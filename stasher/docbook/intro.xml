@@ -1,0 +1,558 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<preface id="index">
+  <title>&app; &mdash; a distributed object repository</title>
+
+  <section id="intro">
+    <title>Introduction</title>
+
+    <para>
+      &app; is a server that implements a distributed, transactional object
+      repository cluster, which means the following:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  An <quote>object</quote> is just a small to a medium-sized file.
+	  There's a limit on the maximum object size. The default maximum
+	  object is 32Mb.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  &app; typically runs on more than one machine, forming a cluster.
+	  Each machine in a cluster is called a node. &app; replicates and
+	  copies all objects in the repository to all nodes, automatically.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  &app; would be mainly used by dedicated applications that are written
+	  to use &app;'s C++ <acronym>API</acronym>.
+	  The <acronym>API</acronym> provides means for connecting to a cluster,
+	  retrieving the contents of existing objects; and putting other
+	  objects into the cluster. There's also a basic, interactive
+	  <link linkend="stasher"><command>stasher</command></link>
+	  tool that provides a simple shell-like interface to an object
+	  repository, interactively, from a command line.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A unique aspect of &app; is that updates to objects are transactional,
+	  like a database.
+	  Applications update multiple objects atomically, in a single
+	  transaction. Other applications that retrieve the
+	  objects, at the same time, will either get the previous or their
+	  updated contents. There's an adjustable upper limit on the number of
+	  objects in the transaction. The default upper limit is ten objects.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  &app; coordinates updates to the same object from different
+	  applications (most likely it's just the same application running
+	  on different nodes), at the same time.
+	  This is similar to traditional relational database
+	  deadlocks, but it's not lock-based, but version-based.
+	  &app; versions each object, and each update from
+	  an application specifies the version of the object that the
+	  transaction updates. Another update, by another application at the
+	  same time changes the object's version. The version of the same
+	  object in the other transaction no longer matches, and the transaction
+	  gets rejected. A transaction either succeeds in updating
+	  each object in the transaction, atomically, or it gets rejected.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  There's also a publish/subscribe mechanism. An application
+	  <quote>subscribes</quote> to an object, and gets notified each time
+	  some other application updates the object.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  When a node in the cluster goes down, the cluster remains operational.
+	  Other, remaining, nodes continue to distribute and update objects in
+	  the cluster. All nodes in the cluster are connected with each other,
+	  and updates continue.
+	</para>
+
+	<para>
+	  Eventually, the disconnected node comes back and
+	  gets reconnected to the cluster. Let's say it rebooted.
+	  During its absence, some objects in the repository have changed.
+	  &app; automatically starts replication of the reconnected node.
+	  The current contents of the object repository get replicated to
+	  the reconnected node,
+	  it's completely synchronized with its peers.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      <command>distreboot</command> demonstrates a simple &app; application.
+      <command>distreboot</command> implements a distributed reboot of
+      multiple servers, one at a time.
+    </para>
+
+    <para>
+      There's other software, similar to &app;, with similar features.
+      Specifically, there are entire distributed filesystems, that present
+      something that looks like an ordinary filesystem partition, which is
+      accessible from multiple machines. The grand-daddy of them all, of course,
+      is <acronym>NFS</acronym>. There are other, more modern ones too.
+    </para>
+
+    <para>
+      &app; is based on &libx; which currently works on Linux only, and is
+      partially stable on FreeBSD 9.
+      &app; is free software, distributed under the terms of the
+      <link linkend="COPYING">GPL, version 3</link>.
+    </para>
+  </section>
+
+  <section id="features">
+    <title>Features</title>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  It's an ordinary application. It's not a filesystem driver, that
+	  requires non-trivial expertise to set up and configure. &app; runs
+	  as a process on each machine in the cluster. It runs from
+	  some directory, where it saves the objects in, and replicates
+	  to its peers. Each instance of &app; connects to its peer
+	  on other nodes.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  &app;'s transactional nature of object updates, is very database-like.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  All instances of &app; talk to each other. One of them is always a
+	  <quote>master controller</quote>, that <quote>runs</quote> the
+	  cluster. This
+	  is an internal, automatic process that requires no attendance, except
+	  for the general
+	  awareness that one of the nodes in the cluster is always
+	  a little bit more <quote>special</quote> than all others.
+	</para>
+
+	<para>
+	  As mentioned previously, a cluster survives a temporary loss of one
+	  of its nodes. Other nodes in the cluster continue to operate.
+	  As long as the majority of nodes in the cluster form a quorum, the
+	  cluster remains operational. A loss of a non-master controller node
+	  is a non-event. An unexpected loss of a master controller is
+	  a bit more disruptive. A new master gets elected from
+	  all the remaining nodes, the master resynchronizes its
+	  copy of the object repository with all other, remaining nodes
+	  in the cluster. Meanwhile, all updates and access to the object
+	  repository is held in limbo, until the the quorum gets reestablished
+	  and all pending updates get applied.
+	</para>
+
+	<para>
+	  With a large object repository, this recovery takes some time,
+	  and until this is complete, applications that use &app; will be
+	  unable to retrieve or update objects in the repository. They won't
+	  get an error indication. Their requests to access or update objects
+	  are held until things go back to normal.
+	</para>
+
+	<para>
+	  When downtime is planned, &app;'s administrative tool shows which node
+	  is the current master. If it's necessary to bring the current master
+	  down, there's an easy way to transfer the master controller status
+	  to another node, in a quick, orderly fashion. &app;'s ordinary
+	  shutdown script invokes that function, making every effort to
+	  transfer master controller status (if the node is a current master
+	  controller) to someone else.
+	</para>
+
+	<para>
+	  For unplanned downtime, it's possible to designate that only certain
+	  nodes can run a master controller. Designate your high-availability
+	  servers as eligible masters, and all other nodes can crash and
+	  burn, whenever they feel like it, with no impact.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  ...but only as long as a majority of nodes doesn't crash and burn at the
+	  same time.
+	  &app; guarantees (as much as anything can be guaranteed by free
+	  software with no warranty) that transaction updates to
+	  the object repository cluster will be atomic as long as the majority
+	  of notes in the cluster are up and connected with each other, this
+	  is called a <quote>quorum</quote>. As long as a quorum is present,
+	  objects won't mysteriously disappear somewhere, and they'll get
+	  replicated
+	  to all nodes in the cluster. Each application that uses &app;'s
+	  <acronym>API</acronym> running on any node in the cluster
+	  sees the same, consistent, reliable snapshot of the objects in the
+	  cluster. Each transaction from an application gets acknowledged only
+	  after all other nodes in the cluster apply the transaction to their
+	  copy of the object repository cluster.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A physical server can be a node in different object repository
+	  clusters, that are independent of each other. A node is just a
+	  directory, somewhere, with an &app; process.
+	</para>
+
+	<para>
+	  But there's little reason to set up multiple repositories, to
+	  isolate different applications apart from each other.
+	  There's a flexible namespace-type mechanism that divides a single
+	  object repository into different parts that are accessible to
+	  different applications, which cannot access each other's objects, only
+	  their own.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section id="securitymodel">
+    <title>Security model</title>
+
+    <para>
+      &app;'s security model is very straightforward. It's based on the same
+      security model that's used for <acronym>SSL</acronym>. That's because it
+      is SSL.
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  An object repository cluster's security is managed by cluster keys
+	  and certificates. It's a certificate authority. The private keys
+	  must be kept in some secure directory, with tight permissions and
+	  away from roaming eyes. Oh, and better have a backup of it, somewhere.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  That doesn't mean that you have to pay some other company, to get
+	  your certificates for &app;. You create them yourself, with &app;'s
+	  tools. You create them, and you keep them safe.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Cluster certificates create and sign node certificates. Each node
+	  in an object repository cluster is identified by its own, unique,
+	  node certificate.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  When nodes in the cluster connect with each other, mutual authentication
+	  takes place, using their respective node certificates, which
+	  are signed by the cluster's certificates. Each node already
+	  has the cluster certificates, so they can verify the peer's certificate.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  By default, after authentication concludes, each connection between
+	  the nodes is no longer encrypted. An optional setting sets
+	  encryption enabled permanently for connections with one or more
+	  nodes.
+	</para>
+
+	<para>
+	  Put one of the nodes halfway across the world. Make sure that it has
+	  the <quote>thou shalt not become a master controller</quote>
+	  flag, and marked to use encryption.
+	  Mission accomplished: automatic offsite backup of your
+	  object repository.
+	</para>
+
+	<para>
+	  Have a few of these offsite nodes, reachable by different networks.
+	  Hopefully, at least one of them is always connected to the cluster.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Cluster and node certificates expire, occasionally, just like
+	  <acronym>SSL</acronym> certificates. That's because they are
+	  <acronym>SSL</acronym> certificates, after all.
+	  But it's easy to renew them.
+	</para>
+
+	<para>
+	  Public cluster certificates are just one of the objects in the object
+	  repository cluster. They are public, and are not a big secret.
+	  It's the cluster keys that get stored somewhere secure, and safe.
+	  For convenience, put them on a machine that's one of the nodes in the
+	  cluster. That makes updates of cluster certificates easier.
+	  &app;'s administrative tools generates a new cluster certificate and
+	  puts it into the object repository cluster, in one command.
+	  The new certificate gets replicated to all nodes in
+	  the cluster, and becomes effective immediately.
+	</para>
+
+	<para>
+	  A node certificate is no different. It's owned by each node, and is
+	  not accessible publicly, but the process is similar. It gets generated
+	  and signed on the machine with the cluster
+	  certificate's key. Then, the object repository node on that machine
+	  takes the newly generated cert, and transmits it to its connected peer,
+	  which takes and activates it (if the new certificate is for another
+	  peer, and not itself).
+	</para>
+
+	<para>
+	  The node certificate's private key is, of course, not public
+	  information, and is kept private on the node itself. However,
+	  after all, all nodes in the cluster are one,
+	  big happy family, and are happy to do it, then immediately forget
+	  what they saw.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section id="INSTALL">
+    <title>Installation, and requirements</title>
+
+    <para>
+      &app; gets installed on all nodes in the cluster. All nodes in the cluster
+      must generally run on the same hardware and software platform, including
+      the C++ runtime. &app;'s internal communication protocols are binary
+      in nature. The actual requirement is that all &app; nodes must have the
+      same C++ ABI. This generally means the same version of the operating
+      system, and the same hardware family.
+    </para>
+
+    <para>
+      &libx; must be installed first. &app; uses &libx;.
+      Install &libx; first and follow its installation instructions.
+      Once &libx; is fully installed on each node, and
+      &libx;'s httportmapper service
+      is running on each node, proceed to install &app;.
+    </para>
+
+    <para>
+      Preparing an installable package is recommended, rather than running
+      <command>configure</command> and <command>make</command>, manually.
+      &app; includes a script that builds <acronym>RPM</acronym> packages on
+      fedora. Executing
+      <quote>rpmbuild -ta &app;-<replaceable>version</replaceable>.tar.bz2</quote>
+      produces two packages: &app;, the required runtime, and &app;-devel,
+      which contains header files and other needed tools for building
+      other applications that use &app;'s C++ API.
+    </para>
+
+    <para>
+      Use the following manual installation instructions only as a guide
+      for preparing installable &app; packages, when the <acronym>RPM</acronym>
+      build script cannot be used for some reason.
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  &libx;'s development environment must be installed, first.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Run <command>./configure</command>
+	  followed by <command>make</command>.
+	  <command>configure</command> takes the usual options.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Run <command>make check</command>. Don't make this a part of an
+	  automated build. <command>make check</command>'s regression tests
+	  should be used as a sanity check after building &app; on a new
+	  platform, for the first time. Once that's done, they serve no
+	  further purpose.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <command>make install DESTDIR=<replaceable>scratchdir</replaceable></command>
+	  creates an installation image in
+	  <replaceable>scratchdir</replaceable>.
+	  Use that to create your installable package.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Some arrangements should be made to have &app; started automatically
+	  on system boot. <command>./configure</command> creates
+	  <filename>stasher.sysinit</filename>, an init-style startup/shutdown
+	  script, and <filename>stasher.service</filename>, a
+	  <command>systemd</command> unit file.
+	</para>
+
+	<para>
+	  There is no fixed location where an object repository lives on
+	  a filesystem. One can be created anywhere, for &app; to start, and
+	  run with. There is a default location used by &app;'s tools
+	  and the <filename>stasher.sysinit</filename> script:
+	  <filename><replaceable>localstatedir</replaceable>/stasher</filename>,
+	  where <replaceable>localstatedir</replaceable> gets set by
+	  <command>./configure</command>'s
+	  <option>--localstatedir</option> option. If so:
+	</para>
+
+	<variablelist>
+	  <varlistentry>
+	    <term><filename>/usr/local/var/stasher/clusters</filename></term>
+	    <listitem>
+	      <para>
+		Default location for
+		<link linkend="newclustersetup">cluster certificates and
+		  private keys.</link>
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>/usr/local/var/stasher/newnodes</filename></term>
+	    <listitem>
+	      <para>
+		Default location for newly-created node directories and
+		certificates.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>/usr/local/var/stasher/nodes</filename></term>
+	    <listitem>
+	      <para>
+		<filename>stasher.sysinit</filename> starts and stops an &app;
+		node for each subdirectory in here.
+		If there's more than one subdirectory here, an &app; instance
+		gets started in each one.
+	      </para>
+
+	      <para>
+		The standard workflow creates new nodes in
+		<filename>/usr/loal/var/stasher/newnodes</filename>. If the
+		new node runs on this machine, it gets <command>mv</command>ed
+		to
+		<filename>/usr/local/var/stasher/nodes</filename>; otherwise
+		the entire new node directory gets copied (carefully, with
+		ownership and permissions preserved) to
+		<filename>/usr/local/var/stasher/nodes</filename> on the other
+		machine.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+
+	<note>
+	  <para>
+	    The default <acronym>RPM</acronym> build script sets
+	    <replaceable>localstatedir</replaceable>
+	    to <filename>/var</filename>. With the default
+	    <acronym>RPM</acronym> package, they are
+	    <filename>/var/stasher/clusters</filename>,
+	    <filename>/var/stasher/newnodes</filename>, and
+	    <filename>/var/stasher/nodes</filename>.
+	  </para>
+	</note>
+
+	<note>
+	  <para>
+	    Cluster and node directories get created as subdirectories in these
+	    locations. These directories are not the actual directories for
+	    cluster certificates and nodes. The name of a subdirectory, in
+	    each one of these directories, don't generally matter; but there
+	    is a default name, as explained later.
+	  </para>
+
+	  <para>
+	    This allows a single machine to run nodes that belong to different,
+	    unrelated, object repository clusters.
+	  </para>
+	</note>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The <filename>maillogs.sh</filename> script gets installed in the
+	  <filename><replaceable>datadir</replaceable>/stasher</filename>
+	  directory (usually <filename>/usr/local/share/stasher</filename>).
+	  The installation package should make arrangements to execute this
+	  script on a regular basis, typically an hourly frequency.
+	  The <filename>maillogs.sh</filename> reads &app;'s logs from
+	  <filename><replaceable>localstatedir</replaceable>/stasher/nodes/*/logs</filename>,
+	  which is where &app; creates them, in its default configuration.
+	  <filename>maillogs.sh</filename> invokes &libx;'s
+	  <command>maillogs</command> tool to mail &app;'s log entries at
+	  level <literal>warning</literal> and higher.
+	</para>
+
+	<para>
+	  <command>make install</command> installs a configuration file
+	  for <filename>maillogs.sh</filename>, called
+	  <filename>stasherlogconfig</filename>, in
+	  <filename><replaceable>sysconfdir</replaceable></filename>
+	  (usually <filename>/usr/local/etc</filename>).
+	  An installable package should not overwrite any existing
+	  <filename>stasherlogconfig</filename> from a previous version of
+	  &app;. In absence of the supporting functionality from the
+	  packaging system, the installable package should install the
+	  configuration file as <filename>stasherlogconfig.dist</filename>,
+	  and copy it to <filename>stasherlogconfig</filename> only if this
+	  file does not exist.
+	</para>
+
+	<note>
+	  <para>
+	    The default <acronym>RPM</acronym> build script uses
+	    <filename>/etc/stasherlogconfig</filename>, and takes care of
+	    running <filename>/usr/share/stasher/maillogs.sh</filename> as part
+	    of <literal>cron.hourly</literal>.
+	  </para>
+	</note>
+      </listitem>
+    </itemizedlist>
+  </section>
+</preface>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "preface")
+End:
+-->

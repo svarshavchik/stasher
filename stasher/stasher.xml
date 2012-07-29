@@ -1,0 +1,44 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<optclass name="objclientopts">
+
+  <option>
+    <name>connect</name>
+    <type>std::string</type>
+    <longopt>connect</longopt>
+    <hasvalue />
+    <descr>Establish a connection to the server</descr>
+    <argdescr>directory</argdescr>
+  </option>
+
+  <option>
+    <name>admin</name>
+    <type>std::string</type>
+    <longopt>admin</longopt>
+    <hasvalue />
+    <descr>Establish an administartive connection to the server</descr>
+    <argdescr>directory</argdescr>
+  </option>
+
+  <option>
+    <name>alarm</name>
+    <type>time_t</type>
+    <longopt>alarm</longopt>
+    <hasvalue />
+    <descr>Set an alarm signal to kill the process if it fails to terminate by the prescribed time</descr>
+    <argdescr>seconds</argdescr>
+    <default>0</default>
+  </option>
+
+  <mutex>
+    <name>connect</name>
+    <name>admin</name>
+  </mutex>
+
+  <defaultoptions />
+</optclass>

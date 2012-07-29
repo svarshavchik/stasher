@@ -1,0 +1,167 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+ "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+
+<!ENTITY % entity-list SYSTEM "entities">
+
+<!ENTITY app "<application>stasher</application>">
+<!ENTITY libx "<application><emphasis>LIBCXX</emphasis></application>">
+<!ENTITY quorum "quorum (the majority of nodes in the cluster are up, connected and synchronized with each other)">
+<!ENTITY fullquorum "full quorum (all nodes in the cluster are up, connected and synchronized with each other)">
+<!ENTITY stashermgcmd "<link linkend='stashermg'><command>stashermg</command></link>">
+<!ENTITY clusterhalt SYSTEM "clusterhalt.xml">
+<!ENTITY intro SYSTEM "intro.xml">
+<!ENTITY newclustersetup SYSTEM "newclustersetup.xml">
+<!ENTITY newnodesetup SYSTEM "newnodesetup.xml">
+<!ENTITY removenode SYSTEM "removenode.xml">
+<!ENTITY renewclustercert SYSTEM "renewclustercert.xml">
+<!ENTITY renewnodecert SYSTEM "renewnodecert.xml">
+<!ENTITY stashermg SYSTEM "stashermg.xml">
+<!ENTITY stasher SYSTEM "stasher.xml">
+<!ENTITY ns "stasher">
+<!ENTITY cct "<link linkend='cct'>client connection thread</link>">
+<!ENTITY synchronousintro SYSTEM "synchronousintro.xml">
+<!ENTITY simpleclient SYSTEM "simpleclient.xml">
+<!ENTITY getdir SYSTEM "getdir.xml">
+<!ENTITY subscribe SYSTEM "subscribe.xml">
+<!ENTITY subscribeserverstatus SYSTEM "subscribeserverstatus.xml">
+
+<!ENTITY asynchronous SYSTEM "asynchronous.xml">
+<!ENTITY get_request SYSTEM "get_request.xml">
+<!ENTITY put_request SYSTEM "put_request.xml">
+<!ENTITY process_request SYSTEM "process_request.xml">
+<!ENTITY other_requests SYSTEM "other_requests.xml">
+
+<!ENTITY manager SYSTEM "manager.xml">
+<!ENTITY managedsubscriber SYSTEM "managedsubscriber.xml">
+<!ENTITY managedobject SYSTEM "managedobject.xml">
+<!ENTITY managedhierarchymonitor SYSTEM "managedhierarchymonitor.xml">
+<!ENTITY managedserverstatusupdates SYSTEM "managedserverstatusupdates.xml">
+
+<!ENTITY serdeser SYSTEM "serdeser.xml">
+<!ENTITY createmanagedobject SYSTEM "createmanagedobject.xml">
+<!ENTITY currentbaseobj SYSTEM "currentbaseobj.xml">
+<!ENTITY currentobj SYSTEM "currentobj.xml">
+
+<!ENTITY versioned SYSTEM "versioned.xml">
+<!ENTITY versionedptr SYSTEM "versionedptr.xml">
+<!ENTITY versionedput SYSTEM "versionedput.xml">
+
+%entity-list;
+
+]>
+
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+
+<book id="toc">
+  <title>&app; &mdash; a distributed object repository</title>
+
+  &intro;
+
+  <part id="clustermgmt">
+    <title>Managing the object repository cluster</title>
+
+    <partintro id="clustermgmtintro">
+      <title>Introduction</title>
+
+      <para>
+	This part contains a step-by-step tutorial for setting up an object
+	repository, after a new &app; installation. You can proceed to
+	<xref linkend="synchronous" /> if you already have a
+	&app; object repository set up and configured, and you are looking
+	for information on &app;'s C++ <acronym>API</acronym>.
+      </para>
+
+      <para>
+	The examples in this part use &app;'s default directory
+	as used by &app;'s <application>RPM</application> package for
+	Fedora, with is
+	<filename>/var/stasher</filename>. If &app; is built manually, the
+	default directory is <filename>/usr/local/var</filename>, and it
+	can be overriden, if desired.
+      </para>
+    </partintro>
+    &newclustersetup;
+    &newnodesetup;
+    &removenode;
+    &renewnodecert;
+    &renewclustercert;
+    &clusterhalt;
+  </part>
+
+  <part id="cpp">
+    <title>&app; C++ library API</title>
+
+    <chapter id="synchronous">
+      <title>Synchronous <acronym>API</acronym></title>
+
+      &synchronousintro;
+      &simpleclient;
+      &getdir;
+      &subscribe;
+      &subscribeserverstatus;
+    </chapter>
+
+    <chapter id="asynchronous">
+      <title>Asynchronous <acronym>API</acronym></title>
+
+      &asynchronous;
+      &get_request;
+      &put_request;
+      &process_request;
+      &other_requests;
+    </chapter>
+
+    <chapter id="manager">
+      <title>Asynchronous connection manager</title>
+
+      &manager;
+      &managedsubscriber;
+      &managedobject;
+      &managedhierarchymonitor;
+      &managedserverstatusupdates;
+    </chapter>
+
+    <chapter id="serdeser">
+      <title>Serializing and deserializing the current value of an object</title>
+
+      &serdeser;
+      &createmanagedobject;
+      &currentbaseobj;
+      &currentobj;
+    </chapter>
+
+    <chapter id="versioned">
+      <title>Versioned current objects and updates</title>
+
+      &versioned;
+      &versionedptr;
+      &versionedput;
+
+    </chapter>
+  </part>
+
+  <part id="manpages">
+    <title>Command Documentation</title>
+
+    &stashermg;
+    &stasher;
+  </part>
+
+  <appendix id="COPYING">
+    <title>COPYING</title>
+
+    <para role="COPYING">
+      &app; is free software, distributed under the terms of the
+      GPL, version 3:
+    </para>
+    <blockquote>
+      <literallayout><xi:include href="../COPYING" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></literallayout>
+    </blockquote>
+  </appendix>
+</book>

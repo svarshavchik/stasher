@@ -1,0 +1,59 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="objrepocopydstthreadObj">
+
+  <method name="event_batonrequest">
+    <comment>
+    //! Synchronization message.
+
+    //! \see objrepocopy
+    </comment>
+    
+  </method>
+
+  <method name="event_masterlist">
+    <comment>
+    //! Synchronization message.
+
+    //! \see objrepocopy
+    </comment>
+    
+    <param type="class"><decl>objrepocopy::masterlist <name>msg</name></decl></param>
+  </method>
+
+  <method name="event_masterlistdone">
+    <comment>
+    //! Synchronization message.
+
+    //! \see objrepocopy
+    </comment>
+    
+    <param type="class"><decl>objrepocopy::masterlistdone <name>msg</name></decl></param>
+  </method>
+
+  <method name="event_slaveliststart">
+    <comment>
+    //! Synchronization message.
+
+    //! \see objrepocopy
+    </comment>
+    
+    <param type="class"><decl>objrepocopy::slaveliststart <name>msg</name></decl></param>
+  </method>
+
+  <method name="event_masterack">
+    <comment>
+    //! Synchronization message.
+
+    //! \see objrepocopy
+    </comment>
+    
+    <param type="class"><decl>objrepocopy::masterack <name>msg</name></decl></param>
+  </method>
+
+</class>

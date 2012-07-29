@@ -1,0 +1,72 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="localconnectionObj">
+
+  <method name="transaction_done">
+    <comment>
+      //! Transaction has been processed
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Original status request uuid
+      </comment>
+      <decl>x::uuid <name>uuid</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Transaction status
+      </comment>
+      <decl>trandistributorObj::transtatus <name>status</name></decl>
+    </param>
+
+  </method>
+
+  <method name="quorumstatuschanged">
+    <comment>
+      //! The quorum status of this cluster has changed
+    </comment>
+    <param type='class'>
+      <comment>
+	//! New quorum status
+      </comment>
+
+      <decl>STASHER_NAMESPACE::quorumstate <name>inquorum</name></decl>
+    </param>
+  </method>
+
+  <method name="statusupdated">
+    <comment>
+      //! Cluster status has changed
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! New cluster status
+      </comment>
+
+      <decl>nodeclusterstatus <name>newStatus</name></decl>
+    </param>
+  </method>
+
+  <method name="clusterupdated">
+    <comment>
+      //! Cluster has changed
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Cluster has changed: added or removed nodes, changed node config...
+      </comment>
+
+      <decl>clusterinfoObj::cluster_t <name>newStatus</name></decl>
+    </param>
+  </method>
+
+</class>

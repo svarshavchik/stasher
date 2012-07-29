@@ -1,0 +1,100 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="managerintro">
+  <title>Introduction</title>
+
+  <para>
+    As mentioned in <xref linkend="subscribe" />, if the connection to the
+    server drops for any reason, the subscription to a hierarchy or an object
+    gets cancelled. Although a new client connection thread gets started by
+    the next request from the application, and it tries to reconnect to the
+    server, the subscription does not get reopened automatically.
+  </para>
+
+  <para>
+    A manager object implements enhanced object and hierarchy subscriptions,
+    then sets a timer when they get cancelled (one minute, by default).
+    After the timer expires, the manager tries to reestablish the subscription
+    (which makes another connection attempt to the server, if necessary).
+  </para>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>&ns;::manager manager=&ns;::manager::create();</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This creates a
+    <ulink url="&link-typedef-stasher-manager;"><classname>&ns;::manager</classname></ulink>,
+    an <classname>x::ref</classname>. The retry interval gets set by
+    the property <quote><literal>objrepo::manager</literal></quote>, with the
+    default value of one minute.
+  </para>
+
+  <para>
+    The entire application can use a single manager object, or different
+    manager objects, there is no particular advantage, except that each manager
+    instance can use a different timeout interval.
+  </para>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>&ns;::manager manager=&ns;::manager::create(L"retry", "10 seconds");</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This example creates a manager that uses the
+    <quote><literal>objrepo::manager</literal></quote> property, with a
+    ten second default value. The first parameter is the property name,
+    as a wide string. The second parameter is an <classname>x::hms</classname>,
+    which can be initialized from a literal string.
+  </para>
+
+  <section id="managernotes">
+    <title>General notes about managed objects and subscriptions</title>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  A manager can manage objects and subscriptions from the same or
+	  different client connections.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  If a manager object goes out of scope and gets destroyed, all
+	  managed objects and subscriptions no longer get managed. They're all
+	  &libx;'s reference counted objects, and as long as a strong reference
+	  to them remains in scope, somewhere, they'll still exist, but won't
+	  be of much use. It's expected that a manager object will
+	  <quote>live nearby</quote> everything that it manages.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  It doesn't matter whether the manager or its managed object goes out
+	  of scope and get destroyed first. Note, though, that managed objects
+	  maintain a strong reference to their client connection object, as
+	  a necessity, so they must go out of scope and get destroyed before
+	  the application's client connection handle.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

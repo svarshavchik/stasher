@@ -1,0 +1,249 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<optclass name="repomgcliopts">
+
+  <superclasses>private repomgcliopts_base</superclasses>
+  <superclassinit>repomgcliopts_base(msgcat)</superclassinit>
+
+  <option>
+    <name>clustkey</name>
+    <type>bool</type>
+    <longopt>clustkey</longopt>
+    <descr>Cluster key management</descr>
+
+    <group>
+      <option>
+	<name>clustkey_generate</name>
+	<type>bool</type>
+	<longopt>generate</longopt>
+	<descr>Generate a new cluster key</descr>
+
+	<group>
+	  <option>
+	    <name>clustkey_name</name>
+	    <type>string</type>
+	    <opt>n</opt>
+	    <longopt>name</longopt>
+	    <descr>Cluster key's name</descr>
+	    <hasvalue />
+	    <argdescr>name</argdescr>
+	  </option>
+
+	  <option>
+	    <name>clustkey_bits</name>
+	    <type>x::gnutls::sec_param</type>
+	    <opt>b</opt>
+	    <longopt>bits</longopt>
+	    <descr>
+	      <format>Key's bit strength (%1%); default is %2%</format>
+	      <param>keystrengths</param>
+	      <param>defaultkeystrength</param>
+	    </descr>
+	    <hasvalue />
+	    <argdescr>strength</argdescr>
+	    <default>GNUTLS_SEC_PARAM_NORMAL</default>
+	  </option>
+
+	  <option>
+	    <name>clustkey_digest</name>
+	    <opt>d</opt>
+	    <longopt>digest</longopt>
+	    <type>x::gnutls::digest_algorithm</type>
+	    <descr>
+	      <format>Signing algorithm (%1%); default is \"sha256\"</format>
+	      <param>digests</param>
+	    </descr>
+	    <hasvalue />
+	    <argdescr>algorithm</argdescr>
+	    <default>"sha256"</default>
+	  </option>
+
+	  <option>
+	    <name>clustkey_expire</name>
+	    <type>ymd_interval</type>
+	    <opt>e</opt>
+	    <longopt>expires</longopt>
+	    <descr>Key's expiration</descr>
+	    <hasvalue />
+	    <argdescr>interval</argdescr>
+	    <default>x::ymd::interval("5 years")</default>
+	  </option>
+
+	  <option>
+	    <name>clustkey_type</name>
+	    <type>string</type>
+	    <opt>t</opt>
+	    <longopt>type</longopt>
+	    <descr>Key type (rsa or dsa)</descr>
+	    <hasvalue />
+	    <argdescr>type</argdescr>
+	    <default>"rsa"</default>
+	  </option>
+
+	  <arg>
+	    <name>directory</name>
+	    <required />
+	  </arg>
+	</group>
+      </option>
+
+      <option>
+	<name>clustkey_remove</name>
+	<type>bool</type>
+	<opt>r</opt>
+	<longopt>remove</longopt>
+	<descr>Remove key</descr>
+
+	<group>
+	  <arg>
+	    <name>directory</name>
+	    <required />
+	  </arg>
+	  <arg>
+	    <name>keyid</name>
+	    <required />
+	  </arg>
+	</group>
+      </option>
+
+      <option>
+	<name>clustkey_list</name>
+	<type>bool</type>
+	<opt>l</opt>
+	<longopt>list</longopt>
+	<descr>List existing keys</descr>
+	<group>
+	  <arg>
+	    <name>directory</name>
+	    <required />
+	  </arg>
+	</group>
+      </option>
+
+      <option>
+	<name>clustkey_export</name>
+	<type>bool</type>
+	<opt>e</opt>
+	<longopt>export</longopt>
+	<descr>Export updated cluster keys to a node key directory</descr>
+	<group>
+	  <arg>
+	    <name>directory</name>
+	    <required />
+	  </arg>
+	  <arg>
+	    <name>nodekeydirectory</name>
+	    <required />
+	  </arg>
+	</group>
+      </option>
+    </group>
+  </option>
+
+  <option>
+    <name>nodekey</name>
+    <type>bool</type>
+    <longopt>nodekey</longopt>
+    <descr>Node key management</descr>
+
+    <group>
+      <option>
+	<name>nodekey_generate</name>
+	<type>bool</type>
+	<longopt>generate</longopt>
+	<descr>Generate a new node key</descr>
+
+	<group>
+	  <option>
+	    <name>nodekey_name</name>
+	    <type>string</type>
+	    <opt>n</opt>
+	    <longopt>name</longopt>
+	    <descr>Node key's name</descr>
+	    <hasvalue />
+	    <argdescr>name</argdescr>
+	  </option>
+
+	  <option>
+	    <name>nodekey_bits</name>
+	    <type>x::gnutls::sec_param</type>
+	    <opt>b</opt>
+	    <longopt>bits</longopt>
+	    <descr>
+	      <format>Key's bit strength (%1%); default is %2</format>
+	      <param>keystrengths</param>
+	      <param>defaultkeystrength</param>
+	    </descr>
+	    <hasvalue />
+	    <argdescr>strength</argdescr>
+	    <default>GNUTLS_SEC_PARAM_NORMAL</default>
+	  </option>
+
+	  <option>
+	    <name>nodekey_digest</name>
+	    <type>x::gnutls::digest_algorithm</type>
+	    <opt>d</opt>
+	    <longopt>digest</longopt>
+	    <descr>
+	      <format>Signing algorithm (%1%); default is \"sha256\"</format>
+	      <param>digests</param>
+	    </descr>
+	    <hasvalue />
+	    <argdescr>algorithm</argdescr>
+	    <default>"sha256"</default>
+	  </option>
+
+	  <option>
+	    <name>nodekey_expire</name>
+	    <type>ymd_interval</type>
+	    <opt>e</opt>
+	    <longopt>expires</longopt>
+	    <descr>Key's expiration</descr>
+	    <hasvalue />
+	    <argdescr>interval</argdescr>
+	    <default>x::ymd::interval("1 year")</default>
+	  </option>
+
+	  <option>
+	    <name>nodekey_signkey</name>
+	    <type>string</type>
+	    <opt>k</opt>
+	    <longopt>signkey</longopt>
+	    <hasvalue />
+	    <descr>Signing cluster key (default: newest)</descr>
+	    <argdescr>keyname</argdescr>
+	  </option>
+
+	  <arg>
+	    <name>directory</name>
+	    <required />
+	  </arg>
+	  <arg>
+	    <name>clusterkeydirectory</name>
+	    <required />
+	  </arg>
+	</group>
+      </option>
+    </group>
+  </option>
+
+  <option>
+    <name>certreload</name>
+    <type>bool</type>
+    <longopt>certreload</longopt>
+    <descr>Reload manually installed node certificate</descr>
+
+    <group>
+      <arg>
+	<name>directory</name>
+	<required />
+      </arg>
+    </group>
+  </option>
+  <defaultoptions />
+</optclass>

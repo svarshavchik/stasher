@@ -1,0 +1,1799 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<refentry id="stasher">
+  <info>
+    <author>
+      <firstname>Sam</firstname>
+      <surname>Varshavchik</surname>
+      <contrib>Author</contrib>
+    </author>
+    <productname>Stasher</productname>
+  </info>
+
+  <refmeta>
+    <refentrytitle>stasher</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class='manual'>Object Repository Server Man Pages</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>stasher</refname>
+    <refpurpose>Interactive object repository client</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+       <command>stasher</command>
+       <group choice='opt'>
+	 <arg choice='plain'>--connect=<replaceable>directory</replaceable></arg>
+	 <arg choice='plain'>--admin=<replaceable>directory</replaceable></arg>
+       </group>
+
+       <arg choice='opt'>--alarm=<replaceable>seconds</replaceable></arg>
+
+       <arg choice='opt'>command</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para>
+      <command>stasher</command> provides an interactive interface to
+      an object repository server. This is mostly an administrative tool,
+      but it's also available as a crude object repository client, running in a
+      <quote>sandbox</quote> for demonstration purposes. It connects to an
+      object repository server running on the same machine. The server is
+      typically configured so that unknown non-administrative connections
+      are confined to a sandbox area, where random objects can be placed
+      and/or retrieved, and <command>stasher</command> implements an
+      interactive interface shell for doing so.
+    </para>
+
+    <para>
+      <command>stasher</command> issues a prompt, and waits for a command.
+      Each command gets parsed into white-space-delimited words, in a similar
+      manner as
+      <citerefentry><refentrytitle>bash</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      including quoting.
+      Input continues
+      if the last character on a typed line is a backslash.
+      <command>stasher</command> removes the backslash, saves the first
+      line, repeats the prompt and waits for another line to be entered, which
+      gets logically appended to the first line, before broken up into
+      individual words using
+      <citerefentry><refentrytitle>bash</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+      rules.
+      Lines are combined in this manner, consecutively, until a typed
+      line does not end in a backslash, then the collected input gets split
+      into words, and executed.
+    </para>
+
+    <para>
+      If <command>stasher</command> receives any non-option parameters, the
+      pre-parsed parameters get interpreted as individual words that make up
+      a single command, which then gets executed, and
+      <command>stasher</command> exits. Otherwise,
+      <command>stasher</command> repeatedly prompts for, and executes commands
+      until it reads an end-of-file (usually <quote>CTRL-D</quote> from the
+      keyboard).
+    </para>
+
+    <para>
+      Passing a single command to execute, to <command>stasher</command>,
+      on the command line, enables some rudimentary scripting using the
+      following options:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><option>--connect=<replaceable>directory</replaceable></option></term>
+	<listitem>
+	  <para>
+	    <command>stasher</command> executes the command
+	    <quote>CONNECT directory</quote> before executing the command
+	    it receives as an argument.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><option>--admin=<replaceable>directory</replaceable></option></term>
+	<listitem>
+	  <para>
+	    <command>stasher</command> executes the command
+	    <quote>ADMIN directory</quote> before executing the command
+	    it receives as an argument.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><option>--alarm=<replaceable>seconds</replaceable></option></term>
+	<listitem>
+	  <para>
+	    Sets an alarm clock for the prescribed number of seconds. If
+	    the command executed by
+	    <command>stasher</command> does not finish in the prescribed time,
+	    the <command>stasher</command> command dies with a signal.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>
+      Input to <command>stasher</command> can also be piped in, which
+      <command>stasher</command> reads and acts upon as if it was typed in.
+      <command>stasher</command> does not issue interactive prompts if
+      its input is piped in; and suppresses some interactive output; but
+      otherwise produces the same messages that it would, when used
+      interactively.
+    </para>
+
+    <para>
+      The following documentation specifies the syntax of each command as
+      a list of separate words. Except where noted otherwise
+      "{parameter}" refers to a single parsed word, that's required by the
+      command; "[parameter]" refers to a single optional word.
+      Uppercase specifies literal keywords, a lowercase name designates a
+      replaceable parameter value.
+    </para>
+
+    <para>
+      Parenthesis designates a sequence, or a list of words.
+      The "*" suffix denotes an optional sequence of words.
+      The "+" suffix denotes a required sequence, at least one word is required,
+      and may be repeated.
+    </para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Starting and connecting to an object repository server</title>
+
+    <para>
+      The following commands connect to an object repository server that's
+      already running, or start a server process.
+    </para>
+
+    <refsect2>
+      <title>CONNECT [directory]</title>
+
+      <para>
+	The <literal>CONNECT</literal> command makes
+	a regular, non-administrative connection to an object repository
+	server running
+	in a <filename><replaceable>directory</replaceable></filename>.
+	The connection usually gets placed into a sandbox area, according to
+	the namespace rules defined for the given object repository.
+      </para>
+
+      <para>
+	<filename><replaceable>directory</replaceable></filename> is optional
+	when there's exactly one object repository server node
+	directory installed in
+	the default installation directory, which is usually
+	<filename>/var/stasher/nodes</filename> or
+	<filename>/usr/local/var/stasher/nodes</filename>.
+	If there's more than one node directory, or if it's not in the
+	default location, the
+	<filename><replaceable>directory</replaceable></filename> parameter
+	is required.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+$ stasher
+&gt; connect nodekey.dir
+Connected to example, node nodea.example.
+Maximum 10 objects, 32 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+nodea&gt;</programlisting> 
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This example makes a connection to an object repository cluster node
+	running from <filename>nodekey.dir</filename>.
+	<command>stasher</command> prompts with a <quote>&gt;</quote> when
+	its not connected to any server. When connected the node's name
+	is included with the prompt.
+	<command>stasher</command> can connect to only one server
+	at a time.
+	After connecting, <command>stasher</command> reports the
+	server's limits. In this example, the server will accept a maximum
+	of ten objects per transaction, with their total aggregate
+	size not exceeding a megabyte; and the server accepts a maximum of ten
+	object subscriptions at a time.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>ADMIN [directory]</title>
+
+      <para>
+	The <literal>ADMIN</literal> command makes
+	an administrative connection to an object repository server running
+	in a <filename><replaceable>directory</replaceable></filename>.
+	The <filename><replaceable>directory</replaceable></filename> must
+	be owned by the same user-id that's running <command>stasher</command>
+	otherwise the connection fails.
+      </para>
+
+      <para>
+	<filename><replaceable>directory</replaceable></filename> is optional
+	when there's exactly one object repository server node
+	directory installed in
+	the default installation directory, which is usually
+	<filename>/var/stasher/nodes</filename> or
+	<filename>/usr/local/var/stasher/nodes</filename>.
+	If there's more than one node directory, or if it's not in the
+	default location, the
+	<filename><replaceable>directory</replaceable></filename> parameter
+	is required.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>START {directory}</title>
+
+      <para>
+	The <literal>START</literal> command
+	starts a child process that runs an object repository server in the
+	<filename><replaceable>directory</replaceable></filename>, which must've
+	been previously created by
+	<command>stashermg --nodekey --generate</command>.
+	An administrative connection gets immediately established with the
+	newly started server process, as if by the <quote>ADMIN</quote> command.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>DISCONNECT</title>
+
+      <para>
+	The <literal>DISCONNECT</literal> command drops the connection with
+	the server. <command>stasher</command> can only connect to one server
+	at a time, and an existing connection must be dropped before
+	another <literal>CONNECT</literal> or <literal>ADMIN</literal>
+	command.
+      </para>
+    </refsect2>
+  </refsect1>
+
+  <refsect1>
+    <title>Administrative commands</title>
+
+    <para>
+      The following commands require an administrative connection with an
+      object repository server created by the
+      <literal>ADMIN</literal> command.
+      <command>stasher</command> does not itself check that an administrative
+      connection was established; this is checked by the server, and the
+      imposed penalty is the disconnection of a non-administrative connection,
+      and a nasty message in the server's logs.
+    </para>
+
+    <refsect2>
+      <title>GETPROPS</title>
+
+      <para>
+	This command displays a list of current server property settings.
+	Server property settings are low level configuration settings that
+	control the server's operation.
+	The <literal>GETPROPS</literal> command displays a list of property
+	settings, and each setting's current value.
+      </para>
+    </refsect2>
+    <refsect2>
+      <title>SETPROP {name} {value}</title>
+
+      <para>
+	The <literal>SETPROP</literal> command changes an internal server
+	property setting <replaceable>name</replaceable> to value. Generally,
+	the setting takes effect immediately, and is permanent. The new
+	setting remains in effect when the server gets restarted.
+      </para>
+    </refsect2>
+    <refsect2>
+      <title>RESETPROP {name}</title>
+
+      <para>
+	The <literal>RESETPROP</literal> command resets a property setting to
+	its default value the next time the server restarts. The default
+	property setting value does not take effect immediately. It's necessary
+	to stop and restart the server for the property to revert to its
+	default value.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>SETLIMITS {maxobjects} {maxobjectsize}</title>
+
+      <para>
+	Set a maximum limit of <replaceable>maxobjects</replaceable> objects
+	updated per transaction, with the total aggregate size of all objects
+	in the transaction no more than
+	<replaceable>maxobjectsize</replaceable>.
+	<replaceable>maxobjectsize</replaceable> can be given as
+	<quote><replaceable>n</replaceable>Mb</quote>, in megabytes.
+      </para>
+
+      <para>
+	These limits take effect for new client connections only, and do not
+	affect existing connections. In order to effectively manage the object
+	repository's available space, all client connections must have the same
+	uniform limit, so this command gets typically used when creating a
+	new object repository cluster. If the limits of an existing cluster
+	get changed, all object repository nodes should be restarted in an
+	orderly fashion, to enforce consistent limits for all client
+	connections.
+      </para>
+
+      <para>
+	Specifying <quote><literal>default</literal></quote> for
+	<replaceable>maxobjects</replaceable> or
+	<replaceable>maxobjectsize</replaceable> resets the correspoding
+	limit to its <quote>factory default</quote> setting (10 objects,
+	32 megabytes).
+      </para>
+    </refsect2>
+    <refsect2>
+      <title>STATUS</title>
+
+      <para>
+	The <literal>STATUS</literal> command displays the connected node's
+	current status. The result is a long report on the node's state,
+	with mind-numbing detail.
+      </para>
+    </refsect2>
+    <refsect2>
+      <title>STOP</title>
+
+      <para>
+	The <literal>STOP</literal> command stops the repository cluster node
+	and terminates the daemon process. The stoppage is immediate, and the
+	administrative connection with the server gets dropped.
+      </para>
+
+      <para>
+	Stopping a slave cluster node generally has little impact, as long as
+	the majority of nodes in the cluster remain in quorum. If the stopped
+	node was a master node, the remaining nodes must elect
+	a new master.
+	This is a disruptive event and should be avoided, if possible.
+	Once a new master gets elected, each slave has to synchronize its copy
+	of the object repository with the master, before regular operations
+	can resume. Depending on the size of the object repository, this can
+	take a long time.
+      </para>
+
+      <para>
+	Use the <quote>STATUS</quote> command to verify which node is the
+	current master node, and that there's sufficient number of nodes
+	for the cluster to remain in &quorum;.
+	If this node is a repository master node,
+	use the <quote>RESIGN</quote> command to make another node a master,
+	in an orderly fashion.
+      </para>
+    </refsect2>
+    <refsect2>
+      <title>RESIGN</title>
+
+      <para>
+	If this node is the current master of the cluster, another node takes
+	its place. This is an orderly transition that does not
+	require each node to re-synchronize itself with the new master.
+      </para>
+
+      <para>
+	The <literal>RESIGN</literal> command has no effect if the connected
+	node is not the current master.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>HALT</title>
+
+      <para>
+	Halt the entire cluster. All nodes in the cluster get stopped.
+	This command requires a &fullquorum;, and can only be issued
+	when connected to the cluster's master node.
+      </para>
+
+      <para>
+	Use <literal>STATUS</literal> to show the cluster's master node
+	and its quorum status. This is the safest way to stop an
+	entire cluster and have any connected clients receive a
+	reliable indication whether their last transaction succeeded,
+	or not.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>EDITCLUSTER [FORCE] [NEW] [command]*</title>
+
+      <para>
+	The <literal>EDITCLUSTER</literal> command loads the list of
+	cluster nodes, for editing by the <literal>CLUSTER</literal>
+	command. The cluster list is a list of nodes in the repository,
+	the machines they run on, and their individual configurations.
+	It's stored as an object in the repository itself, named
+	<quote>etc/cluster</quote>.
+	<literal>EDITCLUSTER</literal> loads this list.
+	The <literal>CLUSTER</literal> command makes changes to the list,
+	and <literal>SAVECLUSTER</literal> installs a new
+	<quote>etc/cluster</quote> object.
+      </para>
+
+      <para>
+	Since the list of cluster nodes is saved as an object in the repository,
+	changes made to the cluster configuration using an administrative
+	connection on any node get
+	automatically replicated to all nodes in the cluster.
+      </para>
+
+      <para>
+	In marginal situations it may be necessary to use
+	<literal>EDITCLUSTER</literal> with the "force" or "new" option
+	to recover from fatal errors that
+	prevent normal object repository cluster operations.
+      </para>
+
+      <para>
+	The object repository cluster node configuration is stored as an
+	object in its own repository. If the repository cluster is not in
+	quorum, attempts to read or update objects hang, until the
+	repository quorum gets established, and the
+	<literal>EDITCLUSTER</literal> and
+	<literal>SAVECLUSTER</literal> commands wait until
+	&quorum; gets
+	established.
+      </para>
+
+      <para>
+	There are situations where a quorum can never be established. This
+	can occur, for example, if: a node in the repository permanently
+	disappears for some reason; the node is not yet removed from the
+	cluster's configuration; and the
+	remaining operational nodes are insufficient for a minimum quorum.
+	The former node has to be deleted from the configuration, before
+	the total number of nodes in the repository falls
+	and the remaining nodes	now comprise a majority quorum.
+	So the cluster configuration cannot
+	be loaded until a quorum is formed, and the quorum cannot be formed
+	until a node gets removed from the cluster's configuration.
+      </para>
+
+      <para>
+	To recover from this situation, a new administrative connection must
+	be established, and the <quote>force</quote> parameter specified to
+	the <literal>EDITCLUSTER</literal> command. <quote>force</quote>
+	loads <quote>etc/cluster</quote> from the node's copy of the
+	object repository, even if the cluster is not in quorum. This
+	permits editing to proceed.
+      </para>
+
+      <para>
+	If the <quote>etc/cluster</quote> object itself is corrupted or
+	damaged, and cannot be parsed, the <quote>new</quote>
+	parameter (which can be used together with <quote>force</quote>)
+	ignores the contents of <quote>etc/cluster</quote>, and starts editing
+	with an empty list.
+      </para>
+
+      <para>
+	Any additional words given to <literal>EDITCLUSTER</literal>,
+	<quote>[command]*</quote>,
+	if present,
+	get processed as if they were given to the <literal>CLUSTER</literal>
+	command.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>CLUSTER [command]*</title>
+
+      <para>
+	<literal>CLUSTER</literal>
+	changes the list of nodes in the cluster and their
+	configuration. A <literal>CLUSTER</literal> by itself shows the current
+	list. If followed by a <replaceable>command</replaceable>, the command
+	updates the list of nodes, and <literal>SHOW</literal> shows the changed
+	list.
+	The list of individual cluster commands follows. They are
+	typically combined into a single
+	<literal>CLUSTER</literal> directive, since they often must follow in
+	a specific order, as described:
+      </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term>ADDNODE {name}</term>
+	  <listitem>
+	    <para>
+	      Add a new node to the list of nodes in the object repository
+	      cluster, named <replaceable>name</replaceable>.
+	      <replaceable>name</replaceable> must match the name given to
+	      <citerefentry><refentrytitle>stashermg</refentrytitle><manvolnum>1</manvolnum></citerefentry>'s
+	      <option>--name</option> parameter which created the node's
+	      certificate. Each node in the cluster must have a unique name.
+	    </para>
+
+	    <para>
+	      The <literal>SET</literal>,
+	      <literal>UNSET</literal>,
+	      and <literal>ADD</literal> directives that follow, in the
+	      same <literal>CLUSTER</literal> directive, get applied to the
+	      newly created node.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>DELNODE {name}</term>
+	  <listitem>
+	    <para>
+	      Removes the specified node from the list of nodes in the
+	      object repository.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>UPDATE {name}</term>
+	  <listitem>
+	    <para>
+	      Make changes to an existing node's configuration.
+	      The <literal>SET</literal>,
+	      <literal>UNSET</literal>,
+	      and <literal>ADD</literal> directives that follow, in the
+	      same <literal>CLUSTER</literal> directive, get applied to the
+	      selected node.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>SET {name[=value]}</term>
+	  <listitem>
+	    <para>
+	      Sets the node's configuration setting named
+	      <quote>name</quote> to the specified value.
+	      <quote>name=value</quote> is specified as a single word.
+	    </para>
+
+	    <para>
+	      Either uppercase or lowercase may be used to give a setting's
+	      name. Setting names are case-insensitive.
+	      The <literal>SET</literal> directive removes any setting with
+	      the same name, and replaces it with the new
+	      <replaceable>value</replaceable>.
+	    </para>
+
+	    <para>
+	      Some options are flags, and do not have a value, so
+	      the <quote>=value</quote> part is omitted. The list of options
+	      is given below.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>UNSET {name}</term>
+	  <listitem>
+	    <para>
+	      Any existing settings with this name are removed.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>ADD {name=value}</term>
+	  <listitem>
+	    <para>
+	      This is similar to the <literal>SET</literal> command except
+	      that any existing setting with this name remains, and this
+	      value is added as another setting with the same name.
+	      Depending on the setting, the same setting may have multiple
+	      values.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>REORDER name (BEFORE|AFTER) anchor</term>
+	  <listitem>
+	    <para>
+	      Changes the listed order of nodes in the cluster by moving
+	      one node, <quote>name</quote> before another <quote>anchor</quote>
+	      node in the cluster. The order in which the nodes in the cluster
+	      appear is mostly cosmetic, but it's used by the
+	      <literal>RESIGN</literal> command, which sets the next available
+	      node, in the cluster, as the new master.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+
+      <para>
+	Examples:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+CLUSTER ADDNODE nodea SET host=ip1.nodea.example.com ADD host=ip2.nodea.example.com SET nomaster</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Define a new node named <quote>nodea</quote> in the cluster, with the
+	the setting <quote>host</quote> containing two values,
+	<quote>ip1.nodea.example.com</quote> and
+	<quote>ip2.nodea.example.com</quote>. The <literal>SET</literal>
+	directive sets the first value for <quote>host</quote>, and
+	<literal>ADD</literal> adds the second value (if it was also a
+	<literal>SET</literal> the second <literal>SET</literal> replaces the
+	value from the first one).
+      </para>
+
+      <para>
+	Additionally, the <quote>nomaster</quote> setting, that takes no
+	value, is given.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+CLUSTER UPDATE nodea UNSET nomaster</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This example removes the <quote>nomaster</quote> setting from
+	<quote>nodea</quote>.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+CLUSTER REORDER nodea AFTER nodeb</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Move node <quote>nodea</quote> after <quote>nodeb</quote> in the
+	node list.
+      </para>
+
+      <blockquote>
+	<informaltable>
+	  <thead>
+	    <tr>
+	      <td colspan="2" align="center">Node configuration settings</td>
+	    </tr>
+	    <tr>
+	      <td align="center">Setting</td>
+	      <td align="center">Description</td>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    <tr>
+	      <td><simpara>HOST=<replaceable>hostname</replaceable></simpara></td>
+	      <td>
+		<simpara>
+		  The name of the server the node runs on. The server's name
+		  does
+		  not have to be the same as the given name of the node, in its
+		  certificate.
+		  The <literal>HOST</literal> option must be specified for
+		  every node in the repository. Multiple HOST settings are
+		  permitted for nodes running on multi-homed servers.
+		</simpara>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td><simpara>NOMASTER</simpara></td>
+	      <td>
+		<simpara>
+		  This node should never be elected the repository's cluster
+		  master.
+		  The <literal>RESIGN</literal> command will not consider this
+		  node. The only situation where this node assumes a master role
+		  would be if all connected nodes have this setting, and there
+		  are no other choices. As soon as a node connects that does
+		  not have this setting, it becomes the repository's master.
+		</simpara>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td><simpara>ENCRYPTION</simpara></td>
+	      <td>
+		<simpara>
+		  Connections with this node should be fully encrypted over the
+		  network. Without this setting, encryption is only used
+		  briefly to authenticate connections with this node and
+		  verify the node's certificate. Once a connection gets
+		  established, it remains encrypted if this setting is present,
+		  otherwise the encryption gets dropped.
+		  The encryption gets dropped only if the nodes on both
+		  sides of the connection do not have this flag set. If either
+		  node has this setting, the connection remains encrypted.
+		</simpara>
+	      </td>
+	    </tr>
+	  </tbody>
+	  <tfoot>
+	    <tr>
+	      <td colspan="2">
+		<simpara>
+		  Changes to
+		  the <literal>HOST</literal> and <literal>ENCRYPTION</literal>
+		  options have no effect on existing connections with the
+		  affected nodes. They take their respective effect when the
+		  next connection between the nodes gets established, after any
+		  existing connection gets dropped, for some reason.
+		</simpara>
+	      </td>
+	    </tr>
+	  </tfoot>
+	</informaltable>
+      </blockquote> 
+    </refsect2>
+    <refsect2>
+      <title>SAVECLUSTER [FORCE]?</title>
+
+      <para>
+	All changes specified by previous <literal>CLUSTER</literal> command
+	take effect. A new <quote>etc/cluster</quote> objects is installed in
+	the object repository, and distributed to all nodes in the cluster.
+      </para>
+
+      <para>
+	<literal>SAVECLUSTER</literal> fails with an error message
+	if the list of nodes in the repository was independently updated,
+	by another <command>stasher</command> on the same node, or another
+	node in the cluster, after the initial <literal>EDITCLUSTER</literal>
+	command.
+      </para>
+
+      <para>
+	The <literal>FORCE</literal> option should only be specified for the
+	same reason that its given to <literal>EDITCLUSTER</literal>, and its
+	full implication must be fully understood.
+      </para>
+
+      <para>
+	<literal>FORCE</literal> updates the <quote>etc/cluster</quote>
+	object, with the new cluster configuration, on the connected node only.
+	It's meant to be used as an emergency repair tool, to bring up the
+	repository cluster under dire circumstances:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    The first node in the cluster gets started. On the node, the
+	    cluster node list configuration gets force-edited, updated, and
+	    force-save, in order to recover from whatever condition
+	    prevents the quorum from getting established.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    The next node in the cluster get started. If it is unable to
+	    connect with the first node, the secon node's cluster list gets
+	    forcibly edited in the same manner, using whatever changes
+	    are needed for it to be able to connect with first node.
+	  </para>
+
+	  <para>
+	    Once a connection is made, the two nodes should be able to
+	    re-synchronize their copies of the object repository, including
+	    <quote>etc/cluster</quote> with the cluster's official node list.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    The process gets repeated, until a quorum forms. Once a quorum
+	    forms, it might be possible to bring up the remaining nodes without
+	    force-editing their copy of <quote>etc/cluster</quote>, as long
+	    as they connect with the quorum's master.
+	    The quorum's state should prevent any possibility of them
+	    becoming the cluster's master, pushing their bad
+	    <quote>etc/cluster</quote> to other nodes,
+	    and undo-ing the rebuilt cluster list.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </refsect2>
+    <refsect2 id="namespacecmd">
+      <title>NAMESPACE {command}*</title>
+
+      <para>
+	Make changes to global object repository namespace rules. An
+	administrative connection has full read/write access to the entire
+	object repository namespace. A non-administrative connection typically
+	has read/write and read-only access to a subset of the entire
+	object repository namespace. The namespace rules define the subset.
+      </para>
+
+      <para>
+	The namespace rules are processed when a non-administrative connection
+	gets established. This defines the connection's view of the object
+	repository namespace. Changes to the namespace rules take effect for
+	new connections only, and do not affect existing connections.
+      </para>
+
+      <para>
+	Global namespace rules are stored in the <quote>etc/namespaces</quote>
+	object in the repository itself, so changes are immediately
+	replicated to all nodes, and take effect on all nodes.
+	Global namespace rules get overridden by application namespace rules,
+	see <xref linkend="appsdir" />.
+	The global namespce rules described here take effect only when
+	application namespace rules are not in effect.
+      </para>
+
+      <para>
+	The <quote>etc/namespaces</quote> object
+	gets updated by the <literal>NAMESPACE</literal> command
+	in the same way that all objects are. The repository must be
+	in quorum. If not, <literal>NAMESPACE</literal> waits until the
+	repository is in quorum, before proceeding.
+      </para>
+
+      <para>
+	The primary namespace setting is the namespace root. This restricts
+	the connection's view to the specified subset of the object repository
+	hierarchy.
+      </para>
+
+      <para>
+	Example: the namespace root is
+	<quote>apps/acct</quote>. This is the top-level hierarchy from the
+	connection's view. If the connection accesses an object
+	named <quote>index</quote> it actually ends up with
+	<quote>apps/acct/index</quote>. Objects in the repository
+	outside of <quote>apps/acct</quote> are inaccessible, except through
+	an auxiliary namespace mapping.
+      </para>
+
+      <para>
+	The namespace rules may also define auxiliary namespace mappings, which
+	act as a virtual pointer from the connection's namespace root.
+	Example: a connection whose root is <quote>apps/acct</quote>, and
+	an auxiliary mapping of <quote>system</quote> to <quote>etc</quote>.
+	A connection accesses
+	<quote>system/cluster</quote>. Instead of
+	<quote>apps/acct/system/cluster</quote>, the actual object accessed is
+	<quote>etc/cluster</quote>.
+	An auxiliary mapping is like a pointer from the connection's namespace
+	root to some other part of the object repository's hierarchy. From
+	the connection's view, the <quote>system</quote> hierarchy provides
+	access to anything in <quote>etc</quote> in the object repository
+	namespace, notwithstanding that the connection's namespace root is
+	<quote>apps/acct</quote>.
+      </para>
+
+      <para>
+	Typically, applications create and use objects in a top-level namespace,
+	and namespace rules separate applications' objects from each other.
+      </para>
+
+      <para>
+	The namespace rules specify each connection's root, and any auxiliary
+	mappings. The rules define them based
+	on the user-id and the group-id of the process that
+	connected to a repository node, the filename of the binary that the
+	process is running, and on the name of the node itself.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>NAMESPACE (RW|RO) [command]*</title>
+
+      <para>
+	The namespace command with no arguments displays the current list of
+	namespace rules. Otherwise the first argument must be either
+	<literal>RW</literal> or <literal>RO</literal>.
+      </para>
+
+      <para>
+	There are two separate lists of namespace rules, the read/write rules
+	and the read-only rules. In order to define a namespace view for a
+	connection,
+	the read-only rules gets processed first. The namespace they specify
+	gets defined as a read-only namespace, where the connection can
+	access objects, but not modify them.
+      </para>
+
+      <para>
+	Afterwords, the read-write rules modify the read-only view, and
+	specify which parts of the namespace may be modified.
+	If an auxiliary mapping gets initially defined by read-only rules,
+	accessing objects through that mapping is restricted to reading them,
+	and the objects cannot be modified.
+	If an auxiliary mapping gets defined by read-write rules, objects in
+	that auxiliary mapping are modifiable by the connection.
+      </para>
+
+      <para>
+	An auxiliary mapping defined by read-write rules does not require that
+	the mapping must be defined by read-only rules, first. The read-write
+	rules simply supersede the read-only ones. The auxiliary mapping
+	may or may not be defined in the read-only list. If the read-write
+	list does not redefine the mapping, it gets left as it is, otherwise
+	the read-write mapping supersedes, and the read-write mapping can
+	specify a different part of the entire object repository namespace for
+	the read-write mapping, than the read-only one.
+      </para>
+
+      <para>
+	The connection's name root setting can appear in either the read-only
+	or the read-write list.
+	If specified by a read-write rule, the application
+	may access and modify objects under the specified namespace.
+	If specified by a read-only rule, and not overridden by a read-write
+	rule, the application may access any existing objects, but not
+	modify them. If the application has any read-write auxiliary mappings,
+	the application can still modify objects through the read-write
+	mapping.
+      </para>
+
+      <para>
+	If a top-level namespace root does not get specified by either read-only
+	or read-write rules, the top-level namespace gets set to
+	<quote>sandbox</quote>.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>NAMESPACE (RW|RO) ADD [selector]* [rule]*</title>
+
+      <para>
+	The <literal>ADD</literal> commands adds a new namespace read-write or
+	read-only rule. One or more following clauses follow
+	the <literal>ADD</literal> command:
+      </para>
+
+      <para>
+	<literal>ADD</literal> is followed by a list of selectors, then
+	by a list of rules. The selectors restrict the following rules to
+	be applicable only to connections that meet a specified criteria.
+	If no selectors are given, the rules apply to all connections:
+      </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term>USER {username}</term>
+	  <listitem>
+	    <para>
+	      The following rules apply only to connections from a process
+	      running with the given effective username.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>GROUP {groupname}</term>
+	  <listitem>
+	    <para>
+	      The following rules apply only to connections from a process
+	      running with the given effective groupname.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>PATH {pathname}</term>
+	  <listitem>
+	    <para>
+	      The following rules apply only to connections from a process
+	      running the given binary executable.
+	      <replaceable>pathname</replaceable> must be an absolute pathname.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>HOST {node}</term>
+	  <listitem>
+	    <para>
+	      The following rules apply only to connections on the given
+	      <replaceable>node</replaceable> in the object repository cluster.
+	      Essentially, only the specified node processes this rule, all
+	      others ignore it.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+
+      <para>
+	One or more of the following rules follow the selectors:
+      </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term>ADD {hierarchy} {path}</term>
+	  <listitem>
+	    <para>
+	      Add an auxiliary mapping from <replaceable>hierarchy</replaceable>
+	      to <replaceable>path</replaceable>.
+	      <replaceable>hierarchy</replaceable> must be a single name,
+	      not hierarchical. <replaceable>path</replaceable> is the
+	      path in the overall object repository hierarchy where the mapping
+	      points to.
+	    </para>
+
+	    <para>
+	      Note that this <literal>ADD</literal> clause is different, and
+	      in addition to <literal>ADD</literal> that follows
+	      the <literal>NAMESPACE (RW|RO)</literal>, which indicates an
+	      addition of a new rule, that contains this clause.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>SETROOT {hierarchy}</term>
+	  <listitem>
+	    <para>
+	      Set the connection's namespace root to this
+	      <replaceable>hierarchy</replaceable> within the object
+	      repository's namespace.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>UNADD {hierarchy}</term>
+	  <listitem>
+	    <para>
+	      Remove any previous auxiliary mapping for
+	      <replaceable>hierarchy</replaceable> that's set by any previous
+	      rule. All namespace rules are processed in sequence, and
+	      an auxiliary mapping set by one rule can be removed by another
+	      rule. A rule can also define its own <literal>ADD</literal>,
+	      for the same hierarchy, that replaces the previous rule's.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>UNSETROOT</term>
+	  <listitem>
+	    <para>
+	      Remove any top level hierarchy specification that's set by any
+	      previous rule in the namespace rule list. All namespace rules are
+	      processed in sequence, and a namespace root specified by a rule
+	      an auxiliary mapping set by one rule can be overridden by another
+	      rule, or removed altogether by <literal>UNSETROOT</literal>, so
+	      if not specified by some subsequent rule it defaults to the
+	      <quote>sandbox</quote>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>SETLABEL {label}</term>
+	  <listitem>
+	    <para>
+	      Assign a <replaceable>label</replaceable> to these rules.
+	      It's an arbitrary name that labels these rules, and provides a
+	      convenient way to <literal>MODIFY</literal> them.
+	      The same label cannot be specified for more than one set of rules.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </refsect2>
+
+    <refsect2>
+      <title>NAMESPACE (RW|RO) MODIFY [selector]* [rule]*</title>
+
+      <para>
+	This is similar to <literal>ADD</literal> except that this modifies
+	an existing read-write or a read-only rule definition.
+	The first read-write or read-only rule that matches the list of
+	selector gets modified according to the rules given by
+	<literal>MODIFY</literal>. Alternatively, <quote>LABEL {label}</quote>
+	selects a rule that has the specified label.
+	This is more convenient than
+	having to laboriously repeat the existing selectors, exactly.
+      </para>
+
+      <para>
+	<literal>MODIFY</literal>'s rules are the same as
+	<literal>ADD</literal>, but may also include the following:
+      </para>
+      <variablelist>
+	<varlistentry>
+	  <term>UNSETLABEL</term>
+	  <listitem>
+	    <para>
+	      Remove the existing label from the selected rules. Alternatively,
+	      specifying another <literal>LABEL</literal> rule replaces the
+	      existing label; this would be essentially a rename operation.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>DELSETROOT</term>
+	  <listitem>
+	    <para>
+	      Remove any <literal>SETROOT</literal> or
+	      <literal>UNSETROOT</literal> from the selected rules.
+	      Alternatively, specifying another <literal>SETROOT</literal>
+	      <literal>UNSETROOT</literal> replaces the existing one in the
+	      selected rule.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>DELADD {hierarchy}</term>
+	  <listitem>
+	    <para>
+	      Remove any <literal>ADD</literal> or
+	      <literal>UNADD</literal> for the same hierarchy
+	      from the selected rules.
+	      Alternatively, specifying another <literal>SETROOT</literal>
+	      <literal>UNSETROOT</literal> replaces the existing one in the
+	      selected rule.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+
+      <para>
+	To remove a namespace entry completely, <literal>DELADD</literal> all
+	of its <literal>ADD</literal>s and <literal>UNADD</literal>s,
+	and <literal>DELSETROOT</literal> any
+	<literal>SETROOT</literal> or <literal>UNSETROOT</literal>.
+      </para>
+
+      <refsect3>
+	<title>Write access to <quote>etc</quote> considered harmful</title>
+
+	<para>
+	  An <literal>ADD</literal> to the <quote>etc</quote>
+	  hierarchy in the <literal>RW</literal> list means that anyone that
+	  gets that rule
+	  can remove anything in <quote>etc</quote>. With
+	  <command>stasher</command> itself, a single <literal>RMRF</literal>
+	  command will destroy the entire object cluster repository.
+	</para>
+      </refsect3>
+    </refsect2>
+
+    <para>
+      Examples:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+nodea&gt; NAMESPACE RW ADD PATH /usr/sbin/distreboot SETROOT \
+    apps/distreboot.objrepo.example.com SETLABEL distreboot
+NAMESPACE RW ADD PATH /usr/sbin/distreboot SETLABEL distreboot \
+    SETROOT apps/distreboot.objrepo.example.com</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This command sets the read-write namespace root for
+      <command>/usr/sbin/distreboot</command> to
+      <quote>apps/distreboot.objrepo.example.com</quote>, and assigns
+      the <quote>distreboot</quote> label to this rule.
+    </para>
+
+    <para>
+      The <literal>NAMESPACE</literal> command responds with the list of
+      currently defined namespace rules, in the form of the commands
+      necessary to recreate them. In the above example, there were no
+      other namespace rules defined before, and the output consists of the
+      same command.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+nodea&gt; NAMESPACE RO ADD PATH /usr/bin/distreboot SETLABEL distreboot-etc ADD etc etc
+NAMESPACE RO ADD PATH /usr/bin/distreboot SETLABEL distreboot-etc \
+    ADD etc etc
+NAMESPACE RW ADD PATH /usr/bin/distreboot SETLABEL distreboot \
+    SETROOT apps/distreboot.objrepo.courier-mta.com</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      An auxiliary namespace mapping gets added, with the assigned label of
+      <quote>distreboot-etc</quote>. The mapping links <quote>etc</quote>
+      from within the same program's namespace root to the real
+      <quote>etc</quote> within the overall object repository hierarchy,
+      read-only.
+    </para>
+
+    <para>
+      As stated previously, the read-only and read-write rules are separate
+      lists, and the read-only list gets processed first, followed by the
+      read-write list, and the output of the <literal>NAMESPACE</literal>
+      command reflects that. However, after processing both lists, the
+      auxiliary namespace mappings take effect with respect to the derived
+      namespace root, so the above example works as described.
+    </para>
+
+    <refsect2>
+      <title>NAMESPACE (RW|RO) MOVE [selector]* (BEFORE | AFTER) [selector]*</title>
+
+      <para>
+	The order of rules often matters with a complex namespace configuration.
+	The <literal>MOVE</literal> command
+	rearranges the order of the existing rules.
+	The <literal>MOVE</literal> command takes two lists of selectors.
+	Each list selects an existing rule, the same way
+	that the <literal>ADD</literal> and <literal>MODIFY</literal>,
+	preferably using an existing label to make this operation easier.
+      </para>
+
+      <para>
+	The rule selected by the first list of selectors gets moved before or
+	after the rule selected by the second list, as specified.
+	The read-write and read-only rules are separate from each other,
+	and a read-write rule can be re-positioned only relative to another
+	read-write rule, and a read-only rule can be repositioned only
+	relative to another read-only rule.
+      </para>
+    </refsect2>
+  </refsect1>
+
+  <refsect1>
+    <title>Regular commands</title>
+
+    <para>
+      The regular commands generally require the object repository to be
+      in &quorum;. If not, these commands wait until a quorum forms, before
+      proceeding.
+    </para>
+
+    <refsect2>
+      <title>PUT ( (DEL name:uuid | NEW name | UPD name:uuid) (VALUE literal | FILE filename) )+</title>
+
+      <para>
+	The <literal>PUT</literal> command adds, modifies, or removes
+	objects in the object repository. More than one object can be
+	processed at the same time.
+	If the <literal>PUT</literal> fails for any reason, as described below,
+	none of the changes take effect; otherwise all objects get updated
+	atomically.
+	Another
+	process doing a <literal>PUT</literal>, <literal>GET</literal>, or
+	another command at the same time
+	will either use the previous contents of the modified objects, or
+	the contents as updated by this <literal>PUT</literal>.
+      </para>
+
+      <para>
+	Atomicity is guaranteed only as long as the object repository cluster
+	remains in quorum. Like all other commands, <literal>PUT</literal>
+	waits until the repository cluster is in quorum before proceeding.
+	If the repository cluster loses quorum in the middle of a
+	<literal>PUT</literal>, the command waits until a quorum gets
+	reestablished, before resuming, but the results of the command,
+	when it's reported to succeed, or to fail, are undefined. The command
+	may report a failure, but some of its objects might still get
+	updated, as the contents of the object repository get re-synchronized
+	between all the nodes in the quorum.
+      </para>
+
+      <para>
+	The maximum number of objects in a <literal>PUT</literal>, and the
+	maximum aggregate sizes of new object values, are limited by the
+	server. These limits are reported when <command>stasher</command>
+	connects to its object repository node server.
+      </para>
+
+      <para>
+	<literal>PUT</literal> takes a list of objects to process, as follows.
+	Each object's name is interpreted according to the
+	<literal>NAMESPACE</literal> rules, in force.
+      </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term>NEW name</term>
+	  <listitem>
+	    <para>
+	      Adds a new object to the repository. The <literal>PUT</literal>
+	      command fails if the object already exists.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>DEL name:uuid</term>
+	  <listitem>
+	    <para>
+	      Removes an object from the repository.
+	      The existing object's name must
+	      be followed by a colon, and the existing object's
+	      <replaceable>uuid</replaceable>. The <literal>PUT</literal>
+	      command fails if the object does not exist or its
+	      <replaceable>uuid</replaceable> is different.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>UPD name:uuid</term>
+	  <listitem>
+	    <para>
+	      Updates an existing object's value.
+	      The existing object's name must
+	      be followed by a colon, and the existing object's
+	      <replaceable>uuid</replaceable>. The <literal>UPD</literal>
+	      command fails if the object does not exist or its
+	      <replaceable>uuid</replaceable> is different.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+
+      <para>
+	The value of <literal>NEW</literal> or
+	<literal>UPD</literal>ated objects may be specified in two ways,
+	immediately after the <literal>NEW</literal> or the
+	<literal>UPD</literal>ate command:
+	<quote>VALUE literal</quote> gives the new value for the object
+	explicitly, as a single word;
+	<quote>FILE filename</quote> reads the value from the specified file.
+	The entire contents of the given file are taken as the new value of
+	the object.
+      </para>
+
+      <para>
+	If successful, the <literal>UPD</literal> command responds with the
+	<replaceable>uuid</replaceable> of all objects added or updated by
+	the command. A <replaceable>uuid</replaceable> is an opaque serial
+	number or a timestamp. Each time an object gets updated, it gets
+	a new <replaceable>uuid</replaceable>, which is shown as a list of
+	meaningless letters, numbers, and some symbols. The actual value is
+	unimportant, except that it's always unique, and each update to an
+	object changes its <replaceable>uuid</replaceable>.
+	The <literal>UPD</literal> and <literal>DEL</literal> operation
+	require a matching <replaceable>uuid</replaceable>. If the affected
+	objects get updated by someone else, since the objects'
+	<replaceable>uuid</replaceable> were obtained, they'll have a different
+	<replaceable>uuid</replaceable>, and <literal>PUT</literal> fails.
+      </para>
+    </refsect2>
+
+    <para>
+      Example:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+nodea&gt; put new pi value "3.1415926" new e value "2.718281828"
+New object uuid: PjGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This example creates two objects, named <quote>pi</quote> and
+      <quote>e</quote>, with explicit values. The new objects did not exist,
+      and the new objects' uuid is
+      <quote>PjGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS</quote>. All objects
+      updated by a transaction have the same uuid.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+nodea&gt; put upd pi:PjGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS file /tmp/pi
+New object uuid: RDGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The <quote>pi</quote> objects gets replaced, and its new contents are
+      taken from the file <filename>/tmp/pi</filename>. This object now has
+      a different uuid.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+nodea&gt; put del pi:PjGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS
+Collision detected - object uuid mismatch</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The <quote>pi</quote> object cannot be deleted, since the specified
+uuid no longer matches.
+    </para>
+    
+    <blockquote>
+      <informalexample>
+	<programlisting>
+nodea&gt; put del pi:RDGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS
+New object uuid: TDGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying the <filename>pi</filename> object's correct uuid succeeds in
+      deleting the object. This <literal>PUT</literal> transaction did not
+      update or create any new objects, so the new uuid value is meaningless.
+    </para>
+
+    <refsect2>
+      <title>DIR [hierarchy]</title>
+
+      <para>
+	The <literal>DIR</literal> command lists objects at the
+	specified hierarchy level, or at the top level if a hierarchy
+	is not specified.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+nodea&gt; dir
+etc/
+pi</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This example shows that the top level hierarchy contains an object
+	named <quote>pi</quote> and a sub-hierarchy named <quote>etc</quote>.
+	A trailing <quote>/</quote> designates a hierarchy level, not an
+	object.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+nodea> dir etc
+etc/namespaces
+etc/rootcerts</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	There are two objects in the <quote>etc</quote> hierarchy, whose names
+	are shown. Object names are shown with their full hierarchy, as in this
+	example.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>UIDS {object}+</title>
+
+      <para>
+	The <literal>UIDS</literal> command shows the uuids of listed objects:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+nodea&gt; uids etc/namespaces pi e
+etc/namespaces:ODGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS
+pi:UDGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS
+e:</programlisting>
+	  </informalexample>
+      </blockquote>
+
+      <para>
+Each object's name is affixed with <quote>:</quote> and its current
+uuid value. In this example the object <quote>e</quote> did not exist, and
+its uuid shows empty.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>RMRF {hierarchy}*</title>
+
+      <para>
+	<literal>RMRF</literal> run the <literal>DIR</literal>,
+	<literal>UIDS</literal> and <literal>PUT</literal> commands to remove
+	all objects in the listed hierarchies.
+      </para>
+
+      <para>
+	If no parameters are given, everything in the connecting client's
+	sandbox gets removed. Since this would be a disaster if the client
+	had an administrative connection, an <literal>RMRF</literal> reports
+	an error if no arguments are provided, and the connection is an
+	administrative connection.
+      </para>
+
+      <para>
+	This is typically used to clean up a generic, shared, sandbox hierarchy.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>GET {object}+</title>
+
+      <para>
+	Retrieve and display the contents of the selected objects:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+nodea&gt; get pi e
+pi:UDGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS
+e:XzGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS
+3.1415926
+2.718281828</programlisting>
+	  </informalexample>
+      </blockquote>
+
+      <para>
+	The output of <literal>GET</literal> is similar to
+	<literal>UIDS</literal>'s output, and includes the value of each
+	object.
+      </para>
+
+      <para>
+	Objects may contain any data, and it's not necessarily human-readable,
+	so the <literal>GET</literal> is not very useful if an object contains
+	binary data.
+      </para>
+    </refsect2>
+    <refsect2>
+      <title>SAVE ({object} {filename})+</title>
+
+      <para>
+	The <literal>SAVE</literal> command is similar to <literal>GET</literal>
+	except that the value of each object is saved in a file, rather than
+	shown. Each object's name is followed by the filename where the
+	object's value is saved to:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+nodea&gt; save pi /tmp/pi e /tmp/e
+e:XzGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS
+pi:UDGKSOqwW7MxIG00Y4SSJm000028Tm800318n4AS</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	<filename>/tmp/pi</filename> and <filename>/tmp/e</filename> now
+	contain the values of the corresponding objects.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>SUB {object}+</title>
+
+      <para>
+	After subscribing to one or more objects, the server sends a
+	<quote>push</quote>-type
+	notification every time the object's value changes. The maximum number
+	of concurrent subscription is limited by the server.
+	<command>stasher</command> shows how many concurrent subscription
+	the server accepts, after connecting to the server.
+      </para>
+
+      <para>
+	The subscription facility is mostly useful when using the C++ API
+	for accessing the object repository. Here, with
+	<command>stasher</command> it's implemented for demonstrative
+	purposes, mostly.
+	Each time <command>stasher</command> reads a command and executes it,
+	it reports the names of any objects that the server, in the meantime,
+	has pushed to <command>stasher</command>:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>      
+nodea&gt; sub pi e
+Subscribed to pi
+Subscribed to e
+nodea&gt;
+nodea&gt;
+nodea&gt;
+e updated
+pi updated
+nodea> uids e pi
+e:
+pi:HX2RF2zlQsLwIm00MAKSJm000000T0C00318n4AS</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	After reporting that both subscribed objects have been updated, the
+	<literal>UIDS</literal> command returns <quote>pi</quote>'s new uuid,
+	and shows that the <quote>e</quote> object was deleted.
+      </para>
+
+      <para>
+	Append a trailing "/" to the object name to subscribe to all changes
+	in a hierarchy. A notification gets sent when any object in the
+	hierarchy changes. Note that the subscription is for the immediate
+	objects in the hierarchy, and won't cover any nested hierarchies.
+      </para>
+    </refsect2>
+    <refsect2>
+      <title>UNSUB {object}+</title>
+
+      <para>
+	The <literal>UNSUB</literal> command cancels the subscription for the
+	specified objects.
+      </para>
+    </refsect2>
+  </refsect1>
+
+  <refsect1 id="appsdir">
+    <title>Application namespace rules</title>
+
+    <para>
+      The namespace rules defined by
+      the <link linkend="namespacecmd"><literal>NAMESPACE</literal></link>
+      command are stored in a repository object, and take effect for all
+      cluster nodes. An application namespace rule file is an alternative
+      namespace specification mechanism that's easier to use with
+      installable application packages. It avoids the need to have an
+      installation script update the namespace rules stored in the object
+      repository.
+    </para>
+
+    <para>
+      This section describes the application namespace rule file, and defines
+      the naming convention for application namespaces.
+    </para>
+
+    <para>
+      Application namespaces are named according to the application's
+      domain name. For example, a distributed rebooter that comes with
+      &app; might use the domain "distreboot.courier-mta.com". This does not
+      have to be a real, existing hostname. As long as an organization or a
+      group controls a domain name, the organization or a group can use
+      that domain name to name its applications, without conflicting with
+      other applications.
+    </para>
+
+    <para>
+      Applications should use "apps/<replaceable>domain</replaceable>"
+      hierarchy as their root namespace, where <replaceable>domain</replaceable>
+      is the controlling organization or group's domain or a subdomain.
+      An application package installs a namespace file named
+      <filename>@localstatedir@/stasher/apps/<replaceable>domain</replaceable></filename>
+      (actual directory location depends on &app;'s configuration options)
+      that typically contains the following two commands:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+PATH <replaceable>pathname</replaceable>
+ROOT apps/<replaceable>domain</replaceable></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This is equivalent to the following namespace configuration
+      (see <xref linkend="namespacecmd" />):
+      <quote>NAMESPACE RW ADD PATH <replaceable>pathname</replaceable> HOST <replaceable>host</replaceable> SETROOT apps/<replaceable>domain</replaceable></quote>,
+      where <quote><replaceable>host</replaceable></quote> is the host where
+      the application namespace rules file gets installed.
+    </para>
+
+    <para>
+      The net effect is that <replaceable>pathname</replaceable>'s read/write
+      namespace root gets set to apps/<replaceable>domain</replaceable>.
+    </para>
+
+    <para>
+      The <literal>PATH</literal> command must always be the first command
+      in the application namespace rule file. When a non-administrative
+      client connection gets established, all files in
+      <filename>@localstatedir@/stasher/apps</filename> get searched
+      (except files whose names contain the characters # or ~, which are
+      presumed to be backup or lock files from various editors).
+      If the connecting client's <literal>PATH</literal> is found, the
+      following commands specify the namespace that take effect for the
+      non-administrative connection.
+      If the connecting client's <literal>PATH</literal> is not found, the
+      global object repository namespace rules get processed
+      (see <xref linkend="namespacecmd" />).
+    </para>
+
+    <para>
+      Each line in an application namespace rule file gets parsed into
+      whitespace-delimited words, which may be quoted using the double-quote
+      character. The available commands are:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><literal>PATH</literal> <replaceable>filename</replaceable></term>
+	<listitem>
+	  <para>
+	    All following commands in the file define the namespace rules
+	    for connections from <replaceable>filename</replaceable>.
+	    <literal>PATH</literal> may appear more than once in an application
+	    namespace rule file.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><literal>ROOT</literal> <replaceable>hierarchy</replaceable></term>
+	<listitem>
+	  <para>
+	    Equivalent to
+	    <quote>NAMESPACE RW ADD PATH <replaceable>path</replaceable> HOST <replaceable>host</replaceable> SETROOT <replaceable>hierarchy</replaceable></quote>,
+	    where <replaceable>host</replaceable> is
+	    <replaceable>path</replaceable>'s host.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><literal>ROROOT</literal> <replaceable>hirearchy</replaceable></term>
+	<listitem>
+	  <para>
+	    Equivalent to
+	    <quote>NAMESPACE RO ADD PATH <replaceable>path</replaceable> HOST <replaceable>host</replaceable> SETROOT <replaceable>hierarchy</replaceable></quote>,
+	    where <replaceable>host</replaceable> is
+	    <replaceable>path</replaceable>'s host.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><literal>RW</literal> <replaceable>alias</replaceable> <replaceable>hierarchy</replaceable></term>
+	<listitem>
+	  <para>
+	    Equivalent to
+	    <quote>NAMESPACE RW ADD PATH <replaceable>path</replaceable> HOST <replaceable>host</replaceable> ADD <replaceable>alias</replaceable> <replaceable>hierarchy</replaceable></quote>,
+	    where <replaceable>host</replaceable> is
+	    <replaceable>path</replaceable>'s host.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><literal>RO</literal> <replaceable>alias</replaceable> <replaceable>hierarchy</replaceable></term>
+	<listitem>
+	  <para>
+	    Equivalent to
+	    <quote>NAMESPACE RO ADD PATH <replaceable>path</replaceable> HOST <replaceable>host</replaceable> ADD <replaceable>alias</replaceable> <replaceable>hierarchy</replaceable></quote>,
+	    where <replaceable>host</replaceable> is
+	    <replaceable>path</replaceable>'s host.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>
+      Note the application namespace rule files are known only to the node
+      that's running on the same server. Presumably, the application that uses
+      the distributed object repository gets installed on multiple repository
+      nodes. The application package installs the same namespace rule file on
+      each node, so every application installation, on different nodes, ends
+      up connecting to the same namespace; but it's possible to install the
+      same application in a different application directory, on one node, and
+      adjust the application namespace rule file so that it sees the same
+      object namespace as its peers on other nodes.
+    </para>
+  </refsect1>
+</refentry>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "reference" "refentry")
+End:
+-->

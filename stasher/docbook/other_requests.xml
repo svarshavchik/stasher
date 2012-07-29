@@ -1,0 +1,31 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="other_request">
+  <title>Other <methodname><classname>&ns;::client</classname>-&gt;<replaceable>name</replaceable>_request</methodname>()s</title>
+
+  <para>
+    <methodname>&ns;::getdir_request</methodname>(),
+    <methodname>&ns;::subscribe_request</methodname>() and
+    <methodname>&ns;::subscribeserverstatus_request</methodname>()
+    follow the same design
+    as other asynchronous requests, like
+    <link linkend="get_request"><function>&ns;::get_request</function>()</link>
+    and
+    <link linkend="put_request"><function>&ns;::put_request</function>()</link>,
+    and implement the asynchronous versions of their synchronous cousins;
+    and can be used, in the same way, with
+    <link linkend="process_request"><function>&ns;::process_request</function>()</link>.
+  </para>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

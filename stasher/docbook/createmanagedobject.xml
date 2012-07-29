@@ -1,0 +1,126 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="createmanagedobject">
+  <title><function>&ns;::create_manage_object&lt;<classname><replaceable>classptr</replaceable></classname>&gt;</function>(): call a functor after deserializing an object</title>
+
+  <para>
+    The following example shows the current contents of the
+    <ulink url="examples/inventory/inventory.H">inventory object</ulink>,
+    and shows the updated contents any time that
+    <ulink url="examples/inventory/setinventory.C"><command>setinventory</command></ulink>,
+    executes on the same node or any other node in the cluster,
+    and updates the contents of the inventory object.
+    Pass the name of the object as a parameter to
+    <command>showinventory</command>:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/inventory/">examples/inventory/showinventory.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/inventory/showinventory.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <function>&ns;::create_manage_object</function>()'s
+    <classname><replaceable>classptr</replaceable></classname> template
+    parameter
+    is an <classname>x::ptr</classname> to an object that meets the requirements
+    in <xref linkend="serdeserrequirements" />.
+    <function>&ns;::create_manage_object</function>() returns a
+    <classname>&ns;::managedobject</classname> that can be passed as
+    the third parameter to
+    <link linkend="managedobject"><methodname><classname>&ns;::manager</classname>-&gt;manage_object</methodname></link>().
+  </para>
+
+  <para>
+    The first parameter to
+    <function>&ns;::create_manage_object</function>() is a functor that
+    takes two parameters, a
+    <classname><replaceable>classptr</replaceable></classname> and a
+    <classname>bool</classname>.
+    <function>&ns;::create_manage_object&lt;</function>() instantiates a
+    <classname>&ns;::managedobject</classname> whose
+    <methodname>updated</methodname>() invokes the functor passing it a
+    <classname><replaceable>classptr</replaceable></classname> to an instance
+    of the template class constructed with the forwarded
+    <classname>x::uuid</classname> and file descriptor parameters, and whose
+    <methodname>removed</methodname>() invokes the functor with a
+    <literal>nullptr</literal>
+    <classname><replaceable>classptr</replaceable></classname>.
+  </para>
+
+  <para>
+    In either case, the second <classname>bool</classname> parameter to the
+    functor is <literal>true</literal> if this is the first object that's
+    retrieved from the repository after a connection or a reconnection,
+    indicating the initial value of the object; and <literal>false</literal>
+    for subsequent invocations.
+  </para>
+
+  <para>
+    The second parameter to
+    <function>&ns;::create_manage_object&lt;</function>() is a functor
+    that takes a <classname>&ns;::req_stat_t</classname> parameter, which is
+    forwarded from the managed object's
+    <link linkend="managedobject"><methodname>connection_update</methodname></link>()
+    callback, and works similarly to the <methodname>connection_update</methodname>() in
+    other managed objects and subscriptions.
+  </para>
+
+  <para>
+    The second functor parameter is optional, and may be omitted if its
+    functionality is not needed.
+  </para>
+
+  <para>
+    To summarize:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	Define a reference-counted class that meets the requirements described
+	in <xref linkend="serdeserrequirements" />.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Use <methodname>&ns;::create_managed_object</methodname>(), and pass its
+	return value to
+	<methodname><classname>&ns;::manager</classname>-&gt;manage_object</methodname>().
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	The end result is a functor that tracks its object in the repository.
+	The functor gets invoked shortly after the managed subscription gets
+	established and every time the object is changed in the repository,
+	with a reference to a new class instance that's constructed from the
+	updated object's contents.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    The functors
+    have certain limitations, see
+    <xref linkend="asynchronouscancannot" /> for more information; with the
+    addition that exceptions thrown by the functors get caught, and logged,
+    before returning.
+  </para>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

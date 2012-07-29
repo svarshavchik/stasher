@@ -1,0 +1,60 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="simplepartintro">
+  <title>Introduction</title>
+
+  <para>
+    &app;'s C++ <acronym>API</acronym> uses &libx;. Before using this
+    <acronym>API</acronym>, it's necessary to have a good working knowledge
+    of &libx; template and classes. &app; uses &libx;'s reference counted
+    object classes and templates extensively.
+  </para>
+
+  <para>
+    This part describes &app;'s synchronous <acronym>API</acronym>, one of
+    several alternatives <acronym>API</acronym>s in &app;'s C++ client
+    libraries. These synchronous <acronym>API</acronym> methods take their
+    input parameters, send a message to the &cct;, wait for the message to
+    get processed, and return the results. Internally they're basic on
+    &app;'s
+    <link linkend="asynchronous">asynchronous <acronym>API</acronym></link>,
+    which is slightly more complicated. The synchronous <acronym>API</acronym>
+    implements a simplified interface, and would be appropriate for small
+    scripts or non-critical batch jobs that do not need a high degree of
+    fault tolerance.
+  </para>
+
+  <para>
+    Other &app;'s <acronym>API</acronym> also use some
+    concepts from the synchronous API, such as client handles and &cct;s.
+    An application connects to a &app; object repository by creating a
+    <ulink url="&link-typedef-stasher-client;">client handle</ulink>,
+    which represents a connection with the server's object repository
+    node. The handle, an <classname>x::ref</classname>, is a reference to
+    a reference-counted object. Although there is an explicit disconnection
+    call, once the client handle goes completely out of scope, the underlying
+    object gets destroyed, and the connection to the server gets terminated.
+  </para>
+
+  <para>
+    The code examples in this part expect a basic &app; configuration,
+    like the one described in
+    <xref linkend="clustermgmt" />: one of the server nodes in an object
+    repository, with the server containing one node repository directory in
+    the &app; library's default node directory; and the repository server
+    process configured to place connections
+    from client applications, by default, into the sandbox hierarchy.
+  </para>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

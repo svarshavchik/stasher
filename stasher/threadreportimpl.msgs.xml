@@ -1,0 +1,35 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="threadreportimplObj">
+
+  <method name="report">
+    <comment>
+      //! Ask the thread for a report on its status
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Thread's status
+
+	//! The thread fills in the report field in this object
+	//!
+      </comment>
+      <decl>x::ptr&lt;singlethreadreportObj&gt; <name>rep</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Request mcguffin
+
+	//! Once the report field is complete, the thread releases its
+	//! reference on this mcguffin
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+</class>

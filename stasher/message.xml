@@ -1,0 +1,510 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<messages>
+  <includes><![CDATA[
+#include <x/ptr.H>
+#include <x/obj.H>
+#include <x/property_properties.H>
+]]></includes>
+
+  <privincludes module='resultsdecl'><![CDATA[
+#include <stasher/reqstat.H>
+#include <stasher/serobjname.H>
+#include <stasher/contents.H>
+#include <stasher/userhelo.H>
+]]></privincludes>
+
+  <privincludes module='resultsdef'><![CDATA[
+#include "stasher/client.H"
+#include "stasher/reqstat.H"
+#include "stasher/serobjname.H"
+]]></privincludes>
+
+  <privincludes module='replymsgdecl'><![CDATA[
+#include <x/exception.H>
+#include <x/uuid.H>
+#include "stasher/results.auto.H"
+#include "stasher/serobjname.H"
+#include "stasher/reqstat.H"
+]]></privincludes>
+
+  <privincludes module='reqdecl'><![CDATA[
+#include <x/exception.H>
+#include <x/uuid.H>
+#include "stasher/serobjname.H"
+#include "stasher/reqstat.H"
+]]></privincludes>
+
+  <privincludes module='replymsgdef'><![CDATA[
+#include "replymsgs.auto.H"
+]]></privincludes>
+
+  <privincludes module='reqdef'><![CDATA[
+#include "requestmsgs.auto.H"
+]]></privincludes>
+
+  <message name="getserverstatus" class="privileged">
+    <comment>
+      //! Request the server's status. This request
+      //! returns the server's status, as a short freeform report.
+    </comment>
+
+    <results>
+      <field>
+	<comment>
+	  //! Formatted server status
+	</comment>
+	<decl>std::string <name>report</name></decl>
+	<default>clientObj::lost_connection_errmsg</default>
+      </field>
+    </results>
+  </message>
+
+  <message name="getprops" class="privileged">
+    <comment>
+      //! Enumerate server application properties
+    </comment>
+
+    <results>
+      <field>
+	<comment>
+	  //! Enumerated server properties
+	</comment>
+	<decl>std::map&lt;x::property::propvalue, x::property::propvalue&gt; <name>properties</name></decl>
+      </field>
+    </results>
+  </message>
+
+  <message name="setprop" class="privileged">
+    <comment>
+      //! Set a server-side property
+    </comment>
+
+    <request>
+      <field>
+	<comment>
+	  //! Name of the property to set
+	</comment>
+	<decl type='class'>x::property::propvalue <name>propname</name></decl>
+      </field>
+
+      <field>
+	<comment>
+	  //! Property's new value
+	</comment>
+	<decl type='class'>x::property::propvalue <name>propvalue</name></decl>
+      </field>
+    </request>
+
+    <results>
+      <field>
+	<comment>
+	  //! Whether the property was set succesfully
+	</comment>
+	<decl>bool <name>succeeded</name></decl>
+	<default>false</default>
+      </field>
+
+      <field type="class">
+	<comment>
+	  //! An error message if the request failed
+	</comment>
+	<decl>std::string <name>errmsg</name></decl>
+	<default>clientObj::lost_connection_errmsg</default>
+      </field>
+
+      <field type="class">
+	<comment>
+	  //! The adjusted property value
+	</comment>
+
+	<decl>x::property::propvalue <name>newvalue</name></decl>
+      </field>
+    </results>
+  </message>
+
+  <message name="resetprop" class="privileged">
+    <comment>
+      //! Reset server property to its default value
+    </comment>
+    <request>
+      <field>
+	<comment>
+	  //! Reset this property to default value
+	</comment>
+	<decl type='class'>x::property::propvalue <name>propname</name></decl>
+      </field>
+    </request>
+
+    <results>
+      <field>
+	<default>clientObj::lost_connection_errmsg</default>
+	<comment>
+	  //! Message from the server acknowledging the reset
+	</comment>
+	<decl type='class'>std::string <name>resultmsg</name></decl>
+	<default>clientObj::lost_connection_errmsg</default>
+      </field>
+    </results>
+  </message>
+
+  <clientonlymessage name="get" class="nonprivileged">
+
+    <comment>
+      //! Return uuids, and optionally the content, of objects on the server
+    </comment>
+
+    <request>
+      <field>
+	<comment>//! The request object</comment>
+	<decl type='class'>x::ref&lt;getreqObj&gt; <name>contents_req</name></decl>
+      </field>
+    </request>
+
+    <results>
+      <field>
+	<comment>
+	  //! The results of the get request
+	</comment>
+	<decl>contents <name>objects</name></decl>
+	<default>contents::create()</default>
+      </field>
+    </results>
+  </clientonlymessage>
+
+  <clientonlymessage name="put" class="nonprivileged">
+    <comment>
+      //! Place objects into the repository.
+    </comment>
+
+    <request>
+      <field>
+	<comment>//! The transaction object</comment>
+	<decl type='class'>x::ref&lt;transactionObj&gt; <name>transaction</name></decl>
+      </field>
+    </request>
+
+    <results>
+      <field>
+	<comment>
+	  //! Whether the transaction succeeded, or not.
+	</comment>
+	<decl>req_stat_t <name>status</name></decl>
+	<default>req_disconnected_stat</default>
+      </field>
+
+      <field>
+	<comment>
+	  //! New objects' UUID
+	</comment>
+	<decl>x::uuid <name>newuuid</name></decl>
+      </field>
+    </results>
+  </clientonlymessage>
+
+  <!--==============================================================-->
+
+  <clientonlymessage name="subscribe" class="nonprivileged">
+    <comment>
+      //! Subscribe for object updates
+    </comment>
+
+    <request>
+      <field>
+	<comment>
+	  //! Name of an object to subscribe for updates to
+	</comment>
+	<decl type='class'>std::string <name>objname</name></decl>
+      </field>
+
+      <field>
+	<comment>
+	  //! The subscriber
+	</comment>
+	<decl type='class'>x::ref&lt;subscriberObj&gt; <name>subscriber</name></decl>
+      </field>
+
+    </request>
+
+    <results>
+      <field>
+	<comment>
+	  //! Whether the subscription request succeeded
+	</comment>
+	<decl type='class'>req_stat_t <name>status</name></decl>
+	<default>req_disconnected_stat</default>
+      </field>
+
+      <field>
+	<comment>
+	  //! A mcguffin for the subscription.
+
+	  //! The subscription gets terminated when this mcguffin goes out of
+	  //! scope.
+	</comment>
+	<decl type='class'>x::ref&lt;x::obj&gt; <name>mcguffin</name></decl>
+	<default>x::ref&lt;x::obj&gt;::create()</default>
+      </field>
+
+      <field>
+	<comment>
+	  //! Cancellation mcguffin
+
+	  //! An internal reference on this object gets released when the
+	  //! subscription gets terminated. This occurs in response to mcguffin
+	  //! going out of scope and getting destroyed, or when the connection
+	  //! to the server gets lost.
+	</comment>
+
+	<decl type='class'>x::ref&lt;x::obj&gt; <name>cancel_mcguffin</name></decl>
+	<default>x::ref&lt;x::obj&gt;::create()</default>
+      </field>
+    </results>
+
+  </clientonlymessage>
+
+  <serveronlymessage name="beginsub" class="nonprivileged">
+    <comment>
+      //! Client asks to begin a subscription for an object
+    </comment>
+
+    <request>
+      <field>
+	<comment>
+	  //! Name of an object to begin a subscription for
+	</comment>
+	<decl type='class'>serobjname <name>objname</name></decl>
+      </field>
+    </request>
+
+    <results>
+      <field>
+	<comment>
+	  //! Whether the subscription request succeeded
+	</comment>
+	<decl type='class'>req_stat_t <name>status</name></decl>
+	<default>req_disconnected_stat</default>
+      </field>
+    </results>
+  </serveronlymessage>
+
+  <serveronlymessage name="endsub" class="nonprivileged">
+    <comment>
+      //! Client asks to end a subscription for an object
+    </comment>
+
+    <request>
+      <field>
+	<comment>
+	  //! Name of an object to end a subscription for
+	</comment>
+	<decl type='class'>serobjname <name>objname</name></decl>
+      </field>
+    </request>
+
+    <results />
+  </serveronlymessage>
+
+
+
+  <clientonlymessage name="subscribeserverstatus" class="nonprivileged">
+    <comment>
+      //! Subscribe for server status updates
+    </comment>
+
+    <request>
+      <field>
+	<comment>
+	  //! The server status callback
+	</comment>
+	<decl type='class'>serverstatuscallback <name>callback</name></decl>
+      </field>
+
+    </request>
+
+    <results>
+      <field>
+	<comment>
+	  //! Whether the subscription request succeeded
+	</comment>
+	<decl type='class'>req_stat_t <name>status</name></decl>
+	<default>req_disconnected_stat</default>
+      </field>
+
+      <field>
+	<comment>
+	  //! The current connection parameters
+	</comment>
+
+	<decl type='class'>userhelo <name>server_conn</name></decl>
+      </field>
+
+      <field>
+	<comment>
+	  //! A mcguffin for the subscription.
+
+	  //! The subscription gets terminated when this mcguffin goes out of
+	  //! scope.
+	</comment>
+	<decl type='class'>x::ref&lt;x::obj&gt; <name>mcguffin</name></decl>
+	<default>x::ref&lt;x::obj&gt;::create()</default>
+      </field>
+
+      <field>
+	<comment>
+	  //! Cancellation mcguffin
+
+	  //! An internal reference on this object gets released when the
+	  //! subscription gets terminated. This occurs in response to mcguffin
+	  //! going out of scope and getting destroyed, or when the connection
+	  //! to the server gets lost.
+	</comment>
+
+	<decl type='class'>x::ref&lt;x::obj&gt; <name>cancel_mcguffin</name></decl>
+	<default>x::ref&lt;x::obj&gt;::create()</default>
+      </field>
+    </results>
+  </clientonlymessage>
+
+  <message name="certreload" class="privileged">
+    <comment>
+      //! Message to the server to reload its node certificate
+    </comment>
+
+    <request />
+    <results />
+  </message>
+
+  <!--==============================================================-->
+
+  <message name="getdir" class="nonprivileged">
+    <comment>
+      //! Return contents of a directory hierarchy
+
+      //! [CLIENTDIR]
+      //!
+    </comment>
+
+    <request>
+      <field>
+	<comment>
+	  //! Hierarchy to enumerate. Specify an empty string for a top level
+	  //! hierarchy, or a hierarchy name.
+	</comment>
+	<clientdecl type='class'>std::string <name>hier</name></clientdecl>
+	<decl type='class'>serobjname <name>hier</name></decl>
+      </field>
+    </request>
+
+    <results>
+      <customclass>
+	<name>dirmsgreply</name>
+      </customclass>
+
+      <field>
+	<comment>
+	  //! Whether the subscription request succeeded. req_processed_stat
+	  //! indicates a succesful reply.
+	</comment>
+	<decl type='class'>req_stat_t <name>status</name></decl>
+	<default>req_disconnected_stat</default>
+      </field>
+
+      <field>
+	<comment>
+	  //! Object names in the hierarchy.
+	  //! Names that have a trailing / represents a sub-hierarchy, not an
+	  //! object name.
+	</comment>
+
+	<decl>std::set&lt;std::string&gt; <name>objects</name></decl>
+      </field>
+    </results>
+  </message>
+
+  <message name="resign" class="privileged">
+    <comment>
+      //! Ask the server to resign its master status
+    </comment>
+
+    <results>
+      <field>
+	<comment>
+	  //! Whether the request was completed
+	</comment>
+	<decl>bool <name>status</name></decl>
+      </field>
+
+      <field>
+	<comment>
+	  //! New master
+	</comment>
+
+	<decl type='class'>std::string <name>master</name></decl>
+      </field>
+    </results>
+  </message>
+
+  <message name="setnewcert" class="privileged">
+    <comment>
+      //! Install a new node certificate
+    </comment>
+
+    <request>
+      <field>
+	<comment>
+	  //! The new certificate
+	</comment>
+	<decl type='class'>std::string <name>certificate</name></decl>
+      </field>
+    </request>
+
+    <results>
+      <field>
+	<comment>
+	  //! Whether the request succeeded
+	</comment>
+	<decl>bool <name>success</name></decl>
+	<default>false</default>
+      </field>
+
+      <field>
+	<comment>
+	  //! The error message
+	</comment>
+	<decl>std::string <name>message</name></decl>
+	<default>clientObj::lost_connection_errmsg</default>
+      </field>
+    </results>
+  </message>
+
+  <message name="haltrequest" class="privileged">
+    <comment>
+      //! Halt the entire cluster
+    </comment>
+
+    <results>
+      <field>
+	<comment>
+	  //! Whether the cluster is about to be halted
+	</comment>
+	<decl>bool <name>halted</name></decl>
+	<default>false</default>
+      </field>
+
+      <field>
+	<comment>
+	  //! The error message
+	</comment>
+	<decl>std::string <name>message</name></decl>
+	<default>clientObj::lost_connection_errmsg</default>
+      </field>
+    </results>
+  </message>
+
+</messages>

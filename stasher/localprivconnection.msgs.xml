@@ -1,0 +1,78 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="localprivconnectionObj">
+  <method name="serverstatusreport_done">
+    <comment>
+      //! Server status report is ready
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Original status request uuid
+      </comment>
+      <decl>x::uuid <name>requuid</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! The report
+      </comment>
+      <decl>x::ptr&lt;STASHER_NAMESPACE::threadreportObj&gt; <name>report</name></decl>
+    </param>
+  </method>
+
+  <method name="resign_done">
+    <comment>
+      //! Resignation is complete
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Original status request uuid
+      </comment>
+      <decl>x::uuid <name>requuid</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Whether the server resigned succesfully
+      </comment>
+      <decl>boolref <name>status</name></decl>
+    </param>
+  </method>
+
+  <method name="setnewcert_done">
+    <comment>
+      //! New certificate has been installed by the peer.
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Original status request uuid
+      </comment>
+      <decl>x::uuid <name>requuid</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! The original request
+      </comment>
+      <decl>x::ref&lt;repopeerconnectionObj::setnewcertObj&gt; <name>req</name></decl>
+    </param>
+  </method>
+
+  <method name="halt_ack">
+    //! Send a halt acknowledgement, after the cluster has stopped
+
+    <param type="class">
+      //! The response to send
+
+      <decl>haltrequest_resp_msg_t <name>resp</name></decl>
+    </param>
+  </method>
+</class>

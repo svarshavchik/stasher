@@ -1,0 +1,21 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<optclass name="objrepodoptions">
+
+  <option>
+    <name>daemon</name>
+    <type>bool</type>
+    <longopt>daemon</longopt>
+    <descr>Fork and run in the background</descr>
+  </option>
+  <arg>
+    <name>pathname</name>
+    <required />
+  </arg>
+  <defaultoptions />
+</optclass>

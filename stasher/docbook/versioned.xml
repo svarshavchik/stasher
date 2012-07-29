@@ -1,0 +1,113 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="versioned">
+  <title>Introduction</title>
+
+  <para>
+    <link linkend="managedobject">Managed objects</link>, and specifically
+    <link linkend="currentobj">current object instances</link> are
+    internal application objects that get automatically updated
+    whenever the corresponding object gets updated in the &app;
+    object repository; but this is not an instantaneous process.
+    Another application updates the object as part of its transaction.
+    This results in a couple of round trips between the &app; server and
+    the application, before a new internal application object gets created and
+    replaces the the existing one. Until this process is done,
+    the application still sees the old object, and only knows about the
+    object's previous uuid.
+  </para>
+
+  <para>
+    In this situation, if the application sends its own transaction to update
+    the object at the same time, the
+    transaction will reference the previous object's uuid.
+    It will fail with a
+    <link linkend="reqstatt"><literal>&ns;::req_rejected_stat</literal></link>
+    error code. The &app; server requires the
+    <link linkend="index">existing objects'
+    uuids</link>
+    from any transaction that updates them, otherwise the
+    entire transaction fails.
+  </para>
+
+  <para>
+    After getting a
+    <link linkend="reqstatt"><literal>&ns;::req_rejected_stat</literal></link>
+    the application can expect that its internal
+    <link linkend="managedobject">managed object</link> or
+    <link linkend="currentobj">current object instance</link> is going to get
+    updated with the new version of this object, at which point the
+    application can try again to update the object. The application
+    can choose to do nothing too.
+    However, a
+    <link linkend="reqstatt"><literal>&ns;::req_rejected_stat</literal></link>
+    error code does not imply, either way,
+    whether the application has already
+    received the new object, from the &app; object repository.
+    The application may, or may not, already have the updated object.
+  </para>
+
+  <para>
+    The application can track each object that went into a transaction,
+    and check if the object was already updated when a transaction fails
+    with a
+    <link linkend="reqstatt"><literal>&ns;::req_rejected_stat</literal></link>;
+    if not, wait until it does (since that's implied by the status code).
+    But there's no need to do it, because the templates and
+    functions described in this part will do all this hard work.
+  </para>
+
+  <para>
+    The templates described in this part keep track of which versions of
+    which objects went into a transaction. They implement the following logic:
+    do not notify the application in the event that a transaction failed with
+    a <literal>&ns;::req_rejected_stat</literal> until at least one of the
+    objects that went into the transaction gets updated.
+    If that already happened by the time that a transaction
+    <literal>&ns;::req_rejected_stat</literal>ed, the application gets
+    notified immediately. Otherwise the application gets notified after
+    one of the objects gets updated.
+  </para>
+
+  <para>
+    These templates and classes create any updating mechanism of their
+    own. They work together with the
+    <link linkend="currentobj"><classname>&ns;::current&lt;<replaceable>classptr</replaceable>&gt;</classname></link>
+    class template, which is based on the
+    <methodname><classname>&ns;::manager</classname>-&gt;manage_object</methodname>()
+    update mechanism.
+    All that happens here is that a
+    <literal>&ns;::req_rejected_stat</literal> transaction status is held,
+    and the application does not get notified, until at least one of the
+    objects gets updated, if it hasn't already.
+  </para>
+
+  <para>
+    When multiple objects get updated by a transaction, the
+    <literal>&ns;::req_rejected_stat</literal> error does not explicitly
+    identify which one it was, but the application now has at least one
+    updated
+    <classname>&ns;::current&lt;<replaceable>classptr</replaceable>&gt;</classname>
+    object. The application can try again, and another
+    <literal>&ns;::req_rejected_stat</literal> likely means that the
+    application finally has the current version of everything.
+    <literal>&ns;::req_rejected_stat</literal>s are expected to be quite
+    rare, and infrequent, so all this extra work should not happen very often.
+    Furthermore, the application is not required to retry the transaction.
+    There's always
+    the option of changing its mind, and doing something else,
+    instead.
+  </para>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

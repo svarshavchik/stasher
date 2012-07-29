@@ -1,0 +1,122 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="currentbaseobj">
+  <title><classname>&ns;::currentbaseObj&lt;<replaceable>classptr</replaceable>&gt;</classname>: virtual superclass for <function>&ns;::create_manage_object</function>()'s functors</title>
+
+  <para>
+    The following example is an alternate version of
+    <link linkend="createmanagedobject"><filename>showinventory.C</filename></link>
+    that uses
+    <ulink url="&link-stasher--currentBaseObj;"><classname>&ns;::currentBaseObj</classname></ulink>:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/inventory/">examples/inventory/showinventory2.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/inventory/showinventory2.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The <classname>&ns;::currentBaseObj&lt;<replaceable>classptr</replaceable>&gt;</classname>
+    template defines a class with two virtual methods,
+    <methodname>update</methodname>() and
+    <methodname>connection_update</methodname>(); and a
+    <methodname>manage</methodname>() method.
+    <methodname>manage</methodname>() takes a manager object, and client
+    connection object, and an object name as parameters; it invokes
+    <link linkend="createmanagedobject"><function>&ns;::create_managed_object</function></link> with functors that invoke the
+    <methodname>update</methodname>() and
+    <methodname>connection_update</methodname>() methods, then calls
+    the manager's <methodname>manage_object</methodname>() method, like
+    <filename>showinventory.C</filename> does, and returns the managed object's
+    mcguffin.
+  </para>
+
+  <para>
+    To summarize:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	Subclass <classname>&ns;::currentBaseObj&lt;<replaceable>classptr</replaceable>&gt;</classname>, where
+	<classname><replaceable>classptr</replaceable></classname> is
+	an <classname>x::ref</classname> to a class
+	that meets the requirements described
+	in <xref linkend="serdeserrequirements" />; then implement the
+	<methodname>update</methodname>() method. Implementing
+	<methodname>connection_update</methodname>() which reports the
+	status of the connection, as described in <xref linkend="manager" />,
+	is optional.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	After invoking <methodname>manage</methodname>(),
+	the object's <methodname>update</methodname>() gets called with the
+	deserialized object every time it's changed in the repository, with the
+	first call happening immediately, with the
+	<varname>initial</varname> bool set to
+	<literal>true</literal>, and with
+	<literal>false</literal> for subsequent updates.
+	In the event that the connection with the object repository gets lost,
+	and reestablished, another call to <methodname>update</methodname>()
+	with a <literal>true</literal> will follow when the connection gets
+	reestablished.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	<methodname>manage</methodname>() returns the subscription mcguffin from
+	<link linkend="managedobject"><methodname>manage_object</methodname></link>().
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Implementing <methodname>connection_update</methodname>() in the
+	subclass is optional.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <note>
+    <para>
+      The functors created by
+      <methodname>manage</methodname>(), then get incorporated into the
+      instantiated managed object, hold a strong reference to the
+      <classname>&ns;::currentBaseObj</classname> and its subclass.
+      The subclass should not store the mcguffin in the class instance, that
+      creates a circular reference. If an execution thread is running the
+      subclass, it's generally fine to store the mcguffin on the executing
+      thread's stack, which will go out of scope and get destroyed when the
+      executing thread returns.
+    </para>
+  </note>
+
+  <para>
+    Also note that
+    <methodname>update</methodname>() and
+    <methodname>connection_update</methodname>() are invoked by the functors
+    with certain limitations, described in
+    <link linkend="createmanagedobject"><filename>showinventory.C</filename></link>
+    typically invoked by the &cct;, and they
+    have certain limitations, see
+    <link linkend="createmanagedobject"><function>&ns;::create_managed_object</function></link> for more information.
+  </para>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

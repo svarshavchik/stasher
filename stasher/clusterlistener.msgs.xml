@@ -1,0 +1,14 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="clusterlistenerObj">
+  <method name="checkcert">
+    <comment>
+      //! Check certificate expiration
+    </comment>
+  </method>
+</class>

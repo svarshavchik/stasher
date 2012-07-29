@@ -1,0 +1,192 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="currentobj">
+  <title><classname>&ns;::current&lt;<replaceable>classptr</replaceable>&gt;</classname>, <classname>&ns;::currentptr&lt;<replaceable>classptr</replaceable>&gt;</classname>: a basic <classname>&ns;::currentBaseObj</classname> subclass</title>
+
+  <para>
+    The following example is based on
+    <link linkend="currentbaseobj"><filename>showinventory2.C</filename></link>.
+    This example uses
+    <classname>&ns;::current</classname>; this is an
+    <classname>x::ref</classname> to a
+    <ulink url="&link-stasher--currentObj;"><classname>&ns;::currentObj</classname></ulink>
+    subclass that implements its <methodname>update</methodname>() and
+    <methodname>connection_update</methodname>() methods
+    (there's also a
+    <classname>&ns;::currentptr</classname> that defines an
+    <classname>x::ptr</classname>):
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/inventory/">examples/inventory/showinventory3.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/inventory/showinventory3.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <filename>showinventory3.C</filename> waits for <keycap>Enter</keycap>
+    before showing the current inventory. Entering <quote>grapes 3</quote>
+    before <keycap>Enter</keycap> waits until there are 3 grapes in the
+    inventory, then the current inventory gets shown:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout> ./showinventory3 instock
+Enter for the current inventory, "what" "howmuch" to wait until we have it,
+EOF to quit
+<emphasis>&lt;Enter&gt;</emphasis>
+Current inventory:
+    Item                                Count
+    ------------------------------   --------
+    apples                                  2
+===========================================================================
+Connection status: Transaction/request processed
+<emphasis>grapes 3&lt;Enter&gt;</emphasis>
+Waiting for 3 grapes
+We have 0 of them, now.
+We have 1 of them, now.
+We have 3 of them, now.
+Updated inventory:
+    Item                                Count
+    ------------------------------   --------
+    apples                                  2
+    grapes                                  3
+===========================================================================
+Connection status: Transaction/request processed</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    In this example, there were two updates to the inventory in the interim.
+    First, <quote>grapes</quote> was 1, then the second update set it to 3.
+  </para>
+
+  <para>
+    <classname>&ns;::current&lt;<replaceable>classptr</replaceable>&gt;</classname>
+    (and
+    <classname>&ns;::currentptr&lt;<replaceable>classptr</replaceable>&gt;</classname>)
+    refers to a
+    <classname>&ns;::currentObj&lt;<replaceable>classptr</replaceable>&gt;</classname>,
+    a subclass of
+    <link linkend="currentbaseobj"><classname>&ns;::currentBaseObj&lt;<replaceable>classptr</replaceable>&gt;</classname></link>.
+
+    <classname>&ns;::currentObj</classname> contains a member called
+    <varname>current_value</varname>, of type
+    <classname>&ns;::current&lt;<replaceable>classptr</replaceable>&gt;::base::current_value_t</classname>.
+  </para>
+
+  <para>
+    This is an <classname>x::mpcobj</classname>,
+    a mutex-protected object with
+    <varname>value</varname>,
+    a <classname><replaceable>classptr</replaceable></classname> to the
+    current value of the object in the repository (a <literal>nullptr</literal>
+    if there isn't one), a <classname>bool</classname>
+    <varname>isinitial</varname> flag, indicating whether
+    <varname>value</varname> is the initial object value retrieved from the
+    object repository, or an updated one, and a
+    <classname>&ns;::req_stat_t</classname>
+    <varname>connection_status</varname>, the latest connection status with
+    the &app; repository server, reported by the manager.
+  </para>
+
+  <para>
+    <classname>&ns;::currentObj&lt;<replaceable>classptr</replaceable>&gt;</classname>,
+    implements
+    <classname>&ns;::currentBaseObj&lt;<replaceable>classptr</replaceable>&gt;</classname>'s
+    <methodname>update</methodname>() and
+    <methodname>connection_update</methodname>() by locking the
+    <varname>current_value</varname>, updating its contents, and then
+    notifying the lock's condition variable, before releasing the lock.
+    <filename>showinventory3.C</filename> waits for <keycap>Enter</keycap>,
+    locks the <varname>current_value</varname>, and displays its contents.
+    Until the next <keycap>Enter</keycap>,
+    <varname>current_value</varname> gets automatically updated, by the
+    <classname>&ns;::currentObj</classname>, when the object in the repository
+    changes.
+  </para>
+
+  <para>
+    To summarize:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	Create a <classname>&ns;::current&lt;<replaceable>classptr</replaceable>&gt;</classname>, where
+	<classname><replaceable>classptr</replaceable></classname> is
+	an <classname>x::ref</classname> to a class
+	that meets the requirements described
+	in <xref linkend="serdeserrequirements" />, and manage it.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	To check the current contents of the object in the repository,
+	acquire a lock on the mutex-protected
+	<varname>current_value</varname>.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <note>
+    <para>
+      The lock on the <varname>current_value</varname> should be short and
+      brief. If the object gets updated in the repository, a new object gets
+      constructed, and
+      <classname>&ns;::currentObj</classname>'s callback gets invoked.
+      This all happens in the &cct;. The &cct; waits to acquire a lock on the
+      <varname>current_value</varname>, and won't do anything else until it
+      does, and finishes updating the object.
+    </para>
+
+    <para>
+      The same thing happens if the connection to the server gets dropped, or
+      it gets reconnected. This results in the
+      <methodname>connection_update</methodname> update getting invoked, which
+      also needs to acquire a lock on the
+      <varname>current_value</varname>, so that the
+      <varname>status</varname> can get updated.
+    </para>
+  </note>
+
+  <note>
+    <para>
+      An application that needs to take special action for an
+      <varname>isinitial</varname> object value must explicitly subclass
+      the <classname>&ns;::currentObj</classname>, and override the
+      <classname>connection_update</classname> method. This is because the
+      initial value of the object may or may not be installed before
+      <methodname>manage</methodname>() returns, since the
+      <classname>connection_update</classname> gets called from a different
+      thread. Since an object in a &app; object repository can get updated at
+      any time, this means that it can also get updated before
+      <methodname>manage</methodname>() returns as well, before the application
+      has a chance to lock the
+      <varname>current_value</varname>.
+    </para>
+
+    <para>
+      The contract for the
+      <link linkend="createmanagedobject">created managed object's</link>
+      <methodname>connection_update</methodname>() methods guarantees that
+      it gets called with a value that's marked as an initial value, but not
+      when.
+    </para>
+  </note>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

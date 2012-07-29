@@ -1,0 +1,162 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="serdeserintro">
+  <title>Introduction</title>
+
+  <para>
+    The manager methods described in <xref linkend="manager" /> provide
+    stable means for automatically retrieving objects from &app;
+    when the objects get updated. The objects get retrieved as read-only
+    file descriptors.
+  </para>
+
+  <para>
+    &libx; provides templates that serialize and deserialize
+    class instances to file descriptors. This part introduces templates and
+    methods that get combined with the manager interface into a set of
+    templates and classes that deserialize the current value of an object in a
+    &app; object repository.
+  </para>
+
+  <para>
+    The manager notifies the templates when the object in the object repository
+    changes. The templates and methods generate code that retrieve and
+    deserialize the raw file descriptor into some class instance.
+  </para>
+
+  <section id="serdeserrequirements">
+    <title>Requirements</title>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The class must be
+	  a reference-counted object that's virtually subclassed from
+	  <classname>x::obj</classname>. See &libx;'s documentation for more
+	  information.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The class must implement two non-default constructors.
+	  The first constructor that takes two parameters,
+	  an <classname>x::uuid</classname> and a file descriptor. This
+	  constructor gets called when the object is retrieved from the
+	  repository. The constructor, presumably, gets to read the file
+	  descriptor and initialize the class instance from its contents.
+	  Although &libx;'s serialization and deserialization templates are
+	  a convenient way to do so, their usage is not required. The
+	  constructor gets the raw file descriptor, and it's up to the
+	  constructor to read what it needs to read from it.
+	</para>
+
+	<para>
+	  If the constructor throws an exception, the presumed reason is that
+	  the object file in the object repository got corrupted or cannot
+	  be parsed (created by a previous version of the application, or
+	  something along the lines). It's preferrable for the first
+	  constructor to handle that, but if that gets handle by throwing
+	  an exception, the second non-default constructor gets called,
+	  which takes only a <classname>x::uuid</classname> parameter.
+	</para>
+
+	<para>
+	  The intention here is to initialize a default object instance that
+	  replaces the unparsable in the object repository, but to do that the
+	  existing object's uuid must be known. For that reason, the constructor
+	  gets called with the existing object's uuid, with the presumption that
+	  whenever the instantiated object gets serialized later, its valid,
+	  serialized contents replace the unparsable object in the repository.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  These constructors get typically invoked from a &cct; callback.
+	  As such, it has certain limitations, see
+	  <xref linkend="asynchronouscancannot" /> for more information.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  In most cases the class also needs to implement a default constructor.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The examples in this chapter use the following class as an example:
+    </para>
+
+    <blockquote>
+      <title><ulink url="examples/inventory/">examples/inventory/inventory.H</ulink></title>
+      <informalexample>
+	<programlisting><xi:include href="../examples/inventory/inventory.H" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This is a fairly straightforward, simple class, with a serialization
+      function, and a constructor that employs the serialization function to
+      deserialize the existing object from a file descriptor.
+      An instance of this class gets stored in an object in the &app;
+      object repository. Use the following program
+      to update this object:
+    </para>
+
+    <blockquote>
+      <title><ulink url="examples/inventory/">examples/inventory/setinventory.C</ulink></title>
+      <informalexample>
+	<programlisting><xi:include href="../examples/inventory/setinventory.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The first parameter to <command>setinventory</command> is the name of
+      an object for this inventory class. The remaining parameters is 
+      a list of <quote>name</quote> and
+      <quote>count</quote> parameters.
+      <command>setinventory</command> adds them or replace them in the
+      inventory object. For example:
+    </para>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>$ ./setinventory instock apples 2 bananas 3</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      This puts a key of <quote>apples</quote> with the value of 2, and
+      <quote>bananas</quote> with the value of 3 into
+      <classname>inventoryObj</classname>'s <classname>std::map</classname>
+      (a 0 count removes that key from the <classname>std::map</classname>).
+      If an object named <quote>instock</quote> does not exist, it gets
+      created, otherwise its existing contents are read and updated.
+    </para>
+
+    <note>
+      <para>
+	This simplistic example does not handle the
+	<literal>stasher::req_rejected_stat</literal> error indicating that
+	something else updated the same object at the same time. For these
+	simple examples it's presumed that
+	only <command>setinventory</command> updates them.
+      </para>
+    </note>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

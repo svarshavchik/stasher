@@ -1,0 +1,124 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="removenode">
+  <title>Removing a node from a cluster</title>
+
+  <para>
+    Checking the current status of the object repository cluster, and making
+    sure that the node that's about to be removed is not the current
+    cluster master, is the first step to removing that node. The following
+    example removes the <quote>monster</quote> node from the cluster, and it
+    starts with an administrative connection on another node,
+    <quote>octopus</quote>:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# stasher
+Ready, EOF to exit.
+&gt; admin
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 20 objects, 64 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus> status
+Cluster:
+  Status: master: monster.objrepo.example.com (uuid 3JnftWa59vod5m00ZNTgJm00000pzGe00318_8Fw), 1 slaves, timestamp 2012-03-21 20:51:25 -0400
+  This node:
+    HOST=octopus.example.com
+  Node: monster.objrepo.example.com: connected
+    HOST=monster.example.com
+  Connection attempts in progress:
+
+... long output deleted ...
+
+connection(admin, client: /usr/bin/stasher (root:root)) (thread 0x00007f60f9df3700):
+    Namespace:
+        (root namespace) =>  (rw)
+    Receiving transaction: false
+    There are 0 get request(s) pending:
+    In quorum: full: true, majority: true</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    The cluster's status reports that <quote>monster</quote> is the current
+    master. Later, the cluster is reported in full quorum. Removing a node
+    must be done while a cluster is still in quorum, preferrably a full quorum.
+    The beginning of the status report contains a list of all nodes in the
+    cluster and their connection status.
+  </para>
+
+  <para>
+    Since <quote>monster</quote> is the current master, an extra step in the
+    process involves connecting to the node, and having it resign its master
+    status:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@monster ~]# stasher
+Ready, EOF to exit.
+&gt; admin
+Connected to objrepo.example.com, node monster.objrepo.example.com.
+Maximum 20 objects, 64 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+monster> resign
+Server resigned, new master is octopus.objrepo.example.com
+monster> [EOF, CTRL-D]</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    Back on <quote>octopus</quote>, the node can now be removed:
+  </para>
+  <informalexample>
+    <computeroutput>
+      <literallayout>octopus&gt; status
+Cluster:
+  Status: master: monster.objrepo.example.com (uuid waOJ,qqh0b56Q000nyzfJm00003SHWm00318_8Fw), 1 slaves, timestamp 2012-03-21 07:55:35 -0400
+  This node:
+    HOST=octopus.example.com
+  Node: monster.objrepo.example.com: connected
+    HOST=monster.example.com
+  Connection attempts in progress:
+
+... long output deleted ...
+
+octopus> editcluster delnode monster
+octopus:
+    HOST=octopus.example.com
+
+octopus> savecluster
+octopus> status
+Cluster:
+  Status: master: octopus.objrepo.example.com (uuid UMshCBGHvCGz5000GTHfJm00003d1Wm00318n4AS), 0 slaves, timestamp 2012-03-21 20:52:36 -0400
+  This node:
+    HOST=octopus.example.com
+  Connection attempts in progress:</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    In this example, there are no other nodes in the cluster. At this point,
+    the other node can be stopped by issuing the <quote>STOP</quote> command
+    from its administrative connection, then removing the node directory
+    and its contents.
+  </para>
+
+  <para>
+    It's also possible to remove a node that was already stopped and is no
+    longer connected to the cluster, as long as the cluster is still in
+    quorum.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

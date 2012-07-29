@@ -1,0 +1,214 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="put_request">
+  <title><methodname><classname>&ns;::client</classname>-&gt;put_request</methodname>(): asynchronous version of <methodname>put</methodname>()</title>
+
+  <para>
+    <methodname>put_request</methodname>() follows the naming convention
+    and usage described in <xref linkend="requestpartintro" />.
+    See
+    <ulink url="examples/updatethread/"><filename>updatethread.C</filename></ulink>
+    for an example of using <methodname>put_request</methodname>.
+  </para>
+
+  <para>
+    This example takes names of objects passed to <command>updatethread</command>
+    on the command line, and appends <quote>Object #<replaceable>n</replaceable></quote>
+    to the existing object, or creating it if it does not exist:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>$ ./updatethread planets/mercury planets/venus planets/earth planets/mars planet
+s/jupiter planets/saturn planets/uranus planets/neptune
+Received update request for planets/mercury, checking its existing contents
+Received update request for planets/venus, checking its existing contents
+Received update request for planets/earth, checking its existing contents
+Received update request for planets/mars, checking its existing contents
+Received update request for planets/jupiter, checking its existing contents
+Received update request for planets/saturn, checking its existing contents
+Received update request for planets/uranus, checking its existing contents
+Received update request for planets/neptune, checking its existing contents
+Received existing contents of planets/mercury, updating it
+Received existing contents of planets/venus, updating it
+Received existing contents of planets/earth, updating it
+Received existing contents of planets/mars, updating it
+Received existing contents of planets/jupiter, updating it
+Received existing contents of planets/saturn, updating it
+Received existing contents of planets/uranus, updating it
+Received existing contents of planets/neptune, updating it
+Transaction/request processed
+Transaction/request processed
+Transaction/request processed
+Transaction/request processed
+Transaction/request processed
+Transaction/request processed
+Transaction/request processed
+Transaction/request processed</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    Use <link linkend="simpleclient"><filename>simpleget.C</filename></link>
+    or <link linkend="stasher"><command>stasher</command></link> to examine
+    the resulting contents of each object:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>$ stasher
+Ready, EOF to exit.
+&gt; connect
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 10 objects, 32 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus&gt; get planets/earth
+planets/earth:75CiNQlHVhTmAm0081NlJm00003Jo0m00318n4AS
+Object #3
+
+octopus&gt; get planets/saturn
+planets/saturn:ArCiNQlHVhTmAm0081NlJm00003Jo0m00318n4AS
+Object #6
+
+octopus&gt; </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    Rerunning the same command appends a second line to each object, since it
+    already exists. This example implements a completely asycnhronous,
+    event and message-driven thread to handle updates. An instance of the
+    thread object gets created, and a thread gets started.
+    The first message to the thread gives it
+    a <classname>stasher::client</classname> connection to
+    use. Afterwards, <methodname>update</methodname>() takes an object name,
+    a functor, and a mcguffin for this request. The functor takes an
+    <classname>x::fdptr</classname> and an <classname>x::uuid</classname>
+    for parameters. A non-null <classname>x::fdptr</classname> contains
+    the contents of the existing object; or it's <methodname>null</methodname>()
+    if the object does not exist (in which case the
+    <classname>x::uuid</classname> is meaningless). The functor
+    returns a <classname>stasher::client::base::transaction</classname>.
+  </para>
+
+  <para>
+    The update thread takes care of getting the existing object's contents,
+    and processing the transaction. The update thread takes multiple update
+    requests, and works on them asynchronously. It's not necessary to wait
+    for one update to be done, and for the update thread to release its
+    reference on the corresponding mcguffin, before sending the next one.
+    The above example specifies multiple objects on the command line.
+    <filename>updatethread.C</filename> sends an update request for each
+    one of them, first, then waits for each one to get processed.
+  </para>
+
+  <para>
+    The above examples show the messages from
+    <filename>updatethread.C</filename> that evidence its
+    asynchronous event and message-based design.
+    It's possible that sometimes their order might be slightly different, or
+    some of them might overlap each other. This is, of course, normal output
+    from an asynchronous, multithreaded application.
+  </para>
+
+  <para>
+    <filename>updatethread.C</filename> also handles the
+    <literal>stasher::req_rejected_stat</literal> error code from
+    <methodname>put</methodname>()/<methodname>put_request</methodname>().
+    This indicates that a conflicting update to the same object occured, at the
+    same time. This is handled by, essentially, restarting the update from
+    the start, retrieving the object's updated contents, and invoking
+    the functor again, to build another transaction.
+  </para>
+
+  <para>
+    Passing the same object name more than once is the best way to see this:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>$ ./updatethread fruits/apple fruits/apple fruits/orange fruits/banana fruits/ap
+ple
+Received update request for fruits/apple, checking its existing contents
+Received update request for fruits/apple, checking its existing contents
+Received update request for fruits/orange, checking its existing contents
+Received update request for fruits/banana, checking its existing contents
+Received update request for fruits/apple, checking its existing contents
+Received existing contents of fruits/apple, updating it
+Received existing contents of fruits/apple, updating it
+Received existing contents of fruits/orange, updating it
+Received existing contents of fruits/banana, updating it
+Received existing contents of fruits/apple, updating it
+Transaction/request processed
+Update of fruits/apple rejected because someone else updated it, trying again
+Update of fruits/apple rejected because someone else updated it, trying again
+Received existing contents of fruits/apple, updating it
+Received existing contents of fruits/apple, updating it
+Update of fruits/apple rejected because someone else updated it, trying again
+Received existing contents of fruits/apple, updating it
+Transaction/request processed
+Transaction/request processed
+Transaction/request processed
+Transaction/request processed</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    Each object's update is independent of the other objects'.
+    The asynchronous update thread sends each update to the server, all based
+    on the previous contents of the object in question.
+    When more than one update name the same object, each update's previous
+    content is typically the same, and one of those updates get processed.
+    The other updates, of course, subsequently fail with
+    a <literal>stasher::req_rejected_stat</literal>, and the update thread
+    handles it by taking it from the top.
+    Since each individual update appends
+    <quote>Object #<replaceable>n</replaceable></quote> to the existing
+    contents, the repeatedly-named objects get more than one of them:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>$ stasher
+Ready, EOF to exit.
+&gt; connect
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 10 objects, 32 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus&gt; get fruits/apple
+fruits/apple:rHbqdS4kqBKeAm000nJlJm00000nQWK00318n4AS
+Object #1
+Object #5
+Object #2
+
+octopus&gt; get fruits/orange
+fruits/orange:knbqdS4kqBKeAm000nJlJm00000nQWK00318n4AS
+Object #3
+
+octopus&gt; get fruits/banana
+fruits/banana:m1bqdS4kqBKeAm000nJlJm00000nQWK00318n4AS
+Object #4
+
+octopus&gt;</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    The comments in
+    <ulink url="examples/updatethread/"><filename>updatethread.C</filename></ulink>
+    explain the reason why they are out of order, in this example.
+  </para>
+
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

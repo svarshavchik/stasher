@@ -1,0 +1,78 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="repocontrollerslaveObj">
+
+  <method name="installreceiver">
+    <comment>/*!
+    Slave connection object wishes to start received transaction notices
+    */</comment>
+    <param name="receiver" type="class"><decl>trandistreceived <name>receiver</name></decl></param>
+  </method>
+
+  <method name="synccomplete">
+    <comment>/*!
+    Object repository sync thread has finished.
+    */</comment>
+    <param name="flag" type="class"><decl>boolref <name>flag</name></decl></param>
+  </method>
+
+  <method name="get_quorum">
+    <comment>
+      //! Return the current controller quorum status
+
+      //! \see repocontrollerbaseObj::get_quorum()
+      //!
+    </comment>
+
+    <param type="class">
+      <decl>STASHER_NAMESPACE::quorumstateref <name>status</name></decl>
+    </param>
+    <param type="class">
+      <decl>boolref <name>processed</name></decl>
+    </param>
+
+    <param type="class">
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="master_quorum_announce">
+    <comment>
+      //! The connection to the master received a quorum status announcement
+    </comment>
+
+    <param type="class">
+      <decl>STASHER_NAMESPACE::quorumstate <name>status</name></decl>
+    </param>
+  </method>
+
+  <method name="master_handoff_request">
+    <comment>
+      //! Ask a master to hand over to another node
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Which node should become the new master
+      </comment>
+      <decl>std::string <name>newmastername</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Transfer mcguffin
+
+	//! When this mcguffin goes out of scope, the request has been
+	//! completed (whether succesfully, or not, can be determined by
+	//! checking who the master is now). Note that the cluster may not be
+	//! fully in quorum, yet.
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+</class>

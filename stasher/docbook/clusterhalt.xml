@@ -1,0 +1,93 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="clusterhalt">
+  <title>Halting an entire cluster</title>
+
+  <para>
+    &app; maintains transactional integrity of the cluster only as
+    long as the cluster remains in &quorum;.
+    A special process is necessary to shut down the entire cluster
+    in a manner that preserves the object repository's transactional
+    integrity. Stopping each node in the cluster is not sufficient.
+    Eventually, the cluster will no longer be in quorum, and some
+    clients may not longer have a reliable indication whether their
+    transactions were posted, or not.
+  </para>
+
+  <para>
+    Issuing the administrative <literal>HALT</literal> command
+    stop all the nodes in a cluster, in a manner that preserves
+    transactional integrity:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus stasher]# stasher
+Ready, EOF to exit.
+&gt; admin
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 20 objects, 64 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus> halt
+Cannot halt the cluster, the cluster must be halted by monster.objrepo.example.com
+octopus&gt;</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    The <literal>HALT</literal> command must be issued to a node that's
+    the cluster's current master node. This error message reports that
+    another node in the cluster is the current master. The current
+    cluster master is also reported by the <literal>STATUS</literal>
+    command, too.
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@monster ~]# stasher
+Ready, EOF to exit.
+&gt; admin
+Connected to objrepo.example.com, node monster.objrepo.example.com.
+Maximum 20 objects, 64 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+monster> halt
+Cluster is not in full quorum
+monster&gt;</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    The <literal>HALT</literal> command requires a &fullquorum;.
+    This error message indicates that not all nodes are up,
+    connected with each other, and fully synchronized. Use that
+    <literal>STATUS</literal> command to display the cluster's
+    current status, identify the unavailable nodes, and bring them
+    back up. In order to preserve transaction integrity, all nodes
+    in the cluster must be halted in full quorum, with each node's
+    copy of the object repository identical to every other node's.
+  </para>
+    
+  <informalexample>
+    <computeroutput>
+      <literallayout>monster&gt; halt
+Cluster halted
+Disconnected from monster.objrepo.example.com</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    If all the requirements are met, the cluster gets halted. This
+    stops all &app; node processes, on all the nodes.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

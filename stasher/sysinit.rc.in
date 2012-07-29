@@ -1,0 +1,11 @@
+#! @SHELL@
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+bindir="@bindir@"
+localstatedir="@localstatedir@"
+
+rm -f "$localstatedir"/stasher/"$2".log
+exec >>"$localstatedir"/stasher/"$2".log
+exec 2>&1
+exec "$@"

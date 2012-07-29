@@ -1,0 +1,22 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="clusterlistenerimplObj">
+
+  <method name="connectpeers">
+    <comment>/*!
+    Make connection attempts to all peers not currently connected with.
+    */</comment>
+  </method>
+
+  <method name="update_reserved_space">
+    <comment>/*!
+    Recompute amount of space reserved.
+    */</comment>
+    <param type="class"><decl>margin_message <name>margin</name></decl></param>
+  </method>
+</class>

@@ -1,0 +1,431 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<refentry id="stashermg">
+  <info>
+    <author>
+      <firstname>Sam</firstname>
+      <surname>Varshavchik</surname>
+      <contrib>Author</contrib>
+    </author>
+    <productname>Stasher</productname>
+  </info>
+
+  <refmeta>
+    <refentrytitle>stashermg</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class='manual'>Object Repository Server Man Pages</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>stashermg</refname>
+    <refpurpose>Object repository management</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>stashermg</command>
+      <arg choice='req' rep='repeat'>options</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para>
+      The <command>stashermg</command> command manages object repository
+      certificates. Object repository servers running on different machines
+      connect with each other, and use certificates to mutually authenticate
+      and identify each other.
+    </para>
+
+    <refsect2>
+      <title>Repository cluster keys</title>
+
+      <para>
+	A cluster key serves as an identifier for a distributed object
+	repository. This is
+	the signing key that signs the certificates of all nodes in the
+	object repository. It's analogous to a certificate authority.
+      </para>
+
+      <cmdsynopsis>
+	<command>stashermg</command>
+	<arg choice='plain'>--clustkey</arg>
+	<arg choice='plain'>--generate</arg>
+	<arg choice='plain'>
+	  <group choice='req'>
+	    <arg choice='plain'>-n</arg>
+	    <arg choice='plain'>--name</arg>
+	    </group>=<replaceable>name</replaceable>
+	</arg>
+
+	<group choice='opt'>
+	  <group choice='req'>
+	    <arg choice='plain'>-b</arg>
+	    <arg choice='plain'>--bits</arg>
+	  </group>=<replaceable>strength</replaceable>
+	</group>
+
+	<group choice='opt'>
+	  <group choice='req'>
+	    <arg choice='plain'>-d</arg>
+	    <arg choice='plain'>--digest</arg>
+	  </group>=<replaceable>algorithm</replaceable>
+	</group>
+
+	<group choice='opt'>
+	  <group choice='req'>
+	    <arg choice='plain'>-e</arg>
+	    <arg choice='plain'>--expires</arg>
+	    </group>=<replaceable>interval</replaceable>
+	</group>
+
+	<group choice='opt'>
+	  <group choice='req'>
+	    <arg choice='plain'>-t</arg>
+	    <arg choice='plain'>--type</arg>
+	    </group>=<replaceable>type</replaceable>
+	</group>
+
+	<arg choice='opt'><replaceable>directory</replaceable></arg>
+      </cmdsynopsis>
+
+      <para>
+	The <option>--name</option> parameter is required. It specifies a name
+	for the object repository. The object repository server uses this name
+	to register itself with the system portmapper. The
+	name must comply with the
+	naming convention for portmapper registrations:
+	basically the name must look
+	like a domain name. The actual domain name does not actually need to
+	exist, as long as it falls within a valid governing domain. For example,
+	when <literal>example.com</literal> organization's policy assigns
+	<quote>objrepo.example.com</quote> for its object repositories:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+stashermg --clustkey --generate --name=east.objrepo.example.com \
+          --expires="8 years"</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	The other parameters are optional:
+	<option>--bits</option> specifies the bit strength of the signing key,
+	<quote>weak</quote>, <quote>low</quote>,
+	<quote>normal</quote> (default),
+	<quote>high</quote>, or <quote>ultra</quote>;
+	<option>--digest</option> specifies the signing algorithm,
+	the default is <quote>sha256</quote>; and
+	<option>--expires</option> specifies the certificate's duration
+	(default is <quote>5 years</quote>), this parameter understands
+	<quote><replaceable>n</replaceable> days</quote>,
+	<quote><replaceable>n</replaceable> months</quote>, and
+	<quote><replaceable>n</replaceable> years</quote>;
+	<option>--type</option> specifies the certificate type, either
+	<quote>rsa</quote> (default) or <quote>dsa</quote>.
+      </para>
+
+      <para>
+	The given <replaceable>directory</replaceable> gets created for the new
+	cluster
+	key, with group and world permissions turned off, and the new cluster
+	certificate and key gets saved there. The cluster key
+	directory must be kept
+	secure, and should exist on a machine that runs (or will run) one of
+	the nodes in the cluster repository. It does not need to be copied to
+	every node's machine.
+      </para>
+
+      <para>
+	If not specified, <replaceable>directory</replaceable> gets defaulted
+	to <filename>@localstatedir@/stasher/clusters/<replaceable>name</replaceable></filename>,
+	where <replaceable>name</replaceable> is the specified cluster name.
+      </para>
+
+      <para>
+	Repository cluster keys sign individual repository node keys, which
+	have a shorter expiration interval. Node keys must expire before the
+	cluster key that signed them.
+      </para>
+
+      <para>
+	Before an existing cluster key expires, a new repository cluster key
+	gets generated
+	by running the same command, and pointing it to an existing cluster key
+	directory. The <option>--name</option> parameter is not needed for the
+	new key, the cluster name remains the same, and it's retrieved from the
+	existing key in the directory (if <option>--name</option> is specified
+	it must give the same name). The new key gets gets added to the
+	directory. The existing, expiring key remains valid until it actually
+	expires.
+      </para>
+
+      <para>
+	New keys must always have the same name, but other
+	parameters can be different.
+      </para>
+
+      <cmdsynopsis>
+	<command>stashermg</command>
+	<arg choice='plain'>--clustkey</arg>
+	<group choice='req'>
+	  <arg choice='plain'>-l</arg>
+	  <arg choice='plain'>--list</arg>
+	</group>
+	<arg choice='plain'><replaceable>directory</replaceable></arg>
+      </cmdsynopsis>
+
+      <para>
+	<option>--list</option> produces a formatted output, listing the
+	keys in the specified cluster key directory, and their expiration.
+	The <option>Key ID</option> column contains each key's identifier.
+      </para>
+
+      <para>
+	If desired, multiple keys may be installed in a cluster directory,
+	and used concurrently, for reasons other than expiration. All keys
+	are interchangable with each other, any valid key can be used to create
+	and sign individual cluster node keys.
+      </para>
+
+      <cmdsynopsis>
+	<command>stashermg</command>
+	<arg choice='plain'>--clustkey</arg>
+
+	<group choice='req'>
+	  <arg choice='plain'>-r</arg>
+	  <arg choice='plain'>--remove</arg>
+	</group>
+	<arg choice='plain'><replaceable>directory</replaceable></arg>
+	<arg choice='plain'><replaceable>keyid</replaceable></arg>
+      </cmdsynopsis>
+
+      <para>
+	After a cluster key expires, it should be removed from the cluster
+	key directory, but it may be removed for other reasons, as long as
+	there are no installed node certificates that are signed by that key.
+      </para>
+
+      <para>
+	After creating a new cluster key, or after removing a key, the updated
+	list of cluster certificates needs to be exported, or pushed, into
+	the repository:
+      </para>
+
+      <cmdsynopsis>
+	<command>stashermg</command>
+	<arg choice='plain'>--clustkey</arg>
+
+	<group choice='req'>
+	  <arg choice='plain'>-e</arg>
+	  <arg choice='plain'>--export</arg>
+	</group>
+	<arg choice='plain'><replaceable>directory</replaceable></arg>
+	<arg choice='plain'><replaceable>nodekeydirectory</replaceable></arg>
+      </cmdsynopsis>
+
+      <para>
+	<replaceable>nodekeydirectory</replaceable> is the directory of an
+	existing cluster node, on the same machine. If the node is up, and the
+	cluster is in quorum, the updated list of cluster certificates from
+	<replaceable>directory</replaceable> gets distributed to all nodes in
+	the cluster. If the node is not running, the updated cluster certificate
+	list gets distributed when the node comes up and joins a cluster that's
+	in quorum.
+      </para>
+
+      <para>
+	Do not export cluster keys to a running node that's not connected to
+	a cluster, or if the cluster is not in &quorum;.
+      </para>
+    </refsect2>
+
+    <refsect2>
+      <title>Repository node keys</title>
+
+      <para>
+	Each node in a cluster has its own key. The key gets signed by
+	the object repository's cluster key. A node can connect to other nodes
+	in the cluster only if both node's keys are mutually
+	signed by a cluster key.
+      </para>
+
+      <cmdsynopsis>
+	<command>stashermg</command>
+	<arg choice='plain'>--nodekey</arg>
+	<arg choice='plain'>--generate</arg>
+	<arg choice='plain'>
+	  <group choice='req'>
+	    <arg choice='plain'>-n</arg>
+	    <arg choice='plain'>--name</arg>
+	    </group>=<replaceable>name</replaceable>
+	</arg>
+
+	<group choice='opt'>
+	  <group choice='req'>
+	    <arg choice='plain'>-b</arg>
+	    <arg choice='plain'>--bits</arg>
+	  </group>=<replaceable>strength</replaceable>
+	</group>
+
+	<group choice='opt'>
+	  <group choice='req'>
+	    <arg choice='plain'>-d</arg>
+	    <arg choice='plain'>--digest</arg>
+	  </group>=<replaceable>algorithm</replaceable>
+	</group>
+
+	<group choice='opt'>
+	  <group choice='req'>
+	    <arg choice='plain'>-e</arg>
+	    <arg choice='plain'>--expires</arg>
+	    </group>=<replaceable>interval</replaceable>
+	</group>
+
+	<group choice='opt'>
+	  <group choice='req'>
+	    <arg choice='plain'>-k</arg>
+	    <arg choice='plain'>--signkey</arg>
+	    </group>=<replaceable>keyid</replaceable>
+	</group>
+
+	<arg choice='opt'><replaceable>nodekeydirectory</replaceable></arg>
+	<arg choice='plain'><replaceable>directory</replaceable></arg>
+      </cmdsynopsis>
+
+      <para>
+	The <option>--name</option> parameter gives the name of the node in
+	the object repository cluster. This is a label. Each node in the
+	repository must have a unique label. The label gets prepended to the
+	signing cluster's key, and when the node starts, the resulting name
+	gets registered with the portmapper. This allows multiple
+	nodes in the cluster to run on the same machine, presumably for
+	testing purposes.
+      </para>
+
+      <para>
+	The other parameters are optional:
+	<option>--bits</option> specifies the bit strength of the signing key,
+	<quote>weak</quote>, <quote>low</quote>,
+	<quote>normal</quote> (default),
+	<quote>high</quote>, or <quote>ultra</quote>;
+	<option>--digest</option> specifies the signing algorithm,
+	the default is <quote>sha256</quote>; and
+	<option>--expires</option> specifies the certificate's duration
+	(default is <quote>1 year</quote>), this parameter understands
+	<quote><replaceable>n</replaceable> days</quote>,
+	<quote><replaceable>n</replaceable> months</quote>, and
+	<quote><replaceable>n</replaceable> years</quote>.
+      </para>
+
+      <para>
+	The new node certificate and key gets installed in the specified.
+	<replaceable>nodekeydirectory</replaceable>, which gets created if it
+	does not exist.
+	The new node certificate gets signed with
+	the newest cluster key from the cluster key directory, if there's more
+	than one there. <option>--signkey</option> selects a non-default key
+	instead, if specified.
+      </para>
+
+      <para>
+	<replaceable>nodekeydirectory</replaceable> is optional. If this command
+	has two directory parameters, the first parameters is the new node key
+	directory and the second parameter is the cluster key directory.
+	If this command has a single directory parameter, it specifies a
+	cluster key directory, and the node key directory defaults to
+	<filename>@localstatedir@/stasher/newnodes/<replaceable>name</replaceable></filename>,
+	where <replaceable>name</replaceable> is the new node's name.
+      </para>
+
+      <para>
+	A node certificate must be kept secure, just like a cluster certificate.
+	The certificate file gets created without group and world permissions,
+	but the new node directory is world readable.
+	This allows processes running under any
+	userid to connect to the local object repository node, which can read
+	the certificate.
+      </para>
+
+      <para>
+	This
+	command
+	also copies the current list of cluster certificates into the
+	created new node directory. As previously described, updates to the
+	list of cluster certificates are distributed by
+	<option>--export</option>, using any existing node in the object
+	repository cluster.
+      </para>
+
+      <para>
+	The new node key directory gets created on the same machine as the
+	cluster key directory, since a node key must be signed by a cluster
+	key. To install nodes on other machines, copy the created node key
+	directory, securely, to the other machine, taking care to preserve
+	the structure and the permissions of all the contents of the
+	newly-created node key directory.
+      </para>
+
+      <para>
+	A node certificate expires just like cluster certificates, and a new
+	node certificate, with the same <replaceable>name</replaceable> must
+	be created, before the existing node certificate expires.
+      </para>
+
+      <para>
+	A renewal certificate gets created by specifying an existing
+	<filename><replaceable>nodekeydirectory</replaceable></filename>.
+	<option>--name</option> default's to the node's name.
+	A renewal certificate for another node gets created by an explicit
+	<option>--name</option>. In that case, both the node on this machine
+	and the node whose certificate is getting renewed must be up and
+	connected to the cluster. The node running on this machine
+	forwards the certificate to the peer specified by
+	<option>--name</option>, which installs it.
+      </para>
+
+      <refsect3>
+	<title>Creating certificates when the cluster certificates are stored separately</title>
+
+	<para>
+	  It's possible to securely keep the cluster certificates on a
+	  completely separate machine from any cluster node, and use it to
+	  generate node certificates. To create a new node on another machine,
+	  follow the process for creating a new node certificate, and copy
+	  the entire resulting directory to the other machine, taking care
+	  to use the right permissions and ownership of its contents.
+	  To renew a node certificate, follow the same process, and copy just
+	  the <filename>cert.pem</filename> file. To distribute a new cluster
+	  certificate, generate it, and export it to a temporary directory,
+	  then copy the <filename>rootcerts.pem</filename> file.
+	</para>
+
+	<para>
+	  In either case, run <command>stashermg --certreload
+	    <replaceable>directory</replaceable></command> on the node's
+	  machine, after installing a new <filename>cert.pem</filename>
+	  or a <filename>rootcerts.pem</filename>, to reload the certificate.
+	  The running node server loads the new <filename>cert.pem</filename>
+	  file, if it exists. If a new <filename>rootcerts.pem</filename>
+	  exists it gets loaded also, but straight into the object repository,
+	  and distributed to all nodes in the cluster, before removing it
+	  from the node directory, where it is no longer needed.
+	</para>
+      </refsect3>
+    </refsect2>
+  </refsect1>
+</refentry>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "reference" "refentry")
+End:
+-->

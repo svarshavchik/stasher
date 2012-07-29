@@ -1,0 +1,178 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="renewclustercert">
+  <title>Generating a new cluster certificate</title>
+
+  <para>
+    The
+    <link linkend="newclustersetupcreateclustercert">initial cluster
+    certificate</link> eventually expires.
+    The default setting creates cluster certificates that expire after five
+    years, but a new cluster certificate must be created long before than.
+    The cluster certificate signs node certificates, which individual nodes
+    in the cluster use to authenticate each other.
+    Node certificates' default duration is one year, and a node's certificate
+    cannot remain valid past the expiration date of a cluster certificate that
+    signed it, so a new cluster certificate has to be created after four years,
+    by default.
+  </para>
+
+  <para>
+    There are two ways to check the cluster certificate's expiration.
+    The administrative <command>status</command> command shows the expiration
+    from the cluster certificate's public key:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# stasher
+Ready, EOF to exit.
+&gt; admin
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 20 objects, 64 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus&gt; status
+
+... long output deleted ...
+
+    Cluster certificate: subject `CN=objrepo.example.com,OU=object repository (c
+reated on 2012-03-17 16:12:05 EDT),O=cluster', issuer `CN=objrepo.example.com,OU
+=object repository (created on 2012-03-17 16:12:05 EDT),O=cluster', RSA key 2432
+ bits, signed using RSA-SHA256, activated `2012-03-17 20:12:05 UTC', <emphasis>expires `20
+17-03-27 20:12:05 UTC'</emphasis>, SHA-1 fingerprint `1baed521cd8237d90be58665300db65ae5150
+608'
+
+... long output deleted ...
+
+octopus&gt; [EOF, CTRL-D]
+[root@octopus ~]# </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    <command>stashermg</command> shows the same information
+    from the secure directory that holds the cluster's private keys:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# stashermg --clustkey --list /var/stasher/clusters/objrepo.example.com
+Key ID           Cluster name         Activation           Expiration
+---------------- -------------------- -------------------  -------------------
+1332015126008193 objrepo.example.com  2012-03-17 16:12:05  2017-03-27 16:12:05
+[root@octopus ~]# </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    With node certificates, creating a node certificate replaces the existing
+    one. Cluster certificates are a little bit different. A new cluster
+    certificate does not replace and invalidate the existing one.
+    The existing certificate must remain valid
+    until it expires, since there may be existing node certificates which are
+    signed by it:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# stashermg --clustkey --generate /var/stasher/clusters/objrepo.example.com
+Generating new key...
+...+++++
+.........+++++
+[root@octopus ~]# stashermg --clustkey --list /var/stasher/clusters/objrepo.example.com
+Key ID           Cluster name         Activation           Expiration
+---------------- -------------------- -------------------  -------------------
+1332015126008193 objrepo.example.com  2012-03-17 16:12:05  2017-03-27 16:12:05
+1333767749362115 objrepo.example.com  2012-04-06 23:02:28  2017-04-16 23:02:28
+[root@octopus ~]# </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    This updates only the cluster keys in the secured cluster key directory.
+    The new cluster certificate has to be distributed to the actual cluster
+    repository. If the same machine where the secure cluster key directory
+    gets stored also runs one of the nodes in the cluster:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# stashermg --clustkey --export /var/stasher/clusters/objrepo.ex
+ample.com /var/stasher/nodes/objrepo.example.com
+Connected to /var/stasher/nodes/objrepo.example.com, checking existing certificates
+Updating cluster certificates
+[root@octopus ~]# </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    In this example, the cluster key directory is
+    <filename>/var/stasher/clusters/objrepo.example.com</filename>,
+    and one of the nodes in the cluster runs from
+    <filename>/var/stasher/nodes/objrepo.example</filename>.
+    Use a temporary directory if no node runs on the same machine, to export
+    the updated certificate list:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# mkdir /tmp/clustkey
+[root@octopus ~]# stashermg --clustkey --export /var/stasher/clusters/objrepo.example.com /tmp/clustkey
+Warning: server not running, certificates are installed locally.
+[root@octopus ~]# ls -al /tmp/clustkey
+total 52
+drwxr-xr-x   2 root root  4096 Apr  6 23:07 .
+drwxrwxrwt. 14 root root 36864 Apr  6 23:07 ..
+-rw-r--r--   1 root root  8792 Apr  6 23:07 rootcerts.pem</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    Take <filename>rootcerts.pem</filename> and copy it to any cluster node
+    directory on some other machine, taking care to set its ownership and
+    permissions appropriately:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# ls -al /var/stasher/nodes/objrepo.example.com
+total 52
+drwxr-xr-x 7 daemon daemon 4096 Apr  6 23:13 .
+drwxr-xr-x 3 root   root   4096 Apr  6 22:33 ..
+-rw------- 1 daemon daemon 6281 Mar 30 20:34 cert.pem
+drwxr-xr-x 3 daemon daemon 4096 Mar 17 16:15 data
+-rw-r--r-- 1 daemon daemon    0 Mar 17 16:15 .lock
+drwxr-xr-x 2 daemon daemon 4096 Apr  6 22:34 logs
+drwx------ 2 daemon daemon 4096 Apr  6 22:34 privsocket
+-rw-r--r-- 1 daemon daemon  348 Mar 17 16:13 properties
+drwxr-xr-x 2 daemon daemon 4096 Apr  6 22:34 pubsocket
+-rw-r--r-- 2 daemon daemon 8792 Apr  6 23:15 rootcerts.pem
+drwxr-xr-x 2 daemon daemon 4096 Apr  6 23:06 tmp
+[root@octopus ~]# stashermg --certreload /var/stasher/nodes/objrepo.example.com
+Certificate reloaded
+[root@octopus ~]# </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    In either case, the 
+    administrative <command>status</command> command should now list both
+    cluster certificates.
+    Once the old certificate expires, it should be removed from the cluster.
+    See <link linkend="stashermg"><command>stashermg</command>'s man page</link>
+    for more details. The updated cluster certificate list, without the expired
+    certificate, gets pushed into the cluster using the same process as adding
+    a new one.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

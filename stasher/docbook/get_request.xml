@@ -1,0 +1,119 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="get_request">
+  <title><methodname><classname>&ns;::client</classname>-&gt;get_request</methodname>(): asynchronous version of <methodname>get</methodname>()</title>
+
+  <blockquote>
+    <title><ulink url="examples/get_request.C">examples/get_request.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/get_request.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This is a modified version of the example in
+    <xref linkend="subscribe" /> that demonstrates the use of
+    <methodname>get_request</methodname>().
+    Like <filename>subscribe.C</filename> a subscription gets opened for
+    each object or hierarchy given as an argument to this program, but the
+    main execution thread then stops and waits for <keycap>Enter</keycap>.
+  </para>
+
+  <para>
+    When a subscribed object or hierarchy changes and
+    <methodname>updated</methodname>() gets invoked, it calls
+    <methodname>get_request</methodname>() (instead of
+    <methodname>get</methodname>() invoked from the main execution thread,
+    in the <filename>subscribe.C</filename> version).
+  </para>
+
+  <para>
+    <methodname>updated</methodname>() attaches a destructor callback
+    to the request's mcguffin. When the request gets proceed and the destructor
+    callback gets invoked, the result of the request gets retrieved.
+    Like <filename>subscribe.C</filename>, the object's file descriptor gets
+    opened and the first line in the object gets printed.
+  </para>
+
+  <para>
+    Start this example, subscribing to one or more objects or hierarchies,
+    then use <link linkend="put"><filename>simpleput.C</filename></link>
+    or <link linkend="stasher"><command>stasher</command></link> to
+    create, update, and remove the objects. Each time a subscribed-to object
+    gets created or updated, this example shows the first line in the object.
+  </para>
+
+  <note>
+    <para>
+      As discussed in <xref linkend="asynchronouscancannot" />, callbacks and
+      callback objects, like <classname>mySubscriberObj</classname> create
+      a circular object reference if they have their own
+      <classname>&ns;::client</classname>.
+      Technically this is not completely true, since the
+      reference to the callback is stored on &cct;'s stack, and not the
+      <classname>&ns;::client</classname>-referenced object, and if the
+      execution thread stops (which it can, if the connection with the
+      object repository server breaks, or if
+      <methodname><classname>&ns;::client</classname>-&gt;disconnect</methodname>()
+      gets invoked), that reference goes out of scope and gets destroyed.
+      But this difference is negligible, and this is not really the
+      recommended approach.
+    </para>
+
+    <para>
+      The above example shows the only proper way for callbacks to be able to
+      have their own <classname>&ns;::client</classname>: a destructor guard
+      that makes sure that the callback goes out of scope and gets destroyed
+      before the <classname>&ns;::client</classname>.
+      This order of declaration is important, because this requires that
+      all the related objects go out of scope and get destroyed in the right
+      order: the reference to the subscriber callback object first, then
+      the subscription mcguffins.
+    </para>
+
+    <para>
+      This results in the subscription mcguffins going out of scope first,
+      followed by the subscriber callback object reference.
+      This does not result in the immediate destruction of the callback object.
+      Until the &cct; responds to the destruction of the subscription
+      mcguffins, an internal reference to the callback object,
+      from the &cct; remains. The destruction of the subscription mcguffins
+      results only in a message getting sent to the &cct;, and the
+      subscriptions do not get cancelled until the &cct; processes those
+      messages. This is a quick, but not an instantaneous process.
+    </para>
+
+    <para>
+      Without guarding subscriber object's destructor, the
+      <varname>client</varname> would get destroyed first, but because the
+      subscriber callback object still exists, for the moment, its
+      <classname>&ns;::client</classname> becomes the last handle for the
+      client connection, and when the &cct; processes the unsubscription
+      message, all references to the subscriber object go out of scope, the
+      object gets destroyed, and the last <classname>&ns;::client</classname>
+      reference's destructor deadlocks waiting for the &cct; to stop, because
+      it gets actually invoked from the same thread.
+    </para>
+
+    <para>
+      In this example, when the destructor guard gets destroyed its own
+      destrucor waits and makes sure that the
+      subscriber object is fully destroyed, together with its client
+      connection handle. Then it returns, and the
+      client connection handle that gets destroyed will be the last reference
+      to the client connection, and get destroyed properly.
+    </para>
+  </note>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

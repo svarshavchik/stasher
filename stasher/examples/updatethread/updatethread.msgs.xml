@@ -1,0 +1,101 @@
+<class name="updatethreadObj">
+
+  <method name="installclient">
+    <comment>
+      // Use this client connection
+    </comment>
+
+    <param type="class">
+      <comment>
+	// The client connection handle
+      </comment>
+
+      <decl>stasher::client <name>client</name></decl>
+    </param>
+  </method>
+
+  <method name="updateobject">
+    <comment>
+      // Perform an object update
+    </comment>
+
+    <param type="class">
+      <comment>
+	// The update request
+      </comment>
+
+      <decl>x::ref&lt;updateRequestObj&gt; <name>request</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	// Optional request mcguffin. The thread releases its reference on this
+	// object after the request is completed.
+      </comment>
+
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="processcontents">
+    <comment>
+      // Checked the object's existing contents. Process them.
+    </comment>
+
+    <param type="class">
+      <comment>
+	// Initial contents
+      </comment>
+
+      <decl>stasher::contents <name>contents</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	// The update request
+      </comment>
+
+      <decl>x::ref&lt;updateRequestObj&gt; <name>request</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	// Optional request mcguffin. The thread releases its reference on this
+	// object after the request is completed.
+      </comment>
+
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="processupdate">
+    <comment>
+      // Put request completed. If it did not req_rejected_stat, we're done.
+    </comment>
+
+    <param type="class">
+      <comment>
+	// Put results
+      </comment>
+
+      <decl>stasher::putresults <name>putresults</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	// The update request
+      </comment>
+
+      <decl>x::ref&lt;updateRequestObj&gt; <name>request</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	// Optional request mcguffin. The thread releases its reference on this
+	// object after the request is completed.
+      </comment>
+
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+</class>

@@ -1,0 +1,16 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="repocontrollerbasehandoffObj">
+
+  <method name="handoff">
+    <comment>/*!
+    Hand off control to the next controller.
+    */</comment>
+    <param type="class"><decl>x::ptr&lt;repocontrollerbaseObj&gt; <name>next</name></decl></param>
+  </method>
+</class>

@@ -1,0 +1,21 @@
+
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="keepitObj">
+
+  <method name="check" />
+
+  <method name="check_put">
+
+    <param type="class">
+      <decl>STASHER_NAMESPACE::putresults <name>res</name></decl>
+    </param>
+
+  </method>
+
+</class>

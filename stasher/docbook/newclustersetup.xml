@@ -1,0 +1,444 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="newclustersetup">
+  <title>Setting up a new cluster (with one, initial, node)</title>
+
+  <para>
+    The process of creating a new object repository cluster consists of the
+    following steps:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	<link linkend="newclustersetupcreateclustercert">Create a cluster certificate</link>
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	<link linkend="newclustersetupcreatenodecert">Create a node certificate</link>
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	<link linkend="newclustersetupinstallnodecert">Install the node
+	  certificate</link> on the machine which will run the first
+	node in the cluster, if it's not the same machine where the certificates
+	got created
+      </para>
+
+      <para>
+	In all cases, adjust the permissions and the ownerships of the
+	node's object repository cluster directory.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	<link linkend="newclustersetupstart">Start the first node's server process</link>
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	<link linkend="newclustersetup1stconfig">Define the first node's configuration</link>
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <section id="newclustersetupcreateclustercert">
+    <title>Create a cluster certificate</title>
+
+    <para>
+      The process to set up a new cluster starts with a creation of a cluster
+      certificate. This usually gets done on a machine that will be one of the
+      nodes in the cluster, but it doesn't have to be. It's possible to create
+      a cluster certificate on another machine, and securely copy the the entire
+      directory that gets created:
+    </para>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>[root@octopus ~]# stashermg --clustkey --generate --name objrepo.example.com
+Created /var/stasher/clusters/objrepo.example.com...
+Generating new key...
+..+++++
++++++
+[root@octopus ~]# ls -al /var/stasher/clusters/objrepo.example.com
+total 20
+drwx------ 2 daemon daemon 4096 Mar 17 16:12 .
+drwxr-xr-x 3 root   root   4096 Mar 17 16:12 ..
+-rw-r--r-- 1 daemon daemon 4396 Mar 17 16:12 1332015126008193.crt
+-rw-r--r-- 1 daemon daemon 1968 Mar 17 16:12 1332015126008193.key</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      The &stashermgcmd; command uses default values for most
+      configuration settings, including the directory it creates for the new
+      cluster's certificate and private key. The default directory location
+      comes from the default configuration of &app;. <option>--name</option>
+      gives the cluster's name, and the name of the directory takes the
+      cluster's name by default. See <xref linkend="stashermg" /> for more
+      information.
+    </para>
+
+    <para>
+      The cluster's name should generally follow the naming convention for a
+      <acronym>DNS</acronym> zone name, as means of staking ownership and
+      preventing name collisions not just with other
+      &app; object repositories, but with other applications.
+      &app; uses &libx;'s <application>httportmap</application> service, which
+      advertises network-based server applications and uses
+      a <acronym>DNS</acronym>-like naming convention for applications.
+      Use a <acronym>DNS</acronym> zone name that you own or manage.
+      The examples in this chapter use <literal>example.com</literal>.
+    </para>
+
+    <para>
+      The certificate and the private
+      key file implement access security to the cluster, and the directory gets
+      created without group or world permission, accordingly.
+      The default &app; configuration
+      uses <quote>daemon</quote> if &stashermgcmd; gets invoked by
+      <literal>root</literal>. Adjust the ownership and the permissions of the
+      cluster certificate directory as needed, according to your policies.
+    </para>
+  </section>
+
+  <section id="newclustersetupcreatenodecert">
+    <title>Create a node certificate</title>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>[root@octopus ~]# ls -al /var/stasher/clusters/objrepo.example.com
+total 20
+drwx------ 2 daemon daemon 4096 Mar 17 16:12 .
+drwxr-xr-x 3 root   root   4096 Mar 17 16:12 ..
+-rw-r--r-- 1 daemon daemon 4396 Mar 17 16:12 1332015126008193.crt
+-rw-r--r-- 1 daemon daemon 1968 Mar 17 16:12 1332015126008193.key
+[root@octopus ~]# stashermg --nodekey --generate --name=octopus /var/stasher/clusters/objrepo.example.com
+Created /var/stasher/newnodes/octopus...
+Generating new key...
+...+++++
+....+++++
+Warning: server not running, certificates are installed locally.
+Certificate installed, connecting to server
+Server is not running</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      The second step created a new node certificate. Each node in the cluster
+      has a unique name, or a label. The node name does not have to be the same
+      name as the machine where the node is running, but, for simplicity, it
+      should be.
+    </para>
+
+    <para>
+      The &stashermgcmd; command provides default values for most
+      configuration settings, including the directory it creates for the new
+      node. The default directory location comes from the default configuration
+      of &app;. <option>--name</option> gives the new node's name name, and the
+      name of the creates directory takes the
+      cluster's name by default. See <xref linkend="stashermg" /> for more
+      information.
+    </para>
+
+    <para>
+      Each node's server process must be started by the userid that owns
+      the directory. Different nodes in the same cluster on different machines
+      can use different userids, but each server process must be started by
+      the userid that owns its directory. When started by root, the server
+      immediately drops root and sets its userid to the directory's
+      owner, so the server process can be started by root, or by the directory's
+      actual owner.
+    </para>
+
+    <section id="nodedircontents">
+      <title>Contents of the cluster node directory</title>
+
+      <informalexample>
+	<computeroutput>
+	  <literallayout>[root@octopus ~]# ls -al /var/stasher/newnodes/octopus
+total 36
+drwxr-xr-x 4 daemon daemon 4096 Mar 17 16:13 .
+drwxr-xr-x 3 root   root   4096 Mar 17 16:13 ..
+-rw------- 1 daemon daemon 6285 Mar 17 16:13 cert.pem
+drwxr-xr-x 2 daemon daemon 4096 Mar 17 16:13 data
+drwxr-xr-x 2 daemon daemon 4096 Mar 17 16:13 logs
+-rw-r--r-- 1 daemon daemon  348 Mar 17 16:13 properties
+-rw-r--r-- 1 daemon daemon 4396 Mar 17 16:13 rootcerts.pem</literallayout>
+	</computeroutput>
+      </informalexample>
+
+      <para>
+	The ownership of the newly-created directory can be
+	<command>chown</command>-ed, if so desired. However care must be taken
+	to preserve the file permissions, as shown in the above example. The
+	certificate file, <filename>cert.pem</filename> gets used to
+	authenticate the node to the cluster, and should not be world readable,
+	but everything else can be world readable (including
+	<filename>rootcerts.pem</filename>, which contains only the public
+	keys).
+	The <filename>properties</filename> file keeps the node's internal
+	server configuration. It should not be edited manually.
+      </para>
+
+      <para>
+	Server logs get written to <filename>logs</filename>. The default
+	server configuration rotates log files daily, and purges log files
+	after seven days.
+      </para>
+
+      <para>
+	The objects in the repository get stored in the
+	<filename>data</filename> subdirectory.
+	All nodes in the object cluster repository should have the same
+	amount of free disk space. Putting <filename>data</filename> on a
+	separate partition is recommended. When any node in the object
+	repository cluster runs out of free disk space, no more objects can be
+	added or modified in the repository.
+	The object repository server process switches to a failsafe
+	mode before available free disk space runs out completely;
+	the server process keeps a small fudge factor in reserve, to account
+	for random background noise.
+      </para>
+    </section>
+  </section>
+
+  <section id="newclustersetupinstallnodecert">
+    <title>Install the node certificate directory</title>
+
+      <informalexample>
+	<computeroutput>
+	  <literallayout>[root@octopus ~]# mv /var/stasher/newnodes/octopus /var/stasher/nodes/objrepo.example.com
+[root@octopus ~]# ls -al /var/stasher/nodes
+total 12
+drwxr-xr-x 3 root   root   4096 Mar 17 16:14 .
+drwxr-xr-x 5 root   root   4096 Mar 17 16:10 ..
+drwxr-xr-x 4 daemon daemon 4096 Mar 17 16:13 objrepo.example.com</literallayout>
+	</computeroutput>
+      </informalexample>
+
+    <para>
+      The default location for new node directories created by
+      &stashermgcmd; in the default &app; package for Fedora is
+      <filename>/var/stasher/newnodes</filename>.
+      The startup script in the stock &app; package, though, starts nodes from
+      <filename>/var/stasher/nodes</filename>.
+    </para>
+
+    <para>
+      This allows a single machine to server as both in the cluster management
+      function, creating new node directories, and running one of the nodes
+      too. The machine's node directory lives in
+      <filename>/var/stasher/nodes</filename>, which remains unaffected by
+      &stashermgcmd;'s activities.
+    </para>
+
+    <para>
+      The startup script in the stock &app; package
+      for Fedora starts a server in each
+      subdirectory in <filename>/var/stasher/nodes</filename>. The same
+      machine can run nodes belonging to different object repository clusters.
+      The names of subdirectories in <filename>/var/stasher/nodes</filename>
+      do not need to match the node's or the cluster's name
+      (the <option>--name</option> parameter to &stashermgcmd;).
+    </para>
+
+    <para>
+      Setting up a new node on another machine consists of
+      <link linkend="clusteraddnode">copying
+      the entire new directory to another machine</link>,
+      taking care to preserve its ownership and the correct permissions of
+      its contents. <quote>scp -p -r</quote> will work.
+    </para>
+  </section>
+
+  <section id="newclustersetupstart">
+    <title>Start the first node's server process</title>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>[root@octopus ~]# systemctl restart stasher.service
+[root@octopus ~]# links --dump http://localhost/portmap
+   service,user,pid,prog,port
+   httportmap.libx,0,26741,/usr/sbin/httportmapd,/var/httportmap.client
+   octopus.objrepo.example.com,2,10420,,49329
+   pid2exe.libx,0,26741,/usr/sbin/httportmapd,*
+[root@octopus ~]# stasher
+Ready, EOF to exit.
+> admin
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 10 objects, 32 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus> status
+Cluster:
+  Status: master: octopus.objrepo.example.com (uuid S85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS), 0 slaves, timestamp 2012-03-17 16:15:56 -0400
+
+... long output deleted ...
+
+octopus&gt; [EOF, CTRL-D]
+[root@octopus ~]#</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      The default &app; package installs a <application>systemd</application>
+      service that starts a &app; daemon process for every node directory
+      in <filename>/var/stasher/nodes</filename> when the machine starts.
+      After adding the first node directory to
+      <filename>/var/stasher/nodes</filename>,
+      <command>systemctl restart</command> restarts the service, which starts
+      &app; in the newly-installed directory.
+    </para>
+
+    <para>
+      If not using the default &app; package, for some reason, the
+      <filename>stasher.sysinit</filename> script in the source tarball shows
+      the recommended steps for starting and stopping &app;:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <command>stasher start <replaceable>directory</replaceable></command>
+	  starts &app; in the specified node directory.
+	  Only root, or the owner of the &app; node directory, can start
+	  &app; in that node directory.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <command>stasher --admin=<replaceable>directory</replaceable> --alarm=30 resign</command>
+	  followed by
+	  <command>stasher --admin=<replaceable>directory</replaceable> --alarm=10 stop</command>
+	  safely stops &app;.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      A succesful &app; starts is confirmed by verifying that the node
+      is listed as an <application>httportmap</application> service
+      (<quote>octopus.objrepo.example.com</quote> in the above example), and by
+      connecting to the server, as in the shown example.
+      Open <literal>http://<replaceable>hostname</replaceable>/portmap</literal>
+      in a browser, and verify that the service is listed.
+    </para>
+
+    <para>
+      The <literal>admin</literal> &app; command takes the pathname to the
+      cluster node directory as a parameter. If there's only one subdirectory
+      in the default &app; node directory
+      (<filename>/var/stasher/nodes</filename> or
+      <filename>/usr/local/var/stasher/nodes</filename>, depending on &app;'s
+      configuration), the directory parameter may be omitted, as in this
+      example.
+    </para>
+  </section>
+
+  <section id="newclustersetup1stconfig">
+    <title>Define the first node's configuration</title>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>[root@octopus ~]# stasher
+Ready, EOF to exit.
+> admin
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 10 objects, 32 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus> setlimits 20 64mb
+octopus> [EOF, CTRL-D]
+[root@octopus ~]# stasher
+Ready, EOF to exit.
+> admin
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 20 objects, 64 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus> editcluster addnode octopus set host=octopus.example.com
+octopus:
+    HOST=octopus.example.com
+
+octopus> savecluster
+octopus> status
+Cluster:
+  Status: master: octopus.objrepo.example.com (uuid S85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS), 0 slaves, timestamp 2012-03-17 16:15:56 -0400
+  This node:
+    HOST=octopus.example.com
+
+... long output deleted ...
+
+octopus&gt; [EOF, CTRL-D]
+[root@octopus ~]#</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      The default &app; configuration allows a transaction to add, update, or
+      delete at most ten objects in the object repository, with the total
+      aggregate size of all new or updated objects of 32 megabytes.
+      the <command>setlimits</command> command adjusts these parameters.
+      Disconnecting and reconnecting confirms that the updated settings
+      took hold. See
+      <xref linkend="stashermg" /> for more information on the
+      <command>setlimits</command> command.
+    </para>
+
+    <para>
+      Use <command>editcluster</command> to define the first node's hostname in
+      the object repository cluster's configuration. This setting defines
+      which machine each node runs on. Here, the <quote>cluster</quote>
+      command specifies that the <quote>octopus</quote> node, the first node
+      in the cluster, runs on machine called
+      <quote>octopus.example.com</quote>.
+      Even though the new node
+      started with an empty configuration, the first node's hostname must be
+      explicitly set, as the first order of business.
+    </para>
+
+    <para>
+      The output from the <command>status</command> command verifies the
+      <quote>HOST</quote> setting in the <quote>This node</quote> section.
+      This
+      confirms that the configuration was properly updated.
+    </para>
+  </section>
+
+  <section id="newclustermaillogs">
+    <title>Specify who should get the logs mailed to them</title>
+
+    <para>
+      &app;'s comes with an script that mails any logged errors to
+      anyone who needs to know about them. The script looks for log files
+      in &app;'s default directory location for node directory
+      (<filename>/var/stasher/nodes</filename> for the stock &app;
+      <acronym>RPM</acronym> package).
+      The script uses the <filename>/etc/stasherlogconfig</filename>
+      configuration file. Edit this script and set the email address in
+      <envar>RECIPIENTS</envar> (multiple email addresses can listed,
+      separated by whitespace).
+    </para>
+
+    <para>
+      Expect to get a few messages shortly after every &app; start or
+      shutdown.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

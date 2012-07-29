@@ -1,0 +1,135 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="getdir">
+  <title><methodname><classname>&ns;::client</classname>-&gt;getdir</methodname>(): enumerate objects in the repository</title>
+
+  <blockquote>
+    <title><ulink url="examples/getdir.C">examples/getdir.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/getdir.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <methodname><classname>&ns;::client</classname>-&gt;getdir</methodname>()'s
+    parameter is a hierarchy name, and an empty string specifies the
+    top-level hierarchy.
+    <methodname><classname>&ns;::client</classname>-&gt;getdir</methodname>()'s
+    returns a <classname>&ns;::getdirresults</classname>, which is an
+    <classname>x::ref</classname> to a reference-counted object with
+    two members.
+    <varname>status</varname> reports the
+    <link linkend="reqstatt">request's status</link>.
+    <varname>objects</varname> is a
+    <classname>std::set&lt;std::string&gt;</classname> containing a list of
+    all objects in the specified hierarchy:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>$ ./showhier
+constants/
+helloworld
+$ ./showhier constants
+constants/e
+constants/pi</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    Names that end with a <quote>/</quote> specify a subhierarchy. In this
+    example, there are three objects in the repository.
+    <quote>helloword</quote>,
+    <quote>constants/e</quote>,
+    <quote>constants/pi</quote>.
+    Passing an empty hierarchy name, specifying the top-level hierarchy,
+    returns a <classname>std::set&lt;std::string&gt;</classname> with
+    <quote>helloworld</quote> because it's the only object in the top level
+    of the hierarchy. There's also a <quote>constants/</quote> in the returned
+    list, indicating an existence of objects in a sub-hierarchy.
+  </para>
+
+  <para>
+    Of course, by the time the client asks for the list of objects in the
+    <quote>constants</quote> subhierarchy, something else might've deleted
+    them. This is not an error, the request simply returns an empty list.
+  </para>
+
+  <note>
+    <para>
+      The above example shows that the
+      returned <classname>std::set&lt;std::string&gt;</classname>
+      reflects complete object names.
+      A <quote><literal>getdir("constants")</literal></quote>
+      returns <quote>constants/e</quote> and <quote>constants/pi</quote>,
+      rather than <quote>e</quote> and <quote>pi</quote>.
+    </para>
+  </note>
+
+  <blockquote id="namespaceview">
+    <title>Repository namespace views</title>
+    <para>
+      It's important to note that the client's view of the object repository
+      is usually filtered. The object repository server's configuration
+      typically limits the client's view to some portion of the actual
+      object repository.
+      This is further explained in the
+      documentation for the
+      <link linkend="namespacecmd"><command>stasher</command></link>
+      interactive tool.
+    </para>
+
+    <para>
+      &app;'s default server configuration puts all clients, except those
+      ones specifically configured otherwise, into the
+      <quote>sandbox</quote> hierarchy.
+      For the example in this section, the actual objects would actually be
+      <quote>sandbox/helloworld</quote>,
+      <quote>sandbox/constants/e</quote> and
+      <quote>sandbox/constants/pi</quote>.
+    </para>
+
+    <para>
+      An administrative connection (not used by applications, and is not
+      described here, see
+      <ulink url="&link-typedef-stasher-client;">class documentation</ulink>
+      for more information),
+      gets the actual object hierarchy namespace, with full object names.
+      This example shows the client's perspective, which is confined to the
+      <quote>sandbox</quote> hierarchy. So from the client's perspective,
+      it sees
+      <quote>helloworld</quote>,
+      <quote>constants/e</quote> and
+      <quote>constants/pi</quote>.
+    </para>
+
+    <para>
+      This implements the ability to partition applications into different
+      areas of the same object repository, mostly negating the need to
+      set up different object repositories to provide for this kind of
+      separation. An application would typically be developed in a sandbox
+      area.
+      By default, there's one sandbox for all processes in the server, but
+      it's possible to have dedicated, separate sandboxes for individual
+      userids, for example. Once an application is
+      <quote>fully cooked</quote>, and is ready to be launched (promoted
+      to a production status, or a staging status, or whatever it's called),
+      a namespace rule change repoints the application to its own, dedicated,
+      initially empty object hierarchy, with no changes required to the
+      application itself. See <xref linkend="namespacecmd" /> for more
+      information.
+    </para>
+  </blockquote>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

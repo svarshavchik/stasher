@@ -1,0 +1,96 @@
+Summary: stasher object repository server
+Name: stasher
+Version: @VERSION@
+Release: 1%{?extrarelease}
+License: GPL
+Group: Applications/System
+Source0: %{name}-%{version}.tar.bz2
+Requires(post): /sbin/ldconfig systemd-units
+Requires(preun): systemd-units
+Requires(postun): /sbin/ldconfig systemd-units
+
+%define _hardened_build 1
+
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRequires: libcxx-devel
+
+%description
+A server process that replicates "objects" (or, rather, files) between
+multiple servers, and keeps them in sync.
+
+%package devel
+Summary: Object repository server development files
+Requires: libcxx-devel %{name} = 0:%{version}-%{release}
+Group: Development/Libraries
+
+%description devel
+This package installs development files for building applications that use
+the object repository server.
+
+%prep
+%setup -q
+%configure
+
+%build
+%{__make} %{_smp_mflags}
+
+%install
+rm -rf $RPM_BUILD_ROOT
+%{__make} install DESTDIR=$RPM_BUILD_ROOT
+%{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/stasher
+%{__mkdir_p} $RPM_BUILD_ROOT%{_unitdir}
+%{__install} -m 0555 sysinit.rc $RPM_BUILD_ROOT%{_datadir}/stasher/sysinit.rc
+%{__install} -m 0555 stasher.sysinit $RPM_BUILD_ROOT%{_datadir}/stasher/sysinit
+%{__install} -m 0444 stasher.service $RPM_BUILD_ROOT%{_unitdir}
+
+touch $RPM_BUILD_ROOT%{_localstatedir}/stasher/stasher.logs
+
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly
+ln -s %{_datadir}/stasher/maillogs.sh $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/stasher-maillogs
+
+%post
+/sbin/ldconfig
+/bin/systemctl daemon-reload || :
+
+%preun
+if test "$1" = "0"
+then
+	/bin/systemctl stop stasher.service
+	/bin/systemctl disable stasher.service
+fi
+
+%postun
+/sbin/ldconfig
+/bin/systemctl daemon-reload || :
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root,-)
+%{_libdir}/*.so.*
+%dir %{_localstatedir}/stasher
+%{_localstatedir}/stasher/apps
+%{_localstatedir}/stasher/clusters
+%{_localstatedir}/stasher/newnodes
+%{_localstatedir}/stasher/nodes
+%verify(user group mode) %config(missingok) %ghost %attr(644, root, root) %{_localstatedir}/stasher/stasher.logs
+%{_bindir}/*
+%{_unitdir}/*
+%{_libexecdir}/stasher
+%{_datadir}/stasher
+%{_mandir}/man1/*
+%config(noreplace) %{_sysconfdir}/stasherlogconfig
+%{_sysconfdir}/cron.hourly/*
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/*.so
+%{_libdir}/*.a
+%{_libdir}/*.la
+%{_includedir}/stasher
+
+%changelog
+* Tue Jan 10 2012 Sam Varshavchik <mrsam@octopus.email-scan.com> - 
+- Initial build.
+

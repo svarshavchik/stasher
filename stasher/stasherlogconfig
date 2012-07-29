@@ -1,0 +1,10 @@
+# Recipients of stasher object repository server's logs.
+# Multiple addresses can be listed, separated by spaces.
+RECIPIENTS=""
+
+# Mail log entries that match this pattern. The default log file format.
+# Change, as needed.
+PATTERN='^[^\s]*\s*[^\s]*\s*(warning|error|fatal):'
+
+# Any additional options to maillogs(1)
+OPTIONS=""

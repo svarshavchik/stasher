@@ -1,0 +1,248 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="managedobject">
+  <title><methodname><classname>&ns;::manager</classname>-&gt;manage_object</methodname>(): automatically retrieve an object any time it changes</title>
+
+  <blockquote>
+    <title><ulink url="examples/manager/managedobject.C">examples/manager/managedobject.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/manager/managedobject.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    A managed object goes the next step after a
+    <link linkend="managedsubscriber">managed subscriber</link> by automatically
+    retrieving the current value of the object when the subscription gets
+    opened and any time the subscribed to object changes.
+    This is for individual objects only, see
+    <xref linkend="managedhierarchymonitor" />
+    for a comparable interface for subscribed hierarchies.
+  </para>
+
+  <para>
+    Define a subclass of
+    <ulink url="&link-stasher--managedobjectObj;"><classname>&ns;::managedobjectObj</classname></ulink>
+    and implement its methods, as shown in this example.
+    <methodname><classname>&ns;::manager</classname>-&gt;manage_object</methodname>()
+    takes three parameters: a client connection, the name of an object
+    and an <classname>x::ref</classname> to a subclass of
+    <classname>&ns;::managedobjectObj</classname>.
+    As shown in this example, the same instance can be installed for more than
+    one managed object.
+  </para>
+
+  <note id="noimmediateretr">
+    <para>
+      <methodname>manage_object</methodname>() does not retrieve the object's
+      current value, before returning. It sets up a subscription, and sets the
+      gears in motion. The &cct; is on the job, and the initial callback to
+      <methodname>updated</methodname>() or <methodname>removed</methodname>()
+      is pending, and will follow soon (unless the connection with the
+      server is broken, as described below, in which case stay tuned).
+    </para>
+  </note>
+
+  <para>
+    To see how this works,
+    run <filename>managedobject.C</filename> and give one or more object names
+    on the command line. The main execution thread sets up the
+    subscriptions, and waits for <keycap>Enter</keycap>. All the output comes
+    from the callbacks, as documented in the example.
+    Use <link linkend="put"><filename>simpleput.C</filename></link>
+    or <link linkend="stasher"><command>stasher</command></link> to
+    create, update, and remove the managed objects:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>$ ./managedobject fruits/apple fruits/grape
+Starting subscriptions, press ENTER to stop
+Connection update: Transaction/request processed
+Connection update: Transaction/request processed
+fruits/apple (IdAzcA5Ga9YjVW00dTtmJm00000eyWG00318n4AS):
+delicious
+fruits/grape: removed
+fruits/apple (JdAzcA5Ga9YjVW00dTtmJm00000eyWG00318n4AS):
+very delicious
+fruits/grape (KdAzcA5Ga9YjVW00dTtmJm00000eyWG00318n4AS):
+juicy
+Connection update: Connection to the server failed
+Connection update: Connection to the server failed
+Connection update: Transaction/request processed
+Connection update: Transaction/request processed
+fruits/grape (KdAzcA5Ga9YjVW00dTtmJm00000eyWG00318n4AS):
+juicy
+fruits/apple (JdAzcA5Ga9YjVW00dTtmJm00000eyWG00318n4AS):
+very delicious
+fruits/grape: removed
+</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    <methodname><classname>&ns;::manager</classname>-&gt;manage_object</methodname>()
+    returns a mcguffin that represents the object it's managing. There is no
+    explicit un-manage method. The manager stops managing the object when
+    its mcguffin goes out of scope and gets destroyed.
+  </para>
+
+  <para>
+    The
+    <methodname>connection_update</methodname>() callback reports the status
+    of the subscription.
+    <methodname>connection_update</methodname>() gets invoked shortly after
+    <methodname>manage_object</methodname>() returns (if not right before it),
+    and any time the status of the connection with the server changes.
+    <literal>stasher::req_processed_stat</literal> reports a success in
+    opening the managed object's subscription.
+    A <methodname>connection_update</methodname>() of
+    <literal>stasher::req_disconnected_stat</literal> indicates that the
+    connection with the &app; server was lost. In this example, the connection
+    gets lost, and then reestablished by the manager shortly thereafter.
+  </para>
+
+  <para>
+    The manager keeps trying to reconnect, periodically, reporting the
+    result to <methodname>connection_update</methodname>(). Other error codes,
+    besides
+    <literal>stasher::req_processed_stat</literal> and
+    <literal>stasher::req_disconnected_stat</literal>, indicates a failure
+    to establish a subscription for the managed object, for some other
+    reason.
+  </para>
+
+  <para>
+    A <methodname>connection_update</methodname>() of
+    <literal>stasher::req_processed_stat</literal> gets shortly followed by
+    either an <methodname>updated</methodname>() or a
+    <methodname>removed</methodname>() callback.
+    In the example above, the two messages after the initial pair of
+    <quote>Connection update: Transaction/request processed</quote> are
+    callbacks reporting the initial value of each object
+    at the time the managed subscription gets established:
+    either the existing object's uuid, and its contents, or that the
+    managed object does not exist (but the subscription is still active,
+    waiting for someone to create the object).
+  </para>
+
+  <para>
+    This is the case after the initial
+    <literal>stasher::req_processed_stat</literal>, after a managed object
+    subscription gets opened, and whenever the manager reconnects to the
+    server after recovering from a broken connection.
+    After the initial <methodname>updated</methodname>() or
+    <methodname>removed</methodname>(),
+    additional calls to
+    <methodname>updated</methodname>() and
+    <methodname>removed</methodname>() report whenever the object changes,
+    accordingly. In the example above, there are two updates, one for
+    <quote>fruits/apple</quote> and one for <quote>fruits/grape</quote>
+    before the connection with the server gets broken.
+  </para>
+
+  <note>
+    <para>
+      It's possible to get two <methodname>removed</methodname>() in
+      a row, or two <methodname>updated</methodname>() in a row with the same
+      uuid and contents. This occurs in two marginal situations:
+    </para>
+
+    <orderedlist>
+      <listitem>
+	<para>
+	  Another application updates the managed object at the same time that
+	  the managed object subscription gets established, or when the manager
+	  reconnects to the server.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The object gets updated quickly two or more times. The first updated
+	  value cannot be retrieved, quickly enough, before the
+	  second update gets processed. 
+	  <methodname>updated</methodname>() and/or
+	  <methodname>removed</methodname>() reports the most recent object
+	  contents/status, each time.
+	</para>
+      </listitem>
+    </orderedlist>
+
+    <para>
+      The application should keep track of the object's state as it knows,
+      and compare it to the latest reported state by
+      <methodname>updated</methodname>() or
+      <methodname>removed</methodname>(), and proceed accordingly.
+    </para>
+
+    <para>
+      The way to look at
+      <methodname>updated</methodname>() and
+      <methodname>removed</methodname>() is that they report the latest known
+      value or state of the object, every time; and any change to the object
+      triggers an update.
+    </para>
+  </note>
+
+  <para>
+    The above example shows a typical output of managing two objects:
+    <quote>fruits/apple</quote>, which exists already at the time
+    that <filename>managedobject.C</filename> starts, and
+    <quote>fruits/grape</quote> which does not.
+  </para>
+
+  <para>
+    In this example, the subscriptions for both objects get established,
+    and each individually managed object's
+    <methodname>connection_update</methodname>()
+    gets called with <literal>&ns;::req_processed_stat</literal>
+    (reporting <quote>Transaction/request processed</quote>).
+    This is
+    followed by an <methodname>updated</methodname>() call for
+    <quote>fruits/apple</quote>, and <methodname>removed</methodname>() for
+    th <quote>fruits/grape</quote> that does not exist.
+  </para>
+  <para>
+    Additional <methodname>removed</methodname>() and
+    <methodname>updated</methodname>() callbacks follow,
+    as these object get updated periodically. Some time later, the
+    connection with the server breaks, for some reason (reported for each
+    managed object individually); the manager
+    tries again later and reestablished the connection, then gets the current
+    value of each managed object (since it might've changed since the
+    connection was lost).
+  </para>
+
+  <para>
+    <filename>managedobject.C</filename> assumes that these
+    objects contain plain
+    text. <methodname>updated</methodname>() reads the object's open file
+    descriptor, and copies them to output.
+  </para>
+
+  <para>
+    All managed objects' callbacks
+    have certain limitations, see
+    <xref linkend="asynchronouscancannot" /> for more information.
+  </para>
+
+  <note>
+    <para>
+      Each managed object counts towards the client's
+      <link linkend="connlimits">connection limits</link>.
+    </para>
+  </note>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

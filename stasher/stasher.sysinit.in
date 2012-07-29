@@ -1,0 +1,84 @@
+#! @SHELL@
+#
+### BEGIN INIT INFO
+#
+# Provides: stasher
+# Requires: httportmap
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Description: stasher
+#
+### END INIT INFO
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+bindir="@bindir@"
+localstatedir="@localstatedir@"
+
+case "$1" in
+    start)
+	echo -n "Starting stasher server:"
+	for f in "$localstatedir"/stasher/nodes/*
+	do
+		if test -d "$f"
+		then
+			echo -n " $f"
+			$bindir/stasher start "$f" </dev/null
+		fi
+	done
+	echo ""
+	;;
+    stop)
+	echo -n "Stopping stasher server:"
+	for f in "$localstatedir"/stasher/nodes/*
+	do
+		if test -d "$f"
+		then
+			echo -n " $f"
+			$bindir/stasher --admin="$f" --alarm=30 resign </dev/null
+			$bindir/stasher --admin="$f" --alarm=10 stop </dev/null
+		fi
+	done
+	echo ""
+	;;
+
+    restart)
+	$0 stop
+	$0 start
+	;;
+    reload)
+	;;
+    force-reload)
+	$0 restart
+	;;
+    try-restart)
+	echo -n "Restarting stasher server:"
+	for f in "$localstatedir"/stasher/nodes/*
+	do
+		if test -d "$f"
+		then
+			if $bindir/stasher --admin="$f" status >/dev/null 2>&1
+			then
+				echo  " $f"
+				$bindir/stasher --admin="$f" --alarm=30 resign </dev/null
+				$bindir/stasher --admin="$f" --alarm=10 stop </dev/null
+				$bindir/stasher start "$f" </dev/null
+			fi
+
+		fi
+	done
+	echo ""
+	;;
+    status)
+	for f in "$localstatedir"/stasher/nodes/*
+	do
+		if test -d "$f"
+		then
+			echo ""
+			echo "$f:"
+			$bindir/stasher --admin="$f" status </dev/null | sed 's/^/    /'
+		fi
+	done
+	;;
+esac
+exit 0

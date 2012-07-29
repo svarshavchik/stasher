@@ -1,0 +1,16 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="peerstatusannouncerObj">
+
+  <method name="statusupdated">
+    <comment>/*!
+    Update to this node's status, sent to the execution thread.
+    */</comment>
+    <param type="class"><decl>nodeclusterstatus <name>newStatus</name></decl></param>
+  </method>
+</class>

@@ -1,0 +1,238 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="repocontrollermasterObj">
+
+  <method name="set_cluster">
+    <comment>
+      //! Set the cluster object
+
+      //! The cluster object is sent to the thread by initialize(), and kept
+      //! on the executing thread's stack.
+    </comment>
+
+    <param type="weakptr">
+
+      <decl>clusterinfoptr <name>cluster</name></decl>
+    </param>
+  </method>
+
+  <method name="accept">
+    <comment>
+      //! Slave accepted a connection request from this master object
+    </comment>
+
+    <param type="weakptr">
+      <comment>
+	//! The peer connection object
+      </comment>
+
+      <decl>repopeerconnectionptr <name>peer</name></decl>
+    </param>
+
+    <param type="weakptr">
+      <comment>
+	//! The master's connection object for this slave
+      </comment>
+
+      <decl>slaveConnectionptr <name>conn</name></decl>
+    </param>
+
+    <param type="weakptr">
+      <comment>
+	//! Peer's linkage mcguffin
+      </comment>
+
+      <decl>repopeerconnectionbaseObj::peerlinkptr <name>link</name></decl>
+    </param>
+  </method>
+
+  <method name="clusterupdated">
+    <comment>
+      //! Cluster status notifier's notification: cluster has been updated
+    </comment>
+
+    <param type="class"><decl>clusterinfoObj::cluster_t <name>newStatus</name></decl></param>
+  </method>
+
+  <method name="check_quorum">
+    <comment>
+      //! Recalculate the quorum
+
+      //! A destructor callback attached to each peer connection object sends
+      //! this message to ask the master controller thread to recalculate the
+      //! quorum status of this cluster, once a connection to a peer breaks.
+    </comment>
+  </method>
+
+  <method name="get_quorum">
+    <comment>
+      //! Return the current controller quorum status
+
+      //! \see repocontrollerbaseObj::get_quorum()
+      //!
+    </comment>
+
+    <param type="class">
+      <decl>STASHER_NAMESPACE::quorumstateref <name>status</name></decl>
+    </param>
+    <param type="class">
+      <decl>boolref <name>processed</name></decl>
+    </param>
+
+    <param type="class">
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="peernewmaster">
+    <comment>//! A peer has a new master
+
+    //! A peer wants to report that it switched to a new master.
+    //! If the new master is this node, a new slave has pledged its allegiance
+    //! to this master.
+    </comment>
+
+    <param type="weakptr"><decl>repopeerconnectionptr <name>peerRef</name></decl></param>
+    <param type="class"><decl>nodeclusterstatus <name>peerStatus</name></decl></param>
+  </method>
+
+  <method name="syncslave">
+    <comment>
+      //! A new slave connection object requests to be synced
+
+    </comment>
+    <param type="class"><decl>x::uuid <name>connuuid</name></decl></param>
+    <param type="weakptr"><decl>objrepocopydstinterfaceptr <name>peer</name></decl></param>
+    <param type="class"><decl>std::string <name>name</name></decl></param>
+    <param type="class"><decl>batonptr <name>newmasterbaton</name></decl></param>
+    <param type="class"><decl>x::ptr&lt;syncslave_cbObj&gt; <name>cb</name></decl></param>
+  </method>
+
+  <method name="check_repo_copy_completion">
+    <comment>//! A new slave has been synchronized
+
+    //! A repository copy mcguffin has been destroyed, invoke
+    //! check_copy_completed(), to add a new synchronized slave.
+    </comment>
+  </method>
+
+  <method name="transactions_received">
+    <comment>//! Transaction(s) were received by a node
+
+    //! A node (this one or a peer) reports that it received a transaction.
+    //! If all peers now have this transaction, commit it (or reject it).
+    </comment>
+    <param type="class"><decl>trandistreceived <name>node</name></decl></param>
+    <param type="class"><decl>trandistuuid <name>uuids</name></decl></param>
+  </method>
+
+  <method name="transactions_cancelled">
+    <comment>//! Transaction(s) were cancelled by a node
+
+    //! A node (this one or a peer) reports that it cancelled transactions.
+    </comment>
+    <param type="class"><decl>x::ptr&lt;trancancelleduuidObj&gt; <name>node</name></decl></param>
+    <param type="class"><decl>tranuuid <name>uuids</name></decl></param>
+  </method>
+
+  <method name="handoff_request_continue">
+    <comment>//! Baton handoff request processing
+
+    //! An internal message.
+    //!
+    </comment>
+    <param type="class"><decl>x::ref&lt;handoff_msgObj&gt; <name>msg</name></decl></param>
+  </method>
+
+  <method name="handoff_failed">
+    <comment>
+      //! Baton handover has failed
+
+      //! Message from baton's destructor callback to its creator:
+      //! baton has now been destroyed. If this master is still alive, the
+      //! handover failed. Invoke dispatch_handoff_failed().
+    </comment>
+  </method>
+
+  <method name="debugGetPeerConnectionImpl">
+    <comment>//! Internal message used by debugGetPeerConnection().
+    </comment>
+    <param type="class"><decl>debug_get_peer_msg <name>msg</name></decl></param>
+  </method>
+
+  <method name="masterbaton_announced">
+    <comment>
+      //! All slaves have received the announcement of master's baton
+    </comment>
+
+    <param>
+      <comment>//! The announced baton
+      </comment>
+      <decl type="class">baton <name>batonp</name></decl>
+    </param>
+  </method>
+
+  <method name="masterbaton_handedover">
+    <comment>
+      //! The new master has received the baton, and became a master.
+
+      //! Install the baton on this node, forcing the cluster to become a slave
+      //! to the new master, then notify all connection objects to other slaves
+      //! to hold this baton until other slaves are no longer this node's
+      //! slave, and switched their allegiance to the new master.
+    </comment>
+
+    <param type="class">
+      <comment>//! The baton that was just handed over
+      </comment>
+      <decl>baton <name>batonp</name></decl>
+    </param>
+  </method>
+
+  <method name="halt">
+    <comment>
+      //! Halt the entire cluster, preserving integrity.
+
+    </comment>
+    <param type='class'>
+      <comment>
+	//! Result of the halt request
+      </comment>
+
+      <decl>STASHER_NAMESPACE::haltrequestresults <name>req</name></decl>
+    </param>
+
+    <param type='class'>
+      <comment>
+	//! After all peers have stopped, the controller releases its reference on this mcguffin.
+
+	//! The haltrequestresults object is sent expected to be sent back to
+	//! the client connection. When the haltrequestresults object goes out
+	//! of scope, the master node gets stopped.
+
+      </comment>
+
+      <decl>x::ref&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="halt_continue">
+    <comment>
+      //! Continuing the halt, after all commits have been stopped.
+
+    </comment>
+    <param type='class'>
+      <comment>
+	//! Result of the halt request
+      </comment>
+
+      <decl>halt_msg <name>req</name></decl>
+    </param>
+  </method>
+
+</class>

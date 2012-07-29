@@ -1,0 +1,41 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="objwriterthreadObj">
+
+  <method name="write">
+    <comment>
+      //! Write an object
+    </comment>
+    <param type="class">
+      <comment>
+	//! Object to be written
+      </comment>
+    <decl>x::ref&lt;STASHER_NAMESPACE::writtenobjbaseObj&gt; <name>object</name></decl></param>
+  </method>
+
+  <method name="request_close">
+    <comment>/*!
+    Request the thread to stop after finishing writing all unwritten objects.
+    */</comment>
+  </method>
+
+  <method name="setmaxqueuesize">
+    <comment>
+      //! Set the maximum number of the write queue
+
+      //! The thread dies if the write queue grows above this specified size
+      //!
+    </comment>
+
+    <param>
+      <comment>
+	//! If the number of objects in the write queue exceeds the given size, the thread dies
+      </comment>
+    <decl>size_t <name>max_request_count</name></decl></param>
+  </method>
+</class>

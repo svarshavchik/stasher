@@ -1,0 +1,176 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="managedsubscriber">
+  <title><methodname><classname>&ns;::manager</classname>-&gt;manage_subscription</methodname>(): a managed subscription</title>
+
+  <blockquote>
+    <title><ulink url="examples/manager/subscriber.C">examples/manager/subscriber.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/manager/subscriber.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    A <link linkend="subscribe"><methodname><classname>&ns;::client</classname>-&gt;subscribe</methodname>()</link>
+    gets cancelled if the client connection to the server drops, for some
+    reason. An application needs to detect that using the subscription's
+    cancellation mcguffin, and make periodic resubscription attempts.
+    As described in <xref linkend="simpleclient" />, when a connection with
+    the &app; server breaks, the next request results in an automatic attempt
+    to reconnect with the server.
+  </para>
+
+  <para>
+    The manager object takes care of that. When a managed subscriber's
+    connection breaks, the manager object makes periodic attempts to
+    resubscribe.
+    To use a managed subscription, subclass
+    <ulink url="&link-stasher--managedsubscriberObj;"><classname>&ns;::managedsubscriberObj</classname></ulink>
+    instead of <classname>&ns;::client::base::subscriberObj</classname>,
+    and implement <methodname>updated</methodname>() and
+    <methodname>connection_update</methodname>(), then
+    invoke
+    <methodname><classname>&ns;::manager</classname>-&gt;manage_subscription</methodname>().
+    The first parameter to <methodname>manage_subscription</methodname>() is the
+    client connection handle, the second parameter is the name of an object
+    or a hierarchy to subscribe to, and the third parameter is an
+    <classname>x::ref</classname> to an instance of the
+    <ulink url="&link-stasher--managedsubscriberObj;"><classname>&ns;::managedsubscriberObj</classname></ulink>
+    subclass.
+  </para>
+
+  <para>
+    The same subscriber object can be a callback for multiple subscriptions,
+    or each subscription can have a separate callback object instance.
+    For each subscription, the manager holds a strong reference on the
+    callback object, and its client connection.
+  </para>
+
+  <para>
+    There is no explicit un-manage method.
+    <methodname>manage_subscription</methodname>() returns a mcguffin.
+    The manager keeps a strong reference on the subscriber callback object,
+    and the client connection handle, as long as the manager object and the
+    mcguffin exists. The manager stops managing the
+    subscription when the last reference to the mcguffin goes out of
+    scope and gets destroyed.
+  </para>
+
+  <para>
+    The <methodname>updated</methodname>() callback works just like it does
+    with
+    <link linkend="subscribe"><methodname><classname>&ns;::client</classname>-&gt;subscribe</methodname></link>().
+    A new method,
+    <methodname>connection_update</methodname>(), gets called
+    with a <literal>&ns;::req_processed_stat</literal> when the
+    subscription gets opened. This happens shortly after,
+    or maybe even prior to,
+    <methodname>manage_subscription</methodname>() returning to the caller.
+    When then connection with the server disconnects, for any reason,
+    <methodname>connection_update</methodname>() gets called
+    with a <literal>&ns;::req_disconnected_stat</literal>.
+    <methodname>connection_update</methodname>() gets called with
+    a <literal>&ns;::req_processed_stat</literal> again when the manager
+    reestablishes a subscription after reconnecting with the server.
+    Other status values for <methodname>connection_update</methodname>()
+    indicate an error with opening the subscription.
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>$ ./updatethread fruits/ ""
+Connection update: Transaction/request processed
+Connection update: Transaction/request processed
+pi: 3.1415926
+fruits/apple removed
+Connection update: Connection to the server failed
+Connection update: Connection to the server failed
+Connection update: Transaction/request processed
+Connection update: Transaction/request processed
+fruits/grape: juicy
+</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    This example subscribes to two hierarchies, <quote></quote> (the top level
+    hierarchy), and the <quote>fruits</quote> hierarchy (note the trailing
+    <quote>/</quote>).
+    Both of them log a
+    <methodname>connection_update(<literal>&ns;::req_processed_stat</literal>)</methodname>.
+    After both subscriptions are opened, one object gets added or updated in
+    the top level hierarchy (<quote>pi</quote>), and one object gets removed
+    from <quote>fruits</quote>. The connection with the server drops
+    afterwards
+    <methodname>connection_update(<literal>&ns;::req_disconnected_stat</literal>)</methodname>,
+    and the connection manager reestablishes it some time later
+    <methodname>connection_update(<literal>&ns;::req_processed_stat</literal>)</methodname>.
+    After the connection gets reestablished, the
+    <methodname>fruits/grape</methodname> objects gets created or updated.
+  </para>
+
+  <para>
+    The connection manager tries to reestablish the connection and the
+    subscription periodically. Application may see additional
+    <methodname>connection_update(<literal>&ns;::req_disconnected_stat</literal>)</methodname> before a
+    <methodname>connection_update(<literal>&ns;::req_processed_stat</literal>)</methodname>.
+  </para>
+
+  <para>
+    These callbacks
+    have certain limitations, see
+    <xref linkend="asynchronouscancannot" /> for more information.
+    Each managed subscription counts towards the client's
+    <link linkend="connlimits">connection limits</link>.
+  </para>
+
+  <note>
+    <para>
+      After a subscription gets opened or reopened,
+      <classname>&ns;::managedsubscriberObj</classname>'s
+      <methodname>updated</methodname>() gets called only to report subsequent
+      changes to the object (if the subscription was for an individual object);
+      or to some object in the hierarchy (if the subscription was for a
+      hierarchy) from that point going forward.
+      Particularly, changes could've occured between a
+      <methodname>connection_update(<literal>&ns;::req_disconnected_stat</literal>)</methodname>
+      and a
+      <methodname>connection_update(<literal>&ns;::req_processed_stat</literal>)</methodname>.
+    </para>
+
+    <para>
+      An application should respond to a
+      <methodname>connection_update(<literal>&ns;::req_processed_stat</literal>)</methodname>
+      by retrieving the contents of the subscribed object, or the hierarchy,
+      at that time.
+      In the example in this chapter, this can be done by having
+      <methodname>connection_update(<literal>&ns;::req_processed_stat</literal>)</methodname>
+      put the subscriber-to object's name into the queue. Note that
+      this requires
+      using a separate, individual subscriber class instance for each object
+      instead of a single class instance for all subscriptions, because each one
+      must know which object it is for. This results in the main execution
+      thread using the same code to check for the object's current value,
+      and refresh it.
+    </para>
+
+    <para>
+      But it's easier to use
+      <link linkend="managedobject"><methodname>manage_object</methodname></link>(),
+      for individual objects, or
+      <link linkend="managedhierarchymonitor"><methodname>manage_hierarchymonitor</methodname></link>().
+    </para>
+  </note>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

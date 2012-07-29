@@ -1,0 +1,268 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="subscribe">
+  <title><methodname><classname>&ns;::client</classname>-&gt;subscribe</methodname>(): object subscriptions</title>
+
+  <blockquote>
+    <title><ulink url="examples/subscribe.C">examples/subscribe.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/subscribe.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This is an example of a subscription. A subscription provides a
+    notification mechanism when an object in the repository changes.
+    This is done by installing a callback that gets invoked whenever the
+    subscribed object gets created, updated, or deleted (a subscription
+    can get installed for an object that does not exist at the time of
+    the subscription).
+  </para>
+
+  <para>
+    It's possible to open more than one subscription, for different objects,
+    at a time. This example subscribes to the list of objects given on the
+    command line. Note, however that the server imposes a
+    <link linkend="connlimits">maximum limit</link> on the number of
+    opened subscriptions (this is not checked in this example).
+  </para>
+
+  <para>
+    The first parameter to
+    <methodname><classname>&ns;::client</classname>-&gt;subscribe</methodname>()
+    is the name of the object to open a subscription for. The second parameter
+    is an <classname>x::ref</classname> to a subclass of
+    <ulink url="&link-stasher--clientObj--subscriberObj;"><classname>stasher::client::base::subscriberObj</classname></ulink>
+    that implements a <methodname>updated</methodname>() method as shown
+    in this example.
+  </para>
+
+  <para>
+    After a subscription gets opened, <methodname>updated</methodname>() gets
+    invoked every time the object named by
+    the first parameter to <methodname>subscribe</methodname>() changes
+    &ndash; it gets created, updated, or deleted.
+    Passing an object name with a trailing <quote>/</quote> subscribes to an
+    entire object hierarchy, with a special notation of <quote></quote>
+    referering to the top level hierarchy.
+  </para>
+
+  <para>
+    Example: opening a subscription for <quote>constants</quote> invokes
+    <methodname>updated</methodname>() any time the object named
+    <quote>constants</quote> gets created, updated, or deleted.
+    Opening a subscription for <quote>constants/</quote> invokes
+    <methodname>updated</methodname>() any time an object named
+    <quote>constants/e</quote>, <quote>constants/pi</quote>, or any
+    <quote>constants/<replaceable>anything</replaceable></quote> gets
+    created, updated, or deleted; but not
+    <quote>constants/imaginary/i</quote>, only the objects in the immediate
+    <quote>constants</quote> hierarchy; neither for the
+    <quote>constants</quote> object itself. Opening a subscription for
+    <quote></quote> invokes <methodname>updated</methodname>() for any
+    object in the top level hierarchy, like
+    <quote>e</quote>, <quote>pi</quote>.
+  </para>
+
+  <para>
+    A subscription to a hierarchy counts as one subscription towards the
+    <link linkend="connlimits">connection limits</link>.
+  </para>
+
+  <para>
+    <methodname><classname>&ns;::client</classname>-&gt;subscribe</methodname>()
+    returns a <classname>&ns;::subscriberesults</classname>, which is an
+    <classname>x::ref</classname> to a reference-counted object with
+    the following members:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term><varname>status</varname></term>
+      <listitem>
+	<para>
+	  The subscription status <link linkend="reqstatt">status</link>,
+	  with <literal>&ns;::req_processed_stat</literal> when the
+	  subscription is succesfully opened.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><varname>mcguffin</varname></term>
+      <listitem>
+	<para>
+	  A mcguffin representing the open subscription. There is no formal
+	  unsubscribe(), rather than subscription remains open as long as
+	  the mcguffin exists. Stopping the subscription involves simply
+	  letting the mcguffin go out of scope and get destroyed.
+	</para>
+
+	<para>
+	  The above example puts each subscription's mcguffin on a list kept
+	  on the stack, so that the subscription remains in effect until
+	  the <function>simplesubscribe</function>() function returns.
+	</para>
+
+	<para>
+	  While a subscription remains open, the client object holds a
+	  strong reference on the subscriber callback. When the mcguffin
+	  goes out of scope and gets destroyed, if the &cct;
+	  is in the middle of invoking the
+	  <methodname>updated</methodname>() callback, or is busy with
+	  something else at the moment, there may be a slight delay before
+	  the subscription gets wrapped up, and the connection thread
+	  releases its reference on the subscriber callback object; and it's
+	  remotely possible that <methodname>updated</methodname>()
+	  can get invoked at the same time, or just after, the mcguffin
+	  goes out of scope and gets destroyed.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><varname>cancel_mcguffin</varname></term>
+      <listitem>
+	<para>
+	  The flip side of the coin. This is a mcguffin that's owned by the
+	  &cct;. When the subscription gets closed, for
+	  any reason, the &cct; releases its reference
+	  on the mcguffin.
+	</para>
+
+	<para>
+	  It's possible that an open subscription can get closed even before
+	  its mcguffin goes out of scope and gets destroyed, and the
+	  cancellation mcguffin provides the means for detecting this
+	  situation. The normal sequence of events when the subscription
+	  gets closed goes like this;
+	</para>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      The application destroys the mcguffin.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      The &cct; stops the subscription.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      The &cct; releases its reference on the cancellation mcguffin
+	      and the subscriber callback object.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+	<para>
+	  The last step also happens spontaneously in the event that the
+	  &cct;'s connection to the server breaks for any reason. The
+	  subscription does not get reopened automatically, when a new
+	  &cct; reconnects to the &app; server. Attaching a destructor
+	  callback to the cancellation mcguffin (and releasing the reference
+	  on the cancellation mcguffin, and the
+	  <classname>&ns;::subscriberesults</classname> object) provides the
+	  means for detecting and handling this situation.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <note>
+    <para>
+      The cancellation mcguffin's destructor callbacks also gets
+      invoked when the subscription gets closed in the regular way, by
+      destroying the subscription mcguffin.
+    </para>
+  </note>
+
+  <para>
+    The above example, prints the names of the created/updated/deleted objects
+    until any object's contents are set to a single line with the word "stop".
+  </para>
+
+  <section id="subscribeupdated">
+    <title>The <methodname>updated</methodname>() callback</title>
+
+    <para>
+      <methodname>updated</methodname>() receives two
+      <classname>std::string</classname>s as parameters.
+      The first parameter is always the same as the original parameter
+      to <methodname>subscribe</methodname>(). For an open subscription for
+      a single object the second parameter is always an empty string.
+      For an open subscription for an object hierarchym, the second parameter
+      is the name of the object in the subscribed hierarchy that got created,
+      updated, or deleted.
+    </para>
+
+    <para>
+      Note that concatenating the two together gets the complete name of
+      the affected object, in all situations. The same subscriber callback
+      can get installed for multiple open subscriptions, and the
+      parameters to <methodname>updated</methodname>() indicate which specific
+      object the callback gets invoked for.
+    </para>
+
+    <para>
+      The callback gets invoked by the &cct;, so it should not engage in any
+      lengthy, prolonged activities, nor throw any exceptions. Furthermore,
+      it should not invoke <classname>&ns;::client</classname> methods itself.
+      Because it's the actual &cct;, the outcome of such a lapse in judgement
+      is typically a thread deadlock. In this example, the callback puts the
+      full name of the object into a queue. The main thread keeps reading
+      the name of each object from the queue, and invokes
+      <link linkend="get"><methodname>get</methodname>()</link>
+      to retrieve the object's contents.
+    </para>
+
+    <note>
+      <para>
+	It's possible that the same object gets updated two times in a row,
+	very quickly;
+	and the second update completes before the
+	application has an opportunity
+	to respond to the first callback, and send the request for the
+	object's new contents.
+	The application ends up missing
+	the first update, and gets the value of the object after the second
+	update. The application then responds to the second update
+	notification it receives, invoking the callback;
+	then ends up getting the same value, the object's value after
+	the second update.
+      </para>
+
+      <para>
+	Here, an <quote>update</quote> refers to the object getting created,
+	updated, or deleted. Both the first and the subsequent
+	<quote>update</quote> included. An application must be prepared to
+	handle this possibility.
+      </para>
+    </note>
+
+    <note>
+      <para>
+	The limitations on callback methods described later, in
+	<xref linkend="asynchronouscancannot" />, apply to these callbacks
+	too.
+      </para>
+    </note>
+
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

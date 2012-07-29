@@ -1,0 +1,400 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="newnodesetup">
+  <title>Adding a node to an existing cluster</title>
+
+  <para>
+    The previous chapter walks through the process of creating
+    a new object repository, with a single node.
+    An object repository with only one node is not very much fun.
+    Things get interesting when multiple nodes, multiple servers, form a single
+    object repository.
+    The process is the same whether adding the repository's second, or the
+    tenth node.
+  </para>
+
+  <para>
+    The process of adding a node to an existing object repository cluster
+    consists of the following steps. The examples in this chapter use the same
+    test environment
+    as in <xref linkend="newclustersetup" />, the cluster certificates are
+    installed on the machine called <quote>octopus</quote>, which also runs
+    one of its nodes (its initial node). This chapter walks through the
+    process of adding a new node named <quote>monster</quote>. Both nodes
+    run on machines that have the same name, and &app; is installed on both
+    machines:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	<link linkend="clusteraddnode">Create the node's certificate, and install it on the node's machine</link>
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	<link linkend="clusterstartnewnode">Start the new node's server</link>
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	<link linkend="clusterjoinnode">Connect to the existing cluster, and
+	  define the new node's connection parameters</link>
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Don't forget to specify who
+	<link linkend="newclustermaillogs">should get
+	  the logs mailed to them</link>, on each node added to the cluster.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <section id="ntprequired">
+    <title>Synchronize the server clocks using <acronym>NTP</acronym></title>
+
+    <para>
+      &app; requires that all nodes have synchronized system clocks. Before
+      configuring a new node, make sure that all existing and potential nodes
+      in the cluster have their system clock synchronized
+      using <acronym>NTP</acronym>.
+    </para>
+  </section>
+
+  <section id="clusteraddnode">
+    <title>Create a certificate for a new cluster node</title>
+
+    <para>
+      After a new cluster with its first node gets created, the next step is
+      to add additional nodes to the cluster. At this point, the cluster
+      is fully functional, but it only has one node. Use the following process
+      to add another node to a new cluster, or to add another node to
+      an existing cluster at some later time.
+    </para>
+
+    <para>
+      Creating a new cluster node starts with the first step of creating
+      the new node's certificate. This needs to be done on the machine where
+      the cluster certificates get stored, and is very similar to the process
+      of <link linkend="newclustersetupcreatenodecert">creating the certificate
+	for the first node in the cluster</link>:
+    </para>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>[root@octopus ~]# stashermg --nodekey --generate --name=monster /var/stasher/clusters/objrepo.example.com
+Created /var/stasher/newnodes/monster...
+Generating new key...
+..+++++
+.+++++
+Warning: server not running, certificates are installed locally.
+Certificate installed, connecting to server
+Server is not running
+[root@octopus ~]# scp -pr /var/stasher/newnodes/monster monster:/var/stasher/nodes/objrepo.example.com
+rootcerts.pem                                 100% 4396     4.3KB/s   00:00    
+cert.pem                                      100% 6285     6.1KB/s   00:00    
+properties                                    100%  348     0.3KB/s   00:00    
+[root@octopus ~]# rm -rf /var/stasher/newnodes/monster</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      In this example, as in previous examples, the cluster certificate and one
+      of the cluster's nodes (the first node in the cluster) was installed
+      on the <quote>octopus</quote> machine.
+      This example creates a certificate for a new node
+      called <quote>monster</quote>.
+      All nodes in the cluster must have unique names.
+      See <xref linkend="stashermg" /> for more information on other optional
+      parameters to <command>stashermg</command>.
+    </para>
+
+    <para>
+      As described previously,
+      the default location for new node directories created by
+      <command>stashermg</command> in the default &app; package is
+      <filename>/var/stasher/newnodes</filename>, and &app;'s startup scripts
+      starts cluster node servers from <filename>/var/stasher/nodes</filename>.
+      After creating the new cluster's first node, that runs on the same
+      machine, the newly-created node directory
+      <link linkend="newclustersetupinstallnodecert">gets simply renamed</link>.
+      For other nodes, after the node certificate gets created, and
+      <command>stashermg</command> creates the new node directory, it simply
+      gets copied to another machine, then removed from the machine that
+      stores the cluster certificates that are required to create the
+      node.
+    </para>
+
+    <para>
+      When copying the newly-created node certificate and directory to another
+      machine, care must be taken to properly
+      <link linkend="nodedircontents">preserve the correct ownership and
+	permissions</link> of its contents. The above example uses
+      <command>scp -p -r</command>, and assumes that the new node in the
+      cluster uses the same file permissions and security model that the
+      existing node.
+    </para>
+  </section>
+
+  <section id="clusterstartnewnode">
+    <title>Starting the server on a new node</title>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>[root@monster ~]# systemctl restart stasher.service
+[root@monster ~]# stasher
+Ready, EOF to exit.
+> admin
+Connected to objrepo.example.com, node monster.objrepo.example.com.
+Maximum 10 objects, 32 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+monster> status
+Cluster:
+  Status: master: monster.objrepo.example.com (uuid 0vkUw2GiyQeTBW00VVHaJm00000cemG00318_8Fw), 0 slaves, timestamp 2012-03-17 16:30:53 -0400
+... long output deleted ...
+
+monster&gt; [EOF, CTRL-D]
+[root@monster ~]#</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      This example verifies that the new node has been started.
+      This is just like
+      <link linkend="newclustersetupstart">verifying that the first node in
+	the new cluster</link>.
+      Note that the new node does not know about any of the other nodes in the
+      cluster, and the existing cluster does not know anything about the
+      the newly-created node. The new node, and all the nodes in the existing
+      clusters, are ignorant of each other. This is addressed in the next
+      step.
+    </para>
+  </section>
+
+  <section id="clusterjoinnode">
+    <title>Connect to the existing cluster, and
+      define the new node's connection parameters</title>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>[root@octopus ~]# stasher
+Ready, EOF to exit.
+> admin
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 20 objects, 64 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus> editcluster addnode monster set host=monster.example.com
+octopus:
+    HOST=octopus.example.com
+
+monster:
+    HOST=monster.example.com
+
+octopus> savecluster
+octopus> status
+Cluster:
+  Status: master: octopus.objrepo.example.com (uuid S85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS), 1 slaves, timestamp 2012-03-17 16:15:56 -0400
+  This node:
+    HOST=octopus.example.com
+  Node: monster.objrepo.example.com: connected
+    HOST=monster.example.com
+
+... long output deleted ...
+
+master(octopus.objrepo.example.com, uuidS85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS) (thread 0x00007f90fb383700):
+    Quorum: full: true, majority: true
+    Distributor object installed: true
+    Transactions received by this node:
+    Transactions being commited:
+    Slave monster.objrepo.example.com:
+      Connected, synchronized: true
+      Synchronization metadata not present
+      Transactions received by this node:
+
+monster.objrepo.example.com (thread 0x00007f90d9ffb700):
+    Encrypted connection: false
+    Peer's last reported status: master: octopus.objrepo.example.com (uuid S85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS), 1 slaves, timestamp 2012-03-17 16:15:56 -0400
+    This node's status: master: octopus.objrepo.example.com (uuid S85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS), 1 slaves, timestamp 2012-03-17 16:15:56 -0400
+    Outstanding ping requests:
+    Connected with controller: octopus.objrepo.example.com (S85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS)
+
+... long output deleted ...
+
+octopus&gt; [EOF, CTRL-D]
+[root@octopus ~]#</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      The final step of joining a new node to the cluster occurs by making
+      an administrative connection to one of the existing nodes in the
+      cluster (it can be any existing node, as long as it's an administrative
+      connection; it's not necessary
+      to make an administrative connection on the cluster's
+      current master, as in this example).
+    </para>
+
+    <para>
+      The <link linkend="newclustersetup1stconfig">same
+	<command>editcluster</command> command</link> defines the new
+      node in the repository. The output from <command>editcluster</command>
+      confirms the definition, and <command>savecluster</command> saves it,
+      and makes it effective.
+    </para>
+
+    <para>
+      This example defines a new node called
+      <quote>monster</quote> on the machine <quote>monster.example.com</quote>.
+      Once the new node gets defined, all the nodes establish connections
+      with the new node. This is confirmed by the <command>status</command>
+      command. <command>status</command> is very wordy,
+      and the key things to look
+      for confirmations are:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The number of slave nodes reported in <quote>Status</quote>, under
+	  <quote>Cluster</quote>. This example reports one slave, and including
+	  the master that makes it two nodes in the cluster, all present and
+	  accounted for.
+	  The list with established connections follows, which should list the
+	  newly-connected node.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The <quote>master</quote> section reports the individual status
+	  of this, master node. Its <quote>quorum</quote> status reports the
+	  quorum's status. A <literal>true</literal> <quote>full</quote>
+	  quorum indicates that the master has established connections to
+	  all defined nodes in the cluster. The <quote>full</quote> status
+	  shows <literal>false</literal> if the master is not connected and
+	  synchronized with any defined cluster node.
+	  A <literal>true</literal> <quote>majority</quote>
+	  quorum indicates that the master is connected and synchronized with
+	  the majority of the nodes in the cluster.
+	  <literal>false</literal> indicates that it's not, and there is no
+	  quorum. Without a quorum, objects cannot be retrieved or placed
+	  into the object repository cluster.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A connection to the newly-added node should also be reported in the
+	  <quote>master</quote> section, as shown in this example.
+	  For a very large existing object repository, it may take some time
+	  for the existing contents of the object repository cluster to get
+	  replicated to the newly-added slave, and the slave may be reported
+	  as connected, but not synchronized, for a little while. A full quorum
+	  will not be reported until the slave has synchronized its copy of
+	  the object repository.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  In addition to the <quote>master</quote> section, there's a
+	  status section for each connected peer. The
+	  <quote>monster.objrepo.example.com</quote> section shows the
+	  peer's last reported status. In this example,
+	  <quote>monster</quote> reports that its current master is
+	  <quote>octopus</quote>, this node. During normal operations, all
+	  peers should report a consistent status.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      And here's the status from the newly-added node's view:
+    </para>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>[root@monster ~]# stasher
+Ready, EOF to exit.
+> admin
+Connected to objrepo.example.com, node monster.objrepo.example.com.
+Maximum 20 objects, 64 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+monster> status
+Cluster:
+  Status: master: octopus.objrepo.example.com (uuid S85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS), 1 slaves, timestamp 2012-03-17 16:15:56 -0400
+  This node:
+    HOST=monster.example.com
+  Node: octopus.objrepo.example.com: connected
+    HOST=octopus.example.com
+  Connection attempts in progress:
+
+... long output deleted ...
+
+octopus.objrepo.example.com (thread 0x00007f140affd700):
+    Encrypted connection: false
+    Peer's last reported status: master: octopus.objrepo.example.com (uuid S85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS), 1 slaves, timestamp 2012-03-17 16:15:56 -0400
+    This node's status: master: octopus.objrepo.example.com (uuid S85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS), 1 slaves, timestamp 2012-03-17 16:15:56 -0400
+    Outstanding ping requests:
+    Connected with controller: octopus.objrepo.example.com (S85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS)
+    Disconnection mcguffin installed
+    Connected to a slave controller:
+
+... long output deleted ...
+
+slave(octopus.objrepo.example.com, uuidS85HVpjTVrQqA000_F1aJm00001vhGO00318n4AS) (thread 0x00007f140a7fc700):
+    Connection object installed: true
+    Destination repo copy object installed: false
+    Receiver object installed: true
+    Synchronized with master: true
+    Distributor object installed: true
+
+monster&gt; [EOF, CTRL-D]
+[root@monster ~]#</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      On the <quote>monster</quote> slave, its status is slightly different.
+      It reports its master, in the <quote>Cluster</quote> section, is
+      <quote>octopus</quote>, another node. So, instead of a
+      <quote>master</quote> status section, it has one called
+      <quote>slave</quote>, where it reports its synchronization status.
+    </para>
+
+    <para>
+      The slave node also has a separate status section for each peer that
+      it's connected to. This example
+      shows status section for its connection with the
+      master, <quote>octopus</quote>.
+    </para>
+
+    <para>
+      Note that it now reports non-default connection limits (20 objects
+      per transaction, 64MB total aggregate size). The non-default
+      connection limits were set when the cluster
+      <link linkend="newclustersetup1stconfig">was initially configured</link>.
+      After the new node joined the cluster, the cluster's configuration
+      parameters took effect.
+    </para>
+
+    <para>
+      Congratulations, you have a working object repository cluster.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

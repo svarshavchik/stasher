@@ -1,0 +1,32 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="batonhandoverthreadObj">
+
+  <method name="baton_destroyed">
+    <comment>
+      //! Handover baton has been destroyed, wait until quorum is regained
+    </comment>
+  </method>
+
+  <method name="quorum">
+    <comment>
+      //! Cluster quorum status update
+
+      //! Quorum change status notification
+      //!
+    </comment>
+
+    <param>
+      <comment>
+	//! Whether the cluster is currently in quorum
+      </comment>
+
+      <decl>bool <name>flag</name></decl>
+    </param>
+  </method>
+</class>

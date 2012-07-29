@@ -1,0 +1,22 @@
+#! @SHELL@
+#
+# Sample script, to be executed periodically, to gather new logs and mail
+# them to someone.
+
+if test ! -f @sysconfdir@/stasherlogconfig
+then
+    exit 0
+fi
+
+. @sysconfdir@/stasherlogconfig
+
+if test "$RECIPIENTS" = ""
+then
+    exit 0
+fi
+
+RECIPIENTS="`echo $RECIPIENTS | tr ' ' '\012' | sed 's/\(.*\)/-t=\1/'`"
+
+umask 022
+maillogs --pattern="$PATTERN" $OPTIONS $RECIPIENTS @localstatedir@/stasher/stasher.logs @localstatedir@/stasher/nodes/*/logs/*
+

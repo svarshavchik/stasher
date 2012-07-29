@@ -1,0 +1,193 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="subscribeserverstatus">
+  <title><methodname><classname>&ns;::client</classname>-&gt;subscribeserverstatus</methodname>(): server status reports</title>
+
+  <blockquote>
+    <title><ulink url="examples/subscribeserverstatus.C">examples/subscribeserverstatus.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/subscribeserverstatus.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This is a subscription to a notification mechanism of the server's status.
+    The parameter to
+    <methodname><classname>&ns;::client</classname>-&gt;subscribeserverstatus</methodname>()
+    is an <classname>x::ref</classname> to a subclass of
+    <ulink url="&link-stasher--serverstatuscallbackObj;"><classname>stasher::client::base::subscriberObj</classname></ulink>
+    that implements the two methods shown in this example.
+  </para>
+
+  <para>
+    The <methodname>serverinfo</methodname>() callback gets invoked once,
+    shortly after <methodname>subscribeserverstatus</methodname>() returns
+    (or just before it, dependencies on how fast the thread hamster runs).
+    It reports the object repository server's name, and the resource limits
+    for the connection.
+  </para>
+
+  <para>
+    The <methodname>state</methodname>() callback gets invoked shortly after
+    <methodname>serverinfo</methodname>() returns, and any time thereafter
+    when its reported information changes. The <methodname>state</methodname>()
+    callback reports which node is the <link linkend="features">master
+    controller</link>, and all the connected peer nodes; as well as the
+    quorum status.
+  </para>
+
+  <para>
+    <methodname><classname>&ns;::client</classname>-&gt;subscribeserverstatus</methodname>()
+    returns a <classname>&ns;::subscribeserverstatusresults</classname>, which is an
+    <classname>x::ref</classname> to a reference-counted object with
+    the following members:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term><varname>status</varname></term>
+      <listitem>
+	<para>
+	  The subscription status <link linkend="reqstatt">status</link>,
+	  with <literal>&ns;::req_processed_stat</literal> indicating that
+	  the server status subscription is succesfully established.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><varname>mcguffin</varname></term>
+      <listitem>
+	<para>
+	  A mcguffin representing the subscription. There is no formal
+	  unsubscribe(), rather than subscription remains open as long as
+	  the mcguffin exists. Stopping the subscription involves simply
+	  letting the mcguffin go out of scope and get destroyed.
+	</para>
+
+	<para>
+	  While a subscription remains open, the client object holds a
+	  strong reference on the server status subscriber callback.
+	  When the mcguffin goes out of scope and gets destroyed, if the &cct;
+	  is in the middle of invoking the one of its callbacks,
+	  or is busy with
+	  something else at the moment, there may be a slight delay before
+	  the subscription gets wrapped up, and the connection thread
+	  releases its reference on the subscriber callback object; and it's
+	  remotely possible that one of the callbacks
+	  can get invoked at the same time, or just after, the mcguffin
+	  goes out of scope and gets destroyed.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><varname>cancel_mcguffin</varname></term>
+      <listitem>
+	<para>
+	  The flip side of the coin. This is a mcguffin that's owned by the
+	  &cct;. When the subscription gets closed, for
+	  any reason, the &cct; releases its reference
+	  on the mcguffin.
+	</para>
+
+	<para>
+	  It's possible that
+	  the server status subscription can get closed even before
+	  its mcguffin goes out of scope and gets destroyed, and the
+	  cancellation mcguffin provides the means for detecting this
+	  situation. The normal sequence of events when the subscription
+	  gets closed goes like this;
+	</para>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      The application destroys the mcguffin.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      The &cct; stops the subscription.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      The &cct; releases its reference on the cancellation mcguffin
+	      and the subscriber callback object.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+	<para>
+	  The last step also happens spontaneously in the event that the
+	  &cct;'s connection to the server breaks for any reason. The
+	  subscription does not get reopened automatically, when a new
+	  &cct; reconnects to the &app; server. Attaching a destructor
+	  callback to the cancellation mcguffin (and releasing the reference
+	  on the cancellation mcguffin, and the
+	  <classname>&ns;::subscribeserverstatusresults</classname> object)
+	  provides the means for detecting and handling this situation.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <note>
+    <para>
+      The cancellation mcguffin's destructor callbacks also gets
+      invoked when the subscription gets closed in the regular way, by
+      destroying the subscription mcguffin.
+    </para>
+  </note>
+
+  <para>
+    Example:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>$ ./subscribeserverstatus
+Subscribing to server status, press ENTER to stop
+Connected to octopus.objrepo.example.com (cluster objrepo.example.com)
+Maximum 10 objects, 32 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+Current master: octopus.objrepo.example.com
+    Peer: monster.objrepo.example.com
+Subscription status: Transaction/request processed
+Quorum: full=true, majority=true
+Current master: octopus.objrepo.example.com
+    Peer: monster.objrepo.example.com
+Quorum: full=false, majority=false
+Current master: monster.objrepo.example.com
+    Peer: monster.objrepo.example.com
+Quorum: full=false, majority=false
+Current master: monster.objrepo.example.com
+    Peer: monster.objrepo.example.com
+Quorum: full=true, majority=true
+</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <note>
+    <para>
+      The limitations on callback methods described later, in
+      <xref linkend="asynchronouscancannot" />, apply to these callbacks
+      too.
+    </para>
+  </note>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

@@ -1,0 +1,21 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="fdobjwriterthreadObj">
+
+  <method name="sendfd_proceed">
+    <comment>
+      //! Proceed with sending a file descriptor
+    </comment>
+    <param type="class">
+      <comment>
+	//! The proceed message from the peer
+      </comment>
+    <decl>sendfd_ready <name>ack</name></decl></param>
+  </method>
+
+</class>

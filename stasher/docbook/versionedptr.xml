@@ -1,0 +1,352 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="versionedptr">
+  <title><classname>&ns;::versionedptr&lt;<replaceable>classptr</replaceable>&gt;</classname>: associate a mcguffin with each object instance</title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+#include &lt;x/ptr.H&gt;
+#include &lt;stasher/versionedptr.H&gt;
+
+class inventoryObj;
+
+typedef x::ptr&lt;inventoryObj&gt; inventoryptr;
+
+&ns;::versionedptr&lt;inventoryptr&gt; instock;
+
+// ...
+
+instock=inventoryptr::create();
+
+if (instock.null())
+{
+  // ...
+}
+
+instock-&gt;method();
+
+inventoryptr p=instock;
+
+// ...
+
+instock.getversion()->addOnDestroy( // ... );</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <ulink url="&link-stasher--versionedptr;"><classname>&ns;::versionedptr</classname></ulink>'s template parameter is an
+    <classname>x::ptr</classname>.
+    The <classname>&ns;::versionedptr</classname> 
+    constains an instance of the <classname>x::ptr</classname>.
+    <methodname>null</methodname>(), the <methodname>*</methodname>() and
+    <methodname>-&gt;</methodname>() operators get forwarded to the
+    <classname>x::ptr</classname> instance.
+  </para>
+
+  <para>
+    <classname>&ns;::versionedptr</classname> defines a
+    <methodname>const x::ptr&lt;classptr&gt; &amp;</methodname> operator,
+    and an assignment operator that replaces the <classname>x::ptr</classname>.
+    Additionally, <classname>&ns;::versionedptr</classname> contains a
+    mcguffin object that gets replaced by the assignment operator.
+    Assigning any <classname>x::ptr</classname>, including a
+    <literal>nullptr</literal>, to a
+    <classname>&ns;::versionedptr</classname> creates a new mcguffin, which
+    replaces the existing one.
+    <methodname>getversion</methodname>() returns the current
+    <classname>x::ptr</classname>'s mcguffin.
+  </para>
+
+  <para>
+    This is slightly different than using the object itself, that the
+    <classname>x::ptr</classname> refers to, as a mcguffin.
+    This is because a mcguffin gets created even for a
+    <literal>nullptr</literal>. Any assignment operation creates a new
+    mcguffin object, and the <classname>&ns;::versionedptr</classname>
+    releases its reference on the previous mcguffin. This includes replacing
+    a <literal>nullptr</literal> with another <literal>nullptr</literal>, too.
+  </para>
+
+  <note>
+    <para>
+      The <classname>&ns;::versionedptr</classname> itself employs no locking,
+      and is not thread safe. Locking and mutex exclusion of an
+      <classname>&ns;::versionedptr</classname> must be separately implemented.
+      Conveniently, an
+      <classname>&ns;::current&lt;<replaceable>classptr</replaceable>&gt;</classname>
+      will be happy to do it.
+    </para>
+  </note>
+
+  <section id="versionedcurrentobj">
+    <title>Versioned current objects</title>
+
+    <para>
+      <link linkend="currentobj"><classname>&ns;::current&lt;<replaceable>classptr</replaceable>&gt;</classname></link>
+      implements managed object callbacks
+      for <classname><replaceable>classptr</replaceable></classname>s,
+      where <classname><replaceable>classptr</replaceable></classname> is an
+      <classname>x::ptr</classname> to a class.
+      The callbacks construct a new
+      <classname><replaceable>classptr</replaceable></classname>, which is
+      a <literal>nullptr</literal> if the object was removed from the &app;
+      object repository. Otherwise, the file descriptor of the object, and its
+      uuid, get passed to the object class's constructor, and the new
+      object instance becomes the
+      <classname><replaceable>classptr</replaceable></classname>.
+      The resulting <classname><replaceable>classptr</replaceable></classname>
+      gets stored in <classname>&ns;::current</classname>'s
+      <varname>current_value</varname> member, which is a mutex protected
+      object that contains <varname>value</varname>, an instance of the
+      <replaceable>classptr</replaceable> that represents the current value
+      of the object in the object repository.
+    </para>
+
+    <para>
+      The
+      <classname>&ns;::current&lt;<replaceable>classptr</replaceable>&gt;</classname>
+      template class has an optional second template parameter, which defaults
+      to the <replaceable>classptr</replaceable>. If specified,
+      the second template parameter declares the class of
+      <varname>current_value.value</varname>.
+      Giving a
+      <quote><classname>&ns;::versionedptr&lt;<replaceable>classptr</replaceable>&gt;</classname></quote>
+      for the second template parameter results in a
+      <quote>versioned current object</quote>.
+      Using a
+      <link linkend="versionedptr"><classname>&ns;::versionedptr</classname></link>
+      results in each update to the object's value installing an associated
+      mcguffin, replacing the previous value's mcguffin.
+    </para>
+
+    <para>
+      The examples in this part use a <classname>warehouseObj</classname>
+      object which contains a map of individual warehouses objects, keyed by
+      the name of the object in the &app; repository. The value of the map
+      is a versioned current object:
+    </para>
+
+    <blockquote>
+      <title><ulink url="examples/inventory/">examples/inventory/warehouses.H</ulink></title>
+      <informalexample>
+	<programlisting><xi:include href="../examples/inventory/warehouses.H" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      One situation where a
+      <classname>&ns;::versionedptr</classname>'s mcguffin comes in handy
+      is
+      <function>load_warehouses</function>().
+      This function sets up current objects'
+      subscriptions, and waits until the application receives the initial
+      value of each object. <function>load_warehouses</function>() gets called
+      after the map container of all warehouses gets initialized.
+      <function>load_warehouses</function>() invokes each current object's
+      <link linkend="currentbaseobj"><methodname>manage</methodname></link>().
+      Before opening a subscription, a destructor callback gets attached to
+      the version mcguffin for each current object's initial value.
+    </para>
+
+    <para>
+      As <link linkend="noimmediateretr">previously described</link>,
+      the initial value of each object does not get retrieved immediately,
+      so <function>load_warehouses</function>() waits until it happens.
+      Once the current value of each object is retrieved, the new version
+      mcguffin replaces the previous one. When all previous versions of all
+      objects get replaced, the destructor callback itself goes out of scope
+      and gets destroyed, so <function>load_warehouses</function>() only needs
+      to wait until that happens, using a destructor guard. See &libx; for
+      more information.
+    </para>
+
+    <para>
+      If there was a problem establishing the subscription, the initial value
+      of an object does not get installed. To check for this possibility,
+      <function>load_warehouses</function>() waits until each current object's
+      <methodname>connection_update</methodname>() method gets called with
+      anything other that <literal>&ns;::req_disconnected_stat</literal>.
+      If the status is anything other than
+      <literal>&ns;::req_processed_stat</literal> this is a subscription
+      error. Once all subscriptions have a
+      <literal>&ns;::req_processed_stat</literal>,
+      <function>load_warehouses</function>() waits for the destructor callback
+      to go out of scope and gets destroyed, and everything is ready:
+    </para>
+
+    <blockquote>
+      <title><ulink url="examples/inventory/">examples/inventory/warehouses.C</ulink></title>
+      <informalexample>
+	<programlisting><xi:include href="../examples/inventory/warehouses.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+  </section>
+
+  <section id="versionedptrusing">
+    <title>Using version mcguffings</title>
+
+    <blockquote>
+      <title><ulink url="examples/inventory/">examples/inventory/adjinventory.C</ulink></title>
+      <informalexample>
+	<programlisting><xi:include href="../examples/inventory/adjinventory.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This is an example of using <classname>&ns;::versionedptr</classname>
+      to properly handle a <literal>&ns;::req_rejected_stat</literal> error.
+      <filename>adjinventory.C</filename> takes a list of adjustments on the
+      command line. Each adjustment consists of a name of an inventory object,
+      the name of an inventory item, and an adjustment. All adjustments get
+      processed at once, and each adjustment that fails because of a
+      <literal>&ns;::req_rejected_stat</literal> gets tried again.
+    </para>
+
+    <para>
+      Here's what happens when there are two inventory objects,
+      <quote>east</quote> with 10 bananas, and <quote>west</quote> with 10
+      apples, and four adjustments: reduce the number of bananas in east by two,
+      add two bananas to west, reduce the number of apples in west by two,
+      add two bananas to east:
+    </para>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>$ ./adjinventory east bananas -2 west bananas 2 west apples -2 east apples 2
+Waiting for objects to get loaded
+Existing inventory:
+east:
+    Item                                Count
+    ------------------------------   --------
+    bananas                                10
+===========================================================================
+west:
+    Item                                Count
+    ------------------------------   --------
+    apples                                 10
+===========================================================================
+Adjusting: adjust bananas by -2 in east
+Adjusting: adjust bananas by 2 in west
+Adjusting: adjust apples by -2 in west
+Adjusting: adjust apples by 2 in east
+Transaction/request processed: adjust bananas by -2 in east
+Transaction/request processed: adjust bananas by 2 in west
+Collision detected - object uuid mismatch: adjust apples by -2 in west
+Collision detected - object uuid mismatch: adjust apples by 2 in east
+Adjusting: adjust apples by -2 in west
+Adjusting: adjust apples by 2 in east
+Transaction/request processed: adjust apples by -2 in west
+Transaction/request processed: adjust apples by 2 in east</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      Here, <function>make_transaction</function>() locks the current object
+      value. In this case, the object is a warehouse object, and the value is
+      an inventory object. <function>make_transaction</function>() retrieves
+      the existing object's version mcguffin from
+      <methodname>getversion()</methodname>, then creates a transaction
+      that updates this object.
+    </para>
+
+    <note>
+      <para>
+	Applications should not modify <classname>&ns;::current</classname>
+	objects. As shown here, applications should create transactions and
+	process them, then leave it up to the managed
+	<classname>&ns;::current</classname> object to update itself
+	automatically, to reflect the updated object in the &app; object
+	repository. Specifically, the requirements are:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Invoking current object's <methodname>manage</methodname>() method,
+	    to open a subscription. The manager object and the subscription
+	    mcguffin must remain in scope for the subscription to be active.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    The versioned object, if it exists and is not a
+	    <literal>nullptr</literal> presumably holds the uuid of the
+	    repository's object that it was constructed from.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    The object's version mcguffin, and the transaction updating that
+	    object get used together.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	Only under these circumstances, a contract exists in the event that the
+	transaction fails with a <literal>&ns;::req_rejected_stat</literal> 
+	that the versioned object is going to get updated by
+	the managed object subscription, and the version mcguffin will go out
+	of scope and get destroyed. The
+	<literal>&ns;::req_rejected_stat</literal> fail must be because
+	the object in the repository was simultaneously updated, but the
+	application has not yet received the updated object, and it's on the
+	way.
+      </para>
+    </note>
+
+    <para>
+      <function>do_adjustment</function>() calls
+      <function>make_transaction</function>() to prepare each transaction,
+      saves the original object's version mcguffin, then processes the
+      transaction, and invokes the
+      <replaceable>ProcessTransactionFunctor</replaceable>
+      with the transaction's results. If the result was a
+      <literal>&ns;::req_rejected_stat</literal> the functor gets invoked
+      from the destructor callback, otherwise it gets invoked immediately.
+    </para>
+
+    <para>
+      For simplicity, <function>do_adjustment</function>() always constructs
+      a destructor callback that invokes the functor, but actually installs the
+      destructor callback on the version mcguffin only in the event of a
+      <literal>&ns;::req_rejected_stat</literal>; and invokes it itself in all
+      other cases.
+    </para>
+
+    <para>
+      The end result is that the functor that processes the results of the
+      transaction gets invoked with a <literal>&ns;::req_rejected_stat</literal>
+      only after the original object got updated from the repository by an
+      updated object value, in the event of an update collission.
+      <function>do_adjustments</function>() takes a list of all the adjustments
+      specified on the command line, and starts asynchronous transactions for
+      all of them, at the same time. As shown in the above example, when
+      multiple transactions affect the same object, they're likely to collide
+      (the actual output can vary, under heavy client or server load, due to
+      the natural variations that are inherent to multithreaded applications,
+      but the shown output is the typical result).
+    </para>
+
+    <para>
+      Finally, <function>adjinventory</function> collects the results of all
+      transaction, and repeats the ones that failed with a
+      <literal>&ns;::req_rejected_stat</literal>.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

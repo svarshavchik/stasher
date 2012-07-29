@@ -1,0 +1,13 @@
+[Unit]
+Description=Object Repository Server
+Wants=network.target httportmap.service
+After=network.target httportmap.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=forking
+RemainAfterExit=true
+ExecStart=@datadir@/stasher/sysinit.rc @datadir@/stasher/sysinit start
+ExecStop=@datadir@/stasher/sysinit.rc @datadir@/stasher/sysinit stop

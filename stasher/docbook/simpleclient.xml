@@ -1,0 +1,406 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="simpleclient">
+  <title>A simple C++ client: getting and modifying objects</title>
+
+  <blockquote>
+    <title><ulink url="examples/simpleclient/">examples/simpleclient/simpleget.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/simpleclient/simpleget.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <ulink url="&link-typedef-stasher-client;"><classname>&ns;::client</classname></ulink>
+    is an <classname>x::ref</classname> handle that represents a connection
+    to the object repository server. Following the normal naming conventions for
+    &libx;'s reference-counted object, a
+    <ulink url="&link-typedef-stasher-clientptr;"><classname>&ns;::clientptr</classname></ulink>
+    is an <classname>x::ptr</classname> type.
+  </para>
+
+  <para>
+    <ulink url="&link-stasher--clientBase;"><function>&ns;::client::base::connect</function></ulink>
+    connects to the default object repository node on the server server
+    and returns the connection handle.
+  </para>
+
+  <para>
+    As documented in the class reference, an overloaded
+    <function>connect</function>() takes an explicit directory name for an
+    object repository node, if it's not installed in the &app; library's
+    default location. If there are more than one object repository nodes,
+    use <function>defaultnodes</function>() to enumerate them, then pick
+    one for the <function>connect</function>().
+  </para>
+
+  <para>
+    <function>connect</function>() throws an
+    <classname>x::exception</classname> if the connection fails.
+    Alternatively, <function>connect_client</function>() allocates a
+    connection handle, and the connection attempt gets made the first time
+    the handle gets used in some way.
+  </para>
+
+  <para>
+    No explicit error or exception gets reported
+    in the event that the postponed connection attempt fails.
+    Rather, the corresponding request fails with an appropriate error code
+    or indication. When an existing, established, connection with the object
+    repository server breaks, all pending/outstanding requests fail with an
+    appropriate error code, and another connection attempt gets made
+    when the next request is made.
+  </para>
+
+  <para>
+    The administrative connection functions that are described in the
+    documentation are available only to root or processes running under the
+    same userid as the object repository node's daemon, and they enable
+    some additional methods that are described in the
+    client handle object's
+    <ulink url="&link-stasher--clientObj;">reference documentation</ulink>;
+    ordinary applications do not need them.
+  </para>
+
+  <blockquote id="cct">
+    <title>Client connection threads</title>
+
+    <para>
+      <classname>stasher::client</classname> starts a thread, which handles
+      the connection details. The thread stops
+      automatically upon disconnection from the server. The thread also stops
+      if the connection to &app; server terminates for any reason (but, as
+      described above, it gets restarted automatically, by the next
+      request of any kind).
+    </para>
+  </blockquote>
+
+  <blockquote id="connlimits">
+    <title>Connection limits</title>
+
+    <para>
+      A single application can create more than one client handle, to different
+      repositories (if multiple repositories exist), or to
+      the same object repository; however object repository servers have
+      a server-configured limit on the maximum number of connections they'll
+      accept from the same application. There are also several per-connection
+      limits. The above example invokes <methodname>getlimits</methodname>(),
+      and shows what those limits are: a single transaction can update/replace a
+      maximum number of objects in the same transaction, and the total size of
+      all
+      new or replaced objects, in aggregate (meaning the sum total of the number
+      of bytes in the new values of all new or replaced objects) is also
+      limited. There's also a limit on the maximum number of open subscriptions.
+    </para>
+  </blockquote>
+
+  <para>
+    <methodname>getlimits</methodname>() only works when a connection to the
+    server has been established. If the client handle is disconnected,
+    <classname>&ns;::userinit</classname> returns all the limits as zeroes.
+    It's a roundabout way of checking the current status of the client
+    handle.
+  </para>
+
+  <section id="get">
+    <title><methodname><classname>&ns;::client</classname>-&gt;get</methodname>(): get objects from the repository</title>
+
+    <para>
+      This method takes a
+      <classname>&ns;::client::base::getreq</classname> as a
+      parameter.
+      This is an <classname>x::ref</classname> to an object with a
+      <classname>bool</classname> <varname>openobjects</varname> (and a
+      default of <literal>false</literal>), and a
+      <classname>std::set &lt;std::string&gt;</classname>
+      <varname>objects</varname>.
+    </para>
+
+    <para>
+      <varname>objects</varname> lists the names of objects to retrieve, in one
+      transaction. They cannot exceed the limit on the maximum number of objects
+      in a transaction.
+    </para>
+
+    <para>
+      <methodname><classname>&ns;::client</classname>-&gt;get</methodname>()
+      returns an <classname>x::ref</classname> to an object that's not
+      particularly interesting except for its
+      <varname>objects</varname> member, which is a
+      <ulink url="&link-typedef-stasher-contents;"><classname>&ns;::contents</classname></ulink>.
+      This is an <classname>x::ref</classname> to a subclass of
+      a <classname>std::map</classname>, specifically a
+      <classname>&ns;::contents::base::map_t</classname>.
+      But before getting there, check
+      <varname>succeeded</varname> first.
+      It's a <classname>bool</classname>, with <literal>true</literal>
+      indicating a succesful request. If <literal>false</literal>, look at
+      the <classname>std::string</classname> error message in
+      <varname>errmsg</varname>.
+    </para>
+
+    <para>
+      If an object name that was placed in
+      <classname>&ns;::client::base::getreq</classname>'s
+      <varname>objects</varname> is not in
+      <classname>&ns;::contents</classname>, this means that the object
+      does not exist. If it does exist,
+      the map's <varname>second</varname> is a
+      <ulink url="&link-stasher--retrobj;">&ns;::retrobj</ulink> which has
+      two members: an <classname>x::uuid</classname>
+      <varname>uuid</varname> that gives the object's
+      <quote>uuid</quote>, and an
+      <classname>x::fdptr</classname> <varname>fd</varname>.
+    </para>
+
+    <para>
+      When an object gets added to the object repository, it acquires a
+      <classname>x::uuid</classname> assigned to it by the server, and it
+      gets returned here, by
+      <methodname><classname>&ns;::client</classname>-&gt;get</methodname>().
+      <varname>fd</varname> is an open read-only file descriptor, if
+      <classname>&ns;::client::base::getreq</classname>'s
+      <varname>openobjects</varname> was <literal>true</literal>
+      file descriptor. If it was <literal>false</literal>, only each object's
+      <classname>x::uuid</classname> gets returned, and the
+      <classname>x::fdptr</classname> is null.
+    </para>
+
+    <note>
+      <para>
+	The returned file descriptor is an open read-only file descriptor to
+	the actual object file in the repository. The application should
+	not sit on it, but read it, and get rid of it, as in this example
+	(since the <classname>x::fd</classname> is a reference-counted object,
+	this gets taken care of when the reference goes out of scope completely
+	and gets destroyed). Even if the object gets deleted from the
+	repository, this file descriptor will remain open, and the object's
+	space on disk remains used, until the file descriptor gets closed.
+      </para>
+    </note>
+  </section>
+
+  <section id="put">
+    <title><methodname><classname>&ns;::client</classname>-&gt;put</methodname>(): update objects in the repository</title>
+
+    <blockquote>
+      <title><ulink url="examples/simpleclient/">examples/simpleclient/simpleput.C</ulink></title>
+      <informalexample>
+	<programlisting><xi:include href="../examples/simpleclient/simpleput.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This method takes a
+      <classname>&ns;::client::base::transaction</classname> as a
+      parameter.
+      This is an <classname>x::ref</classname> to an object that defines which
+      objects the transaction updates.
+    </para>
+
+    <para>
+      This example takes the name of an object and its new value as command
+      line parameters.
+      <link linkend="get"><methodname>get</methodname>()</link>
+      gets invoked to check if the object already exists. Note that in this
+      case,
+      <classname>&ns;::client::base::getreq</classname>'s
+      <classname>openobjects</classname> flag does not get set to
+      <literal>true</literal>.
+      Here the existing object's contents are not needed, this is just a check
+      if the object already exists, and what it's <classname>x::uuid</classname>
+      is.
+    </para>
+
+    <para>
+      <classname>&ns;::client::base::transaction</classname> is just a structure
+      (it's an <classname>x::ref</classname>, actually)
+      that holds a list of repository objects that gets updated by the
+      transaction. The actual transaction gets executed by
+      <methodname>put</methodname>().
+      Instantiate a
+      <classname>&ns;::client::base::transaction</classname> and invoke its
+      methods, as follows:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><methodname>newobj</methodname>(<replaceable>name</replaceable>, <replaceable>value</replaceable>)</term>
+	<listitem>
+	  <para>
+	    Add a new object to the object repository.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><methodname>updobj</methodname>(<replaceable>name</replaceable>, <replaceable>uuid</replaceable>, <replaceable>value</replaceable>)</term>
+	<listitem>
+	  <para>
+	    Update/replace
+	    an existing object in the object repository. The new
+	    contents replace the object's existing contents.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><methodname>delobj</methodname>(<replaceable>name</replaceable>, <replaceable>uuid</replaceable>)</term>
+	<listitem>
+	  <para>
+	    Delete an existing object from the object repository.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>
+      These methods can be invoked more than once (for different objects)
+      to have a single transaction update multiple objects. The same transaction
+      can add, replace, or delete different objects. There's a server-imposed
+      limit on the <link linkend="connlimits">maximum number of objects in one
+	transaction</link>.
+    </para>
+
+    <para>
+      <replaceable>name</replaceable> gives the name of the object that the
+      transaction adds, replaces, or deleted. <replaceable>uuid</replaceable>
+      specifies an existing object's <classname>x::uuid</classname>.
+    </para>
+
+    <para>
+      A <replaceable>value</replaceable> for a new or replaced object is a
+      <classname>std::string</classname> or an opened
+      <classname>x::fd</classname> whose contents specify the object's value.
+      There's an <link linkend="connlimits">limit on the total size</link>
+      of all
+      new or replaced objects in the transaction.
+    </para>
+
+    <blockquote id="objectnames">
+      <title>Object names</title>
+      <para>
+	Objects are identified by their name.
+	Object names have a maximum size of 512 bytes, and they use
+	<quote>/</quote> for a hierarchy separator, so
+	<quote>group/files</quote>
+	would represent an object named <quote>files</quote> in the
+	<quote>group</quote> hierarchy.
+	Object names are always absolute, but they do not begin with
+	a <quote>/</quote> like an absolute pathname. There is no formal
+	process to create or delete a hierarchy, that's analogous to creating or
+	deleting a directory; create the object <quote>group/files</quote> and
+	the <quote>group</quote> hierarchy gets created; remove it, and if there
+	are
+	no other objects in the <quote>group</quote> hierarchy, it gets removed.
+	Although &app; itself does not impose any other standards on object
+	names,
+	other than their maximum size and <quote>/</quote> as a hierarchy
+	separator,
+	by convention object names should be coded in <literal>UTF-8</literal>.
+	The <link linkend="stasher"><command>stasher</command></link> tool uses
+	<literal>UTF-8</literal> for object names, so application should use
+	<literal>UTF-8</literal> coding too, in order for
+	<command>stasher</command> to be available for diagnostics.
+      </para>
+    </blockquote>
+
+    <para>
+      <methodname><classname>&ns;::client</classname>-&gt;put</methodname>()
+      returns a
+      <ulink url="&link-typedef-stasher-putresults;">&ns;::putresults</ulink>
+      which contains two fields:
+      <varname>status</varname>, an enumerated status code,
+      <classname>&ns;::req_stat_t</classname>;
+      and <varname>newuuid</varname>, the new <classname>x::uuid</classname> of
+      objects added or replaced by the transaction, if it succeeded.
+    </para>
+
+    <blockquote id="objectuuids">
+      <title>Object uuids</title>
+
+      <para>
+	Each object in a &app; object repository has a <quote>universal unique
+	  identifier</quote>, uuid for short.
+	The server assigns a uuid to each object added to the repository, and
+	when an existing object's contents get replaced.
+	A transaction <varname>status</varname> of
+	<literal>&ns;::req_processed_stat</literal>
+	indicates that the transaction was processed, and &app; returns
+	a <varname>newuuid</varname>, the <classname>x::uuid</classname> of
+	new or updated objects. The same <classname>x::uuid</classname> applies
+	to all objects added or updated by the transaction.
+      </para>
+
+      <para>
+	An existing object's uuid must be specified to update or delete it.
+	A transaction
+	<varname>status</varname> of <literal>&ns;::req_rejected_stat</literal>
+	indicates that the transaction was rejected because one of the existing
+	objects in the transaction did not match it's given
+	<classname>x::uuid</classname>. This includes a
+	<methodname>newobj</methodname>() of an object that already exists,
+	and an <methodname>updobj</methodname>() or
+	a <methodname>delobj</methodname>() of a nonexistent object.
+      </para>
+
+      <para>
+	The transaction gets rejected if any of its objects' uuids do not
+	match. None of the objects in the transaction get updated even if some
+	of the uuids matched.
+      </para>
+    </blockquote>
+
+    <para>
+      The above example calls <methodname>get</methodname>() first, to
+      check if an object exists. If so, the transaction replaces it with
+      <methodname>updobj</methodname>(), specifying
+      its uuid. If the object does not exist, the transaction creates it with
+      <methodname>newobj</methodname>(). The object gets deleted with
+      <methodname>delobj</methodname>() by omitting the second parameter to
+      the example program.
+    </para>
+
+    <para>
+      It's possible that another application can change its object between the
+      time this sample program gets its uuid, and sends the transaction request.
+      Since the object's uuid no longer matches, the update transaction will
+      get rejected, with <literal>&ns;::req_rejected_stat</literal>.
+    </para>
+
+    <note>
+      <para>
+	This simplistic example prints the <varname>newuuid</varname> after
+	deleting the object. Of course, in this case, the object got deleted,
+	and the <varname>newuuid</varname> is meaningless. However, if the
+	same trasnaction created or updated other objects, the given
+	<varname>newuuid</varname> spplies to them.
+      </para>
+    </note>
+
+    <blockquote id="reqstatt">
+      <title>Transaction status</title>
+
+      <para>
+	Other &app; C++ API requests also report their success or failure
+	by a status code.
+	Generally, <literal>&ns;::req_processed_stat</literal> indicates
+	that the request was processed succesfully.
+	Besides <literal>&ns;::req_rejected_stat</literal> indicating a
+	transaction uuid mismatch, the status code may also report
+	<ulink url="&link-enum-stasher-req-stat-t;">other error
+	  conditions</ulink>.
+      </para>
+    </blockquote>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

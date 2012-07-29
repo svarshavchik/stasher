@@ -1,0 +1,248 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="requestpartintro">
+  <title>Introduction</title>
+
+  <para>
+    Methods described in <xref linkend="synchronous" /> send a message to the
+    &cct; then wait for the message to get processed, before returning the
+    results.
+  </para>
+
+  <para>
+    This is sufficient for implementing simple, basic scripts or batch jobs.
+    For interactive applications &app;'s asynchronous API might be a better
+    fit.
+  </para>
+
+  <para>
+    Each method described in <xref linkend="synchronous" />, namely
+    <link linkend="get"><methodname><classname>&ns;::client</classname>-&gt;get</methodname>()</link>,
+    <link linkend="put"><methodname><classname>&ns;::client</classname>-&gt;put</methodname>()</link>,
+    <link linkend="getdir"><methodname><classname>&ns;::client</classname>-&gt;getdir</methodname>()</link>, and
+    <link linkend="subscribe"><methodname><classname>&ns;::client</classname>-&gt;subscribe</methodname>()</link>,
+    has an asynchronous <quote><replaceable>name</replaceable>_request</quote> version, that takes the
+    same parameters as the corresponding synchronous method.
+  </para>
+
+  <para>
+    The asynchronous <quote><replaceable>name</replaceable>_request</quote> returns a
+    <classname>std::pair</classname>.
+
+    A <classname>std::pair</classname> returned by
+    <quote><replaceable>name</replaceable>_request</quote>
+    has <classname>&ns;::<replaceable>name</replaceable>request</classname>
+    for its <varname>first</varname>, and a
+    <classname>&ns;::client::base:request</classname>.
+  </para>
+
+  <para>
+    This is a consistent naming convention. For example,
+    <methodname>get_request</methodname>() returns a
+    <classname>std::pair&lt;&ns;::getrequest, &ns;::client::base::request&gt;</classname>,
+    <methodname>put_request</methodname>() returns a
+    <classname>std::pair&lt;&ns;::putrequest, &ns;::client::base::request&gt;</classname>,
+    and so on.
+
+    The asynchronous <quote><replaceable>name</replaceable>_request</quote> method does not wait for the
+    request to be processed, it returns immediately.
+    <classname>std::pair</classname>'s <varname>second</varname>,
+    a <classname>&ns;::client::base:request</classname>, is an
+    <classname>x::ref</classname> to an object that indicates the status of
+    the request, using the following methods:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term><type>bool</type> <classname>&ns;::client::base:request</classname>-&gt;<methodname>done</methodname>()</term>
+      <listitem>
+	<para>
+	  <methodname>done</methodname>() returns <literal>true</literal>
+	  when the request is processed, and the return value in
+	  <classname>std::pair</classname>'s <varname>first</varname> is
+	  valid.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><type>void</type> <classname>&ns;::client::base:request</classname>-&gt;<methodname>wait</methodname>()</term>
+      <listitem>
+	<para>
+	  If the requedt is not processed,
+	  <methodname>wait</methodname>() waits until it does. After
+	  <methodname>wait</methodname>() returns,
+	  <methodname>done</methodname>() always returns
+	  <literal>true</literal>.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><type>x::ref&lt;x::obj&gt;</type> <classname>&ns;::client::base:request</classname>-&gt;<methodname>mcguffin</methodname>()</term>
+      <listitem>
+	<para>
+	  <methodname>mcguffin</methodname>() returns a reference to an
+	  opaque object that represents the request's mcguffin. The &cct;
+	  has an internal reference on the underlying object, which gets
+	  released when the &cct; processes the request. If no other strong
+	  references to the object remain, it goes out of scope and gets
+	  destroyed, invoking any destructor callbacks.
+	</para>
+
+	<note>
+	  <para>
+	    The callbacks get invoked by the &cct;. They should not throw
+	    exceptions, block, or take an excessive time to return.
+	  </para>
+	</note>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para>
+    The <classname>&ns;::<replaceable>name</replaceable>request</classname>
+    in 
+    <classname>std::pair</classname>'s <varname>first</varname>,
+    contains a single <methodname>getmsg</methodname>() method that returns
+    the results of the request, the same return value that the
+    synchronous <methodname><replaceable>name</replaceable></methodname>()
+    would return.
+
+    &app;'s synchronous <acronym>API</acronym> is just a wrapper for the
+    asynchronous <acronym>API</acronym>. Here's all of
+    <link linkend="get"><methodname><classname>&ns;::client</classname>-&gt;get</methodname>()</link>:
+  </para>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+&ns;::getresults &ns;::clientObj::get(const &ns;::getreq &amp;contents_req)
+{
+    std::pair&lt;&ns;::getrequest, &ns;::client::base::request&gt; req=get_request(contents_req);
+
+    req.second-&gt;wait();
+    return req.first-&gt;getmsg();
+}</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    All other synchronous methods work the same way.
+    As an alternative to <methodname>wait</methodname>(), use
+    <methodname>mcguffin</methodname>() and attach a destructor callback to it,
+    which gets invoked when the request completes.
+  </para>
+
+  <note>
+    <para>
+      For consistent semantics, after the request is already done
+       <methodname>mcguffin</methodname>() returns a dummy mcguffin, without
+       retaining a reference on it. When the caller attaches a destructor
+       callback to it, afer the dummy mcguffin goes out of scope and gets
+       destroyed, the destructor callback gets triggered, since the request
+       has completed, already.
+    </para>
+  </note>
+
+  <para>
+    Note that, as mentioned previously, destructor callacks usually get invoked
+    by the &cct;. They should not throw exceptions, or do something that takes
+    a while.
+  </para>
+  <section id="asynchronouscancannot">
+    <title>What asynchronous C++ <acronym>API</acronym> methods can and cannot do</title>
+
+
+    <para>
+      Callbacks that get executed by a &cct; cannot invoke synchronous
+      C++ methods, but they can invoke asynchronous methods, since the
+      asynchronous methods simply send a message to the &cct; and return.
+      Synchronous methods send the message and wait for a response from the
+      threads, so a thread deadlock occurs when the same thread invokes the
+      synchronous method.
+    </para>
+
+    <para>
+      Note that this applies to the
+      <methodname>updated</methodname>()
+      callback that gets invoked by
+      <link linkend="subscribe"><methodname><classname>&ns;::client</classname>-&gt;subscribe</methodname></link>,
+      and to destructor callbacks attached to asynchronous requests'
+      mcguffins, since they're usually invoked by the &cct;.
+    </para>
+
+    <para>
+      In general, callback objects must not have a strong reference on
+      <classname>&ns;::client</classname>. There are at least two reasons for
+      that.
+    </para>
+
+    <orderedlist>
+      <listitem>
+	<para>
+	  In most cases, the &cct; thread
+	  has a strong reference on the callback object. If that object, in turn
+	  has a <classname>&ns;::client</classname>, this creates a circular
+	  reference.
+	</para>
+
+	<para>
+	  <classname>&ns;::client</classname> is an
+	  <classname>x::ref</classname> itself.
+	  When the last reference to the underlying object gets destroyed, the
+	  underlying object's destructor stops the &cct; thread if it's
+	  running,
+	  disconnecting from the object repository. The circular reference
+	  prevents this from happening.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Using a weak reference is usually insufficient, since a strong
+	  reference gets recovered from the weak one, whenever the weak
+	  reference needs to be used in any way. Setting aside the fact
+	  that a circular reference exists now exists, if all other instances
+	  of <classname>&ns;::client</classname> referring to this
+	  connection go out of scope and get destroyed, this one becomes the
+	  last <classname>&ns;::client</classname>, and when it goes out of
+	  scope and gets destroyed, the underlying object's destructor attempts
+	  to stop the &cct;, and waits until it does.
+	</para>
+
+	<para>
+	  If this happens during one of the callbacks which gets executed by
+	  the &cct;, this results in a thread deadlock, since the &cct; is
+	  essentially waits for itself to stop.
+	</para>
+      </listitem>
+    </orderedlist>
+
+    <para>
+      The recommended approach is for the callbacks to do little beyond sending
+      a message to another thread, or recording their invocation in some queue
+      or an intermediate object, of some sort. Other threads or objects with
+      their own <classname>&ns;::client</classname> can have a reference to the
+      same intermediate queue or object, without creating a circular reference.
+    </para>
+
+    <para>
+      Under very controlled situations, it's possible for a callback to have
+      its own <classname>&ns;::client</classname>. See
+      <xref linkend="get_request" /> for an example.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

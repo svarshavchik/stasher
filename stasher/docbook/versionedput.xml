@@ -1,0 +1,420 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="versionedput">
+  <title><function>&ns;::versioned_put</function>: updating multiple versioned objects</title>
+
+  <para>
+    Extending the process of
+    <link linkend="versionedptrusing">updating a versioned current object</link>
+    to multiple versioned current objects is deceptively simple:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	Lock each current object. Always use a specific locking order to prevent
+	deadlocks against other threads.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Collect each object's <link linkend="versionedptr">version
+	  mcguffin</link>, then create a transaction that updates the
+	current objects.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	If the transaction gets rejected with a
+	<literal>&ns;::req_rejected_stat</literal> wait until one of the
+	version mcguffins goes out of scope and gets destroyed, before
+	assessing what the next step should be (a new transaction, or
+	something else).
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    A <literal>&ns;::req_rejected_stat</literal> indicates that at least one
+    of the objects involved in the transaction was updated and is no
+    longer the current object in the repository. When a transaction updates
+    multiple objects, the <literal>&ns;::req_rejected_stat</literal> does
+    not identify which one it was; therefore, it's necessary to wait until
+    any one of them does.
+  </para>
+
+  <para>
+    This can be implemented manually by using the
+    <methodname>onAnyDestroyed</methodname>() template, as described in
+    &libx;'s documentation, but the following templates and classes implement
+    this more conveniently.
+  </para>
+
+  <section id="versionscollected">
+    <title><classname>&ns;::versionscollected</classname>: a container for current object version mcguffins</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>#include &lt;stasher/versionscollected.H&gt;
+
+typedef stasher::current&lt;inventoryptr, stasher::versionedptr&lt;inventoryptr&gt;
+			 &gt; warehouse_t;
+
+std::pair&lt;stasher::client::base::transaction,
+	  stasher::versionscollected&gt;
+create_versioned_put(const warehouse_t &amp;a,
+		     const warehouse_t &amp;b)
+
+{
+    auto transaction=stasher::client::base::transaction::create();
+    auto versions=stasher::versionscollected::create();
+
+    warehouse_t::base::current_value_t::lock
+         alock(a->current_value),
+         block(b->current_value);
+
+    versions-&gt;add(alock->value);
+    versions-&gt;add(block->value);
+
+    // create the transaction here...
+
+    return std::make_pair(transaction, versions);
+}</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <ulink url="&link-typedef-stasher-versionscollected;"><classname>&ns;::versionscollected</classname></ulink>
+      is an <classname>x::ref</classname> for a container of version mcguffins
+      of objects that form a transaction. The above example takes two
+      <link linkend="versionedcurrentobj">versioned current object</link>,
+      and locks their <varname>current_value</varname>s.
+      As noted previously, when locking multiple objects they must get locked
+      in a specific order, in order to avoid deadlocks; but this is outside
+      of the scope of this example, which presumes that the two
+      <classname>warehouse_t</classname>s are different and always get given
+      in the right order.
+    </para>
+
+    <para>
+      After locking the current values of both objects, each
+      <varname>current_value.value</varname>, which is a
+      <classname>&ns;::versionedptr</classname>, gets passed to
+      <methodname><classname>&ns;::versionscollected</classname>-&gt;add</methodname>().
+      This method invokes <classname>&ns;::versionedptr</classname>'s
+      <methodname>getversion</methodname>() and stores a weak reference to the
+      version mcguffin in the <classname>&ns;::versionscollected</classname>.
+      <classname>&ns;::versionscollected</classname> does not need to store
+      a strong reference on the version mcguffin. Checking whether the
+      weakly-referenced mcguffin went out of scope and got destroyed is
+      sufficient for the purpose of determining whether the versioned object
+      was updated already.
+    </para>
+
+    <para>
+      For convenience
+      <ulink url="&link-stasher--versionscollectedBase;"><function>create_from</function></ulink>() takes
+      a variadic list of <classname>&ns;::versionedptr</classname> as
+      parameters:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+stasher::versionscollected versions=
+    stasher::versionscollected::base::create_from(alock->value, block->value);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This is equivalent to invoking
+      <function>&ns;::versionscollected::create</function>(), then
+      <methodname>add</methodname>()ing
+      both <classname>&ns;::versionedptr</classname>s.
+    </para>
+
+    <para>
+      A
+      <ulink url="&link-stasher--versionscollectedBase;"><function>create_fromiter</function></ulink>()
+      takes a beginning and an ending input iterator over
+      <classname>&ns;::versionedptr</classname>s, then constructs a new
+      <classname>&ns;::versionscollected</classname>,
+      <methodname>add</methodname>()ing
+      version mcguffins from the input sequence.
+    </para>
+  </section>
+
+  <section id="usingversionedput">
+    <title>Using <function>&ns;::versioned_put</function>()</title>
+
+    <para>
+      <filename>xferinventory.C</filename> is a modified version of
+      <link linkend="versionedptrusing"><filename>adjinventory.C</filename></link>
+      that updates multiple versioned objects in the same transaction, and
+      shows how to handle <literal>&ns;::req_rejected_stat</literal>
+      with <function>&ns;::versioned_put</function>():
+    </para>
+
+    <blockquote>
+      <title><ulink url="examples/inventory/">examples/inventory/xferinventory.C</ulink></title>
+      <informalexample>
+	<programlisting><xi:include href="../examples/inventory/xferinventory.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <command>xferinventory</command> takes a list of transfers on the
+      command line. Each transfer consists of the name of the
+      <quote>from</quote> warehouse object, the name of the
+      <quote>to</quote> warehouse object, the name of an inventory item, and
+      a positive count.
+      <command>xferinventory</command> updates both warehouse objects,
+      adjusting each one's inventory accordingly.
+      <command>xferinventory</command> accepts more than one transfer, and
+      does them all. Here's the output of transferring four bananas from
+      <literal>east</literal> to <literal>west</literal>, and four
+      apples from <literal>west</literal> to <literal>east</literal>:
+    </para>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>$ ./xferinventory east west bananas 4 west east apples 4
+Waiting for objects to get loaded
+Transfering between:
+east:
+    Item                                Count
+    ------------------------------   --------
+    apples                                  2
+    bananas                                 8
+===========================================================================
+west:
+    Item                                Count
+    ------------------------------   --------
+    apples                                  8
+    bananas                                 2
+===========================================================================
+Processing: transfer 4 bananas from east to west
+Transaction/request processed: transfer 4 bananas from east to west
+Processing: transfer 4 apples from west to east
+Collision detected - object uuid mismatch: transfer 4 apples from west to east
+Processing: transfer 4 apples from west to east
+Transaction/request processed: transfer 4 apples from west to east</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      In <filename>xferinventory.C</filename>,
+      <function>create_versioned_put</function>() acquires a lock on both
+      warehouse objects, collects both objects' version mcguffins into a
+      <classname>&ns;::versionscollected</classname>, then prepares a
+      transaction to update those objects, and releases the lock.
+    </para>
+
+    <para>
+      <function>do_transfers</function>() processes the transactions.
+      They all get purposefully created in advance, so that all transactions
+      get created for the initial contents of the warehouse objects.
+      <function>&ns;::versioned_put</function>() then processes each
+      transaction, one at a time. This guarantees a
+      <literal>&ns;::req_rejected_stat</literal> when the same warehouse is
+      a part of more than one transfer, as in this example.
+    </para>
+
+    <para>
+      <function>&ns;::versioned_put</function>() takes a
+      client connection handle, a transaction object, and
+      a <classname>&ns;::versionscollected</classname>.
+      This <link linkend="synchronous">synchronous</link> function waits for
+      the transaction to get processed, then returns its
+      <classname>&ns;::putresults</classname>.
+      Additionally, if the transaction's status is
+      <literal>&ns;::req_rejected_stat</literal>,
+      <function>&ns;::versioned_put</function>() waits until at least one of the
+      versioned mcguffins goes out of scope and gets destroyed, indicating that
+      its versioned object has been updated.
+    </para>
+
+    <para>
+      The above example simply proceeds and immediately reprocesses all
+      transfers that failed with a <literal>&ns;::req_rejected_stat</literal>,
+      using the updated contents of the warehouse objects as a new starting
+      point, for this go-around.
+    </para>
+
+    <note>
+      <para>
+	All current object value locks must be released before calling
+	<function>&ns;::versioned_put</function>(). The correct sequence of
+	events is:
+      </para>
+
+      <orderedlist>
+	<listitem>
+	  <para>
+	    Lock all <varname>current_value</varname>s, in a consistent order,
+	    to avoid deadlocks.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Collect each value's version mcguffin, into a
+	    <classname>&ns;::versionscollected</classname>, and prepare
+	    a transaction updating the same objects.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Release <varname>current_value</varname> locks.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Call <function>&ns;::versioned_put</function>().
+	  </para>
+	</listitem>
+      </orderedlist>
+
+      <para>
+	In the event of the collision,
+	<function>&ns;::versioned_put</function>() waits until one of the
+	versioned objects gets updated. The callbacks that update versioned
+	current objects acquire their own lock on their
+	<varname>current_value</varname>, resulting in a deadlock unless
+	all locks get released prior to a
+	<function>&ns;::versioned_put</function>().
+      </para>
+    </note>
+  </section>
+
+  <section id="versionedputrequset">
+    <title><function>&ns;::versioned_put_request</function>()</title>
+
+    <para>
+      <ulink url="examples/inventory/xferinventory2.C"><filename>xferinventory2.C</filename></ulink>
+      is a version of
+      <link linkend="usingversionedput"><filename>xferinventory.C</filename></link>
+      that demonstrates how to use
+      <ulink url="&link-function-stasher-versioned-put-request;"><function>&ns;::versioned_put_request</function></ulink>(),
+      an <link linkend="asynchronous">asynchronous</link> version
+      of <function>&ns;::versioned_put</function>().
+      <function>&ns;::versioned_put</function>() takes
+      client connection handle, a transaction object, a functor, and
+      a <classname>&ns;::versionscollected</classname>.
+      The client connection handle, the transaction object, and the
+      <classname>&ns;::versionscollected</classname> serve the same purpose
+      as with <function>&ns;::versioned_put</function>().
+    </para>
+
+    <para>
+      <ulink url="&link-function-stasher-versioned-put-request;"><function>&ns;::versioned_put_request</function></ulink>()
+      returns immediately.
+      The functor gets invoked, with a
+      <classname>&ns;::putresults</classname> parameter, when the
+      transaction gets processed.
+      Just like with <function>&ns;::versioned_put</function>(),
+      if the transaction's status is
+      <literal>&ns;::req_rejected_stat</literal>,
+      the functor does not get invoked until at least
+      one of the versioned mcguffins goes out of scope and gets destroyed,
+      indicating that its versioned object has been updated.
+    </para>
+
+    <informalexample>
+      <computeroutput>
+	<literallayout>$ ./xferinventory2 east west apples 2 east west bananas 1 west east apples 1 west east bananas 2
+Waiting for objects to get loaded
+Transfering between:
+east:
+    Item                                Count
+    ------------------------------   --------
+    apples                                  6
+    bananas                                 4
+===========================================================================
+west:
+    Item                                Count
+    ------------------------------   --------
+    apples                                  4
+    bananas                                 6
+===========================================================================
+Processing: transfer 2 apples from east to west
+Processing: transfer 1 bananas from east to west
+Processing: transfer 1 apples from west to east
+Processing: transfer 2 bananas from west to east
+Transaction/request processed: transfer 2 apples from east to west
+Collision detected - object uuid mismatch: transfer 1 apples from west to east
+Collision detected - object uuid mismatch: transfer 1 bananas from east to west
+Collision detected - object uuid mismatch: transfer 2 bananas from west to east
+Processing: transfer 1 bananas from east to west
+Processing: transfer 1 apples from west to east
+Processing: transfer 2 bananas from west to east
+Transaction/request processed: transfer 1 bananas from east to west
+Collision detected - object uuid mismatch: transfer 1 apples from west to east
+Collision detected - object uuid mismatch: transfer 2 bananas from west to east
+Processing: transfer 1 apples from west to east
+Processing: transfer 2 bananas from west to east
+Transaction/request processed: transfer 1 apples from west to east
+Collision detected - object uuid mismatch: transfer 2 bananas from west to east
+Processing: transfer 2 bananas from west to east
+Transaction/request processed: transfer 2 bananas from west to east</literallayout>
+      </computeroutput>
+    </informalexample>
+
+    <para>
+      <filename>xferinventory2.C</filename> does not prepare all the
+      transactions in advance, before processing them. Since they're
+      asynchronous,
+      <filename>xferinventory2.C</filename> starts them all together, then
+      waits until they've all been processed, before redoing all the
+      <literal>&ns;::req_rejected_stat</literal> failures:
+    </para>
+
+    <note>
+      <para>
+	The requirement to release all versioned current object locks,
+	mentioned in
+	<link linkend="usingversionedput"><filename>xferinventory.C</filename></link>
+	is slightly relaxed due to
+	<function>&ns;::versioned_put_request</function>()'s asynchronous
+	nature, as long as the locks are released shortly after
+	<function>&ns;::versioned_put_request</function> returns.
+      </para>
+
+      <para>
+	Because of that, two convenience templates are also available.
+	<function>&ns;::versioned_put_request_from</function> is an
+	alternative version where the last
+	<classname>&ns;::versionscollected</classname> parameter gets
+	replaced by a variadic list of
+	<classname>&ns;::versionedptr</classname>s (or something similar
+	that implements a suitable <methodname>getversion</methodname>());
+	and <function>&ns;::versioned_put_request_fromiter</function> where
+	the last
+	<classname>&ns;::versionscollected</classname> parameter gets
+	replaced by a beginning and an ending iterator, over
+	<classname>&ns;::versionedptr</classname>s.
+      </para>
+
+      <para>
+	These alternative functions construct a
+	<classname>&ns;::versionscollected</classname> from
+	their custom parameters, then invoke
+	<function>&ns;::versioned_put_request</function>().
+      </para>
+    </note>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

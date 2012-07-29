@@ -1,0 +1,189 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="renewnodecert">
+  <title>Renewing a node certificate</title>
+
+  <para>
+    Each cluster node has a certificate that authenticates it to the cluster.
+    That certificate gets created as part of
+    <link linkend="clusteraddnode">the process that sets up a
+    new node</link>. All node certificates have an expiration date. The
+    node certificate's creation time and expiration date is shown by the
+    status command:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# stasher
+Ready, EOF to exit.
+&gt; admin
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 20 objects, 64 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus&gt; status
+
+... long output deleted ...
+
+listener(octopus.objrepo.example.com) (thread 0x00007f73f6ffd700):
+    Node certificate: subject `CN=octopus.objrepo.example.com,OU=object reposito
+ry (created on 2012-03-17 16:13:05 EDT),O=node', issuer `CN=objrepo.example.com,
+OU=object repository (created on 2012-03-17 16:12:05 EDT),O=cluster', RSA key 24
+32 bits, signed using RSA-SHA256, activated `2012-03-17 20:13:05 UTC', expires `
+<emphasis>2013-03-27 20:13:05 UTC</emphasis>', SHA-1 fingerprint `9be3e4f42a32d5a0789d67d51df60a48df6
+18f74'
+
+... long output deleted ...
+
+octopus&gt; [EOF, CTRL-D]
+[root@octopus ~]# </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    A new node certificate must get created before the shown expiration date
+    (highlighted in the example above).
+    This is a straightforward process if the
+    <link linkend="newclustersetupcreateclustercert">cluster certificates are on
+      the same machine</link> as the cluster node whose certificate is getting
+    renewed:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# stashermg --nodekey --generate /var/stasher/nodes/objrepo.example.com /var/stasher/clusters/objrepo.example.com
+Generating new key...
++++++
+.......+++++
+Connected to /var/stasher/nodes/objrepo.example.com, checking existing certificates
+Updating cluster certificates
+Certificate installed, connecting to server
+Certificate reloaded
+[root@octopus ~]# </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    In this example, the renewing node is <quote>octopus</quote> in the
+    directory <filename>/var/stasher/nodes/objrepo.example.com</filename>,
+    and the cluster certificate directory is
+    <filename>/var/stasher/clusters/objrepo.example.com</filename>, on
+    the same machine. The succesful installation of the new certificate can
+    be verified by checking the output of the <literal>status</literal>
+    command, again.
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# stasher
+Ready, EOF to exit.
+&gt; admin
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 20 objects, 64 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus> status
+
+... long output deleted ...
+
+listener(octopus.objrepo.example.com) (thread 0x00007f73f6ffd700):
+    Node certificate: subject `CN=octopus.objrepo.example.com,OU=object reposito
+ry (created on 2012-03-25 21:53:59 EDT),O=node', issuer `CN=objrepo.example.com,
+OU=object repository (created on 2012-03-17 16:12:05 EDT),O=cluster', RSA key 24
+32 bits, signed using RSA-SHA256, activated `2012-03-26 01:53:59 UTC', expires `
+<emphasis>2013-04-05 01:53:59 UTC</emphasis>', SHA-1 fingerprint `708f1cfedc1378783ef1f571939197a43a0
+7464e'
+
+... long output deleted ...
+
+octopus&gt; [EOF, CTRL-D]
+[root@octopus ~]# </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    By default, node certificates are good for a year. For this example, the
+    certificate was renewed 51 weeks earlier.
+  </para>
+
+  <para>
+    When the expiring certificate is on another machine, the process is
+    similar, as long as:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	The other machine is up, and connected to the cluster.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	The connections between the nodes are fully encrypted
+	(see the <literal>ENCRYPTION</literal> option of the
+	<command>CLUSTER</command> command in the
+	<xref linkend="stasher" /> documentation), or the
+	intermediate network is secure in some other way.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    Pass an additional <option>--name</option> parameter to
+    <command>repomg</command> giving the name of the other node:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# stashermg --nodekey --generate --name monster /var/stasher/nodes/objrepo.example.com /var/stasher/clusters/objrepo.example.com
+Generating new key...
+...............+++++
+.+++++
+Certificate installed on monster.objrepo.example.com
+[root@octopus ~]# </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    <command>repomg</command> connects to the node on this machine. The node
+    forwards the newly-generated certificate to its peer, which installs it
+    and uses it. Use the <command>status</command> command on the other
+    node to verify that the certificate was installed, and is active.
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>[root@octopus ~]# stashermg --nodekey --generate --name cthulhu /var/stasher/nodes/objrepo.example.com /var/stasher/clusters/objrepo.example.com
+Generating new key...
+..................+++++
+.....+++++
+No connection with cthulhu.objrepo.example.com
+[root@octopus ~]# </literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    This error message reports that there's no such node in the cluster, or
+    if there is one, it's not connected to the cluster.
+  </para>
+
+  <para>
+    If the other machine is not connected to the cluster, or if the underlying
+    network transport is not secure, follow the process for creating a new
+    cluster node, with the same name, then just copy the certificate to the
+    other machine's node directory.
+    Run
+    <link linkend="stashermg"><command>stashermg --certload</command></link>,
+    if necessary.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

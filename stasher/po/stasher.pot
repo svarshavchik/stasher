@@ -1,0 +1,167 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Double Precision, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: stasher 0.01\n"
+"Report-Msgid-Bugs-To: mrsam@courier-mta.com\n"
+"POT-Creation-Date: 2012-03-11 22:50-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: repomgcliopts.h:190
+msgid "clustkey"
+msgstr ""
+
+#: repomgcliopts.h:190
+msgid "Cluster key management"
+msgstr ""
+
+#: repomgcliopts.h:192 repomgcliopts.h:212
+msgid "generate"
+msgstr ""
+
+#: repomgcliopts.h:192
+msgid "Generate a new cluster key"
+msgstr ""
+
+#: repomgcliopts.h:194 repomgcliopts.h:214
+msgid "name"
+msgstr ""
+
+#: repomgcliopts.h:194
+msgid "Cluster key's name"
+msgstr ""
+
+#: repomgcliopts.h:196 repomgcliopts.h:216
+msgid "bits"
+msgstr ""
+
+#: repomgcliopts.h:196
+msgid "Key's bit strength (%1%); default is %2%"
+msgstr ""
+
+#: repomgcliopts.h:196 repomgcliopts.h:216
+msgid "strength"
+msgstr ""
+
+#: repomgcliopts.h:198 repomgcliopts.h:218
+msgid "digest"
+msgstr ""
+
+#: repomgcliopts.h:198 repomgcliopts.h:218
+msgid "Signing algorithm (%1%); default is \"sha256\""
+msgstr ""
+
+#: repomgcliopts.h:198 repomgcliopts.h:218
+msgid "algorithm"
+msgstr ""
+
+#: repomgcliopts.h:200 repomgcliopts.h:220
+msgid "expires"
+msgstr ""
+
+#: repomgcliopts.h:200 repomgcliopts.h:220
+msgid "Key's expiration"
+msgstr ""
+
+#: repomgcliopts.h:200 repomgcliopts.h:220
+msgid "interval"
+msgstr ""
+
+#: repomgcliopts.h:202
+msgid "type"
+msgstr ""
+
+#: repomgcliopts.h:202
+msgid "Key type (rsa or dsa)"
+msgstr ""
+
+#: repomgcliopts.h:204
+msgid "remove"
+msgstr ""
+
+#: repomgcliopts.h:204
+msgid "Remove key"
+msgstr ""
+
+#: repomgcliopts.h:206
+msgid "list"
+msgstr ""
+
+#: repomgcliopts.h:206
+msgid "List existing keys"
+msgstr ""
+
+#: repomgcliopts.h:208
+msgid "export"
+msgstr ""
+
+#: repomgcliopts.h:208
+msgid "Export updated cluster keys to a node key directory"
+msgstr ""
+
+#: repomgcliopts.h:210
+msgid "nodekey"
+msgstr ""
+
+#: repomgcliopts.h:210
+msgid "Node key management"
+msgstr ""
+
+#: repomgcliopts.h:212
+msgid "Generate a new node key"
+msgstr ""
+
+#: repomgcliopts.h:214
+msgid "Node key's name"
+msgstr ""
+
+#: repomgcliopts.h:216
+msgid "Key's bit strength (%1%); default is %2"
+msgstr ""
+
+#: repomgcliopts.h:222
+msgid "signkey"
+msgstr ""
+
+#: repomgcliopts.h:222
+msgid "Signing cluster key (default: newest)"
+msgstr ""
+
+#: repomgcliopts.h:222
+msgid "keyname"
+msgstr ""
+
+#: repomgcliopts.h:224
+msgid "certreload"
+msgstr ""
+
+#: repomgcliopts.h:224
+msgid "Reload manually installed node certificate"
+msgstr ""
+
+#: repomgcliopts.h:226 repomgcliopts.h:228 repomgcliopts.h:232
+#: repomgcliopts.h:234 repomgcliopts.h:238 repomgcliopts.h:242
+msgid "directory"
+msgstr ""
+
+#: repomgcliopts.h:230
+msgid "keyid"
+msgstr ""
+
+#: repomgcliopts.h:236
+msgid "nodekeydirectory"
+msgstr ""
+
+#: repomgcliopts.h:240
+msgid "clusterkeydirectory"
+msgstr ""

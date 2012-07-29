@@ -1,0 +1,81 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="process_request">
+  <title><function>&ns;::process_request</function>() template function</title>
+
+  <para>
+    The example in previous chapter,
+    <filename>updatethread.C</filename> uses similar code in two cases of
+    setting up a destructor callback for an asynchronous request's mcguffin.
+    Each case, a separate destructor callback class gets defined, instantiated,
+    and attached as a destructor callback for an asynchronous request's
+    mcguffin.
+  </para>
+
+  <para>
+    <ulink url="examples/updatethread/"><filename>updatethread2.C</filename></ulink>
+    is a modified version of <filename>updatethread.C</filename>.
+    It does the same thing, but uses
+    <ulink url="&link-function-stasher-process-request;"><function>&ns;::process_request</function>()</ulink>:
+  </para>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>&ns;::process_request(client-&gt;get_request(req),
+                         []
+                         (const &ns;::getresults &amp;res)
+                         {
+                            // functor
+                         });</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The <function>&ns;::process_request</function>() template function takes
+    two parameters.
+    The first parameter is a
+    return value from an asynchronous request such as
+    <function>&ns;::get_request</function>() or
+    <function>&ns;::put_request</function>().
+    The second parameter is a functor
+    with a single parameter that's consistent with the final result of the
+    request.
+    For <function>&ns;::get_request</function>() it's
+    <classname>&ns;::getresults</classname>,
+    for <function>&ns;::put_request</function>() it's
+    <classname>&ns;::putresults</classname>.
+  </para>
+
+  <para>
+    <function>&ns;::process_request</function>() installs a destructor
+    callback for the request's mcguffin that invokes the functor, with the
+    results of the request. <function>&ns;::process_request</function>()
+    uses &libx;'s <classname>x::destroyCallback::create</classname>(), which
+    logs any exceptions thrown in the callback.
+  </para>
+
+  <para>
+    Quite a bit of code from <filename>updatethread.C</filename> gets
+    replaced with just a short functor in
+    <filename>updatethread2.C</filename>.
+    The functor can capture variables, but in most cases they must be
+    captured by value; the functor works the same way that a manually-installed
+    destructor callback does, here; and it usually ends up getting invoked by
+    the &cct;, so variables need to be captured by value.
+    The limitations of destructor callback described in
+    <xref linkend="asynchronouscancannot" /> apply here too.
+  </para>
+
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

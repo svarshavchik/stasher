@@ -1,0 +1,44 @@
+/*
+** Copyright 2012 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+
+#ifndef tranuuid_H
+#define tranuuid_H
+
+#include <x/uuid.H>
+#include <x/obj.H>
+#include <x/exception.H>
+
+#include <set>
+
+#include "tranreceived.H"
+#include "tranuuidfwd.H"
+
+//! A set of transactions that were received or cancelled by a node.
+
+class tranuuidObj : public tranreceivedObj {
+
+public:
+	//! Constructor
+	tranuuidObj();
+
+	//! Destructor
+	~tranuuidObj() noexcept;
+
+	//! The set
+	std::set<x::uuid> uuids;
+
+	//! Add a bunch of uuids.
+	void received(const tranuuid &recvuuids);
+
+	//! Remove a bunch of uuids
+	void cancelled(const tranuuid &cancuuids);
+
+
+	//! Dump this object
+	void toString(std::ostream &o);
+
+};
+
+#endif

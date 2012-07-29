@@ -1,0 +1,414 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<class name="clientObj::implObj">
+
+  <method name="shutdown">
+    <comment>
+      //! Stop the node
+    </comment>    
+  </method>
+
+  <method name="getserverstatus">
+    <comment>
+      //! Request the server's status
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! The server's status gets placed here
+      </comment>
+      <decl>x::ref&lt;getserverstatusresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Request mcguffin
+
+	//! When the request is processed, the implementation thread releases
+	//! its reference on this object.
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="put">
+    <comment>
+      //! Put object into the repository
+    </comment>
+    <param type="class">
+      <comment>
+	//! Transaction
+      </comment>
+      <decl>x::ref&lt;puttransactionObj&gt; <name>transaction</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Results of the transaction
+
+	//! When the transaction completes, the results go here
+	//!
+      </comment>
+
+      <decl>x::ref&lt;putresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Request mcguffin
+
+	//! When the request is processed, the implementation thread releases
+	//! its reference on this object.
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="get">
+    <comment>
+      //! Return object contents
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Transaction
+      </comment>
+      <decl>x::ref&lt;getreqObj&gt; <name>req</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Results of the transaction
+
+	//! When the transaction completes, the results go here
+	//!
+      </comment>
+
+      <decl>x::ref&lt;getresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Request mcguffin
+
+	//! When the request is processed, the implementation thread releases
+	//! its reference on this object.
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="gethelo">
+    <comment>
+      //! Return server connection name and limits
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Request object
+      </comment>
+      <decl>x::ref&lt;getheloObj&gt; <name>limits</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Mcguffin
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="getdir">
+    <comment>
+      //! Get names of all objects in a particular directory hierarchy
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Hierarchy name
+      </comment>
+      <decl>std::string <name>hier</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Results
+      </comment>
+      <decl>x::ref&lt;getdirresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Mcguffin
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="getprops">
+    <comment>
+      //! Request server's property settings
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Object where properties are saved
+      </comment>
+      <decl>x::ref&lt;getpropsresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Mcguffin
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="setprop">
+    <comment>
+      //! Set a server property
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Property name
+      </comment>
+      <decl>x::property::propvalue <name>propname</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Property value
+      </comment>
+      <decl>x::property::propvalue <name>propvalue</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Object where properties are saved
+      </comment>
+      <decl>x::ref&lt;setpropresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Mcguffin
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="resetprop">
+    <comment>
+      //! Reset the server's property to a default value
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Property name
+      </comment>
+      <decl>x::property::propvalue <name>propname</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Object where properties are saved
+      </comment>
+      <decl>x::ref&lt;resetpropresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Mcguffin
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="certreload">
+    <comment>
+      //! Message to the server to reload its node certificate
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Request results
+      </comment>
+      <decl>x::ref&lt;certreloadresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Request mcguffin
+
+	//! When the request is processed, the implementation thread releases
+	//! its reference on this object.
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="subscribe">
+    <comment>
+      //! Subscribe for object updates
+    </comment>
+    <param type='class'>
+      <comment>
+	//! Name of an object to subscribe for updates to
+      </comment>
+      <decl>std::string <name>objname</name></decl>
+    </param>
+
+    <param type='class'>
+      <comment>
+	//! The subscriber
+      </comment>
+      <decl>client::base::subscriber <name>subscriber</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Object where subscription request status is saved
+      </comment>
+      <decl>x::ref&lt;subscriberesultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Mcguffin
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="unsubscribe">
+    <comment>
+      //! Unsubscribe to object updates
+    </comment>
+    <param>
+      <comment>
+	//! Subscription to remove
+      </comment>
+      <decl>subscriber_map_t::iterator <name>iterator</name></decl>
+    </param>
+  </method>
+
+  <method name="resign">
+    <comment>
+      //! Request that the server resign its master status. Administrative privileges required.
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Object where the status of the resignation goes
+      </comment>
+      <decl>x::ref&lt;resignresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Mcguffin
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="subscribeserverstatus">
+    <comment>
+      //! Subscribe to the server's status
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! The callback
+      </comment>
+      <decl>serverstatuscallback <name>callback</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Request mcguffin
+
+	//! When the request is processed, the implementation thread releases
+	//! its reference on this object.
+      </comment>
+      <decl>subscribeserverstatusrequest <name>req</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Request mcguffin
+
+	//! When the request is processed, the implementation thread releases
+	//! its reference on this object.
+      </comment>
+      <decl>x::ref&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="unsubscribeserverstatus">
+    <param>
+      <comment>
+	//! Unsubscribe from server status updates
+
+	//! Sent by serverstatusSubscriptionMcguffinObj's destructor.
+      </comment>
+
+      <decl>server_status_subscribers_t::iterator <name>subscriber</name></decl>
+    </param>
+  </method>
+
+  <method name="setnewcert">
+    <comment>
+      //! Install a new node certificate
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! The certificate
+      </comment>
+      <decl>std::string <name>certificate</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Object where properties are saved
+      </comment>
+      <decl>x::ref&lt;setnewcertresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Mcguffin
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+  <method name="haltrequest">
+    <comment>
+      //! Request the master controller to halt the entire cluster.
+    </comment>
+
+    <param type="class">
+      <comment>
+	//! Object where the results of the request get saved.
+      </comment>
+      <decl>x::ref&lt;haltrequestresultsObj::recvObj&gt; <name>results</name></decl>
+    </param>
+
+    <param type="class">
+      <comment>
+	//! Mcguffin
+      </comment>
+      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    </param>
+  </method>
+
+</class>

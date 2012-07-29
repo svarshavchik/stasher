@@ -1,0 +1,154 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="managedhierarchymonitor">
+  <title><methodname><classname>&ns;::manager</classname>-&gt;manage_hierarchymonitor</methodname>(): maintaining an internal snapshot of an object hierarchy</title>
+
+  <blockquote>
+    <title><ulink url="examples/manager/hierarchymonitor.C">examples/manager/hierarchymonitor.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/manager/hierarchymonitor.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This is the equivalent of a
+    <link linkend="managedobject"><methodname><classname>&ns;::manager</classname>-&gt;manage_object</methodname>()</link>
+    for hierarchies.
+    This example differs from
+    <link linkend="subscribe"><filename>subscribe.C</filename></link>,
+    that uses <methodname>subscribe</methodname>() by what information its
+    callback gets.
+    For a subscribed hierarchy,
+    <methodname>subscribe</methodname>()'s
+    <methodname>updated</methodname>() callback reports that something about
+    a particular object in the hierarchy has changed: it was either created,
+    updated, or removed, and it's up to the applicaiton to try to retrieve it,
+    and report the results.
+    This is what, essentially, a manager does for a managed hierarchy, then
+    <methodname>updated</methodname>() for a new or an updated object's
+    uuid, or <methodname>removed</methodname>() for a removed object.
+  </para>
+
+  <para>
+    Define a subclass of
+    <ulink url="&link-stasher--managedhierarchymonitorObj;"><classname>&ns;::managedhierarchymonitorObj</classname></ulink>
+    and implement its methods, as shown in this example.
+
+    <methodname><classname>&ns;::manager</classname>-&gt;manage_hierarchymonitor</methodname>()
+    takes three parameters: a client connection, the name of a hierarchy
+    (an empty string for the top level, root hierarchy, or a hierarchy name
+    <emphasis>without</emphasis> the trailing <quote>/</quote>),
+    and an <classname>x::ref</classname> to a subclass of
+    <classname>&ns;::managedhierarchymonitorObj</classname>.
+    As shown in this example, the same instance can be installed for more than
+    one managed object.
+  </para>
+
+  <para>
+    <methodname><classname>&ns;::manager</classname>-&gt;manage_hierarchymonitor</methodname>()
+    returns a mcguffin that represents the managed hierarchy. There is no
+    explicit un-manage method. The manager stops managing the hierarchy when
+    its mcguffin goes out of scope and gets destroyed.
+  </para>
+
+  <para>
+    The
+    <methodname>connection_update</methodname>() callback reports the status
+    of the subscription.
+    <methodname>connection_update</methodname>() gets invoked shortly after
+    <methodname>manage_hierarchymonitor</methodname>() returns (if not right before it),
+    and any time the status of the connection with the server changes.
+    <literal>stasher::req_processed_stat</literal> reports a success in
+    opening the managed object's subscription.
+    A <methodname>connection_update</methodname>() of
+    <literal>stasher::req_disconnected_stat</literal> indicates that the
+    connection with the &app; server was lost. In the following example, the
+    connection
+    gets lost, and then reestablished by the manager shortly thereafter.
+  </para>
+
+  <para>
+    Run <filename>hierarchymonitor.C</filename> without any arguments to monitor
+    the top level, root hierarchy. Alternatively, names of one or more
+    hierarchies are given as parameters. The main execution thread sets up the
+    subscriptions, and waits for <keycap>Enter</keycap>. All the output comes
+    from the callbacks, as documented in the example.
+  </para>
+
+  <para>
+    Start this example, subscribing to one or more objects or hierarchies,
+    then use <link linkend="put"><filename>simpleput.C</filename></link>
+    or <link linkend="stasher"><command>stasher</command></link> to
+    create, update, and remove the objects in the monitored hierarchies.
+    When monitoring more than one hierarchy, their output can get intermixed,
+    naturally:
+  </para>
+
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>$ ./hierarchymonitor "" "fruits"
+Starting subscriptions, press ENTER to stop
+Connection update: Transaction/request processed
+=== Initial contents of [root]
+Connection update: Transaction/request processed
+=== Initial contents of fruits
+=== End of [root]
+fruits/apple (zzS9QJ2JoDfj9000h8FmJm0000126mO00318n4AS)
+=== End of fruits
+fruits/banana (_DS9QJ2JoDfj9000h8FmJm0000126mO00318n4AS)
+fruits/apple (0TW9QJ2JoDfj9000h8FmJm0000126mO00318n4AS)
+fruits/banana (removed)
+Connection update: Connection to the server failed
+Connection update: Connection to the server failed
+Connection update: Transaction/request processed
+=== Initial contents of fruits
+Connection update: Transaction/request processed
+=== Initial contents of [root]
+=== End of [root]
+fruits/apple (0TW9QJ2JoDfj9000h8FmJm0000126mO00318n4AS)
+=== End of fruits</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    In this example, the top level hierarchy initially has no objects, and
+    the <quote>fruits</quote> hierarchy has an <quote>apple</quote> object.
+    The initial list of objects in each hierarchy is intermixed.
+  </para>
+
+  <para>
+    Following the initial list of objects in hierarchy, some updates are shown,
+    then the connection to the object repository server breaks, for some reason.
+    Some time later the connection gets reestablished, for both subscriptions.
+    This results in getting
+    an another list of objects in each hierarchy. This is
+    because the list of objects in each hierarchy could've changed, in the
+    mean time (it didn't here, but it could).
+  </para>
+
+  <para>
+    The manager object takes care of reconnecting. All the callbacks in this
+    example have certain limitations, see
+    <xref linkend="asynchronouscancannot" /> for more information.
+  </para>
+
+  <note>
+    <para>
+      Each managed hierarchy counts towards the client's
+      <link linkend="connlimits">connection limits</link>.
+    </para>
+  </note>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

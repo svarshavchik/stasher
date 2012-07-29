@@ -1,0 +1,66 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="managedserverstatusupdates">
+  <title><methodname><classname>&ns;::manager</classname>-&gt;manage_serverstatusupdates</methodname>(): maintaining server status updates</title>
+
+  <blockquote>
+    <title><ulink url="examples/manager/serverstatusupdates.C">examples/manager/serverstatusupdates.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/manager/serverstatusupdates.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This is a managed version of
+    <link linkend="subscribeserverstatus"><methodname>subscribeserverstatus</methodname></link>().
+    The example above is nearly identical to
+    <ulink url="examples/subscribeserverstatus.C">examples/subscribeserverstatus.C</ulink>
+    except for the subclassing of
+    <ulink url="&link-stasher--managedserverstatuscallbackObj;"><classname>&ns;::managedserverstatuscallbackObj</classname></ulink>
+    and implementint the additional <methodname>connect_update</methodname>()
+    callback with the same semantics as it has with the other
+    <methodname>manage_<replaceable>name</replaceable></methodname>()
+    methods:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout>$ ./serverstatusupdates
+Subscribing to server status, press ENTER to stop
+Connected to octopus.objrepo.example.com (cluster objrepo.example.com)
+Maximum 10 objects, 32 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+Connection update: Transaction/request processed
+Current master: monster.objrepo.example.com
+    Peer: monster.objrepo.example.com
+Quorum: full=true, majority=true
+Connection update: Connection to the server failed
+Connected to octopus.objrepo.example.com (cluster objrepo.example.com)
+Maximum 10 objects, 32 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+Connection update: Transaction/request processed
+Current master: monster.objrepo.example.com
+    Peer: monster.objrepo.example.com
+Quorum: full=true, majority=true</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    As always,
+    the manager object takes care of reconnecting. All the callbacks in this
+    example have certain limitations, see
+    <xref linkend="asynchronouscancannot" /> for more information.
+  </para>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->
