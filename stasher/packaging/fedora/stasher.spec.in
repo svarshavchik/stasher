@@ -41,7 +41,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__mkdir_p} $RPM_BUILD_ROOT%{_unitdir}
 %{__install} -m 0555 sysinit.rc $RPM_BUILD_ROOT%{_datadir}/stasher/sysinit.rc
 %{__install} -m 0555 stasher.sysinit $RPM_BUILD_ROOT%{_datadir}/stasher/sysinit
-%{__install} -m 0444 stasher.service $RPM_BUILD_ROOT%{_unitdir}
+%{__install} -m 0444 packaging/fedora/stasher.service $RPM_BUILD_ROOT%{_unitdir}
 
 touch $RPM_BUILD_ROOT%{_localstatedir}/stasher/stasher.logs
 

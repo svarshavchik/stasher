@@ -2,10 +2,10 @@ MANPAGESIN=stashermg.1.in stasher.1.in
 man1_MANS=stashermg.1 stasher.1
 sysconf_DATA=stasherlogconfig
 
-EXTRA_DIST=config.rpath repomgcli.xml opts.parse.inc.tst.C message.xsl $(myXML) stasher.spec $(MANPAGESIN) maillogs.sh.in stasherlogconfig
+EXTRA_DIST=config.rpath repomgcli.xml opts.parse.inc.tst.C message.xsl $(myXML) $(MANPAGESIN) maillogs.sh.in stasherlogconfig
 BUILT_SOURCES=localstatedir.h repomgcliopts.h stasherdpath.h
-CLEANFILES=localstatedir.h repomgcliopts.h stasherdpath.h stasher.service \
-	stasher.sysinit stasher.spec sysinit.rc $(myCLEANFILES) $(man1_MANS)
+CLEANFILES=localstatedir.h repomgcliopts.h stasherdpath.h \
+	stasher.sysinit sysinit.rc $(myCLEANFILES) $(man1_MANS)
 
 XLIBS=-lcxx
 #XLIBS=/home/mrsam/src/ng/gnutls/libxtls.la /home/mrsam/src/ng/base/libx.la
@@ -635,7 +635,28 @@ check-am:
 	./appsdir.tst
 	./verify.tst
 
-docs: Doxyfile
+docs: html/book.css
+
+html/book.css: html/ref/index.html $(wildcard docbook/*.xml)
+	rm -rf html.tmp
+	mkdir html.tmp
+	xsltproc $(srcdir)/docbook/xmllinks.xsl xml/index.xml >docbook/entities
+	xsltproc --nonet -o html.tmp/ --xinclude \
+		--param local.l10n.xml 'document("'`pwd`/docbook/l10.xml'")' \
+		$(srcdir)/docbook/docbook.xsl \
+		$(srcdir)/docbook/book.xml
+	-rm -f html/* 2>/dev/null >/dev/null || :
+	mkdir -p html
+	mv html.tmp/* html
+	rm -rf html.tmp
+	rm -rf html/examples
+	find examples -depth \( -type d -o -name '*.[CH]' -o -name '*.xml' -o -name Makefile.am -o -name configure.ac \) -print | cpio -o --quiet | (cd html; cpio -i --quiet --make-directories)
+	echo 'ForceType text/plain' >html/examples/.htaccess
+	links --dump --no-references html/INSTALL.html >INSTALL.tmp
+	mv -f INSTALL.tmp INSTALL
+	$(INSTALL) -m 0644 $(srcdir)/docbook/book.css html
+
+html/ref/index.html: Doxyfile $(wildcard stasher/*.H) $(myCLEANFILES)
 	rm -rf html/ref xml
 	mkdir -p html/ref
 	doxygen; c=$$?;	perl -p -i -e 's/INSERT_STASHER_NAMESPACE/stasher/g' html/ref/*.html; exit $$c
@@ -687,7 +708,7 @@ man.in.stamp: $(DOCBOOKSRC)
 CLEANFILES += man.in.stamp
 endif
 
-SUBDIRS = po
+SUBDIRS = po packaging/fedora
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -696,22 +717,6 @@ contracts:
 
 .PHONY: html
 
-html:
-	rm -rf html.tmp
-	mkdir html.tmp
-	xsltproc $(srcdir)/docbook/xmllinks.xsl xml/index.xml >docbook/entities
-	xsltproc --nonet -o html.tmp/ --xinclude \
-		--param local.l10n.xml 'document("'`pwd`/docbook/l10.xml'")' \
-		$(srcdir)/docbook/docbook.xsl \
-		$(srcdir)/docbook/book.xml
-	$(INSTALL) -m 0644 $(srcdir)/docbook/book.css html.tmp
-	-rm -f html/* 2>/dev/null >/dev/null || :
-	mkdir -p html
-	mv html.tmp/* html
-	rm -rf html.tmp
-	rm -rf html/examples
-	find examples -depth \( -type d -o -name '*.[CH]' -o -name '*.xml' -o -name Makefile.am -o -name configure.ac \) -print | cpio -o --quiet | (cd html; cpio -i --quiet --make-directories)
-	echo 'ForceType text/plain' >html/examples/.htaccess
 
 .PHONY: rpm
 

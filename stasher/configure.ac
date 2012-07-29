@@ -38,5 +38,8 @@ LIBCXX_INIT
 
 AM_CONDITIONAL(HAVE_DOCBOOK,[test -d ${srcdir}/docbook])
 AC_CONFIG_FILES(Doxyfile Makefile po/Makefile.in
-		stasher.spec stasher.sysinit stasher.service sysinit.rc)
+		stasher.sysinit sysinit.rc
+		packaging/fedora/Makefile
+		packaging/fedora/stasher.spec
+		packaging/fedora/stasher.service)
 AC_OUTPUT
