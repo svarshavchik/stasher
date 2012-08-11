@@ -146,8 +146,7 @@ public:
 
 	x::ptr<getsemaphoreObj> semaphore;
 
-	getinfo(const x::uuid &requuidArg)
- : requuid(requuidArg)
+	getinfo(const x::uuid &requuidArg) : requuid(requuidArg)
 	{
 	}
 };
@@ -180,7 +179,7 @@ void localconnectionObj::drain()
 
 		x::ptr<x::obj> semaphore_mcguffin;
 
-		if (p->lock->locked()
+		if (!p->lock.null() && p->lock->locked()
 		    && (p->semaphore.null() ||
 			!(semaphore_mcguffin=p->semaphore->getMcguffin())
 			.null()))
@@ -618,7 +617,7 @@ void localconnectionObj::deserialized(const STASHER_NAMESPACE::usergetuuids
 			gi.admin=false;
 	}
 
-	gi.lock=repo->lock(gi.objects, msgqueue->getEventfd());
+	check_get_lock(gi);
 
 	if (gi.openobjects)
 	{
@@ -634,6 +633,24 @@ void localconnectionObj::deserialized(const STASHER_NAMESPACE::usergetuuids
 #ifdef	DEBUG_TEST_GETQUEUE_SERVER_RECEIVED
 	DEBUG_TEST_GETQUEUE_SERVER_RECEIVED();
 #endif
+}
+
+void localconnectionObj::check_get_lock(getinfo &gi)
+{
+	if (currentstate.majority || gi.admin)
+	{
+		if (gi.lock.null())
+			gi.lock=repo->lock(gi.objects, msgqueue->getEventfd());
+	}
+	else
+	{
+		// When the cluster is not in quorum, we need to drop all
+		// locks, so that the master can sync this slave. When the slave
+		// syncs, it acquires lock each batch of objects in the
+		// repository.
+
+		gi.lock=tobjrepoObj::lockentryptr_t();
+	}
 }
 
 void localconnectionObj::usergetuuids_fail(const x::uuid &requuid,
@@ -974,10 +991,13 @@ void localconnectionObj::deserialized(const STASHER_NAMESPACE::sendupdatesreq
 }
 
 void localconnectionObj::dispatch(const quorumstatuschanged_msg &msg)
-
 {
 	stat_quorum_received=true;
 	currentstate=msg.inquorum;
+
+	for (auto &gi:*getqueue)
+		check_get_lock(gi);
+
 	quorumstatuschanged();
 }
 
@@ -999,7 +1019,6 @@ void localconnectionObj::dispatch(const clusterupdated_msg &msg)
 }
 
 void localconnectionObj::quorumstatuschanged()
-
 {
 	if (!wantupdates ||
 	    !stat_quorum_received ||

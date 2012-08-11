@@ -148,39 +148,38 @@ void tstnodes::init(std::vector<noderef> &nodes,
 	}
 }
 
+void tstnodes::setmasteron0(std::vector<noderef> &nodes)
+{
+	STASHER_NAMESPACE::nodeinfomap clusterinfo;
+
+	STASHER_NAMESPACE::nodeinfo info;
+
+	info.options.insert(std::make_pair(STASHER_NAMESPACE::nodeinfo::host_option,
+					   "localhost"));
+
+	if (useencryption)
+		info.useencryption(true);
+
+	for (size_t i=0; i<nodes.size(); ++i)
+	{
+		clusterinfo[getnodefullname(i)]=info;
+		info.nomaster(true); // 2nd and subsequent nodes
+	}
+
+	for (size_t i=0; i<nodes.size(); ++i)
+	{
+		repoclusterinfoObj::saveclusterinfo(nodes[i]->repo,
+						    clusterinfo);
+	}
+}
+
 repocontrollermasterptr
 tstnodes::startmastercontrolleron0(std::vector<noderef> &nodes)
-
 {
-        {
-                STASHER_NAMESPACE::nodeinfomap clusterinfo;
-
-                STASHER_NAMESPACE::nodeinfo info;
-
-                info.options.insert(std::make_pair(STASHER_NAMESPACE::nodeinfo::host_option,
-                                                   "localhost"));
-
-		if (useencryption)
-			info.useencryption(true);
-
-		for (size_t i=0; i<nodes.size(); ++i)
-		{
-			clusterinfo[getnodefullname(i)]=info;
-
-			info.nomaster(true);
-		}
-
-		for (size_t i=0; i<nodes.size(); ++i)
-		{
-			repoclusterinfoObj::saveclusterinfo(nodes[i]->repo,
-							    clusterinfo);
-		}
-        }
+	setmasteron0(nodes);
 
 	for (size_t i=0; i<nodes.size(); i++)
 		nodes[i]->start(true);
-
-	std::cerr << "Starting connections" << std::endl;
 
 	if (nodes.size() > 1)
 	{

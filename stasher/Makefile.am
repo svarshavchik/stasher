@@ -123,6 +123,7 @@ noinst_PROGRAMS=\
 	peerstatusannouncer.tst \
 	readtimeout.tst \
 	reconnect.tst \
+	reconnectsync.tst \
 	repoclusterinfo.tst \
 	repocontrollermaster.tst \
 	repocontrollerslave.tst \
@@ -543,6 +544,10 @@ verify_tst_SOURCES=verify.tst.C tst.nodes.C tst.nodes.H
 verify_tst_LDADD=libstasher.la
 verify_tst_LDFLAGS=-static
 
+reconnectsync_tst_SOURCES=reconnectsync.tst.C tst.nodes.C tst.nodes.H
+reconnectsync_tst_LDADD=libstasher.la
+reconnectsync_tst_LDFLAGS=-static
+
 EXTRATESTS=
 
 if extratests
@@ -634,6 +639,7 @@ check-am:
 	./managedobject3.tst
 	./appsdir.tst
 	./verify.tst
+	./reconnectsync.tst
 
 docs: html/book.css
 

@@ -50,6 +50,8 @@ public:
 	void init(std::vector<noderef> &nodes,
 		  const char *root_ns="");
 
+	void setmasteron0(std::vector<noderef> &nodes);
+
 	repocontrollermasterptr
 	startmastercontrolleron0(std::vector<noderef> &nodes);
 

@@ -255,6 +255,10 @@ private:
 
 	size_t getqueue_cnt;
 
+	//! Acquire a lock on the objects in the GET request.
+
+	void check_get_lock(getinfo &gi);
+
 	//! A GET request is ready to be processed
 
 	void getready(const getinfo &gi, STASHER_NAMESPACE::usergetuuidsreply
