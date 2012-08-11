@@ -34,7 +34,7 @@ static void test1(tstnodes &t)
 	node test(tstnodes::getnodedir(0));
 
 	test.start(false);
-	test.debugWaitQuorumStatus(true);
+	test.debugWaitFullQuorumStatus(true);
 
 	STASHER_NAMESPACE::client cl=
 		STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
@@ -107,7 +107,7 @@ static void test1(tstnodes &t)
 			test=node(tstnodes::getnodedir(0));
 			std::cerr << "Starting" << std::endl;
 			test.start(false);
-			test.debugWaitQuorumStatus(true);
+			test.debugWaitFullQuorumStatus(true);
 			std::cerr << "Started" << std::endl;
 		}
 	}

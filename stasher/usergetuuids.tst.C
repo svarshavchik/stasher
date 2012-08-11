@@ -340,8 +340,8 @@ static void test3(tstnodes &t, size_t which)
 
 	tnodes[0]->start(true);
 	tnodes[1]->start(true);
-	tnodes[0]->debugWaitQuorumStatus(false);
-	tnodes[1]->debugWaitQuorumStatus(false);
+	tnodes[0]->debugWaitFullQuorumStatus(false);
+	tnodes[1]->debugWaitFullQuorumStatus(false);
 
 	std::cerr << "started" << std::endl;
 
@@ -396,8 +396,8 @@ static void test4(tstnodes &t)
 
 	tnodes[0]->start(true);
 	tnodes[1]->start(true);
-	tnodes[0]->debugWaitQuorumStatus(false);
-	tnodes[1]->debugWaitQuorumStatus(false);
+	tnodes[0]->debugWaitFullQuorumStatus(false);
+	tnodes[1]->debugWaitFullQuorumStatus(false);
 
 	std::cerr << "started" << std::endl;
 

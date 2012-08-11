@@ -18,8 +18,8 @@ static void test1(tstnodes &t)
 	t.startmastercontrolleron0(tnodes);
 	t.any1canbemaster(tnodes);
 
-	tnodes[0]->debugWaitQuorumStatus(false);
-	tnodes[1]->debugWaitQuorumStatus(false);
+	tnodes[0]->debugWaitFullQuorumStatus(false);
+	tnodes[1]->debugWaitFullQuorumStatus(false);
 }
 
 int main(int argc, char **argv)

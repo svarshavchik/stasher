@@ -48,7 +48,7 @@ static void wait4quorum(const x::destroyCallbackFlag &cb,
 		throw EXCEPTION("[MASTERHANDOVERREQUEST] failed");
 
 	for (size_t i=0; i<tnodes.size(); i++)
-		tnodes[i]->debugWaitQuorumStatus(true);
+		tnodes[i]->debugWaitFullQuorumStatus(true);
 }
 
 static void verifymaster(size_t whichone,

@@ -85,8 +85,8 @@ static void test1(tstnodes &t)
 		t.init(tnodes);
 		t.startmastercontrolleron0_int(tnodes);
 
-		tnodes[0]->debugWaitQuorumStatus(true);
-		tnodes[1]->debugWaitQuorumStatus(true);
+		tnodes[0]->debugWaitFullQuorumStatus(true);
+		tnodes[1]->debugWaitFullQuorumStatus(true);
 
 		STASHER_NAMESPACE::client cl0=
 			STASHER_NAMESPACE::client::base::admin(tstnodes::getnodedir(0));
@@ -121,8 +121,8 @@ static void test1(tstnodes &t)
 		t.init(tnodes);
 		t.startmastercontrolleron0_int(tnodes);
 
-		tnodes[0]->debugWaitQuorumStatus(true);
-		tnodes[0]->debugWaitQuorumStatus(true);
+		tnodes[0]->debugWaitFullQuorumStatus(true);
+		tnodes[0]->debugWaitFullQuorumStatus(true);
 
 		STASHER_NAMESPACE::client cl0=
 			STASHER_NAMESPACE::client::base::admin(tstnodes::getnodedir(0));

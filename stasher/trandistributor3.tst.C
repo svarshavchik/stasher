@@ -357,9 +357,9 @@ void test2()
 	a.listener->connectpeers();
 	a.debugWait4AllConnections();
 
-	a.debugWaitQuorumStatus(true);
-	b.debugWaitQuorumStatus(true);
-	c.debugWaitQuorumStatus(true);
+	a.debugWaitFullQuorumStatus(true);
+	b.debugWaitFullQuorumStatus(true);
+	c.debugWaitFullQuorumStatus(true);
 
 	std::cerr << "In quorum" << std::endl;
 	{
@@ -516,8 +516,8 @@ void test3()
 	a.listener->connectpeers();
 	a.debugWait4AllConnections();
 
-	a.debugWaitQuorumStatus(true);
-	b.debugWaitQuorumStatus(true);
+	a.debugWaitFullQuorumStatus(true);
+	b.debugWaitFullQuorumStatus(true);
 
 	x::ptr<test2loggerobj> logger(x::ptr<test2loggerobj>::create());
 	x::ptr<test2enumobj> aenum(new test2enumobj(a.repo, "a", logger)),
@@ -581,8 +581,8 @@ void test3()
 
 		std::cerr << "Waiting for quorum" << std::endl;
 
-		a.debugWaitQuorumStatus(true);
-		b.debugWaitQuorumStatus(true);
+		a.debugWaitFullQuorumStatus(true);
+		b.debugWaitFullQuorumStatus(true);
 
 		std::cerr << "Waiting for transaction to complete" << std::endl;
 
@@ -664,9 +664,9 @@ void test4()
 	a.listener->connectpeers();
 	a.debugWait4AllConnections();
 
-	a.debugWaitQuorumStatus(true);
-	b.debugWaitQuorumStatus(true);
-	c.debugWaitQuorumStatus(true);
+	a.debugWaitFullQuorumStatus(true);
+	b.debugWaitFullQuorumStatus(true);
+	c.debugWaitFullQuorumStatus(true);
 
 	{
 		nodeclusterstatus as=*clusterinfoObj::status(a.repocluster);

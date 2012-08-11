@@ -228,11 +228,11 @@ void test3()
 
 	anode.start(true);
 	bnode.start(true);
-	anode.debugWaitQuorumStatus(false);
-	bnode.debugWaitQuorumStatus(false);
+	anode.debugWaitFullQuorumStatus(false);
+	bnode.debugWaitFullQuorumStatus(false);
 	anode.listener->connectpeers();
-	anode.debugWaitQuorumStatus(true);
-	bnode.debugWaitQuorumStatus(true);
+	anode.debugWaitFullQuorumStatus(true);
+	bnode.debugWaitFullQuorumStatus(true);
 
 	tobjrepoObj::values_t valuesMap;
 	std::set<std::string> notfound;

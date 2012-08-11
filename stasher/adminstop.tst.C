@@ -56,8 +56,8 @@ static void test1(tstnodes &t)
 	test.start(false);
 	test2.start(false);
 
-	test.debugWaitQuorumStatus(true);
-	test2.debugWaitQuorumStatus(true);
+	test.debugWaitFullQuorumStatus(true);
+	test2.debugWaitFullQuorumStatus(true);
 
 	STASHER_NAMESPACE::client
 		cl=STASHER_NAMESPACE::client::base::admin(tstnodes::getnodedir(0));

@@ -458,13 +458,13 @@ void test1()
 
 	a.start(true);
 	b.start(true);
-	a.debugWaitQuorumStatus(false);
-	b.debugWaitQuorumStatus(false);
+	a.debugWaitFullQuorumStatus(false);
+	b.debugWaitFullQuorumStatus(false);
 	a.listener->connectpeers();
 
 	std::cerr << "Waiting for quorum" << std::endl;
-	a.debugWaitQuorumStatus(true);
-	b.debugWaitQuorumStatus(true);
+	a.debugWaitFullQuorumStatus(true);
+	b.debugWaitFullQuorumStatus(true);
 
 	repocontrollermasterptr
 		master(a.repocluster->getCurrentController());
@@ -803,9 +803,9 @@ static void test5(tstnodes &t, int n)
 	std::cerr << "Waiting until quorum is reestablished"
 		  << std::endl;
 
-	a.debugWaitQuorumStatus(true);
-	b.debugWaitQuorumStatus(true);
-	c.debugWaitQuorumStatus(true);
+	a.debugWaitFullQuorumStatus(true);
+	b.debugWaitFullQuorumStatus(true);
+	c.debugWaitFullQuorumStatus(true);
 
 	std::cerr << "Commiting a sample transaction" << std::endl;
 
@@ -872,9 +872,9 @@ static void test6(tstnodes &t, int n)
 	std::cerr << "Waiting until quorum is reestablished"
 		  << std::endl;
 
-	a.debugWaitQuorumStatus(true);
-	b.debugWaitQuorumStatus(true);
-	c.debugWaitQuorumStatus(true);
+	a.debugWaitFullQuorumStatus(true);
+	b.debugWaitFullQuorumStatus(true);
+	c.debugWaitFullQuorumStatus(true);
 
 	std::cerr << "Commiting a sample transaction" << std::endl;
 

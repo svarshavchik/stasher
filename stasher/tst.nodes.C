@@ -185,7 +185,7 @@ tstnodes::startmastercontrolleron0(std::vector<noderef> &nodes)
 	if (nodes.size() > 1)
 	{
 		for (size_t i=0; i<nodes.size(); i++)
-			nodes[i]->debugWaitQuorumStatus(false);
+			nodes[i]->debugWaitFullQuorumStatus(false);
 
 		for (size_t i=0; i<nodes.size(); i++)
 		{
@@ -200,7 +200,7 @@ tstnodes::startmastercontrolleron0(std::vector<noderef> &nodes)
 	}
 
 	for (size_t i=0; i<nodes.size(); i++)
-		nodes[i]->debugWaitQuorumStatus(true);
+		nodes[i]->debugWaitFullQuorumStatus(true);
 
 	return nodes[0]->repocluster->getCurrentController();
 }

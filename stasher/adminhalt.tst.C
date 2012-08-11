@@ -20,8 +20,8 @@ static void test1(tstnodes &t)
 
 	repocontrollermasterptr master=t.startmastercontrolleron0(tnodes);
 
-	tnodes[0]->debugWaitQuorumStatus(true);
-	tnodes[1]->debugWaitQuorumStatus(true);
+	tnodes[0]->debugWaitFullQuorumStatus(true);
+	tnodes[1]->debugWaitFullQuorumStatus(true);
 	std::cerr << "Sending stop from the master controller" << std::endl;
 	master->debugHalt();
 	master=repocontrollermasterptr();
@@ -39,8 +39,8 @@ static void test2(tstnodes &t)
 
 	t.startmastercontrolleron0_int(tnodes);
 
-	tnodes[0]->debugWaitQuorumStatus(true);
-	tnodes[1]->debugWaitQuorumStatus(true);
+	tnodes[0]->debugWaitFullQuorumStatus(true);
+	tnodes[1]->debugWaitFullQuorumStatus(true);
 
 	nodeclusterstatus status=
 		*clusterinfoObj::status(clusterinfo(tnodes[0]->repocluster));
@@ -76,8 +76,8 @@ static void test3(tstnodes &t)
 
 	t.startmastercontrolleron0_int(tnodes);
 
-	tnodes[0]->debugWaitQuorumStatus(true);
-	tnodes[1]->debugWaitQuorumStatus(true);
+	tnodes[0]->debugWaitFullQuorumStatus(true);
+	tnodes[1]->debugWaitFullQuorumStatus(true);
 
 	std::cout
 		<< STASHER_NAMESPACE::client::base::admin(tstnodes

@@ -22,8 +22,8 @@ static void test1(tstnodes &t)
 	t.init(tnodes);
 	t.startmastercontrolleron0_int(tnodes);
 
-	tnodes[0]->debugWaitQuorumStatus(true);
-	tnodes[1]->debugWaitQuorumStatus(true);
+	tnodes[0]->debugWaitFullQuorumStatus(true);
+	tnodes[1]->debugWaitFullQuorumStatus(true);
 
 	std::list<x::gnutls::x509::crt> dummy;
 

@@ -71,13 +71,13 @@ static void test1(tstnodes &t)
 		tnodes[i]->start(false);
 
 	for (size_t i=0; i<tnodes.size(); i++)
-		tnodes[i]->debugWaitQuorumStatus(true);
+		tnodes[i]->debugWaitFullQuorumStatus(true);
 
 	dummytran(tnodes, "test1.part1.");
 	std::cerr << "Shutting down one node." << std::endl;
 
 	tnodes[1]=tstnodes::noderef();
-	tnodes[0]->debugWaitQuorumStatus(false);
+	tnodes[0]->debugWaitFullQuorumStatus(false);
 
 	std::cerr << "Restarting node without autoconnect" << std::endl;
 
@@ -85,8 +85,8 @@ static void test1(tstnodes &t)
 	tnodes[1]->start(true);
 
 	std::cerr << "Waiting for reconnect" << std::endl;
-	tnodes[0]->debugWaitQuorumStatus(true);
-	tnodes[0]->debugWaitQuorumStatus(true);
+	tnodes[0]->debugWaitFullQuorumStatus(true);
+	tnodes[0]->debugWaitFullQuorumStatus(true);
 	dummytran(tnodes, "test1.part2.");
 	std::cerr << "Done" << std::endl;
 }

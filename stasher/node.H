@@ -130,10 +130,13 @@ public:
 
 	void wait();
 
+	//! For regression tests - wait for a full quorum to be established or un-established
 
-	//! For regression tests - wait for a quorum to be established or un-established
+	void debugWaitFullQuorumStatus(bool flag);
 
-	void debugWaitQuorumStatus(bool flag);
+	//! For regression tests - wait for a majority quorum to be established or un-established
+
+	void debugWaitMajorityQuorumStatus(bool flag);
 
 	//! For regression tests - wait for all connections to come up
 

@@ -89,7 +89,6 @@ public:
 
 	void removed(const std::string &objname,
 		     const x::ptr<x::obj> &lock)
-
 	{
 	}
 };
@@ -347,9 +346,11 @@ class node::quorumcbObj:
 	public STASHER_NAMESPACE::repoclusterquorumcallbackbaseObj {
 
 public:
-	x::mpcobj<bool> flag;
-		
-	quorumcbObj() : flag(false)
+	typedef x::mpcobj<STASHER_NAMESPACE::quorumstate> flag_t;
+
+	flag_t flag;
+
+	quorumcbObj() : flag(false, false)
 	{
 	}
 
@@ -358,31 +359,48 @@ public:
 	}
 
 	void quorum(const STASHER_NAMESPACE::quorumstate &state)
-
 	{
-		x::mpcobj<bool>::lock lock(flag);
+		flag_t::lock lock(flag);
 
-		*lock=state.full;
+		*lock=state;
 		lock.notify_all();
 	}
 
-	void wait4(bool forwhat)
+	void wait4full(bool forwhat)
 	{
-		x::mpcobj<bool>::lock lock(flag);
+		flag_t::lock lock(flag);
 
-		while (*lock != forwhat)
+		while (lock->full != forwhat)
+			lock.wait();
+	}
+
+	void wait4majority(bool forwhat)
+	{
+		flag_t::lock lock(flag);
+
+		while (lock->majority != forwhat)
 			lock.wait();
 	}
 };
 
-void node::debugWaitQuorumStatus(bool flag)
+void node::debugWaitFullQuorumStatus(bool flag)
 {
-	x::ptr<quorumcbObj> quorumstatus=x::ptr<quorumcbObj>::create();
+	x::ref<quorumcbObj> quorumstatus=x::ref<quorumcbObj>::create();
 
 	repocluster->installQuorumNotification(quorumstatus);
 
 	(void)repocluster->debug_inquorum();
-	quorumstatus->wait4(flag);
+	quorumstatus->wait4full(flag);
+}
+
+void node::debugWaitMajorityQuorumStatus(bool flag)
+{
+	x::ref<quorumcbObj> quorumstatus=x::ref<quorumcbObj>::create();
+
+	repocluster->installQuorumNotification(quorumstatus);
+
+	(void)repocluster->debug_inquorum();
+	quorumstatus->wait4majority(flag);
 }
 
 class node::wait4allconnections : public clusternotifierObj {
@@ -430,7 +448,7 @@ public:
 
 void node::debugWait4AllConnections()
 {
-	x::ptr<wait4allconnections> w(x::ptr<wait4allconnections>::create());
+	x::ref<wait4allconnections> w(x::ref<wait4allconnections>::create());
 
 	repocluster->installnotifycluster(w);
 	w->wait();
