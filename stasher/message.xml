@@ -60,7 +60,7 @@ See COPYING for distribution information.
 	  //! Formatted server status
 	</comment>
 	<decl>std::string <name>report</name></decl>
-	<default>clientObj::lost_connection_errmsg</default>
+	<default>std::string(clientObj::lost_connection_errmsg) + "\n"</default>
       </field>
     </results>
   </message>
