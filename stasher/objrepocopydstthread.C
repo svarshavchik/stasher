@@ -135,8 +135,9 @@ void objrepocopydstthreadObj::event(const objrepocopy::masterack &msg)
 }
 
 void objrepocopydstthreadObj::dispatch(const event_batonrequest_msg &msg)
-
 {
+	LOG_DEBUG("Received BATONREQUEST");
+
 	objrepocopy::batonresponse ack;
 
 	if (!batonp->null())
@@ -214,16 +215,17 @@ void objrepocopydstthreadObj
 }
 
 void objrepocopydstthreadObj::dispatch(const event_masterlistdone_msg &msg)
-
 {
+	LOG_DEBUG("Received MASTERLISTDONE");
 	objrepocopy::slavelistready ack;
 
 	getsrc()->event(ack);
 }
 
 void objrepocopydstthreadObj::dispatch(const event_slaveliststart_msg &msg)
-
 {
+	LOG_DEBUG("Received SLAVELISTSTART");
+
 	uuidenumref=x::ptr<uuidenumObj>::create(*repo, this);
 
 	objrepocopy::masterack dummy;

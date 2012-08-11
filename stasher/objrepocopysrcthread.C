@@ -12,6 +12,7 @@
 #include "baton.H"
 
 #include <x/threads/run.H>
+#include <x/join.H>
 
 LOG_CLASS_INIT(objrepocopysrcthreadObj);
 
@@ -96,12 +97,10 @@ public:
 	~notifierObj() noexcept;
 
 	void installed(const std::string &objname,
-		       const x::ptr<x::obj> &lock)
-;
+		       const x::ptr<x::obj> &lock);
 
 	void removed(const std::string &objname,
-		       const x::ptr<x::obj> &lock)
-;
+		       const x::ptr<x::obj> &lock);
 };
 
 objrepocopysrcthreadObj::notifierObj
@@ -146,6 +145,9 @@ objrepocopysrcthreadObj::copycompleteObj
 
 objrepocopysrcthreadObj::copycompleteObj::~copycompleteObj() noexcept
 {
+	LOG_DEBUG("copycomplete destructor invoked, status: "
+		  << succeededflag);
+
 	try {
 		if (succeededflag)
 			release();
@@ -250,6 +252,8 @@ void objrepocopysrcthreadObj::dispatch(const event_batonresponse_msg &msg)
 {
 	if (!batonp->null() && x::tostring((*batonp)->batonuuid) == msg.msg.uuid)
 	{
+		LOG_DEBUG("Received valid BATONRESPONSE");
+
 		// Short-circuited
 
 #ifdef DEBUG_BATON_TEST_6_VERIFY
@@ -259,6 +263,8 @@ void objrepocopysrcthreadObj::dispatch(const event_batonresponse_msg &msg)
 		dispatch(event_slavelistdone_msg(objrepocopy::slavelistdone()));
 		return;
 	}
+
+	LOG_DEBUG("Ignoring BATONRESPONSE");
 
 	*batonp=batonptr();
 
@@ -273,10 +279,8 @@ void objrepocopysrcthreadObj::dispatch(const event_batonresponse_msg &msg)
 }
 
 void objrepocopysrcthreadObj::dispatch(const event_slavelist_msg &msg)
-
 {
-	void (objrepocopysrcthreadObj::*ack_func)(objuuidlist &uuidlist)
-;
+	void (objrepocopysrcthreadObj::*ack_func)(objuuidlist &uuidlist);
 
 	objuuidlist uuid;
 
@@ -358,6 +362,10 @@ void objrepocopysrcthreadObj
 	{
 		x::eventfd eventfd(msgqueue->getEventfd());
 
+		LOG_DEBUG("Locking repository for: "
+			  << x::join(object_names.begin(),
+				     object_names.end(), ", "));
+
 		lock=(*repo)->lock(object_names, eventfd);
 
 		while (!lock->locked())
@@ -367,6 +375,10 @@ void objrepocopysrcthreadObj
 
 			eventfd->event();
 		}
+
+		LOG_DEBUG("Locked repository for: "
+			  << x::join(object_names.begin(),
+				     object_names.end(), ", "));
 
 		std::set<std::string> dummy;
 
@@ -401,8 +413,9 @@ void objrepocopysrcthreadObj
 }
 
 void objrepocopysrcthreadObj::dispatch(const event_slavelistready_msg &msg)
-
 {
+	LOG_DEBUG("Received SLAVELISTREADY");
+
 	objrepocopy::slaveliststart ack;
 
 	getdst()->event(ack);
@@ -411,13 +424,17 @@ void objrepocopysrcthreadObj::dispatch(const event_slavelistready_msg &msg)
 void objrepocopysrcthreadObj::dispatch(const event_slavelistdone_msg &msg)
 
 {
+	LOG_DEBUG("Received SLAVELISTDONE");
+
 	(*complete_ptr)->setSuccesfull(*batonp);
+	LOG_DEBUG("Invoking stop()");
 	stop();
 }
 
 tobjrepoObj::commitlock_t objrepocopysrcthreadObj::getcommitlock()
-
 {
+	LOG_DEBUG("Acquiring commit lock");
+
 	x::eventfd eventfd(msgqueue->getEventfd());
 
 	tobjrepoObj::commitlock_t commitLock=(*repo)->commitlock(eventfd);
@@ -429,6 +446,7 @@ tobjrepoObj::commitlock_t objrepocopysrcthreadObj::getcommitlock()
 
 		eventfd->event();
 	}
+	LOG_DEBUG("Commit lock acquired");
 
 	return commitLock;
 }
