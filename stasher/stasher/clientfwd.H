@@ -313,6 +313,14 @@ class clientBase;
 //! the request, and returns the contents object.
 //!
 //! \code
+//! contents res=cluser->get("fruits/apple", "fruits/banana", true)->objects;
+//! \endcode
+//!
+//! This is a convenience variadic template function that takes literal
+//! object names passed as a variadic parameter list, with an optional
+//! \c bool that sets the \c openobjects flag.
+//!
+//! \code
 //! client::base::contentsreq req=client::base::contentsreq::create();
 //!
 //! req->objects.insert("obj1");

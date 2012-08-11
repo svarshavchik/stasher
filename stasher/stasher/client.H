@@ -208,8 +208,8 @@ public:
 	//! on the fly.
 
 	getresults get(const std::set<std::string> &objnames,
-				       bool openobjects=false,
-				       bool admin=false);
+		       bool openobjects=false,
+		       bool admin=false);
 
 	//! Return connection limits
 
@@ -226,6 +226,56 @@ public:
 	//! Error message -- lost connection with server
 
 	static const char lost_connection_errmsg[] LIBCXX_HIDDEN;
+
+	//! Return uuids of objects on the server
+
+	//! This is an overloaded variadic version, for convenience.
+
+	template<typename ...Args>
+	getresults get(const std::string &objname,
+		       Args && ...args)
+	{
+		x::ref<getreqObj> req(x::ref<getreqObj>::create());
+
+		req->objects.insert(objname);
+		return get_variadic(req, std::forward<Args>(args)...);
+	}
+
+private:
+	//! Implementation of the variadic get().
+
+	//! Consumed all arguments.
+	//!
+	getresults get_variadic(x::ref<getreqObj> &req)
+	{
+		return get(req);
+	}
+
+	//! Implementation of the variadic get().
+
+	//! The bool openobject parameter got specified
+
+	getresults get_variadic(x::ref<getreqObj> &req,
+				bool openobjects,
+				bool admin=false)
+	{
+		req->openobjects=openobjects;
+		req->admin=admin;
+		return get(req);
+	}
+
+	//! Implementation of the variadic get().
+
+	//! The next object name is specified.
+
+	template<typename ...Args>
+	getresults get_variadic(x::ref<getreqObj> &req,
+				const std::string &objname,
+				Args && ...args)
+	{
+		req->objects.insert(objname);
+		return get_variadic(req, std::forward<Args>(args)...);
+	}
 };
 
 //! Refer to this class as \c INSERT_STASHER_NAMESPACE::client::base or \c INSERT_STASHER_NAMESPACE::clientptr::base.

@@ -114,17 +114,38 @@ See COPYING for distribution information.
       This method takes a
       <classname>&ns;::client::base::getreq</classname> as a
       parameter.
-      This is an <classname>x::ref</classname> to an object with a
-      <classname>bool</classname> <varname>openobjects</varname> (and a
-      default of <literal>false</literal>), and a
+      This is an <classname>x::ref</classname> to an object with two
+      documented members: a
+      <classname>bool</classname> <varname>openobjects</varname> (defaults to
+      <literal>false</literal>); and a
       <classname>std::set &lt;std::string&gt;</classname>
-      <varname>objects</varname>.
+      <varname>objects</varname>, which enumerates the names of objects
+      to retrieve from the object repository.
     </para>
 
     <para>
       <varname>objects</varname> lists the names of objects to retrieve, in one
       transaction. They cannot exceed the limit on the maximum number of objects
       in a transaction.
+    </para>
+
+    <para>
+      The objects are arranged in a hierarchy, with <quote>/</quote> as
+      a hierarchy separator, like a filesystem but with two key differences:
+      there is no concept of a <quote>current directory</quote> and all
+      object names are absolute, without the leading <quote>/</quote>;
+      and there is no explicit equivalent to creating or removing
+      directories. Put an object named <quote>fruits/apple</quote>, and
+      the <quote>fruits</quote> hierarchy appears, if it did not exist
+      before. Remove the <quote>fruits/apple</quote> object, and the
+      <quote>fruits</quote> hierarchy disappears unless some other object is
+      still in there.
+    </para>
+
+    <para>
+      Although &app; does not explicitly interpret the objects in any way,
+      aside from implementing the object hierarchy, the client convention
+      is to use the <literal>UTF-8</literal> codeset.
     </para>
 
     <para>
