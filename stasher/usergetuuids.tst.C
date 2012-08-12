@@ -360,6 +360,10 @@ static void test3(tstnodes &t, size_t which)
 		set.insert("foobar");
 
 		cl->get(set, which > 0, true); // [FORCEGETADMIN]
+
+		// test3 waits for the hook, then calls connectpeers().
+		// Connection is made, quorum gets established, get()
+		// succeeds.
 	}
 
 	std::cerr << "retrieved" << std::endl;

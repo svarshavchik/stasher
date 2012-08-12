@@ -166,17 +166,6 @@ void localconnectionObj::drain()
 	{
 		++b;
 
-		if (!p->admin)
-		{
-			if (!currentstate.majority)
-			{
-#ifdef DEBUG_LOCALCONNECTION_NOTQUORUM
-				DEBUG_LOCALCONNECTION_NOTQUORUM();
-#endif
-				continue;
-			}
-		}
-
 		x::ptr<x::obj> semaphore_mcguffin;
 
 		if (!p->lock.null() && p->lock->locked()
@@ -650,6 +639,10 @@ void localconnectionObj::check_get_lock(getinfo &gi)
 		// repository.
 
 		gi.lock=tobjrepoObj::lockentryptr_t();
+
+#ifdef DEBUG_LOCALCONNECTION_NOTQUORUM
+		DEBUG_LOCALCONNECTION_NOTQUORUM();
+#endif
 	}
 }
 
