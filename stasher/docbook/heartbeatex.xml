@@ -1,0 +1,197 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="heartbeatex">
+  <title>A heartbeat example</title>
+
+  <blockquote>
+    <title><ulink url="examples/heartbeat.C">examples/heartbeat.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/heartbeat.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This example demonstrates the recommended design pattern for implementing
+    heartbeats:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	The update functor sends a message to a separate thread, consisting
+	of the <classname>update_type_t</classname> token. This example
+	implements a thread queue manually, using
+	<classname>std::deque</classname>. A real application will
+	typically use &libx;'s message dispatching framework.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	The heartbeat update thread gets the heartbeat object as a parameter
+	to its <methodname>run()</methodname>, which is stored on the
+	executing thread's stack. This ensures that when the thread
+	terminates, its reference on the heartbeat object goes out of scope
+	and gets destroyed.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Upon receiving the message, the thread invokes the heartbeat
+	object's <methodname>update</methodname>() method, passing it the
+	<classname>update_type_t</classname> handle, and the instance's
+	current status.
+      </para>
+
+      <para>
+	Aside from the periodically-scheduled updates of the instance's
+	heartbeat status, the application requests an explicit update to
+	its posted heartbeat status by invoking
+	<methodname>update</methodname>() and passing
+	<literal>&ns;::heartbeat&lt;<replaceable>application_id</replaceable>,<replaceable>application_status</replaceable>&gt;::base::app_update</literal>
+	for the <classname>update_type_t</classname> parameter.
+	In this example, the main execution thread arranges that by
+	passing it as a message to the heartbeat thread, and have the
+	heartbeat thread handle it like all the other update messages.
+      </para>
+
+      <note>
+	<para>
+	  Not every call to <methodname>update</methodname>() results
+	  in the heartbeat object getting updated in the &app;
+	  object repository. This is transparent to the application. The
+	  application should invoke <methodname>update</methodname>() in
+	  response to every invocation of the update functor, and let
+	  <classname>&ns;::heartbeat</classname> figure out what needs to be
+	  done.
+	</para>
+      </note>
+    </listitem>
+
+    <listitem>
+      <para>
+	The heartbeat object must go out of scope and get destroyed
+	<link linkend="heartbeatdestroy">before
+	the client connection handle</link>.
+	In this example, <function>post_update</function>() does that by:
+      </para>
+
+      <orderedlist>
+	<listitem>
+	  <para>
+	    Constructing the client connection handle and the manager object
+	    first, then the thread object, then the heartbeat object.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Constructing a manual guard object whose destructor waits for
+	    the thread to stop.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Starting the thread as the last order of business.
+	  </para>
+	</listitem>
+      </orderedlist>
+
+      <para>
+	When these objects go out of scope in reverse order, the guard
+	object stops the thread first. The thread object maintains its
+	reference on the heartbeat object on its execution stack. So with the
+	thread stopped, once the thread and the heartbeat object go out of
+	scope, there cannot be any other references to the heartbeat object.
+	Next, the manager object and the client connection handle can safely
+	go otu of scope and get destroyed.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    Here's the expected output from running this example:
+  </para>
+
+  <informalexample>
+    <computeroutput>
+      <literallayout> ./heartbeat
+Type (blindly) then ENTER to update this instance status, empty line to quit
+-------------------------------------------------------------------------------
+octopus.objrepo.example.com, pid 28837: First instance's status
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+octopus.objrepo.example.com, pid 28837: First instance's status
+octopus.objrepo.example.com, pid 28916: (none)
+-------------------------------------------------------------------------------
+
+<emphasis>Second instance</emphasis>
+-------------------------------------------------------------------------------
+octopus.objrepo.example.com, pid 28837: First instance's status
+octopus.objrepo.example.com, pid 28916: Second instance
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+octopus.objrepo.example.com, pid 28916: Second instance
+-------------------------------------------------------------------------------
+</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    When this process starts, another instance already runs,
+    process 28837, and the heartbeat object contains its existing status.
+    Immediately afterward, the heartbeat object posts its first update,
+    an initial, empty status.
+  </para>
+
+  <para>
+    This is a documented function of the update functor:
+    it gets invoked any time the heartbeat object changes. The update functor
+    also gets invoked at other times, too. This
+    includes the initial contents of the heartbeat object, and this also
+    includes any time the application instance updates its heartbeat.
+    Invoking <methodname>update</methodname>() results in another invocation
+    of the update functor,
+    and another call to <methodname>update</methodname>(), but the second
+    call to <methodname>update</methodname>() does not result in another
+    update to the heartbeat object. The application
+    does not need to implement that logic, but should just pass along
+    the <classname>update_type_t</classname> to
+    <methodname>update</methodname>().
+  </para>
+
+  <para>
+    Therefore, each time the heartbeat thread gets an update message,
+    it checks the current contents of the heartbeat object, and if it's
+    different than the previous value, it gets displayed.
+  </para>
+
+  <para>
+    In the above example,
+    <quote><emphasis>Second instance</emphasis></quote> gets read by the
+    main thread from standard input, then posted as this instance's
+    new status, which gets immediately shown as a result of the heartbeat
+    object update.
+  </para>
+
+  <para>
+    Some time later, the other instance of the application, process
+    28837 stops, and this instance's periodic refresh of the heartbeat
+    object removes its status.
+  </para>
+</section>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

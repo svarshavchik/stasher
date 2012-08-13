@@ -56,6 +56,7 @@ pkginclude_HEADERS=\
 	stasher/current.H		\
 	stasher/currentbase.H		\
 	stasher/contents.H		\
+	stasher/heartbeat.H		\
 	stasher/managedconnectionupdate.H	\
 	stasher/managedhierarchymonitor.H	\
 	stasher/managedobject.H			\
@@ -100,6 +101,7 @@ noinst_PROGRAMS=\
 	fdobjreaderthread.tst \
 	fdobjrwthread.tst \
 	fdobjwriterthread.tst \
+	heartbeat.tst \
 	managedhierarchymonitor.tst \
 	managedserverstatuscallback.tst \
 	managedusersubscribe.tst \
@@ -155,6 +157,7 @@ libstasher_client_la_SOURCES=\
 	client.C                                           \
 	clusterstate.C                                     \
 	dirs.C dirs.H                                      \
+	heartbeat.C                                        \
 	fdobjreaderthread.C fdobjreaderthread.H            \
 	fdobjrwthread.C fdobjrwthread.H                    \
 	fdobjwriterthread.C fdobjwriterthread.H            \
@@ -548,6 +551,10 @@ reconnectsync_tst_SOURCES=reconnectsync.tst.C tst.nodes.C tst.nodes.H
 reconnectsync_tst_LDADD=libstasher.la
 reconnectsync_tst_LDFLAGS=-static
 
+heartbeat_tst_SOURCES=heartbeat.tst.C tst.nodes.C tst.nodes.H
+heartbeat_tst_LDADD=libstasher.la
+heartbeat_tst_LDFLAGS=-static
+
 EXTRATESTS=
 
 if extratests
@@ -640,6 +647,7 @@ check-am:
 	./appsdir.tst
 	./verify.tst
 	./reconnectsync.tst
+	./heartbeat.tst
 
 docs: html/book.css
 

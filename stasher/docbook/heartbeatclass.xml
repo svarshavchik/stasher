@@ -1,0 +1,50 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="heartbeatclass">
+  <title>Application identifiers and status template parameters</title>
+
+  <para>
+    <ulink url="&link-stasher--heartbeat;"><classname>&ns;::heartbeat</classname></ulink>'s
+    template parameter defines the class that holds each instance's metadata:
+  </para>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+typedef &ns;::heartbeat&lt;std::string, std::string&gt; heartbeat;</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <classname>&ns;::heartbeat</classname> takes two template parameters:
+    a class that identifies each instance of an application, and a class
+    that defines each instance's status. In this example, both are a
+    <classname>std::string</classname>. Both classes can be
+    any class that can be serialized by &libx;.
+    Depending on other usage of those classes, they may also need to
+    support stringability using &libx;'s <function>x::tostring</function>().
+    The application ID class must also implement strict weak ordering,
+    using <function>operator &lt;</function>(),
+    and possibly other kinds of ordering operators.
+  </para>
+
+  <para>
+    The application heartbeat is, essentially, a
+    <classname>std::map&lt;<replaceable>application_id_class</replaceable>,<replaceable>status_class</replaceable>&gt;</classname>.
+    Additionally, the status class can be a <classname>void</classname>.
+    This specifies no metadata, and <classname>&ns;::heartbeat</classname>
+    just posts periodic updates without
+    any associated status metadata.
+  </para>
+</section>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

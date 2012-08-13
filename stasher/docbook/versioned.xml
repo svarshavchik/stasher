@@ -75,7 +75,7 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    These templates and classes create any updating mechanism of their
+    These templates and classes do not use any updating mechanism of their
     own. They work together with the
     <link linkend="currentobj"><classname>&ns;::current&lt;<replaceable>classptr</replaceable>&gt;</classname></link>
     class template, which is based on the

@@ -1,0 +1,52 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="heartbeatupdate">
+  <title>Heartbeat updates</title>
+
+  <para>
+    The last parameter to <classname>&ns;::heartbeat</classname>'s
+    constructor is a functor that takes a
+    <classname>&ns;::heartbeat&lt;<replaceable>application_id</replaceable>,<replaceable>application_status</replaceable>&gt;::base::update_type_t</classname> parameter.
+    <classname>&ns;::heartbeat</classname> uses a timer thread to
+    invoke this functor periodically, according to the refresh interval.
+    The functor can also get invoked for other reasons.
+  </para>
+
+  <para>
+    The <classname>update_type_t</classname> parameter is an opaque
+    value. The expected result from invoking the functor is that
+    the heartbeat object's <methodname>update</methodname>() gets invoked.
+    <methodname>update</methodname>() takes two parameters, the
+    original <classname>update_type_t</classname> value that the functor
+    received, and an
+    <classname><replaceable>application_status</replaceable></classname>
+    representing the application instance's current status, which gets
+    posted as the instance's current heartbeat.
+  </para>
+
+  <para>
+    The update functor does not typically invoke the heartbeat object's
+    <methodname>update</methodname>(). The functor gets passed to
+    <classname>&ns;::heartbeat</classname>'s constructor, so the functor
+    gets created before the heartbeat object.
+    The example in the next section shows the recommended implementation of
+    the update functor: the only thing it does is send a message to a thread
+    that takes the constructed hearbeat object as a parameter to its
+    <methodname>run</methodname>(), and the thread invokes
+    <methodname>update</methodname>() when it gets the update message.
+    The functor gets typically invoked from the &cct;, and it can't afford
+    to engage in lengthy, time consuming duties. Having the update functor
+    only send a message to a thread is the recommended approach.
+  </para>
+</section>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

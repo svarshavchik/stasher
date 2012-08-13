@@ -45,6 +45,12 @@
 <!ENTITY versioned SYSTEM "versioned.xml">
 <!ENTITY versionedptr SYSTEM "versionedptr.xml">
 <!ENTITY versionedput SYSTEM "versionedput.xml">
+<!ENTITY heartbeat SYSTEM "heartbeat.xml">
+<!ENTITY heartbeatcreate SYSTEM "heartbeatcreate.xml">
+<!ENTITY heartbeatupdate SYSTEM "heartbeatupdate.xml">
+<!ENTITY heartbeatex SYSTEM "heartbeatex.xml">
+<!ENTITY heartbeatclass SYSTEM "heartbeatclass.xml">
+<!ENTITY heartbeatoter SYSTEM "heartbeatother.xml">
 
 %entity-list;
 
@@ -142,7 +148,17 @@ See COPYING for distribution information.
       &versioned;
       &versionedptr;
       &versionedput;
+    </chapter>
 
+    <chapter id="heartbeat">
+      <title>Heartbeat objects</title>
+
+      &heartbeat;
+      &heartbeatclass;
+      &heartbeatcreate;
+      &heartbeatupdate;
+      &heartbeatex;
+      &heartbeatoter;
     </chapter>
   </part>
 

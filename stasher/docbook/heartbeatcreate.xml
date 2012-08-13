@@ -1,0 +1,219 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="heartbeatcreate">
+  <title>Instantiating a heartbeat class</title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+#include &lt;&ns;/heartbeat.H&gt;
+
+class application_id;
+
+class application_status;
+
+typedef &ns;::heartbeat&lt;application_id, application_status&gt; heartbeat;
+
+class heartbeatThreadObj : virtual public &ns;::obj {
+
+    heartbeat::obj_type *heartbeat_ptr;
+
+    application_status status;
+
+public:
+
+    heartbeatThreadObj(const application_status &amp;initial_status)
+        : status(initial_status)
+    {
+    }
+
+    void run(const heartbeat &amp;heartbeat_arg)
+    {
+        heartbeatptr= &amp;*heartbeat_arg;
+
+// ...
+    }
+
+    void dispatch(const status_msg &amp;msg)
+    {
+        status=msg.status;
+    }
+
+    void dispatch(const post_update_msg &amp;msg)
+    {
+        heartbeatptr-&gt;update(msg.update_msg, status);
+    }
+};
+
+auto client=&ns;::client::base::connect();
+
+auto manager=&ns;::manager::create();
+
+auto thread=x::ref&lt;heartbeatThreadObj&gt;::create("initial_status");
+
+x::run(thread, heartbeat::create(client, manager,
+                                 "status",
+                                 application_id("manager_node"),
+                                 L"update_interval", std::chrono::minutes(10),
+                                 L"stale_interval", std::chrono::minutes(5),
+                                 [thread]
+                                 (heartbeat::base::update_type_t update_type)
+                                 {
+                                     thread->post_update(update_type);
+                                 }));</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <classname>&ns;::heartbeat</classname> takes two template parameters,
+    the name of the class that serves as the application instance identifier
+    (each instance of the application must use a unique one), and a class that
+    serves as each instance's status.
+    All instances of the application must declare the same
+    <classname><replaceable>application_id</replaceable></classname> and
+    <classname><replaceable>application_status</replaceable></classname>.
+    <classname><replaceable>application_id</replaceable></classname> and
+    <classname><replaceable>application_status</replaceable></classname> must
+    support everything that any instance needs to use to identify itself, or to
+    announce its status.
+    The reference-counted <classname>&ns;::heartbeat</classname>'s
+    <methodname>create</methodname>() function takes the following arguments:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	The client connection handle, and a
+	<link linkend="manager">manager</link> object.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	The name of the object in the repository where the heartbeat status
+	gets posted to, <quote>status</quote> in this example.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	The unique identifier for this application's instance,
+	All instances of an application
+	that post a heartbeat update must have a unique identifier.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Two application property names and the default value of
+	each application property. See &libx;'s documentation for more
+	information on application properties.
+      </para>
+
+      <para>
+	In this example, they are called
+	<quote>update_interval</quote>, which defaults to ten minutes;
+	and <quote>stale_interval</quote>, which defaults to five minutes.
+      </para>
+
+      <para>
+	The first property specifies how often this heartbeat object
+	updates its posted status. In this example,
+	the update interval is ten minutes. Each posted status carries an
+	expiration timestamp that's equivalent to the update interval
+	plus an additional 50%, up to a maximum of another two minutes;
+	in this case this becomes twelve minutes. The end result here is
+	that every ten minutes the heartbeat object posts an updated status
+	that expires in twelve minutes. The extra overhead provides for some
+	overhead.
+      </para>
+
+      <para>
+	As part of updating its status in the shared heartbeat object,
+	<classname>&ns;::heartbeat</classname> checks for heartbeats from
+	other applications instances that already expired.
+	Expired heartbeats get removed completely
+	after the interval of time specified
+	by the stale interval. In this example, this application instance
+	removes all other instance's posted heartbeats five minutes after
+	they expire.
+      </para>
+
+      <para>
+	If all other instances also have a five minute stale interval setting,
+	this results in the following: twelve minutes after this instance's
+	last posted heartbeat, it expires; five minutes later, the next update
+	to the heartbeat object removes this instance's status.
+      </para>
+
+      <para>
+	The actual time when the stale application status gets removed varies,
+	since that happens only when an application posts a heartbeat object
+	update. The maximum time that an instance's status
+	could possibly remain in the shared heartbeat object before it gets
+	removed can be computed as follows:
+	the instance's expiration time (its periodic interval
+	update plus the smaller of 50% of the periodic update interval or
+	two minutes), plus the largest of the combined sum of
+	another instance's heartbeat update interval and its configured
+	stale interval (other instances of the application can have different
+	periodic update and stale interval settings).
+      </para>
+
+      <para>
+	This is, of course, true as long as at least one other instance of the
+	application remains running.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	The last parameter to <methodname>create()</methodname>
+	is a functor that takes a
+	<classname>&ns;::heartbeat&lt;<replaceable>application_id</replaceable>,<replaceable>application</replaceable>&gt;::base::update_type_t</classname> parameter.
+
+	<classname>&ns;::heartbeat</classname> invokes the functor whenever
+	an update to the application status needs to be posted to the heartbeat
+	object.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    The constructor installs a <link linkend="manager">managed object
+    subscription</link> for the heartbeat object. The subscription remains
+    active until the hearbeat object goes out of scope and gets destroyed,
+    at which time the subscription is terminated.
+  </para>
+
+  <note id="heartbeatdestroy">
+    <para>
+      The client connection handle and the manager object must remain in
+      scope as long as the heartbeat object exists. They cannot be
+      destroyed until the heartbeat object gets destroyed.
+    </para>
+
+    <para>
+      If a manager object gets destroyed, the heartbeat object may stop
+      getting updated from the object repository.
+    </para>
+
+    <para>
+      The heartbeat object holds a reference on the client connection handle,
+      and the application must destroy the heartbeat object before all of its
+      own references to the client connection handle go out of scope.
+      If they do, the heartbeat object ends up having the last reference
+      to the client connection handle in scope. This will likely result in
+      a deadlock, for the same reasons that are described in
+      <xref linkend="asynchronouscancannot" />.
+    </para>
+  </note>
+</section>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

@@ -11,7 +11,7 @@ LT_INIT
 # Checks for programs.
 AC_PROG_CXX
 
-LIBX_INIT
+LIBCXX_INIT
 
 # Checks for libraries.
 

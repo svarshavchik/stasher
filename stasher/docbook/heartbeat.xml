@@ -1,0 +1,64 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="heartbeatintro">
+  <title>Introduction</title>
+
+  <para>
+
+    The <ulink url="&link-stasher--heartbeat;"><classname>&ns;::heartbeat</classname></ulink> template uses a
+    <link linkend="versionedcurrentobj">versioned current object</link>
+    template class to
+    implement a design pattern for a <quote>heartbeat</quote>
+    object for an application that runs as multiple instances; often on
+    different nodes in the object repository cluster, but multiple instances
+    can run on the same node too, as different processes.
+  </para>
+
+  <para>
+    Each instance of the application has a unique identifier, and a class
+    that represents the application instance's status. Each instance
+    posts, at regular intervals, or sooner, its current status
+    to a shared heartbeat object in the object repository.
+    All instances of the application update the shared heartbeat object with
+    their status, and each posted status gets timedstamped.
+    This serves to announce, to other instances of the application,
+    that this instance is still running and its latest status.
+  </para>
+
+  <para>
+    The heartbeat object functions as a shared dashboard with
+    the latest status of each instance of the application.
+    Each application instance updates its status,
+    and can read other instances' status.
+  </para>
+
+  <para>
+    Updates to an instance's heartbeat discontinue when the application instance
+    terminates, of course.
+    Naturally, a stopped instance does not get detected immediately, but only
+    after some time elapses after its last posted status.
+  </para>
+
+  <note>
+    <para>
+      The heartbeat object methods described here are not thread safe in of
+      themselves, although they employ other objects, like versioned current
+      object, that are generally thread-safe themselves.
+      The heartbeat object is designed to be owned by a single
+      <link linkend="heartbeatex">update thread</link> that invokes the
+      methods described here.
+    </para>
+  </note>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

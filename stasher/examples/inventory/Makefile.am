@@ -1,4 +1,4 @@
-@LIBX_AM@
+@LIBCXX_AM@
 
 noinst_PROGRAMS=showinventory showinventory2 showinventory3 adjinventory xferinventory xferinventory2 setinventory
 

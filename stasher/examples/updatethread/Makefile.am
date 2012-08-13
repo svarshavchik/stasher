@@ -1,4 +1,4 @@
-@LIBX_AM@
+@LIBCXX_AM@
 
 $(call MSGDISPATCHER_GEN,updatethread.msgs,all)
 

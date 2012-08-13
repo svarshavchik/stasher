@@ -1,0 +1,161 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="heartbeatother">
+  <title>The contents of a <classname>&ns;::heartbeat</classname> object</title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+typedef &ns;::heartbeat&lt;<replaceable>application_id</replaceable>,<replaceable>status_class</replaceable>&gt; heartbeat;
+
+typedef &ns;::heartbeatptr&lt;<replaceable>application_id</replaceable>,<replaceable>status_class</replaceable>&gt; heartbeatptr;
+
+heartbeat hb_instance=heartbeat::create( ... );
+
+// ...
+
+hb_instance::base::lock lock(*hb_instance);
+
+&ns;::current_heartbeatptr&lt;<replaceable>application_id</replaceable>,<replaceable>status_class</replaceable>&gt; ptr=lock->value;
+
+if (!ptr.null())
+{
+    &ns;::current_heartbeat&lt;<replaceable>application_id</replaceable>,<replaceable>status_class</replaceable>&gt; ref=ptr;
+
+    &ns;::current_heartbeat&lt;<replaceable>application_id</replaceable>,<replaceable>status_class</replaceable>&gt;::base::timestamps_t &amp;timestamps=ref->timestamps;
+
+    for (auto &amp;map_entry:timestamps)
+    {
+        const <replaceable>application_id</replaceable> &amp;instance=map_entry.first;
+
+        const &ns;::heartbeat_meta_t&lt;<replaceable>status_class</replaceable>&gt; &amp;meta=map_entry.second;
+
+        time_t timestamp=meta.timestamp;
+        const <replaceable>status_class</replaceable> &amp;status=meta.second;
+        // Unless <replaceable>status_class</replaceable> is void
+    }
+}</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This is a synopsis of the contents of
+    <classname>&ns;::heartbeat</classname>. It is based on
+    a <link linkend="versionedcurrentobj">versioned current object</link>.
+    It is a reference-counted object.
+    <classname>&ns;::heartbeat</classname> defines a reference, and
+    <classname>&ns;::heartbeatptr</classname> is a nullable pointer reference.
+  </para>
+
+  <para>
+    Constructing an instance of the <classname>lock</classname> acquires an
+    exclusive lock on the reference-counted
+    <classname>&ns;::current_heartbeatptr</classname>
+    <varname>value</varname>.
+    This is a nullable reference pointer.
+    As explained in <xref linkend="versionedcurrentobj" /> it's null immediately
+    after the heartbeat object gets constructed, until the current
+    value of the heartbeat object gets retrieved from the object repository.
+  </para>
+
+  <note>
+    <para>
+      <classname>lock</classname>
+      acquires an exclusive lock on the object, preventing it from
+      getting updated by the &cct; if the object gets updated in the
+      repository. The lock object must be initiated on the stack, and it
+      should not be held for an extensive period of time.
+    </para>
+  </note>
+
+  <para>
+    If it's not null, it's a <classname>&ns;::current_heartbeat</classname>,
+    and it contains the usual &app; uuid, maintained by the versioned current
+    object template, and a single member, <varname>varname</varname>,
+    which is a
+    <classname>&ns;::current_heartbeat&lt;<replaceable>application_id</replaceable>,<replaceable>status_class</replaceable>&gt;::base::timestamps_t</classname>.
+  </para>
+
+  <para>
+    This is a <classname>std::map</classname> that can be iterated over,
+    keyed by <classname><replaceable>application_id</replaceable></classname>.
+    The map's value is a
+    <classname>&ns;::heartbeat_meta_t&lt;status_class&gt;</classname>
+    which contains two members, <varname>status</varname>, which is
+    <replaceable>application_id</replaceable>'s most recent posted hearbeat
+    status, and <varname>timestamp</varname>, giving the time that this
+    posted status expires.
+  </para>
+
+  <para>
+    A <literal>void</literal> <replaceable>status_class</replaceable>
+    results in a <classname>&ns;::heartbeat_meta_t</classname> with just a
+    <varname>timestamp</varname>.
+  </para>
+
+  <para>
+    The <link linkend="heartbeatupdate">heartbeat update functor</link> gets
+    invoked each time the <link linkend="manager">manager</link> updates
+    the heartbeat object (and in other cases too). After constructing a
+    new heartbeat object, the application should wait for the first
+    call the update functor in order to read the initial heartbeat status of
+    other application instances.
+  </para>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+hb-&gt;admin_drop(<replaceable>application_id</replaceable>("listener"),
+                  []
+                  (bool success, const std::string &amp;message)
+                  {
+                  });</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <methodname>admin_drop</methodname>() removes another instance's posted
+    status
+    if it is expired, but not yet stale enough to get removed.
+    The first parameter is an <replaceable>application_id</replaceable>() whose
+    status should be removed, the second parameter is a functor.
+  </para>
+
+  <para>
+    The functor takes two arguments, a <classname>bool</classname> and a
+    <classname>std::string</classname>. The functor gets invoked when the
+    request gets processed. This can happen before
+    <methodname>admin_drop</methodname>() return or after, depending on whether
+    the request gets immediately rejected, or not.
+  </para>
+
+  <para>
+    The <classname>bool</classname> value indicates whether the request succeded
+    and the instance's status was removed, or not. In all cases, the
+    <classname>std::string</classname> parameter is a descriptive message.
+  </para>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+hb-&gt;report(std::cout);</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <methodname>report</methodname>() produces a summary of the current status
+    of the heartbeat object, and writes it to the given output stream.
+  </para>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "chapter" "section")
+End:
+-->

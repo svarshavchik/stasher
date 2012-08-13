@@ -95,8 +95,9 @@ instock.getversion()->addOnDestroy( // ... );</programlisting>
       <classname>x::ptr</classname> to a class.
       The callbacks construct a new
       <classname><replaceable>classptr</replaceable></classname>, which is
-      a <literal>nullptr</literal> if the object was removed from the &app;
-      object repository. Otherwise, the file descriptor of the object, and its
+      a <literal>nullptr</literal> if the object was removed from the
+      objet repository.
+      Otherwise, the file descriptor of the object, and its
       uuid, get passed to the object class's constructor, and the new
       object instance becomes the
       <classname><replaceable>classptr</replaceable></classname>.
@@ -107,6 +108,18 @@ instock.getversion()->addOnDestroy( // ... );</programlisting>
       <replaceable>classptr</replaceable> that represents the current value
       of the object in the object repository.
     </para>
+
+    <note>
+      <para>
+	It's a nullable reference pointer because it can be a
+	<literal>nullptr</literal> in the event that the object gets removed
+	from the object repository, or if it never existed in the first place.
+	It is also null
+	immediately after the
+	versioned current object gets instantiated, and before the current
+	contents of the object is retrieved from the object repository
+      </para>
+    </note>
 
     <para>
       The
