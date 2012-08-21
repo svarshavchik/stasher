@@ -24,10 +24,16 @@ template<typename ptr_type, typename obj_type,
 class versionedCurrentObj : public currentObj<ptr_type, obj_type> {
 
 	//! The saved update functor
-	UpdateFunctor		upd_funct;
+	typename std::enable_if<
+		!std::is_lvalue_reference<UpdateFunctor>::value &&
+	!std::is_rvalue_reference<UpdateFunctor>::value, UpdateFunctor>
+		::type upd_funct;
 
 	//! The saved conncetion update functor
-	ConnUpdateFunctor	conn_upd_funct;
+	typename std::enable_if<
+		!std::is_rvalue_reference<ConnUpdateFunctor>::value &&
+	!std::is_lvalue_reference<ConnUpdateFunctor>::value, ConnUpdateFunctor>
+		::type conn_upd_funct;
 
 	//! Convenience typedef
 	typedef currentObj<ptr_type, obj_type> superclass_t;
@@ -40,9 +46,8 @@ public:
 		 typename ConnUpdateFunctorArg>
 	versionedCurrentObj(UpdateFunctorArg && upd_functArg,
 			    ConnUpdateFunctorArg && conn_upd_funcArg)
-		: upd_funct(std::forward<UpdateFunctorArg>(upd_functArg)),
-		  conn_upd_funct(std::forward<ConnUpdateFunctorArg>
-				 (conn_upd_funcArg))
+		: upd_funct(std::move(upd_functArg)),
+		  conn_upd_funct(std::move(conn_upd_funcArg))
 	{
 	}
 

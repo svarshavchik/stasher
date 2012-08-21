@@ -12,6 +12,8 @@
 #include <stasher/manager.H>
 #include <stasher/process_request.H>
 
+#include <type_traits>
+
 STASHER_NAMESPACE_START
 
 //! Helper object used by versioned_put_request().
@@ -23,7 +25,9 @@ template<typename Functor>
 class versionedDestroyCallbackObj : public x::destroyCallbackObj {
 
 	//! The saved function
-	Functor f;
+	typename std::enable_if<
+		!std::is_lvalue_reference<Functor>::value &&
+	!std::is_rvalue_reference<Functor>::value, Functor>::type f;
 
 	//! Results of the put request.
 	putresults res;
@@ -139,14 +143,23 @@ void versioned_put_request(//! Client connection handle
 			   const client::base::transaction &tr,
 
 			   //! A functor that received a \ref putresults "putresults" of the transaction
-			   const Functor &f,
+			   const Functor &f_arg,
 
 			   //! The version mcguffins of the objects that went into the transaction.
-			   const versionscollected &vers)
+			   const versionscollected &vers_arg)
 {
+	Functor f=f_arg;
+	versionscollected vers=vers_arg;
+
 	process_request(cl->put_request(tr),
 			[f, vers] (const putresults &res)
 			{
+				typedef typename std::enable_if<
+					!std::is_lvalue_reference<decltype(f)>::value &&
+
+					!std::is_rvalue_reference<decltype(f)>::value
+					>::type cannot_be_ref_type;
+
 				auto cb=x::ref<versionedDestroyCallbackObj
 					       <Functor> >::create(f, res);
 

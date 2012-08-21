@@ -33,13 +33,26 @@ template<typename req_type, typename cb_type>
 void process_request(const std::pair<req_type, client::base::request> &req,
 		     cb_type &&cbArg)
 {
-	const req_type &reqmsg=req.first;
+	req_type reqmsg=req.first;
+
+	cb_type cb_cpy(std::move(cbArg));
 
 	req.second->mcguffin()
 		->addOnDestroy(x::destroyCallback
-			       ::create([cbArg, reqmsg]
+			       ::create([cb_cpy, reqmsg]
 					{
-						cbArg(reqmsg->getmsg());
+						typedef typename std::enable_if<
+							!std::is_rvalue_reference<decltype(cb_cpy)>::value &&
+
+							!std::is_lvalue_reference<decltype(cb_cpy)>::value
+							>::type cannot_be_ref_type;
+						typedef typename std::enable_if<
+							!std::is_rvalue_reference<decltype(reqmsg)>::value &&
+
+							!std::is_lvalue_reference<decltype(reqmsg)>::value
+							>::type cannot_be_ref_type_too;
+
+						cb_cpy(reqmsg->getmsg());
 					}));
 }
 

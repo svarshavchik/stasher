@@ -162,10 +162,17 @@ class managerObj::simpleManagedObjectObj<x::ptr<objClass, baseClass>,
 	public managedobjectObj {
 
 	//! Saved update functor
-	updateFunctor update;
+
+	typename std::enable_if<
+		!std::is_lvalue_reference<updateFunctor>::value &&
+	!std::is_rvalue_reference<updateFunctor>::value,
+		updateFunctor>::type update;
 
 	//! Saved connection functor
-	connectionFunctor connect;
+	typename std::enable_if<
+		!std::is_lvalue_reference<connectionFunctor>::value &&
+	!std::is_rvalue_reference<connectionFunctor>::value,
+		connectionFunctor>::type connect;
 
 	//! Flag: connection_update() was invoked
 	bool connected;

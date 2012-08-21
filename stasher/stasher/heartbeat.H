@@ -451,7 +451,10 @@ class heartbeatUpdateRequestObj : public heartbeatUpdateRequestBaseObj {
 public:
 	//! The saved application functor
 
-	UpdateFunctor updatefunctor;
+	typename std::enable_if<
+		!std::is_lvalue_reference<UpdateFunctor>::value &&
+	!std::is_rvalue_reference<UpdateFunctor>::value, UpdateFunctor >::type
+		updatefunctor;
 
 	//! Constructor
 	heartbeatUpdateRequestObj(UpdateFunctor && UpdateFunctorArg)
@@ -726,15 +729,17 @@ public:
 			     lock->value->uuid,
 			     lock->value->toString());
 
+		auto c_cpy=std::move(callback);
+
 		stasher::process_request(client->put_request(tran),
-					 [callback]
+					 [c_cpy]
 					 (const stasher::putresults &res)
 					 {
-						 callback(res->status
-							  == stasher::
-							  req_processed_stat,
-							  x::tostring(res->
-								      status));
+						 c_cpy(res->status
+						       == stasher::
+						       req_processed_stat,
+						       x::tostring(res->
+								   status));
 					 });
 	}
 
