@@ -18,6 +18,7 @@
 #include "trandistreceived.H"
 #include "trandistuuid.H"
 #include "baton.H"
+#include <x/destroycallback.H>
 #include <x/destroycallbackflag.H>
 #include <x/threads/run.H>
 #include <x/eventqueuemsgdispatcher.H>
@@ -386,6 +387,13 @@ void repocontrollermasterObj::run(x::ref<x::obj> &start_arg)
 			commitqueueref(worker_pool_t
 				       ::create(2, 8, "commit", L"commitjobs"));
 		commitqueue= &*commitqueueref;
+
+		auto stop_mcguffinref=x::ref<x::obj>::create();
+
+		x::weakptr<x::ptr<x::obj> >
+			stop_mcguffinweakptr(stop_mcguffinref);
+
+		stop_mcguffin=&stop_mcguffinweakptr;
 
 		compute_quorum(true);
 
@@ -923,10 +931,14 @@ public:
 
 	x::ptr<x::obj> commit_mcguffin;
 
+	x::weakptr<x::ptr<x::obj> > stop_mcguffin;
+
 	commitJobObj(const x::uuid &uuidArg,
 		     dist_received_status_t status,
 		     const quorumPeerList &peersArg,
-		     const x::ptr<x::obj> &commit_mcguffinArg);
+		     const x::ptr<x::obj> &commit_mcguffinArg,
+		     x::weakptr<x::ptr<x::obj> > &stop_mcguffinArg);
+
 	~commitJobObj() noexcept;
 
 	void run(const x::eventfd &eventfd,
@@ -1018,7 +1030,8 @@ void repocontrollermasterObj::checkcommit(const trandistuuid &uuids,
 
 		auto job=x::ref<commitJobObj>::create(b->first,
 						      b->second, peers,
-						      commit_mcguffin);
+						      commit_mcguffin,
+						      *stop_mcguffin);
 
 		ready.erase(b->first);
 		committing.insert(b->first);
@@ -1073,9 +1086,11 @@ repocontrollermasterObj::commitJobObj
 ::commitJobObj(const x::uuid &uuidArg,
 	       dist_received_status_t statusArg,
 	       const quorumPeerList &peersArg,
-	       const x::ptr<x::obj> &commit_mcguffinArg)
+	       const x::ptr<x::obj> &commit_mcguffinArg,
+	       x::weakptr<x::ptr<x::obj> > &stop_mcguffinArg)
 	: uuid(uuidArg), status(statusArg), peers(peersArg),
-	  commit_mcguffin(commit_mcguffinArg)
+	  commit_mcguffin(commit_mcguffinArg),
+	  stop_mcguffin(stop_mcguffinArg)
 {
 }
 
@@ -1109,8 +1124,42 @@ void repocontrollermasterObj::commitJobObj
 		try {
 			tr=master->repo->begin_commit(uuid, eventfd);
 
+			// Wait until the objects are locked, or until
+			// the master controller wants to stop.
+
+			auto signal_eventfd=x::destroyCallback
+				::create([eventfd]
+					 {
+						 eventfd->event(1);
+					 });
+
+			auto ondestroy=({
+					auto mcguffinptr=stop_mcguffin.getptr();
+
+					if (mcguffinptr.null())
+					{
+						// Already gone
+
+						LOG_TRACE("Stopping: "
+							  << x::tostring(uuid));
+						return;
+					}
+
+					x::ondestroy::create(signal_eventfd,
+							     mcguffinptr,
+							     true);
+				});
+#ifdef DEBUG_MASTER_TEST_2_HOOK1
+			DEBUG_MASTER_TEST_2_HOOK1();
+#endif
+
 			while (!tr->ready())
+			{
+				if (stop_mcguffin.getptr().null())
+					return;
+
 				eventfd->event();
+			}
 
 			LOG_TRACE("Object lock acquired: "
 				  << x::tostring(uuid));
@@ -1131,7 +1180,6 @@ void repocontrollermasterObj::commitJobObj
 		LOG_TRACE("Transaction verified: " << x::tostring(uuid)
 			  << ", status: " << (int)res);
 	}
-	
 
 	repopeerconnectionptr source_peer;
 	x::ptr<repopeerconnectionObj::commitreqObj>
@@ -1158,9 +1206,29 @@ void repocontrollermasterObj::commitJobObj
 	{
 		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
 
-		mcguffin->addOnDestroy(cb);
+		{
+			x::ptr<x::obj> both_mcguffins[2]=
+				{mcguffin,
+				 stop_mcguffin.getptr()
+				};
+
+			if (both_mcguffins[1].null())
+			{
+				// Already gone
+
+				LOG_TRACE("Stopping: " << x::tostring(uuid));
+				return;
+			}
+
+			cb->onAnyDestroyed(both_mcguffins,
+					   both_mcguffins+2);
+		}
 
 		mcguffin=x::ptr<x::obj>();
+
+#ifdef DEBUG_MASTER_TEST_2_HOOK2
+		DEBUG_MASTER_TEST_2_HOOK2();
+#endif
 
 		LOG_TRACE("Waiting for peers to process: "
 			  << x::tostring(uuid));

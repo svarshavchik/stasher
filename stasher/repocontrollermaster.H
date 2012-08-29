@@ -24,7 +24,7 @@
 #include <x/threads/run.H>
 #include <x/threads/workerpool.H>
 #include <x/stoppable.H>
-
+#include <x/weakptr.H>
 #include <map>
 
 class clusterinfoObj;
@@ -185,6 +185,12 @@ private:
 
 	//! Threads that commit transactions, on the execution thread's stack.
 	worker_pool_t::obj_type *commitqueue;
+
+	//! A mcguffin, on the stack, that gets destroyed before commitqueue
+
+	//! This is used as a mcguffin to terminate pending commits.
+
+	x::weakptr<x::ptr<x::obj> > *stop_mcguffin;
 
 	//! The repository cluster, on the executing thread's stack
 

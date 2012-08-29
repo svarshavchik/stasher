@@ -128,6 +128,7 @@ noinst_PROGRAMS=\
 	reconnectsync.tst \
 	repoclusterinfo.tst \
 	repocontrollermaster.tst \
+	repocontrollermaster2.tst \
 	repocontrollerslave.tst \
 	repopeerconnection.tst \
 	repopeerconnection2.tst \
@@ -413,6 +414,10 @@ repocontrollermaster_tst_SOURCES=repocontrollermaster.tst.C
 repocontrollermaster_tst_LDADD=libstasher.la
 repocontrollermaster_tst_LDFLAGS=-static
 
+repocontrollermaster2_tst_SOURCES=repocontrollermaster2.tst.C tst.nodes.C tst.nodes.H
+repocontrollermaster2_tst_LDADD=libstasher.la
+repocontrollermaster2_tst_LDFLAGS=-static
+
 repopeerconnection2_tst_SOURCES=repopeerconnection2.tst.C
 repopeerconnection2_tst_LDADD=libstasher.la
 repopeerconnection2_tst_LDFLAGS=-static
@@ -648,6 +653,7 @@ check-am:
 	./verify.tst
 	./reconnectsync.tst
 	./heartbeat.tst
+	./repocontrollermaster2.tst
 
 docs: html/book.css
 
