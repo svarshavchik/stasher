@@ -71,9 +71,7 @@ static void test1(tstnodes &t)
 		std::cerr << cl2->getserverstatus()->report << std::flush;
 	}
 
-	x::ptr<sendstop> thr(x::ptr<sendstop>::create());
-
-	auto runthr=x::run(thr, cl);
+	auto runthr=x::run(x::ref<sendstop>::create(), cl);
 	test.wait();
 	runthr->wait();
 

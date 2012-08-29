@@ -96,9 +96,9 @@ void test1()
 	x::deserialize::iterator<x::fd::base::inputiter> iter(beg_iter, end_iter);
 
 	newtran tr=({
-			x::ptr<STASHER_NAMESPACE::userput::deserializedObj> deser
-				(new STASHER_NAMESPACE::userput::deserializedObj
-				 ((
+			auto deser=
+				x::ref<STASHER_NAMESPACE::userput::deserializedObj> 
+				::create((
 					{
 						STASHER_NAMESPACE::userput up(limits);
 
@@ -106,7 +106,7 @@ void test1()
 
 						up.tran;
 					}), limits, upt.monitor, upt.repo,
-					 x::uuid(), nsview::create()));
+					x::uuid(), nsview::create());
 
 
 			{
@@ -152,8 +152,8 @@ void test2()
 	STASHER_NAMESPACE::userinit limits(10, 100, 1000000, 2, 10);
 
 	{
-		x::ptr<STASHER_NAMESPACE::puttransactionObj>
-			pt=x::ptr<STASHER_NAMESPACE::puttransactionObj>::create();
+		x::ref<STASHER_NAMESPACE::puttransactionObj>
+			pt=x::ref<STASHER_NAMESPACE::puttransactionObj>::create();
 
 		pt->newobj("obj3", "");
 		pt->newobj("obj4", "foo\n");
@@ -165,17 +165,17 @@ void test2()
 	x::deserialize::iterator<x::fd::base::inputiter> iter(beg_iter, end_iter);
 
 	newtran tr=({
-			x::ptr<STASHER_NAMESPACE::userput::deserializedObj> deser
-				(new STASHER_NAMESPACE::userput::deserializedObj
-				 ((
-					{
+			auto deser=
+				x::ref<STASHER_NAMESPACE::userput::deserializedObj>
+				::create
+				(({
 						STASHER_NAMESPACE::userput up(limits);
 
 						iter(up);
 
 						up.tran;
 					}), limits, upt.monitor, upt.repo,
-					 x::uuid(), nsview::create()));
+					x::uuid(), nsview::create());
 
 
 			{
@@ -229,8 +229,8 @@ void test3()
 	STASHER_NAMESPACE::userinit limits(10, 100, 1000000, 8192, 10);
 
 	{
-		x::ptr<STASHER_NAMESPACE::puttransactionObj>
-			pt=x::ptr<STASHER_NAMESPACE::puttransactionObj>::create();
+		x::ref<STASHER_NAMESPACE::puttransactionObj>
+			pt=x::ref<STASHER_NAMESPACE::puttransactionObj>::create();
 
 		pt->newobj("obj3", "");
 		pt->newobj("obj4", "foo\n");
@@ -260,8 +260,8 @@ void test4()
 	STASHER_NAMESPACE::userinit limits(10, 100, 1000000, 2, 10);
 
 	{
-		x::ptr<STASHER_NAMESPACE::puttransactionObj>
-			pt=x::ptr<STASHER_NAMESPACE::puttransactionObj>::create();
+		x::ref<STASHER_NAMESPACE::puttransactionObj>
+			pt=x::ref<STASHER_NAMESPACE::puttransactionObj>::create();
 
 		pt->newobj("obj3", "");
 		pt->newobj("obj4", "foo\n");
@@ -275,17 +275,17 @@ void test4()
 	try {
 		STASHER_NAMESPACE::userinit deser_limits(10, 100, 2, 8192, 10);
 
-		x::ptr<STASHER_NAMESPACE::userput::deserializedObj> deser
-			(new STASHER_NAMESPACE::userput::deserializedObj
-			 ((
-				 {
-					 STASHER_NAMESPACE::userput up(deser_limits);
+		auto deser=
+			x::ref<STASHER_NAMESPACE::userput::deserializedObj>
+			::create
+			(({
+					STASHER_NAMESPACE::userput up(deser_limits);
 
-					 iter(up);
+					iter(up);
 
-					 up.tran;
-				 }), deser_limits, upt.monitor,
-				 upt.repo, x::uuid(), nsview::create()));
+					up.tran;
+				}), deser_limits, upt.monitor,
+				upt.repo, x::uuid(), nsview::create());
 
 	} catch (const x::exception &e)
 	{
@@ -320,17 +320,17 @@ void test5()
 	try {
 		STASHER_NAMESPACE::userinit deser_limits(10, 100, 2, 8192, 10);
 
-		x::ptr<STASHER_NAMESPACE::userput::deserializedObj> deser
-			(new STASHER_NAMESPACE::userput::deserializedObj
-			 ((
-				 {
-					 STASHER_NAMESPACE::userput up(deser_limits);
+		auto deser=
+			x::ref<STASHER_NAMESPACE::userput::deserializedObj>
+			::create
+			(({
+					STASHER_NAMESPACE::userput up(deser_limits);
 
-					 iter(up);
+					iter(up);
 
-					 up.tran;
-				 }), deser_limits, upt.monitor,
-				 upt.repo, x::uuid(), nsview::create()));
+					up.tran;
+				}), deser_limits, upt.monitor,
+				upt.repo, x::uuid(), nsview::create());
 
 	} catch (const x::exception &e)
 	{
@@ -365,18 +365,16 @@ void test6()
 	try {
 		STASHER_NAMESPACE::userinit deser_limits(10, 100, 2, 8192, 10);
 
-		x::ptr<STASHER_NAMESPACE::userput::deserializedObj> deser
-			(new STASHER_NAMESPACE::userput::deserializedObj
-			 ((
-				 {
-					 STASHER_NAMESPACE::userput up(deser_limits);
+		auto deser=x::ref<STASHER_NAMESPACE::userput::deserializedObj>
+			::create
+			(({
+					STASHER_NAMESPACE::userput up(deser_limits);
 
-					 iter(up);
+					iter(up);
 
-					 up.tran;
-				 }), deser_limits, upt.monitor,
-				 upt.repo, x::uuid(), nsview::create()));
-
+					up.tran;
+				}), deser_limits, upt.monitor,
+				upt.repo, x::uuid(), nsview::create());
 		{
 			STASHER_NAMESPACE::fdobjwriterthreadObj::sendfd_coming msg;
 
@@ -426,17 +424,16 @@ void test7()
 	try {
 		STASHER_NAMESPACE::userinit deser_limits(10, 100, 2, 8192, 10);
 
-		x::ptr<STASHER_NAMESPACE::userput::deserializedObj> deser
-			(new STASHER_NAMESPACE::userput::deserializedObj
-			 ((
-				 {
-					 STASHER_NAMESPACE::userput up(deser_limits);
+		auto deser=x::ref<STASHER_NAMESPACE::userput::deserializedObj>
+			::create
+			(({
+					STASHER_NAMESPACE::userput up(deser_limits);
 
-					 iter(up);
+					iter(up);
 
-					 up.tran;
-				 }), deser_limits, upt.monitor,
-				 upt.repo, x::uuid(), nsview::create()));
+					up.tran;
+				}), deser_limits, upt.monitor,
+				upt.repo, x::uuid(), nsview::create());
 
 		{
 			STASHER_NAMESPACE::fdobjwriterthreadObj::sendfd_coming msg;
@@ -488,17 +485,16 @@ void test8(off_t fake)
 		STASHER_NAMESPACE::userinit
 			deser_limits(10, 100, 1000000, 8192, 10);
 
-		x::ptr<STASHER_NAMESPACE::userput::deserializedObj> deser
-			(new STASHER_NAMESPACE::userput::deserializedObj
-			 ((
-				 {
-					 STASHER_NAMESPACE::userput up(deser_limits);
+		auto deser=x::ref<STASHER_NAMESPACE::userput::deserializedObj>
+			::create
+			(({
+					STASHER_NAMESPACE::userput up(deser_limits);
 
-					 iter(up);
+					iter(up);
 
-					 up.tran;
-				 }), deser_limits, upt.monitor,
-				 upt.repo, x::uuid(), nsview::create()));
+					up.tran;
+				}), deser_limits, upt.monitor,
+				upt.repo, x::uuid(), nsview::create());
 
 		{
 			STASHER_NAMESPACE::puttransactionObj::content_str str(8192);
@@ -540,17 +536,16 @@ void test9()
 		STASHER_NAMESPACE::userinit
 			deser_limits(10, 100, 1000000, 1, 10);
 
-		x::ptr<STASHER_NAMESPACE::userput::deserializedObj> deser
-			(new STASHER_NAMESPACE::userput::deserializedObj
-			 ((
-				 {
-					 STASHER_NAMESPACE::userput up(deser_limits);
+		auto deser=x::ptr<STASHER_NAMESPACE::userput::deserializedObj>
+			::create
+			(({
+					STASHER_NAMESPACE::userput up(deser_limits);
 
-					 iter(up);
+					iter(up);
 
-					 up.tran;
-				 }), deser_limits, upt.monitor,
-				 upt.repo, x::uuid(), nsview::create()));
+					up.tran;
+				}), deser_limits, upt.monitor,
+				upt.repo, x::uuid(), nsview::create());
 
 		{
 			STASHER_NAMESPACE::puttransactionObj::content_str str(1);
