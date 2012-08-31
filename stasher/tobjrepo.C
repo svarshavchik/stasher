@@ -13,7 +13,6 @@
 #include <x/deserialize.H>
 #include <x/fd.H>
 #include <x/sysexception.H>
-#include <sys/xattr.h>
 
 #include <iterator>
 #include <algorithm>
@@ -209,8 +208,7 @@ void tobjrepoObj::tmp_set_uuid(const x::fd &tmp_fd, const x::uuid &uuid)
 
 	uuid.asString(cb);
 
-	if (fsetxattr(tmp_fd->getFd(), xattrserial, cb, strlen(cb), 0) < 0)
-		throw SYSEXCEPTION("fsetxattr");
+	tmp_fd->setattr(xattrserial, cb);
 }
 
 newtran tobjrepoObj::newtransaction()

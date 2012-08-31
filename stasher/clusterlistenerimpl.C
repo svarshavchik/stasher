@@ -458,7 +458,7 @@ void clusterlistenerimplObj::retr_credentialsObj::run()
 				continue;
 			if (pfd[0].revents & POLLIN)
 			{
-				struct ucred uc;
+				x::fd::base::credentials_t uc;
 
 				sock->recv_credentials(uc);
 

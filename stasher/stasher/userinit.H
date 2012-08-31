@@ -7,7 +7,7 @@
 #define stasher_userinit_H
 
 #include <x/exception.H>
-
+#include <unistd.h>
 #include <stasher/namespace.H>
 
 STASHER_NAMESPACE_START
