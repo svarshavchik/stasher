@@ -19,4 +19,23 @@ See COPYING for distribution information.
     */</comment>
     <param type="class"><decl>margin_message <name>margin</name></decl></param>
   </method>
+
+  <method name="start_localconn">
+    <comment>
+      //! Start a non-privileged local connection thrad
+    </comment>
+
+    <param type="class"><decl>x::fd <name>sock</name></decl></param>
+    <param type="class"><decl>nsmap::clientcred <name>fromwho</name></decl></param>
+  </method>
+
+  <method name="start_privlocalconn">
+    <comment>
+      //! Start a privileged local connection thrad
+    </comment>
+
+    <param type="class"><decl>x::fd <name>sock</name></decl></param>
+    <param type="class"><decl>nsmap::clientcred <name>fromwho</name></decl></param>
+  </method>
+
 </class>

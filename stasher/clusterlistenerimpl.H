@@ -187,15 +187,6 @@ private:
 
 	class retr_credentialsObj;
 
-	//! Start a non-privileged local connection thread
-	void start_localconn(const x::fd &sock,
-			     const nsmap::clientcred &fromwho);
-
-
-	//! Start a privileged local connection thread
-	void start_privlocalconn(const x::fd &sock,
-				 const nsmap::clientcred &fromwho);
-
 	//! Common code for start_localconn() and start_privlocalconn()
 
 	void start_conn(//! localprivconnectionObj is a subclass

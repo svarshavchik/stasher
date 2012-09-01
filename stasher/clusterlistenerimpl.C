@@ -112,7 +112,6 @@ void clusterlistenerimplObj::run(const STASHER_NAMESPACE::stoppableThreadTracker
 
 void clusterlistenerimplObj::start_network(const x::fd &sock,
 					   const x::sockaddr &addr)
-
 {
 	LOG_DEBUG(nodeName() << ": connection from " << addr->address());
 
@@ -157,8 +156,7 @@ public:
 
 	~connectpeers_cb() noexcept;
 
-	x::ptr<x::obj> operator()(const std::string &peername) const
-;
+	x::ptr<x::obj> operator()(const std::string &peername) const;
 };
 
 clusterlistenerimplObj::connectpeers_cb
@@ -199,7 +197,6 @@ x::ptr<x::obj> clusterlistenerimplObj::connectpeers_cb
 }
 
 void clusterlistenerimplObj::dispatch(const connectpeers_msg &dummy)
-
 {
 	LOG_DEBUG(nodeName() << ": contacting peers");
 	(*cluster)
@@ -240,7 +237,6 @@ LOG_CLASS_INIT(clusterlistenerimplObj::retr_credentialsObj);
 
 void clusterlistenerimplObj::start_privsock(const x::fd &sock,
 					    const x::sockaddr &addr)
-
 {
 	LOG_DEBUG(nodeName() << ": privileged local connection");
 
@@ -249,7 +245,6 @@ void clusterlistenerimplObj::start_privsock(const x::fd &sock,
 
 void clusterlistenerimplObj::start_pubsock(const x::fd &sock,
 					   const x::sockaddr &addr)
-
 {
 	LOG_DEBUG(nodeName() << ": local connection");
 
@@ -260,18 +255,15 @@ void clusterlistenerimplObj::
 start_credentials(const x::fd &sock,
 		  void (clusterlistenerimplObj::*start_connArg)
 		  (const x::fd &, const nsmap::clientcred &))
-
 {
 	(*tracker)->start(x::ref<retr_credentialsObj>
 			  ::create(sock, clusterlistenerimplptr(this),
 				   start_connArg));
 }
 
-void clusterlistenerimplObj::start_localconn(const x::fd &sock,
-					     const nsmap::clientcred &fromwho)
-
+void clusterlistenerimplObj::dispatch(const start_localconn_msg &msg)
 {
-	std::string name=fromwho;
+	std::string name=msg.fromwho;
 
 	std::string host=nodeName();
 	std::string clustersuffix="." + clusterName();
@@ -300,7 +292,7 @@ void clusterlistenerimplObj::start_localconn(const x::fd &sock,
 			localmap_iter=localmap_end_iter;
 
 		try {
-			auto s=x::fileattr::create(fromwho.path)->stat();
+			auto s=x::fileattr::create(msg.fromwho.path)->stat();
 
 			localmap_iter=localmap.find(std::make_pair(s->st_dev,
 								   s->st_ino));
@@ -344,8 +336,8 @@ void clusterlistenerimplObj::start_localconn(const x::fd &sock,
 		nslist map;
 
 		deserialize_iter(map);
-		rwnamespaces=fromwho.computemappings(map.rw, host);
-		ronamespaces=fromwho.computemappings(map.ro, host);
+		rwnamespaces=msg.fromwho.computemappings(map.rw, host);
+		ronamespaces=msg.fromwho.computemappings(map.ro, host);
 	}
 
 	nsview namespaceview=nsview::create(ronamespaces, rwnamespaces,
@@ -370,16 +362,14 @@ void clusterlistenerimplObj::start_localconn(const x::fd &sock,
 			    *cluster,
 			    spacedf,
 			    getsemaphore),
-		   sock,
-		   x::fd::base::inputiter(sock),
+		   msg.sock,
+		   x::fd::base::inputiter(msg.sock),
 		   x::ptr<x::obj>());
 }
 
-void clusterlistenerimplObj::start_privlocalconn(const x::fd &sock,
-						 const nsmap::clientcred &fromwho)
-
+void clusterlistenerimplObj::dispatch(const start_privlocalconn_msg &msg)
 {
-	std::string name=fromwho;
+	std::string name=msg.fromwho;
 
 	LOG_DEBUG(nodeName() << ": admin connection from " << name);
 
@@ -392,8 +382,8 @@ void clusterlistenerimplObj::start_privlocalconn(const x::fd &sock,
 			    spacedf,
 			    getsemaphore,
 			    clusterlistener(this)),
-		   sock,
-		   x::fd::base::inputiter(sock),
+		   msg.sock,
+		   x::fd::base::inputiter(msg.sock),
 		   x::ptr<x::obj>());
 }
 
@@ -427,7 +417,6 @@ clusterlistenerimplObj::retr_credentialsObj::~retr_credentialsObj() noexcept
 }
 
 void clusterlistenerimplObj::retr_credentialsObj::run()
-
 {
 	try {
 		sock->nonblock(true);
@@ -505,7 +494,6 @@ x::property::value<size_t>
 clusterlistenerimplObj::reserved_inodes(L"reserved::inodes", 100);
 
 void clusterlistenerimplObj::dispatch(const update_reserved_space_msg &msg)
-
 {
 	if (msg.margin.set_new_peers)
 		npeers=msg.margin.npeers;
