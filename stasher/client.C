@@ -34,7 +34,6 @@
 #include <x/fdtimeoutconfig.H>
 #include <x/netaddr.H>
 #include <x/destroycallbackflag.H>
-#include <x/httportmap.H>
 #include <x/weaklist.H>
 
 STASHER_NAMESPACE_START
@@ -54,13 +53,10 @@ class LIBCXX_HIDDEN my_portmapperObj : virtual public x::obj {
 
 x::singleton<my_portmapperObj> myportmapper LIBCXX_HIDDEN;
 
-class LIBCXX_HIDDEN portmapper_init {
-
- public:
-	portmapper_init() { myportmapper.get(); }
-};
-
-portmapper_init portmapper_init_instance LIBCXX_HIDDEN;
+x::httportmap clientObj::get_portmapper()
+{
+	return myportmapper.get()->portmapper;
+}
 
 clientBase::connstatusObj::connstatusObj()
 	: result(req_disconnected_stat)
@@ -440,7 +436,8 @@ clientObj::implObj::default_nodedir(L"objrepo::nodedir",
 				    localstatedir "/stasher/nodes");
 
 clientObj::clientObj(const std::string &socknameArg)
-	: sockname(socknameArg), impl(impl_t::create())
+	: sockname(socknameArg), portmap(get_portmapper()),
+	  impl(impl_t::create())
 {
 }
 

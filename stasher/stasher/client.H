@@ -13,6 +13,7 @@
 #include <x/fd.H>
 #include <x/uuid.H>
 #include <x/mcguffinref.H>
+#include <x/httportmap.H>
 
 #include <stasher/namespace.H>
 #include <stasher/clientfwd.H>
@@ -49,6 +50,12 @@ public:
 private:
 	//! Socket connection
 	std::string sockname;
+
+	//! An internal portmapper handle
+	x::httportmap portmap;
+	
+	//! Acquire an internal portmapper handle
+	static x::httportmap get_portmapper() LIBCXX_INTERNAL;
 
 	//! A mcguffin-based reference to the implementation thread
 
