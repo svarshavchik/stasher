@@ -16,7 +16,7 @@ STASHER_NAMESPACE_START
 x::property::value<unsigned> fdobjrwthreadBase::writeTimeout(L"objrepo::timeoutwrite",
 							     10);
 x::property::value<unsigned> fdobjrwthreadBase::readTimeout(L"objrepo::timeoutread",
-							     60);
+							     90);
 
 fdobjrwthreadObj::fdobjrwthreadObj(const std::string &writeThreadNameArg)
 	: writeThreadName(writeThreadNameArg),
