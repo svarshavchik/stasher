@@ -363,10 +363,10 @@ void repocontrollermasterObj::run(x::ref<x::obj> &start_arg)
 		auto receivedref = x::ref<thisnodereceivedObj>::create
 			(repocontrollermasterptr(this));
 
-
 		slaves= &slavemap;
 		controller_mcguffin=&my_mcguffin;
 		thisnodereceived= &*receivedref;
+		received_cluster_update=false;
 
 		LOG_TRACE("Thread mcguffin for " << mastername
 			  << "  " << &*my_mcguffin);
@@ -395,7 +395,10 @@ void repocontrollermasterObj::run(x::ref<x::obj> &start_arg)
 
 		stop_mcguffin=&stop_mcguffinweakptr;
 
-		compute_quorum(true);
+		// There's an expectation of the initial quorum status
+		// announcement. Do not disappoint.
+
+		quorum(STASHER_NAMESPACE::quorumstate());
 
 		while (1)
 		{
@@ -416,7 +419,6 @@ void repocontrollermasterObj::run(x::ref<x::obj> &start_arg)
 }
 
 void repocontrollermasterObj::initialize(const clusterinfo &cluster)
-
 {
 	set_cluster(cluster);
 
@@ -427,7 +429,6 @@ void repocontrollermasterObj::initialize(const clusterinfo &cluster)
 }
 
 void repocontrollermasterObj::dispatch(const set_cluster_msg &msg)
-
 {
 	if ( (*cluster=msg.cluster.getptr()).null())
 		stop();
@@ -436,8 +437,11 @@ void repocontrollermasterObj::dispatch(const set_cluster_msg &msg)
 // Process cluster composition update
 
 void repocontrollermasterObj::dispatch(const clusterupdated_msg &msg)
-
 {
+	bool received_cluster_update_already=received_cluster_update;
+
+	received_cluster_update=true;
+
 	for (clusterinfoObj::cluster_t::const_iterator
 		     b(msg.newStatus.begin()), e(msg.newStatus.end());
 	     b != e; ++b)
@@ -460,11 +464,12 @@ void repocontrollermasterObj::dispatch(const clusterupdated_msg &msg)
 			slaves->erase(p);
 		}
 	}
-	compute_quorum(false);
+
+	// The first update notification forces a quorum announcement
+	compute_quorum(!received_cluster_update_already);
 }
 
 void repocontrollermasterObj::dispatch(const peernewmaster_msg &msg)
-
 {
 	repopeerconnectionptr peer(msg.peerRef.getptr());
 
@@ -505,6 +510,7 @@ void repocontrollermasterObj::dispatch(const peernewmaster_msg &msg)
 	iter->second=slaveinfo();
 
 	// Make sure that the current state is not in quorum
+
 	compute_quorum(false);
 
 	auto link=repopeerconnectionbaseObj::peerlinkptr::create
@@ -545,7 +551,6 @@ void repocontrollermasterObj::dispatch(const peernewmaster_msg &msg)
 }
 
 void repocontrollermasterObj::dispatch(const accept_msg &msg)
-
 {
 	repopeerconnectionptr peer=msg.peer.getptr();
 
@@ -582,7 +587,6 @@ void repocontrollermasterObj::dispatch(const accept_msg &msg)
 }
 
 void repocontrollermasterObj::dispatch(const check_quorum_msg &dummy)
-
 {
 	compute_quorum(false);
 }
@@ -598,7 +602,6 @@ public:
 };
 
 repocontrollermasterObj::quorumPeerListObj::quorumPeerListObj()
-
 {
 }
 
@@ -607,8 +610,10 @@ repocontrollermasterObj::quorumPeerListObj::~quorumPeerListObj() noexcept
 }
 
 void repocontrollermasterObj::compute_quorum(bool forceannounce)
-
 {
+	if (!received_cluster_update)
+		return; // Did not receive the initial cluster state yet.
+
 	compute_quorum_get_peers(forceannounce,
 				 quorumPeerList::create());
 }
@@ -616,8 +621,6 @@ void repocontrollermasterObj::compute_quorum(bool forceannounce)
 bool repocontrollermasterObj
 ::compute_quorum_get_peers(bool forceannounce,
 			   const quorumPeerList &peers)
-
-
 {
 	STASHER_NAMESPACE::quorumstate newquorum(true, true); // Optimism
 
@@ -722,7 +725,6 @@ bool repocontrollermasterObj
 }
 
 void repocontrollermasterObj::dispatch(const get_quorum_msg &msg)
-
 {
 	static_cast<STASHER_NAMESPACE::quorumstate &>(*msg.status)=curquorum;
 	msg.processed->flag=true;
@@ -731,7 +733,6 @@ void repocontrollermasterObj::dispatch(const get_quorum_msg &msg)
 // Connection from a slave who wants to be synced
 
 void repocontrollermasterObj::dispatch(const syncslave_msg &msg)
-
 {
 	LOG_DEBUG("Slave request: " << msg.name);
 
@@ -834,13 +835,11 @@ void repocontrollermasterObj::slaveinfo::syncobjcbObj
 
 void repocontrollermasterObj::dispatch(const check_repo_copy_completion_msg
 				       &dummy)
-
 {
 	check_copy_completed();
 }
 
 void repocontrollermasterObj::check_copy_completed()
-
 {
 	LOG_DEBUG("Checking for repository synchronization completion");
 
@@ -893,7 +892,6 @@ void repocontrollermasterObj::check_copy_completed()
 // ---------------------------------------------------------------------------
 
 void repocontrollermasterObj::dispatch(const transactions_received_msg &msg)
-
 {
 	msg.node->received(msg.uuids);
 
@@ -902,13 +900,11 @@ void repocontrollermasterObj::dispatch(const transactions_received_msg &msg)
 }
 
 void repocontrollermasterObj::dispatch(const transactions_cancelled_msg &msg)
-
 {
 	msg.node->cancelled(msg.uuids);
 }
 
 void repocontrollermasterObj::checkcommit(const trandistuuid &uuids)
-
 {
 	quorumPeerList peers=quorumPeerList::create();
 
@@ -1042,7 +1038,6 @@ void repocontrollermasterObj::checkcommit(const trandistuuid &uuids,
 
 repopeerconnectionptr
 repocontrollermasterObj::debugGetPeerConnection(const std::string &peername)
-
 {
 	x::ptr<debug_get_peer_msg::retval> rc(x::ptr<debug_get_peer_msg::retval>
 					      ::create());
@@ -1073,7 +1068,6 @@ repocontrollermasterObj::debugGetPeerConnection(const std::string &peername)
 
 void repocontrollermasterObj::dispatch(const debugGetPeerConnectionImpl_msg
 				       &msg)
-
 {
 	slaves_t::iterator p=slaves->find(msg.msg.peername);
 
@@ -1276,7 +1270,6 @@ void repocontrollermasterObj::commitJobObj
 // Initial handoff request
 x::ptr<x::obj>
 repocontrollermasterObj::handoff_request(const std::string &peername)
-
 {
 	LOG_INFO(mastername << ": received handoff request to " << peername);
 
@@ -1353,7 +1346,6 @@ public:
 // Initial handoff processing, in the context of the master controller thread
 
 void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
-
 {
 	if (msg.msg->mcguffin_destroyed == false) // Initial request came in.
 	{
@@ -1497,7 +1489,6 @@ void repocontrollermasterObj::handoff_repolockthreadObj
 }
 
 void repocontrollermasterObj::dispatch(const handoff_failed_msg &msg)
-
 {
 	dispatch_handoff_failed();
 }
@@ -1518,7 +1509,6 @@ void repocontrollermasterObj::dispatch_handoff_failed()
 }
 
 void repocontrollermasterObj::dispatch(const masterbaton_announced_msg &msg)
-
 {
 #ifdef DEBUG_BATON_TEST_2_ANNOUNCED_HOOK
 	DEBUG_BATON_TEST_2_ANNOUNCED_HOOK();
@@ -1531,7 +1521,6 @@ void repocontrollermasterObj::dispatch(const masterbaton_announced_msg &msg)
 }
 
 void repocontrollermasterObj::dispatch(const masterbaton_handedover_msg &msg)
-
 {
 #ifdef DEBUG_BATON_TEST_4_GIVEN_CB
 	DEBUG_BATON_TEST_4_GIVEN_CB();
@@ -1661,7 +1650,6 @@ void repocontrollermasterObj::dispatch(const halt_continue_msg &req_msg)
 }
 
 std::string repocontrollermasterObj::report(std::ostream &rep)
-
 {
 	rep << "Quorum: " << x::tostring(curquorum) << std::endl
 	    << "Distributor object installed: "

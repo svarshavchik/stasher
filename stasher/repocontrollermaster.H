@@ -166,6 +166,9 @@ private:
 
 	class thisnodereceivedObj;
 
+	//! Whether the controller thread received the initial cluster state notification message
+	bool received_cluster_update;
+
 	//! Transactions that have been received by this node -- on the executing thread's stack
 	thisnodereceivedObj *thisnodereceived;
 	
