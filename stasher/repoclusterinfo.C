@@ -44,7 +44,6 @@ x::fdptr repoclusterinfoObj::opendirect(const tobjrepo &repo,
 
 STASHER_NAMESPACE::nodeinfomap
 repoclusterinfoObj::loadclusterinfo(const tobjrepo &repo)
-
 {
 	STASHER_NAMESPACE::nodeinfomap m;
 
@@ -73,7 +72,6 @@ repoclusterinfoObj::loadclusterinfo(const tobjrepo &repo)
 
 void repoclusterinfoObj::saveclusterinfo(const tobjrepo &repo,
 					 const STASHER_NAMESPACE::nodeinfomap &infoArg)
-
 {
 	newtran tr(repo->newtransaction());
 
@@ -104,17 +102,16 @@ void repoclusterinfoObj::saveclusterinfo(const tobjrepo &repo,
 	repo->cancel(uuid);
 }
 
-
 repoclusterinfoObj::repoclusterinfoObj(const std::string &nodename,
 				       const std::string &clustername,
 				       const x::ptr<STASHER_NAMESPACE::stoppableThreadTrackerObj>
 				       &thread_trackerArg,
 				       const tobjrepo &repoArg)
- : clusterinfoObj(nodename, clustername,
-					     thread_trackerArg,
-					     loadclusterinfo(repoArg)),
-			      repo(repoArg),
-			      quorum_callback_list(new repoclusterquorumObj)
+	: clusterinfoObj(nodename, clustername,
+			 thread_trackerArg,
+			 loadclusterinfo(repoArg)),
+	  repo(repoArg),
+	  quorum_callback_list(repoclusterquorum::create())
 {
 	repo->cancel_done(nodename);
 }
@@ -195,7 +192,6 @@ void repoclusterinfoObj::configNotifierObj::installed(const std::string
 						      &objname,
 						      const x::ptr<x::obj>
 						      &lock)
-
 {
 	if (objname == STASHER_NAMESPACE::client::base::clusterconfigobj)
 	{
@@ -208,7 +204,6 @@ void repoclusterinfoObj::configNotifierObj::installed(const std::string
 
 void repoclusterinfoObj::configNotifierObj::removed(const std::string &objname,
 						    const x::ptr<x::obj> &lock)
-
 {
 	installed(objname, lock);
 }
@@ -219,8 +214,7 @@ void repoclusterinfoObj::initialize()
 
 	status current_status(clusterinfo(this));
 
-	updater=x::ptr<configNotifierObj>(new configNotifierObj
-					  (repoclusterinfo(this)));
+	updater=x::ptr<configNotifierObj>::create(repoclusterinfo(this));
 
 	repo->installNotifier(updater);
 
@@ -241,7 +235,6 @@ void repoclusterinfoObj::update()
 std::pair<bool, peerstatus>
 repoclusterinfoObj::installpeer_locked(const std::string &name,
 				       const peerstatus &node)
-
 {
 	LOG_INFO(nodename << ": connection from " << name << ", status: "
 		 << ({
@@ -264,7 +257,6 @@ repoclusterinfoObj::installpeer_locked(const std::string &name,
 
 void repoclusterinfoObj::peernewmaster(const x::ptr<peerstatusObj> &peerRef,
 				       const nodeclusterstatus &peerStatus)
-
 {
 	{
 		std::lock_guard<std::mutex> lock(objmutex);
@@ -351,7 +343,6 @@ void repoclusterinfoObj::mcguffinDestroyCallbackObj::destroyed() noexcept
 }
 
 void repoclusterinfoObj::startmaster(const newnodeclusterstatus &newStatus)
-
 {
 	repocontrollerbase controller=
 		newStatus.status.master == nodename ?
@@ -401,7 +392,6 @@ void repoclusterinfoObj::startmaster(const newnodeclusterstatus &newStatus)
 }
 
 x::ptr<repocontrollerbaseObj> repoclusterinfoObj::getCurrentController()
-
 {
 	std::lock_guard<std::mutex> lock(objmutex);
 
@@ -422,7 +412,6 @@ x::ref<x::obj> repoclusterinfoObj::
 start_handover_thread(const std::string &newmaster,
 		      const boolref &succeeded,
 		      const x::ptr<x::obj> &mcguffin)
-
 {
 	x::ref<batonhandoverthreadObj>
 		thr(x::ref<batonhandoverthreadObj>::create());
