@@ -232,10 +232,11 @@ public:
 	//! Container for other peers in the cluster
 	typedef std::map<std::string, nodeinfoconn> cluster_t;
 
+private:
 	//! cluster_t is a Very Important Object
 	typedef x::vipobj<cluster_t, clusternotifierObj,
 			  cluster_notification> vipcluster_t;
-private:
+
 	class destroycb;
 
 	//! Other peers in the cluster

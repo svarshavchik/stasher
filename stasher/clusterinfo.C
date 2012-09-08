@@ -194,7 +194,6 @@ LOG_FUNC_SCOPE_DECL(clusterinfoObj::installpeer, installpeerLog);
 std::pair<bool, peerstatus>
 clusterinfoObj::installpeer(const std::string &nodename,
 			    const peerstatus &node)
-
 {
 	std::pair<bool, peerstatus> retval;
 
@@ -210,7 +209,6 @@ clusterinfoObj::installpeer(const std::string &nodename,
 
 		peerlock.notify(*vipcluster_t::readlock(cluster));
 	}
-
 
 	recalculate();
 	return retval;
@@ -235,9 +233,10 @@ public:
 std::pair<bool, peerstatus>
 clusterinfoObj::installpeer_locked(const std::string &nodename,
 				   const peerstatus &node)
-
 {
 	LOG_FUNC_SCOPE(installpeerLog);
+
+	thisnodestatus_t::readlock statuslock(thisnodestatus);
 
 	vipcluster_t::writelock writelock(cluster);
 
@@ -255,6 +254,17 @@ clusterinfoObj::installpeer_locked(const std::string &nodename,
 	{
 		LOG_WARNING(this->nodename << ": connection with "
 			    << nodename << " already exists");
+		return std::make_pair(false, prevpeer);
+	}
+
+	if (statuslock->master == nodename)
+	{
+		LOG_WARNING(this->nodename << ": previous connection with "
+			    << nodename << " not yet completely disconnected");
+
+		// Race condition: previous connection with this peer dropped
+		// but the status has not yet been update.
+
 		return std::make_pair(false, prevpeer);
 	}
 
@@ -374,7 +384,6 @@ void clusterinfoObj::connectpeers(const connectpeers_callback &callback)
 }
 
 void clusterinfoObj::installnotifycluster(const clusternotifier &notifier)
-
 {
 	// Do not combine these two, under penalty
 	// of flogging, and being sent back to
@@ -388,7 +397,6 @@ void clusterinfoObj::installnotifycluster(const clusternotifier &notifier)
 
 void clusterinfoObj::installnotifyclusterstatus(const clusterstatusnotifier
 						&notifier)
-
 {
 	// Do not combine these two, under penalty
 	// of flogging, and being sent back to
@@ -403,19 +411,16 @@ void clusterinfoObj::installnotifyclusterstatus(const clusterstatusnotifier
 
 void clusterinfoObj::peerstatusupdated(const x::ptr<peerstatusObj> &peerRef,
 				       const nodeclusterstatus &peerStatus)
-
 {
 	recalculate();
 }
 
 void clusterinfoObj::peernewmaster(const x::ptr<peerstatusObj> &peerRef,
 				   const nodeclusterstatus &peerStatus)
-
 {
 }
 
 void clusterinfoObj::clearbaton(const baton &batonArg)
-
 {
 	thisnodestatus_t::updatelock lock(thisnodestatus);
 
@@ -436,7 +441,6 @@ void clusterinfoObj::clearbaton(const baton &batonArg)
 LOG_FUNC_SCOPE_DECL(clusterinfoObj::installbaton, installbatonLog);
 
 bool clusterinfoObj::installbaton(const baton &batonArg)
-
 {
 	LOG_FUNC_SCOPE(installbatonLog);
 
@@ -521,7 +525,6 @@ LOG_FUNC_SCOPE_DECL(clusterinfoObj::recalculate_locked, recalculateLog);
 
 void clusterinfoObj::recalculate_locked(thisnodestatus_t::updatelock
 					&updatelock)
-
 {
 	LOG_FUNC_SCOPE(recalculateLog);
 
@@ -569,8 +572,6 @@ LOG_FUNC_SCOPE_DECL(clusterinfoObj::calculate_status_locked, calculateLog);
 
 clusterinfoObj::newnodeclusterstatus clusterinfoObj
 ::calculate_status_locked(const vipcluster_t::readlock &clusterlock)
-
-
 {
 	LOG_FUNC_SCOPE(calculateLog);
 
@@ -732,7 +733,6 @@ LOG_FUNC_SCOPE_DECL(clusterinfoObj::calculate_status_locked_with_baton,
 
 nodeclusterstatus clusterinfoObj
 ::calculate_status_locked_with_baton(const vipcluster_t::readlock &clusterlock)
-
 {
 	LOG_FUNC_SCOPE(batonLog);
 
@@ -874,7 +874,6 @@ void clusterinfoObj::getnodeinfo(const std::string &nodename,
 }
 
 x::ptr<peerstatusObj> clusterinfoObj::getnodepeer(const std::string &nodename)
-
 {
 	return getnodepeer_locked(vipcluster_t::readlock(cluster), nodename);
 }
@@ -899,7 +898,6 @@ void clusterinfoObj::getthisnodeinfo(STASHER_NAMESPACE::nodeinfo &infoRet)
 }
 
 void clusterinfoObj::getallpeers(std::list<peerstatus> &allpeerList)
-
 {
 	vipcluster_t::readlock clusterlock(cluster);
 
@@ -914,7 +912,6 @@ void clusterinfoObj::getallpeers(std::list<peerstatus> &allpeerList)
 }
 
 void clusterinfoObj::pingallpeers(const x::ptr<x::obj> &mcguffin)
-
 {
 	vipcluster_t::readlock clusterlock(cluster);
 
@@ -935,7 +932,6 @@ void clusterinfoObj::pingallpeers(const x::ptr<x::obj> &mcguffin)
 }
 
 void clusterinfoObj::installformermasterbaton(const baton &batonp)
-
 {
 	vipcluster_t::readlock clusterlock(cluster);
 
