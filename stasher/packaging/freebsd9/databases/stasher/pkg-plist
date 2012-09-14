@@ -1,0 +1,54 @@
+@stopdaemon stasherd
+bin/stasher
+bin/stashermg
+etc/stasherlogconfig
+include/stasher/client.H
+include/stasher/client.api.auto.H
+include/stasher/clientfwd.H
+include/stasher/clusterstate.H
+include/stasher/contents.H
+include/stasher/current.H
+include/stasher/currentbase.H
+include/stasher/heartbeat.H
+include/stasher/managedconnectionupdate.H
+include/stasher/managedhierarchymonitor.H
+include/stasher/managedobject.H
+include/stasher/managedserverstatuscallback.H
+include/stasher/managedsubscriber.H
+include/stasher/manager.H
+include/stasher/namespace.H
+include/stasher/nodeinfo.H
+include/stasher/objname.H
+include/stasher/process_request.H
+include/stasher/puttransaction.H
+include/stasher/quorumstate.H
+include/stasher/quorumstateobj.H
+include/stasher/repoclusterquorumcallbackbase.H
+include/stasher/reqstat.H
+include/stasher/results.auto.H
+include/stasher/retrobj.H
+include/stasher/serobjname.H
+include/stasher/serverstatuscallback.H
+include/stasher/userhelo.H
+include/stasher/userinit.H
+include/stasher/userput.H
+include/stasher/versionedcurrent.H
+include/stasher/versionedptr.H
+include/stasher/versionedput.H
+include/stasher/versionscollected.H
+lib/libstasher-client.a
+lib/libstasher-client.la
+lib/libstasher-client.so
+lib/libstasher-client.so.1
+lib/libstasher.a
+lib/libstasher.la
+lib/libstasher.so
+lib/libstasher.so.0
+libexec/stasher/stasherd
+share/stasher/maillogs.sh
+share/stasher/stasher.sysinit
+share/stasher/sysinit.rc
+etc/periodic/daily/maillogs.sh
+@dirrm include/stasher
+@dirrm libexec/stasher
+@dirrm share/stasher

@@ -1,0 +1,9 @@
+if test "$2" = "POST-DEINSTALL"
+then
+    for d in apps clusters nodes newnodes
+    do
+	rmdir "$PKG_PREFIX/var/stasher/$d" 2>/dev/null
+    done
+    rmdir "$PKG_PREFIX/var/stasher" 2>/dev/null
+    exit 0
+fi
