@@ -52,6 +52,10 @@
 <!ENTITY heartbeatclass SYSTEM "heartbeatclass.xml">
 <!ENTITY heartbeatoter SYSTEM "heartbeatother.xml">
 
+<!ENTITY freebsdver "FreeBSD 9">
+<!ENTITY freebsdverdir "<filename>packaging/freebsd9/databases/stasher</filename>">
+<!ENTITY freebsdprefix "/usr/local/var/stasher">
+
 %entity-list;
 
 ]>
@@ -83,14 +87,16 @@ See COPYING for distribution information.
 	for information on &app;'s C++ <acronym>API</acronym>.
       </para>
 
-      <para>
-	The examples in this part use &app;'s default directory
-	as used by &app;'s <application>RPM</application> package for
-	Fedora, with is
-	<filename>/var/stasher</filename>. If &app; is built manually, the
-	default directory is <filename>/usr/local/var</filename>, and it
-	can be overriden, if desired.
-      </para>
+      <note>
+	<para>
+	  The examples in this part use &app;'s default directory
+	  as used by &app;'s <application>RPM</application> package for
+	  Fedora, with is
+	  <filename>/var/stasher</filename>. If &app; is built manually, the
+	  default directory is <filename>/usr/local/var</filename>, and it
+	  can be overriden, if desired.
+	</para>
+      </note>
     </partintro>
     &newclustersetup;
     &newnodesetup;

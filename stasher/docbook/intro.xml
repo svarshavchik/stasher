@@ -374,7 +374,8 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      Use the following manual installation instructions only as a guide
+      On Linux,
+      use the following manual installation instructions only as a guide
       for preparing installable &app; packages, when the <acronym>RPM</acronym>
       build script cannot be used for some reason.
     </para>
@@ -548,6 +549,48 @@ See COPYING for distribution information.
 	</note>
       </listitem>
     </itemizedlist>
+    <section id="freebsdpkg">
+      <title>FreeBSD 9 packaging</title>
+
+      <para>
+	At this time, there's a <filename>Makefile</filename> in the
+	&app; tarball that you can use to try to build &app; on &freebsdver;.
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    &libx; must be installed first, and <command>httportmap</command>
+	    must be running.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Copy the &app; tarball to <filename>/usr/ports/distfiles</filename>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Extract the tarball's contents into a temporary directory, then from
+	    the &freebsdverdir; subdirectory run
+	    <command>make makesum</command> followed by
+	    <command>make install</command> (or
+	    <command>make package</command>).
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Add <quote>stasherd_enable=YES</quote> to
+	    <filename>/etc/rc.conf</filename>.
+	    This starts &app; when the server boots for any and all nodes
+	    installed in <filename>&freebsdprefix;/nodes/*</filename>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </section>
   </section>
 </preface>
 <!--
