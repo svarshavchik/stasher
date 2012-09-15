@@ -9,7 +9,5 @@ See COPYING for distribution information.
   <l:l10n language="en">
     <l:gentext key="nav-home" text="Table Of Contents" />
     <l:gentext key="TableofContents" text="Index"/>
-    <l:gentext key="tableofcontents" text="Index"/>
-
   </l:l10n>
 </l:i18n>

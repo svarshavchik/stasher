@@ -1,0 +1,56 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<appendix id="freebsdport">
+  <title>Porting and compatibility notes</title>
+
+  <para>
+    At this time, there's a <filename>Makefile</filename> in the
+    &app; tarball that you can use to try to build &app; on &freebsdver;.
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	&libx; must be installed first, and <command>httportmap</command>
+	must be running.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Copy the &app; tarball to <filename>/usr/ports/distfiles</filename>.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Extract the tarball's contents into a temporary directory, then from
+	the &freebsdverdir; subdirectory run
+	<command>make makesum</command> followed by
+	<command>make install</command> (or
+	<command>make package</command>).
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Add <quote>stasherd_enable=YES</quote> to
+	<filename>/etc/rc.conf</filename>.
+	This starts &app; when the server boots for any and all nodes
+	installed in <filename>&freebsdprefix;/nodes/*</filename>.
+      </para>
+    </listitem>
+  </itemizedlist>
+</appendix>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "appendix")
+End:
+-->

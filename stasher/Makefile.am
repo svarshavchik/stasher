@@ -655,12 +655,21 @@ check-am:
 	./heartbeat.tst
 	./repocontrollermaster2.tst
 
-docs: html/book.css
+docs: html/index.html html/book.css html/logo.png $(shell cd $(srcdir)/docbook; ls *.png | sed 's@^@html/@')
 
-html/book.css: html/ref/index.html $(wildcard docbook/*.xml)
+html/%.png: docbook/%.png
+	mkdir -p html
+	$(INSTALL) -m 0644 $(srcdir)/$< html
+
+html/book.css: html/index.html docbook/book.css
+	mkdir -p html
+	$(INSTALL) -m 0644 $(srcdir)/docbook/book.css html
+
+html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.xsl
+	mkdir -p docbook
+	xsltproc $(srcdir)/docbook/xmllinks.xsl xml/index.xml >docbook/entities
 	rm -rf html.tmp
 	mkdir html.tmp
-	xsltproc $(srcdir)/docbook/xmllinks.xsl xml/index.xml >docbook/entities
 	xsltproc --nonet -o html.tmp/ --xinclude \
 		--param local.l10n.xml 'document("'`pwd`/docbook/l10.xml'")' \
 		$(srcdir)/docbook/docbook.xsl \
@@ -674,7 +683,6 @@ html/book.css: html/ref/index.html $(wildcard docbook/*.xml)
 	echo 'ForceType text/plain' >html/examples/.htaccess
 	links --dump --no-references html/INSTALL.html >INSTALL.tmp
 	mv -f INSTALL.tmp INSTALL
-	$(INSTALL) -m 0644 $(srcdir)/docbook/book.css html
 
 html/ref/index.html: Doxyfile $(wildcard stasher/*.H) $(myCLEANFILES)
 	rm -rf html/ref xml

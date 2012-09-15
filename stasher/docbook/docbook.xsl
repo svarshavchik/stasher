@@ -7,5 +7,14 @@
   <xsl:param name="html.stylesheet">book.css</xsl:param>
   <xsl:param name="root.filename">toc</xsl:param>
   <xsl:param name="generate.id.attributes">1</xsl:param>
+
+  <xsl:template name="body.attributes">
+    <xsl:choose>
+      <xsl:when test='@id'>
+	<xsl:attribute name="id"><xsl:text>body</xsl:text><xsl:value-of select='@id' /></xsl:attribute>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:include href="http://docbook.sourceforge.net/release/xsl/current/xhtml-1_1/chunk.xsl" />
 </xsl:stylesheet>

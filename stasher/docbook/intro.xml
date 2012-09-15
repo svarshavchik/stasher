@@ -13,38 +13,53 @@ See COPYING for distribution information.
 
     <para>
       &app; is a server that implements a distributed, transactional object
-      repository cluster, which means the following:
+      repository cluster.
+      &app; typically runs on more than one network server, forming a
+      <quote>cluster</quote>.
+      Each machine in a cluster is called a node. &app; replicates and
+      copies all objects in the repository to all nodes, automatically.
+      An <quote>object</quote> is just a small to a medium-sized file.
+      There's a limit on the maximum object size. The default maximum
+      object size is 32Mb.
     </para>
 
+    <para>
+      &app; would be mainly used by dedicated applications that are written
+      to use &app;'s C++ <acronym>API</acronym>.
+      The <acronym>API</acronym> provides means for connecting to a cluster,
+      retrieving the contents of existing objects; and putting other
+      objects into the cluster. There's also a basic, interactive
+      <link linkend="stasher"><command>stasher</command></link>
+      tool that provides a simple shell-like interface to an object
+      repository, interactively, from a command line.
+    </para>
+
+    <para>
+      <command>distreboot</command> demonstrates a simple &app; application.
+      <command>distreboot</command> implements a distributed reboot of
+      multiple servers, one at a time.
+    </para>
+
+    <para>
+      There's other software, similar to &app;, with similar features.
+      Specifically, there are entire distributed filesystems, that present
+      something that looks like an ordinary filesystem partition, which is
+      accessible from multiple machines. The grand-daddy of them all, of course,
+      is <acronym>NFS</acronym>. There are other, more modern ones too.
+    </para>
+
+    <para>
+      &app; is based on &libx; which currently works on Linux only, and is
+      partially stable on FreeBSD 9.
+      &app; is free software, distributed under the terms of the
+      <link linkend="COPYING">GPL, version 3</link>.
+    </para>
+  </section>
+
+  <section id="features">
+    <title>Features</title>
+
     <itemizedlist>
-      <listitem>
-	<para>
-	  An <quote>object</quote> is just a small to a medium-sized file.
-	  There's a limit on the maximum object size. The default maximum
-	  object is 32Mb.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  &app; typically runs on more than one machine, forming a cluster.
-	  Each machine in a cluster is called a node. &app; replicates and
-	  copies all objects in the repository to all nodes, automatically.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  &app; would be mainly used by dedicated applications that are written
-	  to use &app;'s C++ <acronym>API</acronym>.
-	  The <acronym>API</acronym> provides means for connecting to a cluster,
-	  retrieving the contents of existing objects; and putting other
-	  objects into the cluster. There's also a basic, interactive
-	  <link linkend="stasher"><command>stasher</command></link>
-	  tool that provides a simple shell-like interface to an object
-	  repository, interactively, from a command line.
-	</para>
-      </listitem>
 
       <listitem>
 	<para>
@@ -54,7 +69,8 @@ See COPYING for distribution information.
 	  transaction. Other applications that retrieve the
 	  objects, at the same time, will either get the previous or their
 	  updated contents. There's an adjustable upper limit on the number of
-	  objects in the transaction. The default upper limit is ten objects.
+	  objects that can be simultaneously updated in a transaction. The
+	  default upper limit is ten objects.
 	</para>
       </listitem>
 
@@ -101,47 +117,16 @@ See COPYING for distribution information.
 	  it's completely synchronized with its peers.
 	</para>
       </listitem>
-    </itemizedlist>
 
-    <para>
-      <command>distreboot</command> demonstrates a simple &app; application.
-      <command>distreboot</command> implements a distributed reboot of
-      multiple servers, one at a time.
-    </para>
-
-    <para>
-      There's other software, similar to &app;, with similar features.
-      Specifically, there are entire distributed filesystems, that present
-      something that looks like an ordinary filesystem partition, which is
-      accessible from multiple machines. The grand-daddy of them all, of course,
-      is <acronym>NFS</acronym>. There are other, more modern ones too.
-    </para>
-
-    <para>
-      &app; is based on &libx; which currently works on Linux only, and is
-      partially stable on FreeBSD 9.
-      &app; is free software, distributed under the terms of the
-      <link linkend="COPYING">GPL, version 3</link>.
-    </para>
-  </section>
-
-  <section id="features">
-    <title>Features</title>
-    <itemizedlist>
       <listitem>
 	<para>
-	  It's an ordinary application. It's not a filesystem driver, that
+	  &app;
+	  is an ordinary application. It's not a filesystem driver, that
 	  requires non-trivial expertise to set up and configure. &app; runs
 	  as a process on each machine in the cluster. It runs from
 	  some directory, where it saves the objects in, and replicates
 	  to its peers. Each instance of &app; connects to its peer
 	  on other nodes.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  &app;'s transactional nature of object updates, is very database-like.
 	</para>
       </listitem>
 
@@ -355,18 +340,24 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      &libx; must be installed first. &app; uses &libx;.
-      Install &libx; first and follow its installation instructions.
+      &libx; must be installed first. &app; uses &libx;, which currently
+      builds only on Linux, with an exception that it also builds on
+      &freebsdver;. Before building &app;
+      install &libx; first and follow its installation instructions.
       Once &libx; is fully installed on each node, and
       &libx;'s httportmapper service
       is running on each node, proceed to install &app;.
+
+      The following instructions are for Linux, see
+      <xref linkend="freebsdport" /> for &freebsdver;-specific build
+      instructions.
     </para>
 
     <para>
       Preparing an installable package is recommended, rather than running
       <command>configure</command> and <command>make</command>, manually.
       &app; includes a script that builds <acronym>RPM</acronym> packages on
-      fedora. Executing
+      Fedora. Executing
       <quote>rpmbuild -ta &app;-<replaceable>version</replaceable>.tar.bz2</quote>
       produces two packages: &app;, the required runtime, and &app;-devel,
       which contains header files and other needed tools for building
@@ -549,48 +540,6 @@ See COPYING for distribution information.
 	</note>
       </listitem>
     </itemizedlist>
-    <section id="freebsdpkg">
-      <title>FreeBSD 9 packaging</title>
-
-      <para>
-	At this time, there's a <filename>Makefile</filename> in the
-	&app; tarball that you can use to try to build &app; on &freebsdver;.
-      </para>
-
-      <itemizedlist>
-	<listitem>
-	  <para>
-	    &libx; must be installed first, and <command>httportmap</command>
-	    must be running.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Copy the &app; tarball to <filename>/usr/ports/distfiles</filename>.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Extract the tarball's contents into a temporary directory, then from
-	    the &freebsdverdir; subdirectory run
-	    <command>make makesum</command> followed by
-	    <command>make install</command> (or
-	    <command>make package</command>).
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Add <quote>stasherd_enable=YES</quote> to
-	    <filename>/etc/rc.conf</filename>.
-	    This starts &app; when the server boots for any and all nodes
-	    installed in <filename>&freebsdprefix;/nodes/*</filename>.
-	  </para>
-	</listitem>
-      </itemizedlist>
-    </section>
   </section>
 </preface>
 <!--
