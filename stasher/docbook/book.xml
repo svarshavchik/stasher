@@ -4,10 +4,13 @@
 <!ENTITY % entity-list SYSTEM "entities">
 
 <!ENTITY app "<application>stasher</application>">
-<!ENTITY libx "<application><emphasis>LIBCXX</emphasis></application>">
+<!ENTITY distrebootapp "<ulink url='http://www.libcxx.org/stasher/distreboot/'><application>stasher-distreboot</application></ulink>">
+<!ENTITY distreboot "<link linkend='distrebootex'><command>distreboot</command></link>">
+<!ENTITY libx "<ulink url='http://www.libcxx.org/'><application><emphasis>LIBCXX</emphasis></application></ulink>">
 <!ENTITY quorum "quorum (the majority of nodes in the cluster are up, connected and synchronized with each other)">
 <!ENTITY fullquorum "full quorum (all nodes in the cluster are up, connected and synchronized with each other)">
 <!ENTITY stashermgcmd "<link linkend='stashermg'><command>stashermg</command></link>">
+<!ENTITY rebooting SYSTEM "rebooting.xml">
 <!ENTITY clusterhalt SYSTEM "clusterhalt.xml">
 <!ENTITY intro SYSTEM "intro.xml">
 <!ENTITY newclustersetup SYSTEM "newclustersetup.xml">
@@ -55,7 +58,8 @@
 <!ENTITY freebsd SYSTEM "freebsd.xml">
 <!ENTITY freebsdver "FreeBSD 9">
 <!ENTITY freebsdverdir "<filename>packaging/freebsd9/databases/stasher</filename>">
-<!ENTITY freebsdprefix "/usr/local/var/stasher">
+<!ENTITY freebsdprefix "/usr/local">
+<!ENTITY freebsdvarstasher "/usr/local/var/stasher">
 
 %entity-list;
 
@@ -104,6 +108,7 @@ See COPYING for distribution information.
     &removenode;
     &renewnodecert;
     &renewclustercert;
+    &rebooting;
     &clusterhalt;
   </part>
 

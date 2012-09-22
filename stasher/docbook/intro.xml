@@ -35,8 +35,8 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      <command>distreboot</command> demonstrates a simple &app; application.
-      <command>distreboot</command> implements a distributed reboot of
+      &distreboot; demonstrates a simple &app; application.
+      &distreboot; implements a distributed reboot of
       multiple servers, one at a time.
     </para>
 
@@ -57,7 +57,7 @@ See COPYING for distribution information.
   </section>
 
   <section id="features">
-    <title>Features</title>
+    <title>Features, and a brief overview</title>
 
     <itemizedlist>
 
@@ -113,8 +113,8 @@ See COPYING for distribution information.
 	  During its absence, some objects in the repository have changed.
 	  &app; automatically starts replication of the reconnected node.
 	  The current contents of the object repository get replicated to
-	  the reconnected node,
-	  it's completely synchronized with its peers.
+	  the reconnected node, until
+	  it's completely up to date and synchronized with its peers.
 	</para>
       </listitem>
 
@@ -188,7 +188,7 @@ See COPYING for distribution information.
 	  &app; guarantees (as much as anything can be guaranteed by free
 	  software with no warranty) that transaction updates to
 	  the object repository cluster will be atomic as long as the majority
-	  of notes in the cluster are up and connected with each other, this
+	  of nodes in the cluster are up and connected with each other, this
 	  is called a <quote>quorum</quote>. As long as a quorum is present,
 	  objects won't mysteriously disappear somewhere, and they'll get
 	  replicated
@@ -205,7 +205,7 @@ See COPYING for distribution information.
 	<para>
 	  A physical server can be a node in different object repository
 	  clusters, that are independent of each other. A node is just a
-	  directory, somewhere, with an &app; process.
+	  directory, somewhere, with a &app; process.
 	</para>
 
 	<para>

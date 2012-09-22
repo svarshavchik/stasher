@@ -1,0 +1,98 @@
+<!--
+
+Copyright 2012 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="rebooting">
+  <title>Rebooting a node</title>
+
+  <para>
+    Before rebooting a server that's running a repository node,
+    it's necessary to verify that the server is not the cluster master node:
+  </para>
+
+  <informalexample>
+    <computeroutput>[root@octopus ~]# stasher
+      <literallayout>
+Ready, EOF to exit.
+&gt; admin
+Connected to objrepo.example.com, node octopus.objrepo.example.com.
+Maximum 10 objects, 32 Mb aggregate object size, per transaction.
+Maximum 10 concurrent subscriptions.
+octopus&gt; status
+Cluster:
+  Status: master: octopus.objrepo.example.com (uuid dY6XWiGRtf5mV000QEDDK000002L
+AGW00318n4AS), 1 slaves, timestamp 2012-09-10 08:56:08 -0400
+
+<emphasis>[long output removed]</emphasis>
+
+octopus> resign
+Server resigned, new master is monster.objrepo.example.com
+octopus&gt;</literallayout>
+    </computeroutput>
+  </informalexample>
+
+  <para>
+    The <literal>STATUS</literal> command shows the repository's current
+    master node. No further action is needed if another node is the master node,
+    but this example reboots the server named <literal>octopus</literal>
+    which was the current master node. The <literal>resign</literal> command,
+    executed on the master node, transfers the master node status to another
+    server in the cluster. Afterwards, use the usual system administration
+    process that reboots the server.
+  </para>
+
+  <section id="distrebootex">
+    <title><command>distreboot</command> - reboot all servers in an object repository cluster</title>
+
+    <para>
+      The <command>distreboot</command> command comes from a separate package,
+      &distrebootapp;. &distrebootapp; gets installed separately, after
+      installing &app;
+    </para>
+
+    <para>
+      <command>distreboot</command> servers as an example of an application
+      that uses the &app; object repository cluster.
+      The &distrebootapp; package gets installed on all servers that run
+      an &app; object repository cluster. Upon request, they work together
+      to reboot all servers, in an orderly fashion, in a way that minimizes
+      the disruption and makes sure that the object repository cluster
+      remains in quorum throughout the entire process.
+    </para>
+
+    <para>
+      Once this so-called <quote>distributed reboot</quote> gets
+      initiated, all <command>distreboot</command> daemons on all nodes
+      work together to perform a coordinated reboot. One server at a time
+      gets rebooted. Once a server is rebooted, and the
+      <command>distreboot</command> gets started again, after a reboot
+      (presumably, as is the case with the default &app; installation package,
+      <command>distreboot</command> together with &app; gets automatically
+      restarted when the server boots),
+      <command>distreboot</command> signals its peer on the next machine in
+      the reboot list to begin rebooting it.
+    </para>
+
+    <para>
+      When a distributed reboot gets initiated,
+      <command>distreboot</command> chooses the order in which the servers
+      get rebooted according to the object repository's current master node.
+      The master node always is the last server that gets rebooted.
+      <command>distreboot</command> relies on the server's shutdown script
+      to run &app;'s default shutdown script that tries to resign the master
+      node, before the shutdown proceeds, so that the master node gets
+      transferred to another node, in an orderly fashion. Since the master
+      node always is the last server to get rebooted, the master node
+      transitions only once by a distributed reboot cycle.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

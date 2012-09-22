@@ -42,7 +42,18 @@ See COPYING for distribution information.
 	Add <quote>stasherd_enable=YES</quote> to
 	<filename>/etc/rc.conf</filename>.
 	This starts &app; when the server boots for any and all nodes
-	installed in <filename>&freebsdprefix;/nodes/*</filename>.
+	installed in <filename>&freebsdvarstasher;/nodes/*</filename>.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Edit <filename>&freebsdprefix;/etc/stasherlogconfig</filename>
+	and specify who should get daily &app; logs. The &freebsdver;
+	<filename>Makefile</filename> installs a daily job that mails
+	&app;'s logs to the recipient specified in this configuration
+	file (Linux has an hourly job, but &freebsdver; has only a daily
+	job).
       </para>
     </listitem>
   </itemizedlist>

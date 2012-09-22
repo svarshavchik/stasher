@@ -655,15 +655,22 @@ check-am:
 	./heartbeat.tst
 	./repocontrollermaster2.tst
 
-docs: html/index.html html/book.css html/logo.png $(shell cd $(srcdir)/docbook; ls *.png | sed 's@^@html/@')
+docs: html/index.html html/book.css html/logo.png html/.htaccess html/frame.js html/icon.gif $(shell cd $(srcdir)/docbook; ls *.png | sed 's@^@html/@')
 
-html/%.png: docbook/%.png
-	mkdir -p html
-	$(INSTALL) -m 0644 $(srcdir)/$< html
+html/%.png: html/index.html docbook/%.png
+	$(INSTALL) -m 0644 $(srcdir)/docbook/$(notdir $@) html
 
 html/book.css: html/index.html docbook/book.css
-	mkdir -p html
 	$(INSTALL) -m 0644 $(srcdir)/docbook/book.css html
+
+html/.htaccess: html/index.html docbook/.htaccess
+	$(INSTALL) -m 0644 $(srcdir)/docbook/.htaccess html/.htaccess
+
+html/frame.js: html/index.html docbook/frame.js
+	$(INSTALL) -m 0644 $(srcdir)/docbook/frame.js html/frame.js
+
+html/icon.gif: html/index.html docbook/icon.gif
+	$(INSTALL) -m 0644 $(srcdir)/docbook/icon.gif html/icon.gif
 
 html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.xsl
 	mkdir -p docbook
@@ -681,13 +688,23 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.
 	rm -rf html/examples
 	find examples -depth \( -type d -o -name '*.[CH]' -o -name '*.xml' -o -name Makefile.am -o -name configure.ac \) -print | cpio -o --quiet | (cd html; cpio -i --quiet --make-directories)
 	echo 'ForceType text/plain' >html/examples/.htaccess
+	rm -f html/distreboot
+	ln -s ../stasher-distreboot html/distreboot
 	links --dump --no-references html/INSTALL.html >INSTALL.tmp
 	mv -f INSTALL.tmp INSTALL
 
-html/ref/index.html: Doxyfile $(wildcard stasher/*.H) $(myCLEANFILES)
+html/ref/index.html: Doxyfile header.html $(wildcard stasher/*.H) $(myCLEANFILES)
 	rm -rf html/ref xml
 	mkdir -p html/ref
 	doxygen; c=$$?;	perl -p -i -e 's/INSERT_STASHER_NAMESPACE/stasher/g' html/ref/*.html; exit $$c
+
+header.html: Doxyfile
+	rm -rf header.html.tmp
+	mkdir -p header.html.tmp
+	cd header.html.tmp && doxygen -w html header.html footer.html doxygen.css
+	perl -p -i -e 's@<head>@<head><link rel="icon" href="/stasher/icon.gif" type="image/gif"/>@;s@\$$projectbrief@<a href="/stasher/">\$$projectbrief</a>@;' header.html.tmp/header.html
+	mv -f header.html.tmp/header.html .
+	rm -rf header.html.tmp
 
 install-exec-hook:
 	mkdir -m 0755 -p $(DESTDIR)@bindir@
@@ -765,3 +782,6 @@ rpm:
 		--define '__spec_prep_pre %{___build_pre}' \
 		--define "extrarelease .`date '+%Y%m%d%H%M%S'`" @PACKAGE@-@VERSION@.tar.bz2
 	$$HOME/repos.sh
+
+www: html
+	rsync -a --delete-after html/. ~/www/www.courier-mta.org/stasher/.

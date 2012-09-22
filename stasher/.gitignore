@@ -19,12 +19,11 @@ config.status
 config.sub
 configure
 depcomp
+/header.html
 install-sh
 libtool
 ltmain.sh
 missing
-install-sh
-ltmain.sh
 /objrepo_config.h
 /objrepo_config.h.in
 /localstatedir.h
