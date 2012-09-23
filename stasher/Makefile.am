@@ -655,7 +655,7 @@ check-am:
 	./heartbeat.tst
 	./repocontrollermaster2.tst
 
-docs: html/index.html html/book.css html/logo.png html/.htaccess html/frame.js html/icon.gif $(shell cd $(srcdir)/docbook; ls *.png | sed 's@^@html/@')
+docs: html/index.html html/book.css html/logo.png html/.htaccess html/frame.js html/icon.gif $(patsubst %,html/%,$(notdir $(wildcard $(srcdir)/docbook/*.png)))
 
 html/%.png: html/index.html docbook/%.png
 	$(INSTALL) -m 0644 $(srcdir)/docbook/$(notdir $@) html
@@ -715,6 +715,7 @@ install-exec-hook:
 
 uninstall-hook:
 	rm -f $(DESTDIR)@bindir@/stasher
+	rm -f $(DESTDIR)$(pkgdatadir)/maillogs.sh
 
 install-data-hook:
 	mkdir -m 0755 -p $(DESTDIR)@localstatedir@/stasher/apps
@@ -785,3 +786,10 @@ rpm:
 
 www: html
 	rsync -a --delete-after html/. ~/www/www.courier-mta.org/stasher/.
+
+tag:
+	git tag -s -a @PACKAGE@/@VERSION@/`date +%Y%m%d%H%M%S` -m 'Tag version @VERSION@'
+
+scp:
+	rm -f @PACKAGE@-@VERSION@.tar.bz2.sig; gpg --detach-sign --default-key mrsam@courier-mta.com @PACKAGE@-@VERSION@.tar.bz2; test -f @PACKAGE@-@VERSION@.tar.bz2.sig || exit 1
+	scp @PACKAGE@-@VERSION@.tar.bz2 @PACKAGE@-@VERSION@.tar.bz2.sig fedorahosted.org:libcxx

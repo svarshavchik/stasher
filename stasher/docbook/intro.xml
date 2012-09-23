@@ -330,6 +330,43 @@ See COPYING for distribution information.
   <section id="INSTALL">
     <title>Installation, and requirements</title>
 
+    <informaltable id="externallinks">
+      <thead cols="1">
+	<tr>
+	  <th>
+	    <simpara>Links</simpara>
+	  </th>
+	</tr>
+      </thead>
+
+      <tbody>
+	<tr>
+	  <td>
+	    <simpara>
+	      <ulink url="https://fedorahosted.org/released/libcxx/">Download</ulink>
+	    </simpara>
+
+	    <simpara>
+	      <ulink url="https://lists.fedorahosted.org/mailman/listinfo/libcxx-stasher-users">Mailing list</ulink>
+	    </simpara>
+
+	    <simpara>
+	      <ulink url="http://git.fedorahosted.org/git/libcxx.git">fedorahosted</ulink> or
+	      <ulink url="https://github.com/svarshavchik/libcxx.git">GitHUB</ulink>
+	      <acronym>GIT</acronym>
+	    </simpara>
+	    <simpara>
+	      (<quote>libcxx/stasher</quote> branch).
+	    </simpara>
+
+	    <simpara>
+	      <ulink url="http://www.courier-mta.org/KEYS.bin">PGP key</ulink>
+	    </simpara>
+	  </td>
+	</tr>
+      </tbody>
+    </informaltable>
+
     <para>
       &app; gets installed on all nodes in the cluster. All nodes in the cluster
       must generally run on the same hardware and software platform, including
