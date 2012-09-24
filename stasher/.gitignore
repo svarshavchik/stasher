@@ -2,6 +2,7 @@
 *.gz
 *.1
 *.la
+*.sig
 /*.tst
 /*.msgs.*.H
 /*.auto.[CH]

@@ -2,7 +2,14 @@ MANPAGESIN=stashermg.1.in stasher.1.in
 man1_MANS=stashermg.1 stasher.1
 sysconf_DATA=stasherlogconfig
 
-EXTRA_DIST=config.rpath repomgcli.xml opts.parse.inc.tst.C message.xsl $(myXML) $(MANPAGESIN) maillogs.sh.in stasherlogconfig
+EXTRA_DIST=config.rpath repomgcli.xml opts.parse.inc.tst.C message.xsl $(myXML) $(MANPAGESIN) maillogs.sh.in stasherlogconfig \
+	packaging/freebsd9/databases/stasher/Makefile \
+	packaging/freebsd9/databases/stasher/pkg-deinstall \
+	packaging/freebsd9/databases/stasher/pkg-descr \
+	packaging/freebsd9/databases/stasher/pkg-install \
+	packaging/freebsd9/databases/stasher/pkg-plist \
+	packaging/freebsd9/databases/stasher/files/stasherd.in
+
 BUILT_SOURCES=localstatedir.h repomgcliopts.h stasherdpath.h
 CLEANFILES=localstatedir.h repomgcliopts.h stasherdpath.h \
 	stasher.sysinit sysinit.rc $(myCLEANFILES) $(man1_MANS)
@@ -690,7 +697,7 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.
 	echo 'ForceType text/plain' >html/examples/.htaccess
 	rm -f html/distreboot
 	ln -s ../stasher-distreboot html/distreboot
-	links --dump --no-references html/INSTALL.html >INSTALL.tmp
+	links --dump html/INSTALL.html >INSTALL.tmp
 	mv -f INSTALL.tmp INSTALL
 
 html/ref/index.html: Doxyfile header.html $(wildcard stasher/*.H) $(myCLEANFILES)
