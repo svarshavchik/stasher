@@ -1287,9 +1287,10 @@ void cli::getprops(const std::list<std::string> &args)
 		}
 	}
 
-	x::property::save_properties(res->properties,
-				     std::ostreambuf_iterator<char>(std::cout),
-				     locale);
+	x::property::save_properties<char>(res->properties,
+					   std::ostreambuf_iterator<char>
+					   (std::cout),
+					   locale);
 }
 
 void cli::setprop(const std::string &propname, const std::string &propvalue)

@@ -286,8 +286,9 @@ void localprivconnectionObj::dopropsetreset(propsetresetaction &action,
 
 	x::ostream o=savefd->getostream();
 
-	x::property::save_properties(props,
-				     std::ostreambuf_iterator<char>(*o), glob);
+	x::property::save_properties<char>(props,
+					   std::ostreambuf_iterator<char>(*o),
+					   glob);
 	*o << std::flush;
 
 	savefd->close();

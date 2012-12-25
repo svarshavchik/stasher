@@ -367,7 +367,7 @@ static int clustmg(int argc, char **argv)
 
 				x::locale env=x::locale::create("");
 
-				x::property::save_properties
+				x::property::save_properties<char>
 					(propmap,
 					 std::ostreambuf_iterator<char>(*w),
 					 env);
