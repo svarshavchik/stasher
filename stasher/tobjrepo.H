@@ -320,6 +320,9 @@ public:
 
 	static const char done_hier[];
 
+	//! The size of done_hier
+	static const size_t done_hier_l;
+
 	//! Return object hierarchy for done files from a given source
 
 	//! This returns, basically, done_hier + "/" + source

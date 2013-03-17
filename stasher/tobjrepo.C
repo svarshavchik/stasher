@@ -534,6 +534,7 @@ void tobjrepoObj::commit_uuid_locked(const std::string &uuidArg,
 }
 
 const char tobjrepoObj::done_hier[]="etc/done";
+const size_t tobjrepoObj::done_hier_l=8; // 8 characters
 
 std::string tobjrepoObj::source_done_hier(const std::string &source)
 

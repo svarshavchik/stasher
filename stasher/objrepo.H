@@ -437,13 +437,11 @@ public:
 
 		//! An object was just installed
 		virtual void installed(const std::string &objname,
-				       const x::ptr<x::obj> &lock)
-=0;
+				       const x::ptr<x::obj> &lock)=0;
 
 		//! An object was just removed
 		virtual void removed(const std::string &objname,
-				       const x::ptr<x::obj> &lock)
-=0;
+				       const x::ptr<x::obj> &lock)=0;
 	};
 
 	//! A reference to a notifier object.
