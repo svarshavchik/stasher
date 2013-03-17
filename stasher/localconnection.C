@@ -218,8 +218,6 @@ class localconnectionObj::subscriptionsObj : public objrepoObj::notifierObj {
 
 	x::ref<STASHER_NAMESPACE::fdobjwriterthreadObj> writer;
 
-	nsview namespaceview;
-
 	typedef std::multimap<std::string, std::string> revmap_t;
 
 	revmap_t revmap;
@@ -233,10 +231,8 @@ public:
 	size_t cnt;
 
 	subscriptionsObj(const x::ref<STASHER_NAMESPACE::fdobjwriterthreadObj>
-			 &writerArg,
-			 const nsview &namespaceviewArg)
+			 &writerArg)
 		: writer(writerArg),
-		  namespaceview(namespaceviewArg),
 		  cnt(0)
 	{
 	}
@@ -412,7 +408,7 @@ void localconnectionObj::started()
 	auto newsubscriptions=
 		x::ref<subscriptionsObj>::create
 		(x::ref<STASHER_NAMESPACE::fdobjwriterthreadObj>
-		 (writer), namespaceview);
+		 (writer));
 
 	*subscriptions=newsubscriptions;
 	subscriptionsptr= &*newsubscriptions;
