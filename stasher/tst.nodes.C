@@ -101,8 +101,16 @@ tstnodes::nodeObj::~nodeObj() noexcept
 {
 }
 
+// Initial test nodes with a basic root namespace view
 void tstnodes::init(std::vector<noderef> &nodes,
 		    const char *root_ns)
+{
+	init(nodes, { {"", root_ns} }, { {"etc", "etc"}});
+}
+
+void tstnodes::init(std::vector<noderef> &nodes,
+		    const std::map<std::string, std::string> &rwmap,
+		    const std::map<std::string, std::string> &romap)
 {
 	nodes.clear();
 	nodes.resize(n);
@@ -117,14 +125,14 @@ void tstnodes::init(std::vector<noderef> &nodes,
 
 		{
 			nsmap dummy_map;
-			dummy_map.map[""]=root_ns;
+			dummy_map.map=rwmap;
 
 			dummy_ns.rw.push_back(dummy_map);
 		}
 
 		{
 			nsmap dummy_map;
-			dummy_map.map["etc"]="etc";
+			dummy_map.map=romap;
 
 			dummy_ns.ro.push_back(dummy_map); // [WRITEPRIVILEGES]
 		}

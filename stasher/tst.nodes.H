@@ -50,6 +50,10 @@ public:
 	void init(std::vector<noderef> &nodes,
 		  const char *root_ns="");
 
+	void init(std::vector<noderef> &nodes,
+		  const std::map<std::string, std::string> &rwmap,
+		  const std::map<std::string, std::string> &romap);
+
 	void setmasteron0(std::vector<noderef> &nodes);
 
 	repocontrollermasterptr
