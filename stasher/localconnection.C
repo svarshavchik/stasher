@@ -899,7 +899,8 @@ void localconnectionObj::deserialized(const beginsub_req_t &msg)
 	beginsub_resp_msg_t resp(msg.requuid);
 	beginsub_resp_msg_t::resp_t &msgres=resp.getmsg();
 
-	std::string mapped_name, trailing_slash;
+	std::string mapped_name;
+	bool trailing_slash=false;
 
 	try {
 		// Validate the name of the object being requested
@@ -916,23 +917,23 @@ void localconnectionObj::deserialized(const beginsub_req_t &msg)
 			if (*--n.end() == '/')
 			{
 				mapped_name=n=n.substr(0, n.size()-1);
-				trailing_slash="/";
+				trailing_slash=true;
 			}
 
 			(void)STASHER_NAMESPACE
 				::encoded_object_name_length(n.begin(),
 							     n.end());
+			if (trailing_slash)
+				mapped_name += "/"; // Put back what was taken.
+		}
+		else
+		{
+			// Make believe, hierarchy.
+			trailing_slash=true;
 		}
 	} catch (const x::exception &e)
 	{
 		msgres.status=STASHER_NAMESPACE::req_badname_stat;
-		resp.write(writer);
-		return;
-	}
-
-	if (!namespaceview->fromclient_read(mapped_name))
-	{
-		msgres.status=STASHER_NAMESPACE::req_eperm_stat;
 		resp.write(writer);
 		return;
 	}
@@ -944,14 +945,27 @@ void localconnectionObj::deserialized(const beginsub_req_t &msg)
 		return;
 	}
 
-	if (msg.objname.size() == 0 && mapped_name.size())
-		trailing_slash="/";
+	// For the purposes of fromclient_read, append "x".
 
-	if (mapped_name.size() == 0)
-		trailing_slash="";
+	if (trailing_slash)
+		mapped_name += "x";
+
+	if (!namespaceview->fromclient_read(mapped_name))
+	{
+		msgres.status=STASHER_NAMESPACE::req_eperm_stat;
+		resp.write(writer);
+		return;
+	}
+
+	if (trailing_slash)
+	{
+		// Remove the "x"
+
+		mapped_name=mapped_name.substr(0, mapped_name.size()-1);
+	}
 
 	if (!subscriptionsptr->addsub(msg.objname,
-				      mapped_name + trailing_slash))
+				      mapped_name))
 	{
 		msgres.status=STASHER_NAMESPACE::req_toomany_stat;
 		resp.write(writer);
