@@ -23,7 +23,7 @@ class LIBCXX_HIDDEN managedhierarchymonitorObj::implObj
 	: public managedsubscriberObj {
 
 	// Current client connection
-	x::weakptr<clientptr> client;
+	x::weakptr<clientptr> client_connection;
 
 	// Hierarchy's name
 	const std::string hierarchy;
@@ -35,6 +35,9 @@ class LIBCXX_HIDDEN managedhierarchymonitorObj::implObj
 
 	userinit limits;
 
+	// List of discovered directories in the hierarchy
+	std::list<std::string> hierarchies;
+
 	// Inherited from managedsubscriberObj
 	// Requests the contents of the updated object.
 
@@ -43,10 +46,18 @@ class LIBCXX_HIDDEN managedhierarchymonitorObj::implObj
 
 	// Inherited from managedsubscriberObj.
 	// Invokes callback->connection_update(). Also
-	// invokes callback->begin() for a req_processed_stat, and sends a
-	// request for the contents of the hierarchy.
+	// invokes callback->begin() for a req_processed_stat, puts the
+	// top level hierarchy in hierarchies, then calls
+	// get_next_hierarchy().
 
 	void connection_update(req_stat_t status);
+
+	// Send request for the contents of the next hierarchy to scan, for
+	// the initial contents of the hierarchy.
+
+	void req_next_hierarchy();
+
+	void req_next_hierarchy(const client &c);
 
 public:
 
@@ -123,14 +134,28 @@ public:
 	//
 	// This gets invoked by the managed subscriber callback, when it's
 	// notified that some entry has changed (added/modified/deleted).
-	// Also gets invoked when the current hierarchy gets returned.
+	// Also gets invoked when the request for the initial contents of some
+	// directory in the monitored hierarchy gets returned.
 	// Send a request for the uuids of the objects, attach an
 	// updateCallbackObj mcguffin that processes the results of the
 	// contents request.
 
 	static x::ptr<x::obj>
-	update(const x::ref<implObj> &mon,
-	       std::set<std::string> &unprocessed);
+		update(// Monitored object
+		       const x::ref<implObj> &mon,
+
+		       // Objects to process.
+
+		       // Will contain one name, when this is called by
+		       // the managed subscribed callback when one entry
+		       // gets returned. The name will always be an object
+		       // name, and not end with a trailing /.
+		       //
+		       // When processing the initial subscription results, this
+		       // will be a list of objects in a hierarchy directory.
+		       // Sends a request for uuids for as many as we can,
+		       // which get removed from unprocessed, accordingly.
+		       std::set<std::string> &unprocessed);
 
 	class updateCallbackObj : public x::destroyCallbackObj {
 
@@ -178,7 +203,8 @@ managedhierarchymonitorObj::implObj::implObj(const clientptr &clientArg,
 					     const std::string &hierarchyArg,
 					     const managedhierarchymonitor
 					     &callbackArg)
-	: client(clientArg), hierarchy(hierarchyArg), callback(callbackArg)
+	: client_connection(clientArg), hierarchy(hierarchyArg),
+	  callback(callbackArg)
 {
 }
 
@@ -204,7 +230,7 @@ void managedhierarchymonitorObj::implObj::connection_update(req_stat_t status)
 	if (status != req_processed_stat)
 		return;
 
-	auto c=client.getptr();
+	auto c=client_connection.getptr();
 
 	if (c.null())
 	{
@@ -214,14 +240,46 @@ void managedhierarchymonitorObj::implObj::connection_update(req_stat_t status)
 
 	limits=c->getlimits();
 
-	auto req=c->getdir_request(hierarchy);
+	callback->begin();
+	hierarchies.clear();
+	hierarchies.push_back(hierarchy);
+	req_next_hierarchy(c);
+}
+
+void managedhierarchymonitorObj::implObj::req_next_hierarchy()
+{
+	auto c=client_connection.getptr();
+
+	if (c.null())
+	{
+		LOG_TRACE("Client no longer available");
+		return;
+	}
+
+	req_next_hierarchy(c);
+}
+
+void managedhierarchymonitorObj::implObj::req_next_hierarchy(const client &c)
+{
+	if (hierarchies.empty())
+	{
+		LOG_DEBUG("End of directory listing");
+		callback->enumerated();
+		return;
+	}
+
+	std::string next_hierarchy=hierarchies.front();
+
+	LOG_DEBUG("Requesting directory contents of " << next_hierarchy);
+
+	hierarchies.pop_front();
+
+	auto req=c->getdir_request(next_hierarchy);
 
 	auto mcguffin=x::ref<getdirCompleteMcguffinObj>
 		::create(x::ref<implObj>(this), req.first);
 
 	req.second->mcguffin()->addOnDestroy(mcguffin);
-
-	callback->begin();
 }
 
 void managedhierarchymonitorObj::implObj::getdirCompleteMcguffinObj::destroyed()
@@ -260,6 +318,29 @@ void managedhierarchymonitorObj::implObj::processDirResultsObj
 		return;
 	}
 
+	// Remove the subhierarchies from the results.
+
+	for (auto e=results->objects.end(),
+		     b=results->objects.begin(); b != e;)
+	{
+		auto p=b;
+		++b;
+
+		if (p->size() == 0 || *--p->end() == '/')
+		{
+			// Sub-hierarchy, add them to the list to do.
+
+			std::string s=*p;
+
+			results->objects.erase(p);
+			if (s.size())
+				s=s.substr(0, s.size()-1);
+
+			LOG_DEBUG("Queueing " << s << " for retrieval");
+			m->hierarchies.push_back(s);
+		}
+	}
+
 	auto mcguffin=implObj::update(m, results->objects);
 
 	if (mcguffin.null())
@@ -275,7 +356,7 @@ x::ptr<x::obj> managedhierarchymonitorObj::implObj
 {
 	// Send in the next chunk of uuid updates.
 
-	auto c=mon->client.getptr();
+	auto c=mon->client_connection.getptr();
 
 	if (c.null())
 	{
@@ -295,26 +376,24 @@ x::ptr<x::obj> managedhierarchymonitorObj::implObj
 
 	for (size_t i=0; i<mon->limits.maxobjects; ++i)
 	{
-		auto iter=unprocessed.begin();
-
-		if (iter == unprocessed.end())
+		if (unprocessed.empty())
 			break;
 
-		if (iter->size() == 0)
-			continue;
-
-		if (*--iter->end() == '/')
-			continue; // Sub-hierarchy, ignore.
-
-		LOG_TRACE("entry: " << *iter);
-		req->objects.insert(*iter);
+		auto iter=unprocessed.begin();
+		std::string s=*iter;
 		unprocessed.erase(iter);
+
+		LOG_TRACE("entry: " << s);
+		req->objects.insert(s);
 	}
 
 	if (req->objects.empty())
 	{
-		LOG_DEBUG("End of directory listing");
-		mon->callback->enumerated();
+		LOG_TRACE("No entries left");
+		// Processing the initial contents of a hierarchy, reached the
+		// end of the current hierarchy's object, start the next
+		// sub-hierarchy.
+		mon->req_next_hierarchy();
 		return x::ptr<x::obj>();
 	}
 

@@ -195,6 +195,7 @@ static void test1(tstnodes &t, const std::string &hier, const std::string &pfix)
 
 		lock.wait([&lock] { return lock->stat_received &&
 					lock->status == STASHER_NAMESPACE::req_disconnected_stat; });
+		lock->objects.clear();
 	}
 	t.init(tnodes);
 	t.startmastercontrolleron0_int(tnodes);
@@ -304,6 +305,110 @@ static void test3(tstnodes &t)
 	}
 }
 
+static void test4(tstnodes &t)
+{
+	std::vector<tstnodes::noderef> tnodes;
+
+	t.init(tnodes);
+	t.startmastercontrolleron0_int(tnodes);
+
+	auto client=STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
+
+	auto manager=STASHER_NAMESPACE::manager::create(L"autoreconnect", 2);
+
+	auto tester=x::ref<test1subscriber>::create();
+
+	auto mcguffin=manager->manage_hierarchymonitor(client, "hiermon", tester);
+
+	{
+		test1subscriber::meta_t::lock lock(tester->meta);
+
+		lock.wait([&lock] {
+				return lock->stat_received;
+			});
+
+		if (lock->status != STASHER_NAMESPACE::req_processed_stat)
+			throw EXCEPTION("Did not receive expected status");
+	}
+
+	{
+		test1subscriber::meta_t::lock lock(tester->meta);
+
+		lock.wait([&lock] {
+				return lock->enumerated_called;
+			});
+	}
+	std::cout << "Enumerated" << std::endl;
+
+	x::uuid objuuid=({
+			auto tran=STASHER_NAMESPACE::client::base
+				::transaction::create();
+
+			tran->newobj("hiermon/1/a", "a");
+			tran->newobj("hiermon/2/b", "b");
+
+			auto res=client->put(tran);
+
+			if (res->status !=
+			    STASHER_NAMESPACE::req_processed_stat)
+				throw EXCEPTION("put: " +
+						x::tostring(res->status));
+
+			res->newuuid;
+		});
+
+	std::cerr << "Waiting to get updated contents"
+		  << std::endl;
+	{
+		test1subscriber::meta_t::lock lock(tester->meta);
+
+		lock.wait([&lock, &objuuid] {
+				auto a=lock->objects.find("hiermon/1/a");
+				auto b=lock->objects.find("hiermon/2/b");
+
+				auto e=lock->objects.end();
+
+				return a != e && b != e &&
+					a->second == objuuid &&
+					b->second == objuuid;
+			});
+	}
+
+	tnodes.clear();
+
+	std::cerr << "Waiting for disconnection" << std::endl;
+
+	{
+		test1subscriber::meta_t::lock lock(tester->meta);
+
+		lock.wait([&lock] {
+				return lock->stat_received &&
+					lock->status == STASHER_NAMESPACE::req_disconnected_stat;
+			});
+		lock->objects.clear();
+	}
+	t.init(tnodes);
+	t.startmastercontrolleron0_int(tnodes);
+
+	std::cerr << "Waiting for reconnection" << std::endl;
+
+	{
+		test1subscriber::meta_t::lock lock(tester->meta);
+
+		lock.wait([&lock, &objuuid] {
+				auto a=lock->objects.find("hiermon/1/a");
+				auto b=lock->objects.find("hiermon/2/b");
+
+				auto e=lock->objects.end();
+
+				return a != e && b != e &&
+					a->second == objuuid &&
+					b->second == objuuid;
+			});
+	}
+
+}
+
 int main(int argc, char **argv)
 {
 #include "opts.parse.inc.tst.C"
@@ -326,6 +431,8 @@ int main(int argc, char **argv)
 		test2(nodes);
 		std::cerr << "test3" << std::endl;
 		test3(nodes);
+		std::cerr << "test4" << std::endl;
+		test4(nodes);
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;
