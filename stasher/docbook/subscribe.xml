@@ -60,9 +60,8 @@ See COPYING for distribution information.
     <methodname>updated</methodname>() any time an object named
     <quote>constants/e</quote>, <quote>constants/pi</quote>, or any
     <quote>constants/<replaceable>anything</replaceable></quote> gets
-    created, updated, or deleted; but not
-    <quote>constants/imaginary/i</quote>, only the objects in the immediate
-    <quote>constants</quote> hierarchy; neither for the
+    created, updated, or deleted.
+    This also includes <quote>constants/imaginary/i</quote>, but not the
     <quote>constants</quote> object itself. Opening a subscription for
     <quote></quote> invokes <methodname>updated</methodname>() for any
     object in the top level hierarchy, like
@@ -257,6 +256,14 @@ See COPYING for distribution information.
       </para>
     </note>
 
+    <note>
+      <para>
+	Some parts of the <quote>etc</quote> hierarchy in the root hierarchy
+	namespace, namely <quote>etc/done</quote> are for &app;'s internal
+	use. The <methodname>updated</methodname>() callback for this
+	hierarchy gets suppressed internally.
+      </para>
+    </note>
   </section>
 </section>
 

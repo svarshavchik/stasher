@@ -44,7 +44,7 @@ See COPYING for distribution information.
     takes two parameters, a
     <classname><replaceable>classptr</replaceable></classname> and a
     <classname>bool</classname>.
-    <function>&ns;::create_manage_object&lt;</function>() instantiates a
+    <function>&ns;::create_manage_object&lt;&gt;</function>() instantiates a
     <classname>&ns;::managedobject</classname> whose
     <methodname>updated</methodname>() invokes the functor passing it a
     <classname><replaceable>classptr</replaceable></classname> to an instance
@@ -65,7 +65,7 @@ See COPYING for distribution information.
 
   <para>
     The second parameter to
-    <function>&ns;::create_manage_object&lt;</function>() is a functor
+    <function>&ns;::create_manage_object&lt;&gt;</function>() is a functor
     that takes a <classname>&ns;::req_stat_t</classname> parameter, which is
     forwarded from the managed object's
     <link linkend="managedobject"><methodname>connection_update</methodname></link>()

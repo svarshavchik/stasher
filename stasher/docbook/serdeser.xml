@@ -61,14 +61,14 @@ See COPYING for distribution information.
 	  the object file in the object repository got corrupted or cannot
 	  be parsed (created by a previous version of the application, or
 	  something along the lines). It's preferrable for the first
-	  constructor to handle that, but if that gets handle by throwing
+	  constructor to handle that, but if that gets handled by throwing
 	  an exception, the second non-default constructor gets called,
 	  which takes only a <classname>x::uuid</classname> parameter.
 	</para>
 
 	<para>
 	  The intention here is to initialize a default object instance that
-	  replaces the unparsable in the object repository, but to do that the
+	  replaces the unparsable object in the repository, but to do that the
 	  existing object's uuid must be known. For that reason, the constructor
 	  gets called with the existing object's uuid, with the presumption that
 	  whenever the instantiated object gets serialized later, its valid,

@@ -12,6 +12,16 @@
 #include <map>
 #include <set>
 
+static size_t hier_created_cnt=0;
+static size_t hier_destroyed_cnt=0;
+static bool hier_exception_flag=false;
+
+#define TEST_SUBSCRIBED_HIER_CREATED() (++hier_created_cnt)
+#define TEST_SUBSCRIBED_HIER_DESTROYED() (++hier_destroyed_cnt)
+#define TEST_SUBSCRIBED_HIER_EXCEPTION() (++hier_exception_flag=true)
+
+#include "localconnection.C"
+
 class test1subscriber
 	: public STASHER_NAMESPACE::client::base::subscriberObj {
 
@@ -19,14 +29,19 @@ class test1subscriber
 	std::mutex mutex;
 	std::condition_variable cond;
 
+	std::string name;
+
 public:
-	test1subscriber() {}
+	test1subscriber(const std::string &nameArg) : name(nameArg) {}
 	~test1subscriber() noexcept {}
 
 	void updated(const std::string &objname,
 		     const std::string &suffix)
 	{
 		std::unique_lock<std::mutex> lock(mutex);
+
+		std::cout << name << ": received update: " << objname
+			  << ", suffix " << suffix << std::endl;
 
 		updateset[objname].insert(suffix);
 		cond.notify_all();
@@ -95,7 +110,7 @@ static void test1(tstnodes &t, const char *root_ns)
 
 	std::cerr << "Subscribing" << std::endl;
 
-	x::ptr<test1subscriber> rootsub=x::ptr<test1subscriber>::create();
+	x::ptr<test1subscriber> rootsub=x::ptr<test1subscriber>::create("rootsub");
 
 	// [SUBSCRIBE]
 	STASHER_NAMESPACE::subscriberesultsptr
@@ -104,7 +119,7 @@ static void test1(tstnodes &t, const char *root_ns)
 	if (rootsubres->status != STASHER_NAMESPACE::req_processed_stat)
 		throw EXCEPTION("subscribe(\"\") failed");
 
-	x::ptr<test1subscriber> obj1sub=x::ptr<test1subscriber>::create();
+	x::ptr<test1subscriber> obj1sub=x::ptr<test1subscriber>::create("obj1sub");
 
 	STASHER_NAMESPACE::subscriberesultsptr
 		obj1subres=cl0->subscribe("obj1", obj1sub);
@@ -112,7 +127,7 @@ static void test1(tstnodes &t, const char *root_ns)
 	if (obj1subres->status != STASHER_NAMESPACE::req_processed_stat)
 		throw EXCEPTION("subscribe(\"obj1\") failed");
 
-	x::ptr<test1subscriber> obj1hiersub=x::ptr<test1subscriber>::create();
+	x::ptr<test1subscriber> obj1hiersub=x::ptr<test1subscriber>::create("obj1hiersub");
 
 	STASHER_NAMESPACE::subscriberesultsptr
 		obj1hiersubres=cl0->subscribe("obj1/", obj1hiersub);
@@ -125,7 +140,7 @@ static void test1(tstnodes &t, const char *root_ns)
 		STASHER_NAMESPACE::subscriberesults
 			errsubres=cl0->subscribe("err//or",
 						x::ptr<test1subscriber>
-						::create());
+						::create("error"));
 
 		if (errsubres->status != STASHER_NAMESPACE::req_badname_stat)
 			throw EXCEPTION("Managed to subscribed to a bad name");
@@ -175,6 +190,8 @@ static void test1(tstnodes &t, const char *root_ns)
 
 	rootsub->clear();
 
+	std::cerr << "Updating obj1/2" << std::endl;
+
 	{
 		STASHER_NAMESPACE::client::base::transaction tran=
 			STASHER_NAMESPACE::client::base::transaction::create();
@@ -187,12 +204,15 @@ static void test1(tstnodes &t, const char *root_ns)
 			throw EXCEPTION(x::tostring(res->status));
 	}
 
-	std::cerr << "Checking callback for obj1/2: obj1" << std::endl;
 	obj1hiersub->wait("obj1/");
+	rootsub->wait("");
 
-	if (obj1sub->received() != "" ||
-	    rootsub->received() != "")
-		throw EXCEPTION("Unexpected update for obj1/2");
+	if (obj1sub->received() != "")
+		throw EXCEPTION("Unexpected update for obj1/2 for root node");
+
+	if (rootsub->received() != "obj1/2\n")
+		throw EXCEPTION("[USERSUBSCRIBEHIER] recursive failed: "
+				+ rootsub->received());
 
 	if (obj1hiersub->received() != "obj1/2\n") // [USERSUBSCRIBESUFFIX]
 		throw EXCEPTION("Did not received expected update for obj1/2");
@@ -232,7 +252,7 @@ static void test2(tstnodes &t)
 	std::list<STASHER_NAMESPACE::subscriberesults> resList;
 	size_t n=0;
 
-	x::ptr<test1subscriber> dummy=x::ptr<test1subscriber>::create();
+	x::ptr<test1subscriber> dummy=x::ptr<test1subscriber>::create("dummy");
 
 	STASHER_NAMESPACE::subscriberesultsptr res;
 
@@ -256,6 +276,59 @@ static void test2(tstnodes &t)
 		throw EXCEPTION(x::tostring(res->status));
 }
 
+static void test3(tstnodes &t)
+{
+	std::cerr << "test3" << std::endl;
+	std::vector<tstnodes::noderef> tnodes;
+
+	t.init(tnodes, { {"", ""} },
+	       {
+		       {"view1", "common1"},
+		       {"view2", "common1"},
+		       {"view3", "common1"},
+			       });
+
+	t.startmastercontrolleron0_int(tnodes);
+
+	std::cout << "Ready" << std::endl;
+
+	STASHER_NAMESPACE::client cl0=
+		STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
+	x::ref<test1subscriber> view1sub=x::ptr<test1subscriber>::create("view1sub");
+	x::ref<test1subscriber> view2sub=x::ptr<test1subscriber>::create("view2sub");
+	x::ref<test1subscriber> view3sub=x::ptr<test1subscriber>::create("view3sub");
+
+	auto view1res=cl0->subscribe("view1/", view1sub);
+	auto view2res=cl0->subscribe("view2/", view2sub);
+	auto view3res=cl0->subscribe("view3/", view3sub);
+
+	if (view1res->status != STASHER_NAMESPACE::req_processed_stat ||
+	    view2res->status != STASHER_NAMESPACE::req_processed_stat ||
+	    view3res->status != STASHER_NAMESPACE::req_processed_stat)
+		throw EXCEPTION("subscribe(\"\") failed");
+
+	{
+		STASHER_NAMESPACE::client::base::transaction tran=
+			STASHER_NAMESPACE::client::base::transaction::create();
+
+		tran->newobj("common1/sub/obj", "obj_value");
+
+		STASHER_NAMESPACE::putresults res=cl0->put(tran);
+
+		if (res->status != STASHER_NAMESPACE::req_processed_stat)
+			throw EXCEPTION(x::tostring(res->status));
+	}
+
+	view1sub->wait("view1/");
+	view2sub->wait("view2/");
+	view3sub->wait("view3/");
+
+	if (view1sub->received() != "view1/sub/obj\n" ||
+	    view2sub->received() != "view2/sub/obj\n" ||
+	    view3sub->received() != "view3/sub/obj\n")
+		throw EXCEPTION("Received something unexpected");
+}
+
 int main(int argc, char **argv)
 {
 #include "opts.parse.inc.tst.C"
@@ -266,6 +339,15 @@ int main(int argc, char **argv)
 		test1(nodes, "");
 		test1(nodes, "sandbox");
 		test2(nodes);
+		test3(nodes);
+
+		if (hier_created_cnt == 0 ||
+		    hier_destroyed_cnt != hier_created_cnt)
+			throw EXCEPTION("Created/destroyed hierarchy node mismatch");
+
+		if (hier_exception_flag)
+			throw EXCEPTION("Hierarchy node exception was thrown");
+
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

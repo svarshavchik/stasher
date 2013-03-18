@@ -27,7 +27,7 @@ See COPYING for distribution information.
     <methodname>subscribe</methodname>()'s
     <methodname>updated</methodname>() callback reports that something about
     a particular object in the hierarchy has changed: it was either created,
-    updated, or removed, and it's up to the applicaiton to try to retrieve it,
+    updated, or removed, and it's up to the application to try to retrieve it,
     and report the results.
     This is what, essentially, a manager does for a managed hierarchy, then
     <methodname>updated</methodname>() for a new or an updated object's

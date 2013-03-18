@@ -15,8 +15,11 @@
 #include "deserobjname.H"
 #include "trancommit.H"
 #include "stasher/objname.H"
+#include <x/hier.H>
+#include <x/strtok.H>
+#include "x/join.H"
 #include <cstdio>
-
+#include <cstring>
 MAINLOOP_IMPL(localconnectionObj)
 
 #include "localconnection.msgs.def.H"
@@ -218,14 +221,69 @@ class localconnectionObj::subscriptionsObj : public objrepoObj::notifierObj {
 
 	x::ref<STASHER_NAMESPACE::fdobjwriterthreadObj> writer;
 
+	// Subscribed objects, keyed by repository object name, value is the
+	// client's name in the local namespace view.
+
 	typedef std::multimap<std::string, std::string> revmap_t;
 
 	revmap_t revmap;
 
+	// Individually subscribed objects.
 	typedef	std::map<std::string, revmap_t::iterator> subscriber_t;
 
 	subscriber_t subscribed;
 
+	// Whether the name represents a hierarchy.
+
+	// If it's "", or ends with a /, it is.
+	static std::pair<bool, std::list<std::string>>
+		ishier(const std::string &h)
+	{
+		std::pair<bool, std::list<std::string>> ret;
+
+		ret.first=true;
+
+		if (h.empty())
+			return ret;
+
+		if (*--h.end() == '/')
+		{
+			x::strtok_str(h.substr(0, h.size()-1), "/", ret.second);
+			return ret;
+		}
+		ret.first=false;
+		return ret;
+	}
+
+	// Subscriptions to a hierarchy
+
+	// Subscriptions to a hierarchy also get inserted into both subscribed
+	// and revmap. They're specified by a name ending in a /. They also
+	// get inserted into an x::hier, keyed by the hierarchy
+	// itself. Due to namespace views, the same repository hierarchy
+	// may be accessible by multiple client paths. This is the value in
+	// the x::hier container, which contains a simple counter of how
+	// many views map to this repository hierarchy.
+
+	class hiersubObj : virtual public x::obj {
+
+	public:
+		size_t counter;
+
+		// We get created by the first sub.
+
+		hiersubObj() : counter(1)
+		{
+		}
+
+		~hiersubObj() noexcept
+		{
+		}
+	};
+
+	typedef x::hier<std::string, x::ref<hiersubObj>> subscribed_hier_t;
+
+	subscribed_hier_t subscribed_hier;
 public:
 
 	size_t cnt;
@@ -233,7 +291,8 @@ public:
 	subscriptionsObj(const x::ref<STASHER_NAMESPACE::fdobjwriterthreadObj>
 			 &writerArg)
 		: writer(writerArg),
-		  cnt(0)
+		  cnt(0),
+		  subscribed_hier(subscribed_hier_t::create())
 	{
 	}
 
@@ -254,6 +313,29 @@ public:
 			revmap.erase(rev_iter);
 			return false;
 		}
+
+		auto what=ishier(mapped_name);
+
+		if (what.first)
+		{
+			subscribed_hier
+				->insert([]
+					 {
+#ifdef TEST_SUBSCRIBED_HIER_CREATED
+						 TEST_SUBSCRIBED_HIER_CREATED();
+#endif
+						 return x::ref<hiersubObj>
+							 ::create();
+					 },
+					 what.second,
+					 []
+					 (const x::ref<hiersubObj> &existing)
+					 {
+						 ++existing->counter;
+						 return false;
+					 });
+		}
+
 		++cnt;
 		LOG_TRACE("Added subscription for \""
 			  << name
@@ -271,6 +353,35 @@ public:
 
 		if (iter != subscribed.end())
 		{
+			// This is the object repository name
+			LOG_DEBUG("Removing subscription for "
+				  << name
+				  << " (" << iter->second->first << ")");
+
+			auto what=ishier(iter->second->first);
+
+			if (what.first)
+			{
+				auto lock=subscribed_hier->create_writelock();
+
+				if (!lock->to_child(what.second, false))
+				{
+#ifdef TEST_SUBSCRIBED_HIER_EXCEPTION
+					TEST_SUBSCRIBED_HIER_EXCEPTION();
+#endif
+
+					throw EXCEPTION("Internal error, cannot locate existing hierarchy subscription for " << name);
+				}
+				if (--lock->entry()->counter == 0)
+				{
+#ifdef TEST_SUBSCRIBED_HIER_DESTROYED
+					TEST_SUBSCRIBED_HIER_DESTROYED();
+#endif
+
+					lock->erase();
+				}
+			}
+
 			revmap.erase(iter->second);
 			subscribed.erase(iter);
 			--cnt;
@@ -314,16 +425,42 @@ private:
 
 	void notify(const std::string &objname)
 	{
-		size_t lastSlash=objname.rfind('/');
+		{
+			const char *p=objname.c_str();
 
-		std::string dirname(lastSlash != std::string::npos ?
-				    objname.substr(0, lastSlash+1):"");
+			if (strncmp(p, tobjrepoObj::done_hier,
+				   tobjrepoObj::done_hier_l) == 0 &&
+			    p[tobjrepoObj::done_hier_l] == '/')
+				return; // Shaddup
+		}
 
 		std::lock_guard<std::mutex> lock(objmutex);
 
 		sendupdate(objname, "");
-		sendupdate(dirname, lastSlash == std::string::npos ?
-			   objname:objname.substr(lastSlash+1));
+
+		std::list<std::string> key;
+
+		x::strtok_str(objname, "/", key);
+
+		if (!key.empty())
+			key.pop_back();
+
+		auto readlock=subscribed_hier->search(key);
+
+		do
+		{
+			if (!readlock->exists())
+				continue;
+
+			std::string hiername=x::join(readlock->name(), "/");
+			size_t hiername_l=hiername.size();
+
+			if (hiername_l)
+				++hiername_l;
+
+			sendupdate(objname.substr(0, hiername_l),
+				   objname.substr(hiername_l));
+		} while (readlock->to_parent());
 	}
 
 	// Send the client an update

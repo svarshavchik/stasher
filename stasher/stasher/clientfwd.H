@@ -575,7 +575,7 @@ class clientBase;
 //! The parameter may end with a trailing slash, such as "jobs/urgent/". This
 //! results in the updated() handler getting invoked for any object in this
 //! hierarchy, such as "jobs/urgent/00", "jobs/urgent/01", and so forth
-//! (but not "jobs/urgent/subhier/00"). Passing "" for \c objname installs
+//! (including "jobs/urgent/subhier/00"). Passing "" for \c objname installs
 //! a handler for any object in the top level hierarchy. [USERSUBSCRIBEHIER]
 //!
 //! The "suffix" parameter to updated() gets set when subscribed to a hierarchy,

@@ -69,7 +69,7 @@ void setinventory(int argc, char **argv)
 	std::cout << "Updated" << std::endl;
 }
 
-// Apply updates to the inventory ni an existing object.
+// Apply updates to the inventory in an existing object.
 
 std::string apply_updates(const inventory &i,
 			  int argc, char **argv)
