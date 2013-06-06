@@ -19,7 +19,7 @@
 class repomgcliopts_base {
 
 public:
-	x::locale l;
+	x::const_locale l;
 	x::wctype wc;
 
 	std::wstring keystrengths;
