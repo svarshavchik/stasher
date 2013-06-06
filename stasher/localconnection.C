@@ -291,8 +291,8 @@ public:
 	subscriptionsObj(const x::ref<STASHER_NAMESPACE::fdobjwriterthreadObj>
 			 &writerArg)
 		: writer(writerArg),
-		  cnt(0),
-		  subscribed_hier(subscribed_hier_t::create())
+		  subscribed_hier(subscribed_hier_t::create()),
+		  cnt(0)
 	{
 	}
 
