@@ -18,6 +18,7 @@ AM_CONDITIONAL(extratests, test "$extratests" = "yes")
 
 # Checks for programs.
 AC_PROG_CXX
+AC_PROG_LIBTOOL
 
 # Checks for libraries.
 
