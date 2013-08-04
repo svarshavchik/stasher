@@ -191,13 +191,136 @@ void test1(tstnodes &t)
 	}
 }
 
+void test2(tstnodes &t)
+{
+	std::vector<tstnodes::noderef> tnodes;
+
+	t.init(tnodes);
+	t.startmastercontrolleron0_int(tnodes);
+
+	auto client1=STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
+	auto client2=STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(1));
+
+	auto manager1=STASHER_NAMESPACE::manager::create(),
+		manager2=STASHER_NAMESPACE::manager::create();
+
+	auto thra=x::ref<test1thrObj>::create(),
+		thrb=x::ref<test1thrObj>::create();
+
+
+	auto hba=test1_hb::create(manager1, client1,
+				  "heartbeat",
+				  "a",
+				  L"refresh",
+				  std::chrono::seconds(2),
+				  L"stale",
+				  std::chrono::seconds(3),
+				  [thra]
+				  (test1_hb::base::update_type_t update_type)
+				  {
+					  thra->push(update_type);
+				  }),
+		hbb=test1_hb::create(manager2, client2,
+				     "heartbeat",
+				     "b",
+				     L"refresh",
+				     std::chrono::seconds(2),
+				     L"stale",
+				     std::chrono::seconds(3),
+				     [thrb]
+				     (test1_hb::base::update_type_t update_type)
+				     {
+					     thrb->push(update_type);
+				     });
+
+	test1thr_instance run1(thra, hba, "avalue");
+
+	{
+		test1thr_instance run2(thrb, hbb, "bvalue");
+
+		std::cout << "Waiting for the heartbeat to be initialized"
+			  << std::endl;
+
+		{
+			test1_hb::base::lock lock(*hba);
+
+			lock.wait([&lock]
+				  {
+					  test1_hb::base::timestamps_t::iterator
+						  a, b;
+
+					  return !lock->value.null()
+						  && (a=lock->value
+						      ->timestamps.find("a"))
+						      != lock->value->
+						      timestamps.end()
+						  && (b=lock->value
+						      ->timestamps.find("b"))
+						      != lock->value->
+						      timestamps.end()
+						  && a->second.meta == "avalue"
+						  && b->second.meta == "bvalue";
+				  });
+			for (auto &timestamp:lock->value->timestamps)
+			{
+				std::cout << timestamp.first << ": "
+					  << (std::string)x::ymdhms(timestamp
+								    .second
+								    .timestamp)
+					  << ": "
+					  << timestamp.second.meta
+					  << std::endl;
+			}
+		}
+	}
+
+	tnodes[1]=tstnodes::noderef();
+
+	std::cout << "Staying down, for a few seconds..." << std::endl;
+
+	sleep(10);
+
+	tnodes[1]=tstnodes::noderef::create(tstnodes::getnodedir(1));
+	tnodes[1]->start(true);
+
+	std::cout << "Waiting to reconnect" << std::endl;
+	tnodes[1]->debugWaitFullQuorumStatus(false);
+	tnodes[1]->listener->connectpeers();
+	tnodes[1]->debugWait4AllConnections();
+	std::cerr << "Waiting for quorum" << std::endl;
+
+	tnodes[0]->debugWaitFullQuorumStatus(true);
+	tnodes[1]->debugWaitFullQuorumStatus(true);
+
+	test1_hb::base::lock lock(*hba);
+
+	time_t current_timestamp=lock->value->timestamps.find("a")
+		->second.timestamp;
+
+	std::cout << "Waiting for the first node to come alive"
+		  << std::endl;
+
+	lock.wait([&lock, &current_timestamp]
+		  {
+			  return lock->value->timestamps.find("a")
+				  ->second.timestamp != current_timestamp;
+		  });
+}
+
 int main(int argc, char **argv)
 {
 #include "opts.parse.inc.tst.C"
 
 	try {
-		tstnodes nodes(1);
-		test1(nodes);
+		{
+			tstnodes nodes(1);
+			test1(nodes);
+		}
+
+		{
+			tstnodes nodes(2);
+			test2(nodes);
+		}
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

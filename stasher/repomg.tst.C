@@ -105,12 +105,12 @@ static void test1(const char *clusterdir, const char *nodedir)
 class testthread : virtual public x::obj {
 
 public:
-	gnutls_connection_end_t mode;
+	decltype(GNUTLS_CLIENT) mode;
 	x::gnutls::credentials::certificate cred;
 
 	std::string peername;
 
-	testthread(gnutls_connection_end_t modeArg,
+	testthread(decltype(mode) modeArg,
 		   x::gnutls::credentials::certificate &credArg)
 		: mode(modeArg), cred(credArg)
 	{
