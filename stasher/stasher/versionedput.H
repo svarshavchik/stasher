@@ -155,10 +155,10 @@ void versioned_put_request(//! Client connection handle
 			[f, vers] (const putresults &res)
 			{
 				typedef typename std::enable_if<
-					!std::is_lvalue_reference<decltype(f)>::value &&
+					!std::is_lvalue_reference<Functor>::value &&
 
-					!std::is_rvalue_reference<decltype(f)>::value
-					>::type cannot_be_ref_type;
+					!std::is_rvalue_reference<Functor>::value
+					>::type cannot_be_ref_type __attribute__((unused));
 
 				auto cb=x::ref<versionedDestroyCallbackObj
 					       <Functor> >::create(f, res);

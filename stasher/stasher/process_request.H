@@ -42,15 +42,15 @@ void process_request(const std::pair<req_type, client::base::request> &req,
 			       ::create([cb_cpy, reqmsg]
 					{
 						typedef typename std::enable_if<
-							!std::is_rvalue_reference<decltype(cb_cpy)>::value &&
+							!std::is_rvalue_reference<cb_type>::value &&
 
-							!std::is_lvalue_reference<decltype(cb_cpy)>::value
-							>::type cannot_be_ref_type;
+							!std::is_lvalue_reference<cb_type>::value
+							>::type cannot_be_ref_type __attribute__((unused));
 						typedef typename std::enable_if<
-							!std::is_rvalue_reference<decltype(reqmsg)>::value &&
+							!std::is_rvalue_reference<req_type>::value &&
 
-							!std::is_lvalue_reference<decltype(reqmsg)>::value
-							>::type cannot_be_ref_type_too;
+							!std::is_lvalue_reference<req_type>::value
+							>::type cannot_be_ref_type_too __attribute__((unused));
 
 						cb_cpy(reqmsg->getmsg());
 					}));
