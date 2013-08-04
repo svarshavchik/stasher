@@ -11,13 +11,67 @@
 #include <x/destroycallbackflag.H>
 #include <map>
 #include <set>
+#include <chrono>
 
-static size_t hier_created_cnt=0;
-static size_t hier_destroyed_cnt=0;
+struct created_destroyed_count_info {
+
+	size_t hier_created_cnt;
+	size_t hier_destroyed_cnt;
+
+	created_destroyed_count_info()
+		: hier_created_cnt(0), hier_destroyed_cnt(0)
+	{
+	}
+};
+
+typedef x::mpcobj<created_destroyed_count_info> created_destroyed_count_mpc_t;
+
+struct created_destroyed_count_t {
+
+public:
+	created_destroyed_count_mpc_t c;
+
+	void created()
+	{
+		created_destroyed_count_mpc_t::lock lock(c);
+		++lock->hier_created_cnt;
+		lock.notify_all();
+	}
+
+	void destroyed()
+	{
+		created_destroyed_count_mpc_t::lock lock(c);
+		++lock->hier_destroyed_cnt;
+		lock.notify_all();
+	}
+
+	void wait_all()
+	{
+		std::cout << "End of test, waiting for everything to be unsubscribed" << std::endl;
+
+		created_destroyed_count_mpc_t::lock lock(c);
+
+		if (!lock.wait_for(std::chrono::seconds(10), [&lock]
+				   {
+					   std::cout << "Subscribed "
+						     << lock->hier_created_cnt
+						     << " times, unsubscribed "
+						     << lock->hier_destroyed_cnt
+						     << " times" << std::endl;
+					   return lock->hier_created_cnt ==
+						   lock->hier_destroyed_cnt;
+				   }))
+		{
+			throw EXCEPTION("Created/destroyed hierarchy node mismatch");
+		}
+	}
+};
+
+created_destroyed_count_t cd;
 static bool hier_exception_flag=false;
 
-#define TEST_SUBSCRIBED_HIER_CREATED() (++hier_created_cnt)
-#define TEST_SUBSCRIBED_HIER_DESTROYED() (++hier_destroyed_cnt)
+#define TEST_SUBSCRIBED_HIER_CREATED() (cd.created())
+#define TEST_SUBSCRIBED_HIER_DESTROYED() (cd.destroyed())
 #define TEST_SUBSCRIBED_HIER_EXCEPTION() (++hier_exception_flag=true)
 
 #include "localconnection.C"
@@ -92,6 +146,9 @@ public:
 	}
 };
 
+static void do_test1(const STASHER_NAMESPACE::client &cl0,
+		     const STASHER_NAMESPACE::client &cl1);
+
 static void test1(tstnodes &t, const char *root_ns)
 {
 	std::cerr << "test1 (root namespace=\""
@@ -108,6 +165,13 @@ static void test1(tstnodes &t, const char *root_ns)
 	STASHER_NAMESPACE::client cl1=
 		STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(1));
 
+	do_test1(cl0, cl1);
+	cd.wait_all();
+}
+
+static void do_test1(const STASHER_NAMESPACE::client &cl0,
+		     const STASHER_NAMESPACE::client &cl1)
+{
 	std::cerr << "Subscribing" << std::endl;
 
 	x::ptr<test1subscriber> rootsub=x::ptr<test1subscriber>::create("rootsub");
@@ -238,6 +302,8 @@ static void test1(tstnodes &t, const char *root_ns)
 	cbobj1hier->wait(); // [UNSUBSCRIBE]
 }
 
+static void do_test2(const STASHER_NAMESPACE::client &cl0);
+
 static void test2(tstnodes &t)
 {
 	std::cerr << "test2" << std::endl;
@@ -249,6 +315,12 @@ static void test2(tstnodes &t)
 	STASHER_NAMESPACE::client cl0=
 		STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
 
+	do_test2(cl0);
+	cd.wait_all();
+}
+
+static void do_test2(const STASHER_NAMESPACE::client &cl0)
+{
 	std::list<STASHER_NAMESPACE::subscriberesults> resList;
 	size_t n=0;
 
@@ -276,6 +348,8 @@ static void test2(tstnodes &t)
 		throw EXCEPTION(x::tostring(res->status));
 }
 
+static void do_test3(const STASHER_NAMESPACE::client &cl0);
+
 static void test3(tstnodes &t)
 {
 	std::cerr << "test3" << std::endl;
@@ -294,6 +368,12 @@ static void test3(tstnodes &t)
 
 	STASHER_NAMESPACE::client cl0=
 		STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
+	do_test3(cl0);
+	cd.wait_all();
+}
+
+static void do_test3(const STASHER_NAMESPACE::client &cl0)
+{
 	x::ref<test1subscriber> view1sub=x::ptr<test1subscriber>::create("view1sub");
 	x::ref<test1subscriber> view2sub=x::ptr<test1subscriber>::create("view2sub");
 	x::ref<test1subscriber> view3sub=x::ptr<test1subscriber>::create("view3sub");
@@ -319,6 +399,8 @@ static void test3(tstnodes &t)
 			throw EXCEPTION(x::tostring(res->status));
 	}
 
+	std::cout << "Before wait" << std::endl;
+
 	view1sub->wait("view1/");
 	view2sub->wait("view2/");
 	view3sub->wait("view3/");
@@ -340,10 +422,6 @@ int main(int argc, char **argv)
 		test1(nodes, "sandbox");
 		test2(nodes);
 		test3(nodes);
-
-		if (hier_created_cnt == 0 ||
-		    hier_destroyed_cnt != hier_created_cnt)
-			throw EXCEPTION("Created/destroyed hierarchy node mismatch");
 
 		if (hier_exception_flag)
 			throw EXCEPTION("Hierarchy node exception was thrown");
