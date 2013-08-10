@@ -705,6 +705,9 @@ html/ref/index.html: Doxyfile header.html $(wildcard stasher/*.H) $(myCLEANFILES
 	mkdir -p html/ref
 	doxygen; c=$$?;	perl -p -i -e 's/INSERT_STASHER_NAMESPACE/stasher/g' html/ref/*.html; exit $$c
 
+perl-configure: perl/Stasher/lib/Stasher.pm
+	set -e; cd perl/Stasher; CC='$(CXX)' SHELL='$(SHELL)' $(PERL) Makefile.PL OPTIMIZE='$(CXXFLAGS)' $(PERL_CONFIGURE_FLAGS)
+
 header.html: Doxyfile
 	rm -rf header.html.tmp
 	mkdir -p header.html.tmp

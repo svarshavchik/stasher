@@ -1,0 +1,6 @@
+/MYMETA*
+/*.bs
+/*.c
+/blib
+/pm_to_blib
+/Makefile.old

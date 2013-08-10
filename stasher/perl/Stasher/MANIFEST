@@ -1,0 +1,11 @@
+Changes
+Makefile.PL
+MANIFEST
+ppport.h
+README
+Stasher.xs
+Stasherapi.C
+Stasherapi.h
+typemap
+t/Stasher.t
+lib/Stasher.pm

@@ -1,0 +1,711 @@
+package Stasher;
+
+use 5.016003;
+use strict;
+use warnings;
+use IO::File;
+use Carp qw/confess/;
+
+require Exporter;
+
+our @ISA = qw(Exporter);
+
+# Items to export into callers namespace by default. Note: do not export
+# names by default without a very good reason. Use EXPORT_OK instead.
+# Do not simply export all your public functions/methods/constants.
+
+# This allows declaration	use Stasher ':all';
+# If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
+# will save memory.
+our %EXPORT_TAGS = ( 'all' => [ qw(
+	
+) ] );
+
+our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+
+our @EXPORT = qw(
+	
+);
+
+our $VERSION = '@VERSION@';
+
+require XSLoader;
+XSLoader::load('Stasher', $VERSION);
+
+die "$@\n" if $@;
+
+=head1 NAME
+
+Stasher - Perl extension for Stasher
+
+=head1 SYNOPSIS
+
+  use Stasher;
+
+=head1 DESCRIPTION
+
+Provides access to a basic subset of Stasher's C++ API through Perl.
+
+=head2 defaultnodes()
+
+my @nodes=Stasher::defaultnodes();
+
+Return a list of default Stasher object repository node directories, if any
+on this server.
+
+=cut
+
+sub defaultnodes {
+
+    my @dirs=api_defaultnodes();
+
+    my $error=shift @dirs;
+
+    confess($error) if $error;
+
+    return @dirs;
+}
+
+=head2 connect()
+
+my $conn=Stasher::connect(%params);
+
+Connect to a stasher server. Parameters:
+
+* node => $directory - connect to this node directory. If not specified,
+defaultnodes() get called. It's expected to return exactly one node directory,
+to which a connection is made. If not, or if, in all cases, the connection
+fails, an exception gets thrown.
+
+* admin => 1 - make an administrative connection, instead of a normally
+privileged one.
+
+* async => 1 - if set, a connection object is returned immediately, and
+the actual connection attempt is made on the first request.
+
+=cut
+
+sub connect {
+    my %params=@_;
+
+    my $conn=Stasher::Connection->new;
+
+    my $node=$params{node};
+
+    unless ($node)
+    {
+	my @nodes=defaultnodes;
+
+	confess ("No stasher nodes on this server")
+	    unless @nodes;
+
+	confess ("Multiple stasher nodes on this server")
+	    if (scalar @nodes) > 1;
+
+	$node=shift @nodes;
+    }
+
+    my $error = $conn->connect($node, ($params{admin} ? 1:0),
+	($params{async} ? 1:0));
+
+    confess($error) if $error;
+
+    return $conn;
+}
+
+package Stasher::Connection;
+
+use Carp qw/confess/;
+
+=head2 $conn->dir($hierarchy)
+
+  my @objects=$conn->dir($hierarchy);
+
+Returns a list of objects from the Stasher object repository, in a given
+hierarchy. $hierarchy is optional, and defaults to an empty string,
+denoting the top-level object hierarchy.
+
+Objects in a Stasher object repository are arranged in named hierarchies.
+Each object's name uses slashes as a hierarchy delimiter, similar to an
+ordinary filesystem.
+
+dir() returns a list of names of all objects in the given hierachy.
+A name with a trailing slash indicates a subhierarchy of objects.
+For example, dir() can return ("inventory_list", "cars/", "trucks/"). This
+indicates that the top level in the object repository contains one object,
+"inventory_list", and there are two subhierarchies. Use dir("cars") and
+dir("trucks") to enumerate the objects in each respective hierarchy.
+
+=cut
+
+sub dir {
+    my ($self, @params) = @_;
+
+    my $req=$self->dir_request(@params);
+
+    $req->wait;
+
+    return $req->results;
+}
+
+=head2 $conn->dir_request($hierarchy)
+
+  my $req=$conn->dir_request($hierarchy);
+
+  if ($req->done())
+  {
+     # ...
+  }
+
+  $req->wait();
+
+  my @objects=$req->results();
+
+dir_request() is an asynchronous version of dir(). The request is
+sent to the Stasher server, and dir_request() returns immediately.
+dir_request() returns a handle for the pending request.
+The handle implements the following methods:
+
+* done() - returns an indication whether the request has been completed.
+
+* wait() - waits for the request to complete.
+
+* results() - returns the results of the request, the same result that
+dir() returns immediately.
+
+It's actually the other way around. dir() is just a wrapper that calls
+dir_request(), followed by wait() and results(), on the returned handle.
+
+=cut
+
+sub dir_request {
+    my ($self, $hier) = @_;
+
+    $hier //= '';
+    $hier =~ s@/$@@; # Strip trailing slash, for convenience
+
+    my @ret=$self->api_dir_request($hier);
+
+    my $error=shift @ret;
+
+    confess($error) if $error;
+
+    return Stasher::GetdirRequestWrapper->new(api => (shift @ret));
+}
+
+=head2 $conn->update(%objects);
+
+  my $fd = IO::File->new;
+
+  my $new_uuid=$conn->update("new_object" => {contents => "Contents1"},
+    "updated_object" => {uuid => $object2_uuid, fd => $fd },
+    "remove_object" =>  {uuid => $object3_uuid });
+
+Call update() to modify the contents of a Stasher object repository.
+update() takes a hash keyed by object names. The value of the hash
+is a hashref that specifies the new contents of an object. Depending on
+what's in the hashref, update() either creates a new object in the object
+repository, updates an existing object, or removes an existing object.
+
+"contents" gives a literal scalar value for the contents of a new or an updated
+object. Alternatively "fd" gives an open, seekable, readable file
+descriptor (typically an IO::File object), whose contents become the contents
+of the object.
+
+Specifying either "contents" or "fd" alone creates a new object. To have
+"contents" or "fd" replace an existing object, its existing "uuid" must be
+provided.
+
+Specify "uuid" alone, without "contents" or "fd" to remove an existing object
+from the object repository. The combination of these parameters determines
+what operation gets performed for a given object:
+
+* Only "contents" or "fd": a new object gets created. This fails if the
+object already exists (see below).
+
+* Only "uuid": an existing object gets removed. This fails unless the object
+exists, and the uuid matches (see below).
+
+* "contents" or "fd" together with uuid: an existing object gets updated. This
+fails unless the object's existing uuid matches (see below).
+
+update() returns a new uuid of all new or updated objects. update() either
+performs
+all requested changes and returns a new uuid assigned to all modified objects,
+or returns an empty string. An empty string indicates that one or more
+objects' uuids did not match.
+
+A "uuid" is a unique identifier assigned to each object in the repository.
+It is not truly unique, because multiple objects touched by the same update()
+end up getting the same exact uuid. A uuid is unique only with respect to
+a single object. The object gets a new uuid when it gets created for the
+first time. Each time the object gets updated its uuid changes.
+
+A matching uuid must be provided when updating or deleting an object. If some
+other process or application modified the object in the repository, its uuid
+changes, and the update or deletion fails.
+
+The uuids of all existing objects given to update(), if any, must match.
+If any one object's uuid does not match, none of the changes take place,
+and update() returns an empty string.
+
+Use exists() or fetch() to obtain each object's current uuid, and call
+update again. Of course,
+by the time update() gets called again, the object's uuid may again be
+different (or the object may be removed altogether, if someone else modified
+the object.
+
+=cut
+
+sub update {
+    my ($self, @params) = @_;
+
+    my $req=$self->update_request(@params);
+
+    $req->wait;
+
+    return $req->results;
+}
+
+=head2 $conn->update_request(%objects)
+
+  my $req=$conn->update_request("new_object" => {contents => "Contents1"},
+    "updated_object" => {uuid => $object2_uuid, fd => $fd },
+    "remove_object" => { uuid => $object3_uuid });
+
+  if ($req->done())
+  {
+     # ...
+  }
+
+  $req->wait();
+
+  my $new_uuid=$req->results();
+
+update_request() is an asynchronous version of update(). The request is
+sent to the Stasher server, and update_request() returns immediately.
+update_request() returns a handle for the pending request.
+The handle implements the following methods:
+
+* done() - returns an indication whether the request has been completed.
+
+* wait() - waits for the request to complete.
+
+* results() - returns the results of the request, the same result that
+update() returns immediately.
+
+It's actually the other way around. update() is just a wrapper that calls
+update_request(), followed by wait() and results(), on the returned handle.
+
+=cut
+
+sub update_request {
+    my ($self, %params) = @_;
+
+    my @flat;
+
+    foreach my $name (keys %params)
+    {
+	push @flat, $name;
+
+	my $ct;
+	my $cv;
+
+	if ($params{$name}->{contents})
+	{
+	    $ct="v";
+	    $cv=$params{$name}->{contents};
+	}
+	elsif ($params{$name}->{fd})
+	{
+	    $ct="f";
+	    die "Bad filehandle\n"
+		unless defined($cv=fileno($params{$name}->{fd}));
+	}
+	else
+	{
+	    push @flat, "d";
+
+	    my $uuid=$params{$name}->{uuid}
+	    or die "Invalid parameters\n";
+	    push @flat, $uuid;
+	    next;
+	}
+
+	if ($params{$name}->{uuid})
+	{
+	    push @flat, "u";
+	    push @flat, $params{$name}->{uuid};
+	}
+	else
+	{
+	    push @flat, "n";
+	}
+	push @flat, $ct;
+	push @flat, $cv;
+    }
+
+    my @ret=$self->put_request(\@flat);
+
+    my $error=shift @ret;
+
+    confess($error) if $error;
+
+    return Stasher::PutRequestWrapper->new(api => (shift @ret));
+}
+
+=head2 $conn->exists(@names)
+
+  my $ret=$conn->exists("obj1", "obj2");
+
+  if ($ret->{obj1})
+  {
+     my $uuid=$ret->{obj1}{uuid};
+     # ...
+  }
+
+exists() takes an array of object names as parameters, and returns an
+indication of whether the given objects exists in the repository. exists()
+returns a hashref keyed by the objects' names. The hashref will not include
+keys of object names that do not exist. The value of the object name's key
+is a single hashref with a key of "uuid" (this is the same hashref that's
+also returned by fetch(), which also returns "contents" or "fd" here).
+"uuid" gives the object's current uuid.
+
+=cut
+
+sub exists {
+
+    my ($self, @objects) = @_;
+
+    my $req=$self->exists_request(@objects);
+
+    $req->wait;
+
+    return $req->results;
+}
+
+=head2 $conn->exists_request(@names)
+
+  my $req=$conn->exists_request("obj1", "obj2");
+
+  if ($req->done())
+  {
+     # ...
+  }
+
+  $req->wait();
+
+  my $ret=$req->results();
+
+  if ($ret->{obj1})
+  {
+     my $uuid=$ret->{obj1}{uuid};
+     # ...
+  }
+
+exists_request() is an asynchronous version of exists(). The request is
+sent to the Stasher server. exists_request() returns a handle for this request.
+The handle implements the following methods:
+
+* done() - returns an indication whether the request has been completed.
+
+* wait() - waits for the request to complete.
+
+* results() - returns the results of the request, the same result that
+exists() returns immediately.
+
+=cut
+
+sub exists_request {
+    my ($self, @objects) = @_;
+
+    my @ret=$self->get_request(0, \@objects);
+
+    my $error=shift @ret;
+
+    confess($error) if $error;
+
+    return Stasher::GetRequestWrapper->new(api => (shift @ret));
+}
+
+=head2 $conn->fetch(objects => \@names)
+
+  my $ret=$conn->exists(objects => ["obj1", "obj2"]);
+
+  if ($ret->{obj1})
+  {
+     my $uuid=$ret->{obj1}{uuid};
+     my $contents=$ret->{obj1}{contents};
+     # ...
+  }
+
+fetch() goes one step beyond exists(), and returns the contents of each
+object, in addition to the object's uuid.
+
+fetch() takes named parameters. Namely, the "objects" parameter is an arrayref
+of the object names to fetch. An optional "fd" parameter returns a read-only
+file descriptor with the contents of each objects, instead of the raw data:
+
+  my $ret=$conn->exists(objects => ["obj1", "obj2"], fd => 1);
+
+  if ($ret->{obj1})
+  {
+     my $uuid=$ret->{obj1}{uuid};
+     my $fd=$ret->{obj1}{fd};
+
+     my $line;
+
+     while (defined($line=<$fd>))
+     {
+         # ...
+     }
+  }
+
+The files are read-only files. These are the actual files in the object
+repository. The files should not be left open for a prolonged period of time.
+Even if these objects get removed from the Stasher repository, as long as
+any file descriptor that references these objects remains open their space
+cannot be reclamed.
+
+=cut
+
+sub fetch {
+
+    my ($self, @params)=@_;
+
+    my $req=$self->fetch_request(@params);
+
+    $req->wait;
+
+    return $req->results;
+}
+
+=head2 $conn->fetch_request(objects => \@names)
+
+  my $req=$conn->fetch_request(objects => ["obj1", "obj2"]);
+
+  if ($req->done())
+  {
+     # ...
+  }
+
+  $req->wait();
+
+  my $ret=$req->results();
+
+  if ($ret->{obj1})
+  {
+     my $uuid=$ret->{obj1}{uuid};
+     my $contents=$ret->{obj1}{contents};
+     # ...
+  }
+
+This is the asynchronous version of fetch(), that works like exists_request()
+works with respect to exists().
+
+NOTE: fetch_request() also implements the "fd" parameter, however due to the
+way that the Perl module works, twice the number of file descriptors get
+used internally, as long as the request object, and the results hash, exist
+at the same time.
+
+This is because both the request object, and the hash returned by results(),
+maintain their own file descriptors internally.
+
+=cut
+
+sub fetch_request {
+    my ($self, %params)=@_;
+
+    my $objects = delete $params{objects};
+
+    my @ret=$self->get_request(1, $objects);
+
+    my $error=shift @ret;
+
+    confess($error) if $error;
+
+    $params{api}=shift @ret;
+
+    return Stasher::GetRequestWrapper->new(%params);
+}
+
+=head2 Removing objects, for good
+
+   while (!$conn->update(%{$conn->exists("object1", "object2")}))
+      ;
+
+exists() returns a hashref that indicates the uuids of specified objects
+in the repository. It just so happens that passing the same hash to
+update() sends a request to remove these objects from the repository.
+If the request succeeds, update() returns a non-empty uuid string that
+gives the uuid of objects that update() created or modified. A non-empty
+uuid gets returned even if all objects given to update() were objects to
+remove from the repository, rather than create or update. In this marginal
+case, the returned uuid does not actually end up getting assigned to any
+new or updated object.
+
+But, if there's a uuid mismatch, update() returns an empty string. So, what
+happens here
+
+* exists() returns the uuids of existing objects in the Stasher object
+repository. If none of these objects exist, exists() returns an empty hashref.
+
+* update() attempts to delete the objects it receives as parameters. If it
+gets an empty hash, update() just returns a new uuid. Otherwise update() deletes
+the objects.
+
+* If, after exists() returned the existing objects' uuids, and before update()
+gets around to deleting them, someone else modified or deleted the same
+objects, update() ends up doing nothing, and returning an empty string,
+due to a uuid mismatch. exists() gets called again, and the process repeats.
+
+=cut
+
+package Stasher::RequestApiPassthrough;
+
+sub new {
+
+    my ($self, %params)=@_;
+
+    return bless \%params, $self;
+}
+
+sub done {
+    my ($self) = @_;
+
+    return $self->{api}->done;
+}
+
+sub wait {
+    my ($self) = @_;
+
+    return $self->{api}->wait;
+}
+
+package Stasher::GetRequest;
+
+our @ISA=qw(Stasher::Request);
+
+package Stasher::PutRequest;
+
+our @ISA=qw(Stasher::Request);
+
+package Stasher::GetdirRequest;
+
+our @ISA=qw(Stasher::Request);
+
+# Wrapper for GetRequest.
+
+package Stasher::GetRequestWrapper;
+
+use Carp qw/confess/;
+
+our @ISA=qw(Stasher::RequestApiPassthrough);
+
+# Massage api_results into a hashref
+
+sub results {
+    my ($self) = @_;
+
+    my @ret=$self->{api}->api_results;
+
+    my $error=shift @ret;
+
+    confess($error) if $error;
+
+    my %ret;
+
+    while (@ret)
+    {
+	my $name=shift @ret;
+	my $uuid=shift @ret;
+	my $fd=shift @ret;
+
+	$ret{$name} = {
+	    uuid => $uuid,
+	};
+
+	if ($fd ne "")
+	{
+	    my $fd=IO::File->new("<&$fd");
+
+	    if ($self->{fd})
+	    {
+		$ret{$name}{fd}=$fd;
+	    }
+	    else
+	    {
+		$ret{$name}{contents}="";
+		my $buf;
+
+		while (1)
+		{
+		    my $ret=read($fd,$buf,8192);
+
+		    die "$!\n" unless defined $ret;
+
+		    last if $ret <= 0;
+		    $ret{$name}{contents}.=$buf;
+		}
+	    }
+	}
+    }
+
+    return \%ret;
+}
+
+# Wrapper for PutRequest.
+
+package Stasher::PutRequestWrapper;
+
+use Carp qw/confess/;
+
+our @ISA=qw(Stasher::RequestApiPassthrough);
+
+# Massage api_results into a hashref
+
+sub results {
+    my ($self) = @_;
+
+    my ($error, $newuuid)=$self->{api}->api_results;
+
+    confess($error) if $error;
+
+    return $newuuid;
+}
+
+package Stasher::GetdirRequestWrapper;
+
+use Carp qw/confess/;
+
+our @ISA=qw(Stasher::RequestApiPassthrough);
+
+sub results {
+    my ($self) = @_;
+
+    my @res=$self->{api}->api_results;
+
+    my $error=shift @res;
+
+    confess($error) if $error;
+
+    return @res;
+}
+
+1;
+__END__
+
+=head2 EXPORT
+
+None by default.
+
+=head1 SEE ALSO
+
+http://www.libcxx.org/stasher/
+
+=head1 AUTHOR
+
+Sam Varshavchik, E<lt>mrsam@courier-mta.comE<gt>
+
+=cut

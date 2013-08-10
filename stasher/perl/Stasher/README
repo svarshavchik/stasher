@@ -1,0 +1,18 @@
+Stasher Perl binding
+====================
+
+INSTALLATION
+
+Run 'make perl' from the Stasher's top level source directory to properly
+configure this module.
+
+Run 'make' from this directory to build it.
+
+Run 'make test' if there is a stasher server running on this system from a
+single, default, node directory.
+
+Run 'make install' to install the Perl module.
+
+COPYRIGHT AND LICENCE
+
+See Stasher's COPYING file for more information.

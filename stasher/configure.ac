@@ -19,6 +19,7 @@ AM_CONDITIONAL(extratests, test "$extratests" = "yes")
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_LIBTOOL
+AC_PATH_PROGS(PERL,perl5 perl,/usr/bin/perl)
 
 # Checks for libraries.
 
@@ -40,6 +41,7 @@ LIBCXX_INIT
 AM_CONDITIONAL(HAVE_DOCBOOK,[test -d ${srcdir}/docbook])
 AC_CONFIG_FILES(Doxyfile Makefile po/Makefile.in
 		stasher.sysinit sysinit.rc
+		perl/Stasher/lib/Stasher.pm
 		packaging/fedora/Makefile
 		packaging/fedora/stasher.spec
 		packaging/fedora/stasher.service)
