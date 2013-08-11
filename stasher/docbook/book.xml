@@ -20,6 +20,7 @@
 <!ENTITY renewnodecert SYSTEM "renewnodecert.xml">
 <!ENTITY stashermg SYSTEM "stashermg.xml">
 <!ENTITY stasher SYSTEM "stasher.xml">
+<!ENTITY stasherpm SYSTEM "stasherpm.xml">
 <!ENTITY ns "stasher">
 <!ENTITY cct "<link linkend='cct'>client connection thread</link>">
 <!ENTITY synchronousintro SYSTEM "synchronousintro.xml">
@@ -56,7 +57,7 @@
 <!ENTITY heartbeatoter SYSTEM "heartbeatother.xml">
 
 <!ENTITY freebsd SYSTEM "freebsd.xml">
-<!ENTITY freebsdver "FreeBSD 9">
+<!ENTITY freebsdver "FreeBSD 9.1">
 <!ENTITY freebsdverdir "<filename>packaging/freebsd9/databases/stasher</filename>">
 <!ENTITY freebsdprefix "/usr/local">
 <!ENTITY freebsdvarstasher "/usr/local/var/stasher">
@@ -179,6 +180,7 @@ See COPYING for distribution information.
 
     &stashermg;
     &stasher;
+    &stasherpm;
   </part>
 
   &freebsd;

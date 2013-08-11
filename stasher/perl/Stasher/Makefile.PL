@@ -24,7 +24,8 @@ WriteMakefile(
        AUTHOR         => 'Sam Varshavchik <mrsam@courier-mta.com>') : ()),
     OBJECT            => '$(BASEEXT)$(OBJ_EXT) Stasherapi$(OBJ_EXT)',
     CC		      => $CC, # . ' -std=c++11 $(call GETFLAGS,$@)',
-    LD                => '$(CC) -Wl,-R/usr/local/lib -Wl,../../.libs/libstasher-client.$(DLEXT)',
+    LD                => '$(CC) -Wl,../../.libs/libstasher-client.$(DLEXT) '
+                         . ($ENV{LDFLAGS} // ''),
     FULLPERL          => 'LD_LIBRARY_PATH=`pwd`/../.. $(PERL)',
     LIBS              => [''], # e.g., '-lm'
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'

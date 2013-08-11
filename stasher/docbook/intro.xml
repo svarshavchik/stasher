@@ -425,6 +425,15 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
+	  To build the Perl module, run <command>make perl-configure</command>
+	  and
+	  <command>make perl-build</command> from the top level source
+	  directory.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
 	  Run <command>make check</command>. Don't make this a part of an
 	  automated build. <command>make check</command>'s regression tests
 	  should be used as a sanity check after building &app; on a new
@@ -438,6 +447,8 @@ See COPYING for distribution information.
 	  <command>make install DESTDIR=<replaceable>scratchdir</replaceable></command>
 	  creates an installation image in
 	  <replaceable>scratchdir</replaceable>.
+	  Also run the same command from the <filename>perl/Stasher</filename>
+	  subdirectory, if installing the Perl module.
 	  Use that to create your installable package.
 	</para>
       </listitem>

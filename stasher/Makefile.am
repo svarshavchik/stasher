@@ -54,6 +54,8 @@ $(call genxsl,client.deserialized.auto.H,message.xml,clientdeserialized) \
 
 dist-hook:
 	cd $(distdir); rm -f $(myCLEANFILES)
+	set -e; for f in `cat $(srcdir)/perl/Stasher/MANIFEST`; do $(mkdir_p) `dirname $(distdir)/perl/Stasher/$$f`; s="perl/Stasher/$$f"; if test ! -f "$$s"; then s="$(srcdir)/$$s"; fi; ln $$s $(distdir)/perl/Stasher/$$f; done
+	rm -f $(distdir)/perl/Stasher/lib/Stasher.pm
 
 pkginclude_HEADERS=\
 	stasher/client.H		\
@@ -679,8 +681,7 @@ html/frame.js: html/index.html docbook/frame.js
 html/icon.gif: html/index.html docbook/icon.gif
 	$(INSTALL) -m 0644 $(srcdir)/docbook/icon.gif html/icon.gif
 
-html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.xsl
-	mkdir -p docbook
+html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.xsl docbook/stasherpm.xml
 	xsltproc $(srcdir)/docbook/xmllinks.xsl xml/index.xml >docbook/entities
 	rm -rf html.tmp
 	mkdir html.tmp
@@ -700,13 +701,21 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.
 	links --dump html/INSTALL.html >INSTALL.tmp
 	mv -f INSTALL.tmp INSTALL
 
+docbook/stasherpm.xml: perl/Stasher/lib/Stasher.pm
+	pod2docbook --doctype=refentry --fix-double-quotes --no-header perl/Stasher/lib/Stasher.pm >docbook/stasherpm.xml.new
+	$(PERL) -p -i -e 's/<refentry>/<refentry id="stasherpm">/' docbook/stasherpm.xml.new
+	mv -f docbook/stasherpm.xml.new docbook/stasherpm.xml
+
 html/ref/index.html: Doxyfile header.html $(wildcard stasher/*.H) $(myCLEANFILES)
 	rm -rf html/ref xml
 	mkdir -p html/ref
 	doxygen; c=$$?;	perl -p -i -e 's/INSERT_STASHER_NAMESPACE/stasher/g' html/ref/*.html; exit $$c
 
 perl-configure: perl/Stasher/lib/Stasher.pm
-	set -e; cd perl/Stasher; CC='$(CXX)' SHELL='$(SHELL)' $(PERL) Makefile.PL OPTIMIZE='$(CXXFLAGS)' $(PERL_CONFIGURE_FLAGS)
+	set -e; cd perl/Stasher; CC='$(CXX)' SHELL='$(SHELL)' LDFLAGS='$(LDFLAGS)' $(PERL) Makefile.PL OPTIMIZE='$(CXXFLAGS)' $(PERL_CONFIGURE_FLAGS)
+
+perl-build:
+	cd perl/Stasher && $(MAKE)
 
 header.html: Doxyfile
 	rm -rf header.html.tmp

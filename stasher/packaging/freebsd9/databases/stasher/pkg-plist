@@ -44,6 +44,9 @@ lib/libstasher.a
 lib/libstasher.la
 lib/libstasher.so
 lib/libstasher.so.0
+lib/perl5/5.16/man/man3/Stasher.3
+lib/perl5/site_perl/5.16/mach/Stasher.pm
+lib/perl5/site_perl/5.16/mach/auto/Stasher/Stasher.so
 libexec/stasher/stasherd
 share/stasher/maillogs.sh
 share/stasher/stasher.sysinit

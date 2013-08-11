@@ -15,15 +15,23 @@ USE_BZIP2=1
 USE_GMAKE=yes
 GNU_CONFIGURE=1
 USE_PKGCONFIG=build
+USE_PERL5=5.16+
 
-CONFIGURE_ARGS=		CPPFLAGS="-D__LONG_LONG_SUPPORTED"
+CONFIGURE_ARGS=		CPPFLAGS="-D__LONG_LONG_SUPPORTED" PERL=$(PERL)$(PERL_VERSION)
 MAN1=			stasher.1 stashermg.1
 
 MAN1COMPRESSED=		yes
 
 USE_RC_SUBR=		stasherd
 
+post-configure:
+	cd $(WRKSRC); gmake perl-configure
+
+post-build:
+	cd $(WRKSRC); gmake perl-build
+
 post-install:
+	cd $(WRKSRC)/perl/Stasher && gmake install
 	PKG_PREFIX=${PREFIX} ${SH} ${PKGINSTALL} ${PKGNAME} POST-INSTALL
 	$(INSTALL_SCRIPT) $(WRKSRC)/stasher.sysinit ${PREFIX}/share/stasher
 	$(INSTALL_SCRIPT) $(WRKSRC)/sysinit.rc ${PREFIX}/share/stasher

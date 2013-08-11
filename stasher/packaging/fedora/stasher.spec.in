@@ -13,13 +13,14 @@ Requires(postun): /sbin/ldconfig systemd-units
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: libcxx-devel
+BuildRequires: perl-devel
 
 %description
 A server process that replicates "objects" (or, rather, files) between
 multiple servers, and keeps them in sync.
 
 %package devel
-Summary: Object repository server development files
+Summary: Stasher object repository server development files
 Requires: libcxx-devel %{name} = 0:%{version}-%{release}
 Group: Development/Libraries
 
@@ -27,16 +28,33 @@ Group: Development/Libraries
 This package installs development files for building applications that use
 the object repository server.
 
+%package perl
+Summary: Perl bindings for the Stasher object repository server API
+Group: Development/Libraries
+
+%description perl
+This package installs a basic Perl module for accessing objects in the
+Stasher object repository from Perl.
+
 %prep
 %setup -q
 %configure
+%{__make} perl-configure PERL_CONFIGURE_FLAGS=INSTALLDIRS=vendor
 
 %build
 %{__make} %{_smp_mflags}
+%{__make} perl-build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
+cd perl/Stasher
+%{__make} install DESTDIR=$RPM_BUILD_ROOT
+cd ../..
+/usr/bin/find $RPM_BUILD_ROOT -type f -name .packlist -exec %{__rm} -f {} ';'
+/usr/bin/find $RPM_BUILD_ROOT -type f -name perllocal.pod -exec %{__rm} -f {} ';'
+/usr/bin/find $RPM_BUILD_ROOT -type f -name '*.bs' -a -size 0 -exec %{__rm} -f {} ';'
+
 %{__mkdir_p} $RPM_BUILD_ROOT%{_datadir}/stasher
 %{__mkdir_p} $RPM_BUILD_ROOT%{_unitdir}
 %{__install} -m 0555 sysinit.rc $RPM_BUILD_ROOT%{_datadir}/stasher/sysinit.rc
@@ -89,6 +107,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.a
 %{_libdir}/*.la
 %{_includedir}/stasher
+
+%files perl
+%defattr(-,root,root,-)
+%{_mandir}/man3/*3pm.*
+%{perl_vendorarch}/*.pm
+%dir %{perl_vendorarch}/auto/Stasher
+%{perl_vendorarch}/auto/Stasher/Stasher*
 
 %changelog
 * Tue Jan 10 2012 Sam Varshavchik <mrsam@octopus.email-scan.com> - 
