@@ -117,6 +117,36 @@ package Stasher::Connection;
 
 use Carp qw/confess/;
 
+=head2 $conn->limits
+
+my %limits = $conn->limits;
+
+limits() returns a hash that specifies certain limits for the connection.
+Currently, the returned hash contains the following:
+
+- "maxobjects": gives the maximum number of objects that can be passed
+to $conn->update() or $conn->update_request().
+
+- "maxobjectsize": gives the maximum total aggregate size, in bytes, of
+all objects created or updated by $conn->update() or $conn->update_request().
+
+- "maxsubs": this refers to a setting that's currently not implemented in the
+Stasher Perl module.
+
+=cut
+
+sub limits {
+    my ($self, @params) = @_;
+
+    my @ret=$self->api_get_limits;
+
+    my $error=shift @ret;
+
+    confess($error) if $error;
+
+    return @ret;
+}
+
 =head2 $conn->dir($hierarchy)
 
   my @objects=$conn->dir($hierarchy);

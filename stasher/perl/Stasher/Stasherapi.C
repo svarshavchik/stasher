@@ -97,6 +97,37 @@ static stasher::client *getclient(void *handleptr, std::string &error)
 	return p;
 }
 
+void api_limits(void *handleptr, std::vector<std::string> &buffer)
+{
+	buffer.push_back("");
+
+	auto &errmsg=*--buffer.end();
+
+	try {
+		stasher::client *handle=getclient(handleptr, errmsg);
+
+		if (!handle)
+			return;
+
+		stasher::userinit limits=(*handle)->getlimits();
+
+#define GETLIMIT(n,v) do {				\
+			std::ostringstream o;		\
+			o << (v);			\
+			buffer.push_back(n);		\
+			buffer.push_back(o.str());	\
+		} while (0)
+
+		GETLIMIT("maxobjects", limits.maxobjects);
+		GETLIMIT("maxobjectsize", limits.maxobjectsize);
+		GETLIMIT("maxsubs", limits.maxsubs);
+	}
+	catch (const x::exception &e)
+	{
+		set_error(errmsg, e);
+	};
+}
+
 void api_getrequest_free(void *&getrequest_handleptr)
 {
 	FREE_HANDLE(getrequest_handleptr, stasher::getrequest);

@@ -352,6 +352,21 @@ PPCODE:
 	XPUSHs(sv);
 }
 
+void
+Connection::api_get_limits()
+PPCODE:
+{
+	{
+		std::vector<std::string> buffer;
+
+		api_limits(THIS->handle, buffer);
+
+		for (size_t i=0; i<buffer.size(); ++i)
+			XPUSHs(sv_2mortal(newSVpv(buffer[i].c_str(),
+						  buffer[i].size())));
+	}
+}
+
 MODULE = Stasher                PACKAGE = Stasher
 void
 api_defaultnodes()

@@ -19,6 +19,12 @@ sub testsuite {
 
     $ok->($conn, "Succesfully connected to the server");
 
+    my %ret=$conn->limits;
+
+    $ok->($conn, "Succesfully called limits(): " . join(", ", map {
+	"$_=" . $ret{$_};
+	} sort keys %ret));
+
     my @defaultnodes = Stasher::defaultnodes;
     print join(":", @defaultnodes) . "\n";
     $ok->(1, "Called dirs");

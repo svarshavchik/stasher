@@ -40,3 +40,5 @@ void api_dir_request(void *, std::string &,
 		     const char *);
 
 void api_getdir_results(void *, std::vector<std::string> &);
+
+void api_limits(void *, std::vector<std::string> &);
