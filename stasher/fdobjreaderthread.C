@@ -47,10 +47,10 @@ size_t fdobjreaderthreadObj::fdadapterObj::pubread(char *buffer, size_t cnt)
 		if (n > cnt)
 			n=cnt;
 
-		return fdptr->pubread(buffer, cnt);
+		return ptr->pubread(buffer, cnt);
 	}
 
-	return me.pubread(fdptr, buffer, cnt);
+	return me.pubread(ptr, buffer, cnt);
 }
 
 fdobjreaderthreadObj::fdobjreaderthreadObj()
