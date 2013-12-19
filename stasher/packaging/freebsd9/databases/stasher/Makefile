@@ -4,7 +4,7 @@
 # $FreeBSD$
 
 PORTNAME=		stasher
-PORTVERSION=		0.03
+PORTVERSION=		0.04
 CATEGORIES=		databases
 
 MAINTAINER=		mrsam@courier-mta.com
@@ -15,8 +15,9 @@ USE_BZIP2=1
 USE_GMAKE=yes
 GNU_CONFIGURE=1
 USE_PKGCONFIG=build
-USE_PERL5=5.16+
 
+USES=perl5
+USE_PERL5=5.16+
 CONFIGURE_ARGS=		CPPFLAGS="-D__LONG_LONG_SUPPORTED" PERL=$(PERL)$(PERL_VERSION)
 MAN1=			stasher.1 stashermg.1
 
@@ -31,12 +32,12 @@ post-build:
 	cd $(WRKSRC); gmake perl-build
 
 post-install:
-	cd $(WRKSRC)/perl/Stasher && gmake install
-	PKG_PREFIX=${PREFIX} ${SH} ${PKGINSTALL} ${PKGNAME} POST-INSTALL
-	$(INSTALL_SCRIPT) $(WRKSRC)/stasher.sysinit ${PREFIX}/share/stasher
-	$(INSTALL_SCRIPT) $(WRKSRC)/sysinit.rc ${PREFIX}/share/stasher
-	mkdir -p ${PREFIX}/etc/periodic/daily
-	ln -fs ../../../share/stasher/maillogs.sh ${PREFIX}/etc/periodic/daily
+	cd $(WRKSRC)/perl/Stasher && gmake install DESTDIR=$(STAGEDIR)
+	PKG_PREFIX=$(STAGEDIR)${PREFIX} ${SH} ${PKGINSTALL} ${PKGNAME} POST-INSTALL
+	$(INSTALL_SCRIPT) $(WRKSRC)/stasher.sysinit $(STAGEDIR)${PREFIX}/share/stasher
+	$(INSTALL_SCRIPT) $(WRKSRC)/sysinit.rc $(STAGEDIR)${PREFIX}/share/stasher
+	mkdir -p $(STAGEDIR)${PREFIX}/etc/periodic/daily
+	ln -fs ../../../share/stasher/maillogs.sh $(STAGEDIR)${PREFIX}/etc/periodic/daily
 
 post-deinstall:
 	PKG_PREFIX=${PREFIX} ${SH} ${PKGDEINSTALL} ${PKGNAME} POST-DEINSTALL
