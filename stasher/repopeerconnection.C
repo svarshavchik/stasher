@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -655,10 +655,8 @@ void repopeerconnectionObj::dispatch(const connect_peer_msg &msg)
 
 	disconnect(); // For a good measure
 
-	peerdisconnect_msg
-		newdisconnect(new peerdisconnect_msgObj
-			      (x::ptr<repopeerconnectionbaseObj>(this))
-			      );
+	auto newdisconnect=peerdisconnect_msg
+		::create(x::ptr<repopeerconnectionbaseObj>(this));
 
 	newdisconnect->install(controllerptr, mcguffinptr);
 

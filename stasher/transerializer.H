@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -21,18 +21,18 @@
 
 class transerializer {
 
-	//! UNDEFINED
-
-	transerializer(const transerializer &);
-
-	//! UNDEFINED
-
-	transerializer &operator=(const transerializer &);
-
 	//! The repository
 	tobjrepo repo;
 
 public:
+	//! UNDEFINED
+
+	transerializer(const transerializer &)=delete;
+
+	//! UNDEFINED
+
+	transerializer &operator=(const transerializer &)=delete;
+
 	//! Transaction UUID
 
 	//! When serializing, this is initialized by the constructor.
@@ -198,7 +198,7 @@ public:
 	{
 		iter(me.uuid);
 
-		me.tran=newtran(new newtranObj(me.repo, me.uuid));
+		me.tran=newtran::create(me.repo, me.uuid);
 
 		iter(me.tran->meta.opts);
 		iter(me.tran->meta.objects);

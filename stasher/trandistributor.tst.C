@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -178,8 +178,8 @@ static void test1() // [PURGETRANSOURCEUNKNOWN].
 		myclusterinfo::saveclusterinfo(repo, cluster);
 	}
 
-	x::ptr<myclusterinfo> cluster(new myclusterinfo("node1", repo,
-							tracker->getTracker()));
+	auto cluster=x::ref<myclusterinfo>::create("node1", repo,
+						   tracker->getTracker());
 
 
 	cluster->initialize();

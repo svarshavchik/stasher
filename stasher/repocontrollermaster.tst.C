@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -259,11 +259,11 @@ public:
 	test12_nodea() : tracker(STASHER_NAMESPACE::stoppableThreadTrackerImpl::create()),
 			 mastername("nodea"),
 			 repo(tobjrepo::create(clusterdir)),
-			 cluster(new clusterinfoObj(clusterdir, "test",
-						    tracker->getTracker(),
-						    STASHER_NAMESPACE
-						    ::nodeinfomap())),
-			 quorum_callback_list(new repoclusterquorumObj),
+			 cluster(clusterinfo::create(clusterdir, "test",
+						     tracker->getTracker(),
+						     STASHER_NAMESPACE
+						     ::nodeinfomap())),
+			 quorum_callback_list(repoclusterquorum::create()),
 			 quorumcb(x::ptr<quorumcbObj>::create()),
 			 master(x::ref<mymastercontrollerObj>::create
 				(mastername, masteruuid, repo,
@@ -286,8 +286,7 @@ static void test1()
 {
 	test12_nodea nodea;
 
-	x::ptr<test1connectionObj>
-		dummypeer(new test1connectionObj("nodeb"));
+	auto dummypeer=x::ref<test1connectionObj>::create("nodeb");
 
 	nodea.master->peernewmaster(dummypeer,
 				    nodeclusterstatus(nodea.mastername,
@@ -570,7 +569,7 @@ public:
 		if (controller.null())
 			LOG_FATAL("Internal error: controller disappeared");
 
-		x::ptr<connectCbObj> cb(new connectCbObj(copydst));
+		auto cb=x::ref<connectCbObj>::create(copydst);
 
 		controller->accept(repopeerconnectionptr(this),
 				   synchandle->connection, masterlink);
@@ -656,12 +655,11 @@ static void test2()
 	nodea.quorumcb->wait4(true);
 
 	{
-		x::ptr<mymastercontrollerObj>
-			 master2(new mymastercontrollerObj
-				(nodea.mastername, nodea.masteruuid, nodea.repo,
+		auto master2=x::ref<mymastercontrollerObj>
+			::create(nodea.mastername, nodea.masteruuid, nodea.repo,
 				 nodea.quorum_callback_list,
 				 x::ptr<trandistributorObj>(),
-				 nodea.tracker->getTracker()));
+				 nodea.tracker->getTracker());
 
 		nodea.quorumcb->wait4(false); // [NEWCONTROLLERQUORUMFALSE]
 
@@ -677,12 +675,11 @@ static void test2()
 	}
 
 	{
-		x::ptr<mymastercontrollerObj>
-			 master2(new mymastercontrollerObj
-				(nodea.mastername, nodea.masteruuid, nodea.repo,
+		auto master2=x::ref<mymastercontrollerObj>
+			::create(nodea.mastername, nodea.masteruuid, nodea.repo,
 				 nodea.quorum_callback_list,
 				 x::ptr<trandistributorObj>(),
-				 nodea.tracker->getTracker()));
+				 nodea.tracker->getTracker());
 
 		nodea.quorumcb->wait4(false);
 	}

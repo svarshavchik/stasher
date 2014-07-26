@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -185,8 +185,7 @@ static void test1()
 
 	repoclusterinfoObj::saveclusterinfo(repo, clusterinfo);
 
-	x::ptr<myrepoclusterinfoObj>
-		clust(new myrepoclusterinfoObj("nodea", repo));
+	auto clust=x::ref<myrepoclusterinfoObj>::create("nodea", repo);
 
 	// [INITIALCONTROLLER]
 	clust->initialize();
@@ -209,8 +208,8 @@ static void test1()
 	if (clust->master_cnt != 1 || clust->slave_cnt != 0)
 		throw EXCEPTION("[INITIALCONTROLLER] failed");
 
-	dummypeerstatus nodeb(new dummypeerstatusObj("nodeb")),
-		nodec(new dummypeerstatusObj("nodec"));
+	auto nodeb=dummypeerstatus::create("nodeb"),
+		nodec=dummypeerstatus::create("nodec");
 
 	x::uuid masteruuid;
 
@@ -285,8 +284,7 @@ static void test2()
 {
 	tobjrepo repo(tobjrepo::create("conftestdir.tst"));
 
-	x::ptr<myrepoclusterinfoObj>
-		clust(new myrepoclusterinfoObj("nodea", repo));
+	auto clust=x::ref<myrepoclusterinfoObj>::create("nodea", repo);
 
 	clust->initialize();
 
@@ -332,8 +330,7 @@ static void test3()
 
 	repoclusterinfoObj::saveclusterinfo(repo, clusterinfo);
 
-	x::ptr<myrepoclusterinfoObj>
-		clust(new myrepoclusterinfoObj("nodea", repo));
+	auto clust=x::ref<myrepoclusterinfoObj>::create("nodea", repo);
 
 	if (repo->get_tran_stat("nodea", nodeauuid) != // [INITREMOVEDONE]
 	    STASHER_NAMESPACE::req_failed_stat ||
@@ -343,14 +340,14 @@ static void test3()
 
 	clust->initialize();
 
-	x::ptr<test3statusObj> peer(new test3statusObj("nodeb"));
+	auto peer=x::ref<test3statusObj>::create("nodeb");
 
 	peer->peerstatusupdate(nodeclusterstatus("nodec", x::uuid(), 0, false));
 
 	if (!peer->install(clust).first)
 		throw EXCEPTION("[FALSEMASTER] failed");
 
-	peer=x::ptr<test3statusObj>(new test3statusObj("nodeb"));
+	peer=x::ptr<test3statusObj>::create("nodeb");
 	clust->stop_threads(false);
 
 	std::cerr << "The following error is expected:" << std::endl;
@@ -382,8 +379,7 @@ static void test4()
 	}
 
 	repoclusterinfoObj::saveclusterinfo(repo, clusterinfo);
-	x::ptr<myrepoclusterinfoObj> cluster(new myrepoclusterinfoObj("a",
-								      repo));
+	auto cluster=x::ref<myrepoclusterinfoObj>::create("a", repo);
 
 	clusterinfo.clear();
 	cluster->get(clusterinfo);

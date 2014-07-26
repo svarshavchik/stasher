@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -157,8 +157,7 @@ public:
 		while (inprogress)
 			cond.wait(lock);
 
-		e=x::ptr<objuuidenumeratorObj>
-			(new objuuidenumeratorObj(repo));
+		e=x::ptr<objuuidenumeratorObj>::create(repo);
 
 		objrepocopy::masterack dummy;
 
@@ -264,7 +263,7 @@ static void test1()
 
 	mkobj(repo2, "objx");
 
-	x::ptr<simdst> dst(new simdst(repo2));
+	auto dst=x::ref<simdst>::create(repo2);
 
 	objrepocopysrcthreadptr src=
 		objrepocopysrcthreadptr::create("src");
@@ -326,7 +325,7 @@ static void test1()
 		throw;
 	}
 
-	x::ptr<objuuidenumeratorObj> getrepo2(new objuuidenumeratorObj(repo2));
+	auto getrepo2=x::ref<objuuidenumeratorObj>::create(repo2);
 	x::ptr<objuuidlistObj> objects;
 
 	while (!(objects=getrepo2->next()).null())
@@ -396,7 +395,7 @@ static void test3()
 
 	mkobj(repo2, "objx");
 
-	x::ptr<simdst> dst(new simdst(repo2));
+	auto dst=x::ref<simdst>::create(repo2);
 
 	objrepocopysrc src(objrepocopysrc::create());
 
@@ -501,7 +500,7 @@ void test4()
 
 	src=objrepocopysrcptr::create();
 	batonp=batonptr::create("a", x::uuid(), "b", x::uuid());
-	dst=x::ptr<test4_dst>(new test4_dst("", src));
+	dst=x::ptr<test4_dst>::create("", src);
 
 	complete=src->start(repo, dst, batonptr(), x::ptr<x::obj>());
 
@@ -524,8 +523,8 @@ void test4()
 
 	src=objrepocopysrcptr::create();
 	batonp=batonptr::create("a", x::uuid(), "b", x::uuid());
-	dst=x::ptr<test4_dst>(new test4_dst(x::tostring(batonp->batonuuid),
-					    src));
+	dst=x::ptr<test4_dst>::create(x::tostring(batonp->batonuuid),
+				      src);
 
 	complete=src->start(repo, dst, batonp, x::ptr<x::obj>());
 

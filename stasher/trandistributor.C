@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -111,10 +111,9 @@ void trandistributorObj::run(const repoclusterinfo &clusterArg,
 		known_nodes.clear();
 		known_nodes.insert(nodename);
 
-		x::ptr<trancancellerObj>
-			canceller(new trancancellerObj(x::ptr<trandistributorObj
-							      >(this),
-						       nodename));
+		auto canceller=x::ptr<trancancellerObj>
+			::create(x::ptr<trandistributorObj>(this),
+				 nodename);
 
 		// Install the cancel notifier, and pick up any existing
 		// cancel notices that are already in the repository

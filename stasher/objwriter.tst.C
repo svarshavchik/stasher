@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -37,7 +37,7 @@ public:
 
 static void test1()
 {
-	x::ptr<test> t(new test);
+	auto t=x::ref<test>::create();
 
 	std::vector<char> dummy;
 

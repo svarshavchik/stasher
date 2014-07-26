@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -176,8 +176,8 @@ void myConnecter::connected(const std::string &peername,
 			    const clusterlistener &listener)
 
 {
-	x::ref<testpeerstatusannouncerObj>
-		testthread(new testpeerstatusannouncerObj(listener, peername));
+	auto testthread=
+		x::ref<testpeerstatusannouncerObj>::create(listener, peername);
 
 	x::ptr<x::obj> mcguffin(x::ptr<x::obj>::create());
 

@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -400,12 +400,9 @@ void test2()
 	x::ptr<test2loggerobj> logger(x::ptr<test2loggerobj>::create());
 	x::ptr<test2enumobj> repoenums[3];
 
-	repoenums[0]=x::ptr<test2enumobj>(new test2enumobj(repos[0], "a",
-							   logger));
-	repoenums[1]=x::ptr<test2enumobj>(new test2enumobj(repos[1], "b",
-							   logger));
-	repoenums[2]=x::ptr<test2enumobj>(new test2enumobj(repos[0], "c",
-							   logger));
+	repoenums[0]=x::ptr<test2enumobj>::create(repos[0], "a", logger);
+	repoenums[1]=x::ptr<test2enumobj>::create(repos[1], "b", logger);
+	repoenums[2]=x::ptr<test2enumobj>::create(repos[0], "c", logger);
 
 	repos[0]->installNotifier(repoenums[0]);
 	repos[1]->installNotifier(repoenums[1]);
@@ -520,8 +517,9 @@ void test3()
 	b.debugWaitFullQuorumStatus(true);
 
 	x::ptr<test2loggerobj> logger(x::ptr<test2loggerobj>::create());
-	x::ptr<test2enumobj> aenum(new test2enumobj(a.repo, "a", logger)),
-		benum(new test2enumobj(b.repo, "b", logger));
+
+	auto aenum=x::ref<test2enumobj>::create(a.repo, "a", logger),
+		benum=x::ref<test2enumobj>::create(b.repo, "b", logger);
 
 
 	{

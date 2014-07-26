@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -68,9 +68,8 @@ static void test1()
 		x::deserialize::iterator<iter_t>
 			deser_iter(b, e);
 
-		transerializer deserializer(two, spacemonitor
-					    (new spacemonitorObj
-					     (x::df::create("."))));
+		transerializer deserializer(two, spacemonitor::create
+					    (x::df::create(".")));
 
 		deser_iter(deserializer);
 		deserializer.tran->finalize();

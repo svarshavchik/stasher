@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -59,7 +59,7 @@ public:
 	: repocontrollerbaseObj("dummy",
 				x::uuid(),
 				tobjrepo::create("repo.tst"),
-				repoclusterquorum(new repoclusterquorumObj))
+				repoclusterquorum::create())
 	{
 	}
 
@@ -459,8 +459,8 @@ static void test2()
 			->commit();
 	}
 
-	x::ptr<test2dstinterface>
-		dstinterface(new test2dstinterface(test.peer->synchandle));
+	auto dstinterface=
+		x::ref<test2dstinterface>::create(test.peer->synchandle);
 
 	x::ptr<x::obj> mcguffin=x::ptr<x::obj>::create();
 
@@ -545,8 +545,7 @@ public:
 
 	test3peer(const std::string &peername)
 		: repopeerconnectionObj(peername, spacemonitor
-					(new spacemonitorObj
-					 (x::df::create("."))))
+					::create(x::df::create(".")))
 	{
 	}
 
@@ -819,7 +818,7 @@ static void test3()
 
 	}
 
-	repoclusterquorum quorum_callback_list(new repoclusterquorumObj);
+	auto quorum_callback_list=repoclusterquorum::create();
 
 	x::ptr<test3quorumcb> quorumcb(x::ptr<test3quorumcb>::create());
 

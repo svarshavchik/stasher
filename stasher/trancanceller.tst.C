@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -36,10 +36,9 @@ static const char repo1[]="conftest1.dir";
 void test1()
 {
 	tobjrepo repo(tobjrepo::create(repo1));
-	x::ptr<trandistributorObj> fakedist(new trandistributorObj);
+	auto fakedist=x::ref<trandistributorObj>::create();
 
-	x::ptr<trancancellerObj> canceller(new trancancellerObj(fakedist,
-								"node1"));
+	auto canceller=x::ref<trancancellerObj>::create(fakedist, "node1");
 
 	repo->installNotifier(canceller);
 

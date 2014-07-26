@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -91,9 +91,9 @@ tobjrepoObj::tobjrepoObj(const std::string &directoryArg)
 			     e=unfinished_business.end(); b != e; ++b)
 		{
 			try {
-				tran tranRef(new tranObj(b->first.substr
-							 (0, b->first.find('.')
-							  )));
+				auto tranRef=tran::create(b->first.substr
+							  (0, b->first.find('.')
+							   ));
 
 				parse(*tranRef, tmp_open(b->first, O_RDONLY));
 
@@ -340,7 +340,7 @@ void tobjrepoObj::parse(tranmeta &tranArg,
 
 void tobjrepoObj::cancel(const x::uuid &uuidArg)
 {
-	tran tranRef(new tranObj(uuidArg));
+	auto tranRef=tran::create(uuidArg);
 
 	uuidlock ulock(this, uuidArg);
 
@@ -411,7 +411,7 @@ trancommit tobjrepoObj::begin_commit(const x::uuid &uuidArg,
 				     const x::eventfd &fdArg)
 
 {
-	trancommit c(new trancommitObj(uuidArg, tobjrepo(this)));
+	auto c=trancommit::create(uuidArg, tobjrepo(this));
 
 	{
 		{
@@ -440,7 +440,7 @@ void tobjrepoObj::commit_nolock(const x::uuid &uuidArg)
 {
 	uuidlock ulock(this, uuidArg);
 
-	tran t(new tranObj(uuidArg));
+	auto t=tran::create(uuidArg);
 
 	try {
 		parse(*t, open_tran_uuid_locked(uuidArg));

@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -93,7 +93,7 @@ static void test1()
 {
 	clusterinfo c(clusterinfo::create());
 
-	x::ptr<teststatusObj> stat(new teststatusObj("foo"));
+	auto stat=x::ptr<teststatusObj>::create("foo");
 
 	{
 		nodeclusterstatus s("a", x::uuid(), 1, false);

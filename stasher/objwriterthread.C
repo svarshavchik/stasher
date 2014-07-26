@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -140,7 +140,7 @@ void objwriterthreadObj::dispatch(const write_msg &msg)
 			request_count_warn_level=max_request_count/2;
 	}
 
-	requests.push(x::ref<writeRequestObj>(new writeRequestObj(msg.object)));
+	requests.push(x::ref<writeRequestObj>::create(msg.object));
 }
 
 void objwriterthreadObj::dispatch(const request_close_msg &msg)

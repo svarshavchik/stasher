@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -85,7 +85,7 @@ static void test2()
 	tobjrepo r(tobjrepo::create());
 
 	{
-		newtran n(new newtranObj(r));
+		auto n=newtran::create(r);
 
 		n->newobj("dummy1");
 		n->delobj("dummy2", x::uuid());

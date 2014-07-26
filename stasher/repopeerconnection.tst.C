@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -23,9 +23,7 @@ public:
 
 	testconnection(const std::string &connectionName)
 		:  repopeerconnectionObj(connectionName,
-					 spacemonitor
-					(new spacemonitorObj
-					 (x::df::create("."))))
+					 spacemonitor::create(x::df::create(".")))
 	{
 	}
 

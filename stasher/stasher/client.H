@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -142,7 +142,7 @@ public:
 
 	//! A wrapper for puttransactionObj
 
-	class transactionObj : private puttransactionObj {
+	class transactionObj : private puttransactionObj, virtual public obj {
 	public:
 		//! Constructor
 		transactionObj();

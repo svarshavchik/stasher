@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -81,7 +81,7 @@ static void test1(tstnodes &t)
 
 	std::cerr << "Restarting node without autoconnect" << std::endl;
 
-	tnodes[1]=new tstnodes::nodeObj(tstnodes::getnodedir(1));
+	tnodes[1]=x::ref<tstnodes::nodeObj>::create(tstnodes::getnodedir(1));
 	tnodes[1]->start(true);
 
 	std::cerr << "Waiting for reconnect" << std::endl;

@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -108,7 +108,7 @@ static void test1(size_t n)
 	size_t batchcnt=0;
 
 	{
-		x::ptr<uenum> e(new uenum(repo));
+		auto e=x::ref<uenum>::create(repo);
 
 		// [ENUMERATE]
 

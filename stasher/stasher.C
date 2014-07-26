@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -1369,7 +1369,7 @@ void cli::editcluster(std::list<std::string> &args)
 		x::uuid uuid=p->second.uuid;
 
 		curcluster=x::ptr<editclusterObj::updcluster>
-			(new editclusterObj::updcluster(p->second.uuid));
+			::create(p->second.uuid);
 
 		if (!newflag)
 		{
@@ -1696,8 +1696,8 @@ void cli::savecluster(bool forceflag)
 	if (results->status != STASHER_NAMESPACE::req_processed_stat)
 		throw EXCEPTION(x::tostring(results->status));
 
-	x::ptr<editclusterObj::updcluster>
-		newmeta(new editclusterObj::updcluster(results->newuuid));
+	auto newmeta=x::ptr<editclusterObj::updcluster>
+		::create(results->newuuid);
 
 	newmeta->info=curcluster->info;
 	curcluster=newmeta;
@@ -1921,8 +1921,7 @@ void cli::namespacecmd(std::list<std::string> &args)
 
 		if (ns.null())
 		{
-			ns=x::ptr<cli::currentns>
-				(new cli::currentns(x::uuid()));
+			ns=x::ptr<cli::currentns>::create(x::uuid());
 
 			tran->newobj(NSLISTOBJECT,
 				     ns->doadddel(rwro, adddel));
@@ -2122,7 +2121,7 @@ x::ptr<cli::currentns> cli::loadns()
 
 	if (b != contents->end())
 	{
-		nsptr=x::ptr<currentns>(new currentns(b->second.uuid));
+		nsptr=x::ptr<currentns>::create(b->second.uuid);
 
 		x::fd::base::inputiter beg_iter(b->second.fd), end_iter;
 		x::deserialize::iterator<x::fd::base::inputiter>

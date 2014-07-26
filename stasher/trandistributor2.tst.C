@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -186,8 +186,7 @@ static void test1()
 	clustermap["nodea"]=nodeinfoconn();
 	clustermap["nodeb"]=nodeinfoconn();
 
-	repoclusterinfo
-		cluster(new repoclusterinfoObj("nodea", clustermap));
+	auto cluster=repoclusterinfo::create("nodea", clustermap);
 
 	STASHER_NAMESPACE::stoppableThreadTrackerImpl
 		tracker(STASHER_NAMESPACE::stoppableThreadTrackerImpl::create());
@@ -332,8 +331,7 @@ static void test2()
 	clustermap["nodea"]=nodeinfoconn();
 	clustermap["nodeb"]=nodeinfoconn();
 
-	repoclusterinfo
-		cluster(new repoclusterinfoObj("nodea", clustermap));
+	auto cluster=repoclusterinfo::create("nodea", clustermap);
 
 	STASHER_NAMESPACE::stoppableThreadTrackerImpl
 		tracker(STASHER_NAMESPACE::stoppableThreadTrackerImpl::create());

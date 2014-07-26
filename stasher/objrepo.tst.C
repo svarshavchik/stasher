@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -343,7 +343,7 @@ static void test_obj5()
 
 	p=&*repo1;
 
-	x::ptr<notifierObj> n(new notifierObj);
+	auto n=x::ref<notifierObj>::create();
 
 	repo1->installNotifier(n);
 

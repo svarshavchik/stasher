@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -543,10 +543,9 @@ void test4()
 
 	x::ptr<x::obj> mcguffin(x::ptr<x::obj>::create());
 
-	bconn->commit_peer(x::ptr<repopeerconnectionObj::commitreqObj>
-			   (new repopeerconnectionObj
-			    ::commitreqObj(tran1, aname,
-					   STASHER_NAMESPACE::req_processed_stat)),
+	bconn->commit_peer(x::ref<repopeerconnectionObj::commitreqObj>
+			   ::create(tran1, aname,
+				    STASHER_NAMESPACE::req_processed_stat),
 			   mcguffin);
 
 	{
@@ -580,10 +579,9 @@ void test4()
 
 	mcguffin=x::ptr<x::obj>::create();
 
-	aconn->commit_peer(x::ptr<repopeerconnectionObj::commitreqObj>
-			   (new repopeerconnectionObj
-			    ::commitreqObj(tran2, bname,
-					   STASHER_NAMESPACE::req_processed_stat)),
+	aconn->commit_peer(x::ref<repopeerconnectionObj::commitreqObj>
+			   ::create(tran2, bname,
+				    STASHER_NAMESPACE::req_processed_stat),
 			   mcguffin);
 
 	{

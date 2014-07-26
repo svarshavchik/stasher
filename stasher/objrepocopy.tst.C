@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -228,7 +228,7 @@ static void test1()
 	if (!flag->flag)
 		throw EXCEPTION("flag wasn't set to true");
 
-	x::ptr<objuuidenumeratorObj> getrepo2(new objuuidenumeratorObj(repo2));
+	auto getrepo2=x::ref<objuuidenumeratorObj>::create(repo2);
 	x::ptr<objuuidlistObj> objects;
 
 	while (!(objects=getrepo2->next()).null())
