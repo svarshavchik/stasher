@@ -11,6 +11,7 @@
 #include "objuuidenumerator.H"
 #include <sstream>
 #include <iostream>
+#include <x/destroycallbackflag.H>
 #include <x/serialize.H>
 #include <x/deserialize.H>
 #include <x/destroycallbackflagobj.H>
@@ -297,10 +298,9 @@ static void test1()
 		}
 
 		{
-			x::ptr<x::destroyCallbackFlagObj>
-				cb(x::ptr<x::destroyCallbackFlagObj>::create());
+			auto cb=x::destroyCallbackFlag::create();
 
-			mcguffin->addOnDestroy(cb);
+			mcguffin->ondestroy([cb]{cb->destroyed();});
 			mcguffin=x::ptr<x::obj>();
 			std::cout << "Testing [COPYSRCMCGUFFIN]" << std::endl;
 			cb->wait(); // [COPYSRCMCGUFFIN]
@@ -364,10 +364,9 @@ static void test2()
 		threadrun=x::run(src, repo, batonptr(), complete, mcguffin);
 
 		{
-			x::ptr<x::destroyCallbackFlagObj>
-				cb(x::ptr<x::destroyCallbackFlagObj>::create());
+			auto cb=x::destroyCallbackFlag::create();
 
-			mcguffin->addOnDestroy(cb);
+			mcguffin->ondestroy([cb]{cb->destroyed();});
 			mcguffin=x::ptr<x::obj>();
 			std::cout << "Testing [COPYSRCMCGUFFIN]" << std::endl;
 			cb->wait();
@@ -528,10 +527,9 @@ void test4()
 
 	complete=src->start(repo, dst, batonp, x::ptr<x::obj>());
 
-	x::ptr<x::destroyCallbackFlagObj>
-		cb(x::ptr<x::destroyCallbackFlagObj>::create());
+	auto cb=x::destroyCallbackFlag::create();
 
-	batonp->addOnDestroy(cb);
+	batonp->ondestroy([cb]{cb->destroyed();});
 	batonp=batonptr();
 
 	src->wait();

@@ -300,7 +300,7 @@ repoclusterinfoObj::debug_inquorum()
 
 		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
 
-		mcguffin->addOnDestroy(cb);
+		mcguffin->ondestroy([cb]{cb->destroyed();});
 		mcguffin=x::ptr<x::obj>();
 
 		cb->wait();
@@ -311,8 +311,7 @@ repoclusterinfoObj::debug_inquorum()
 	return status;
 }
 
-class repoclusterinfoObj::mcguffinDestroyCallbackObj
-	: public x::destroyCallbackObj {
+class repoclusterinfoObj::mcguffinDestroyCallbackObj : virtual public x::obj {
 
 public:
 	x::weakptr< x::stoppableptr > terminator;
@@ -321,7 +320,7 @@ public:
 	mcguffinDestroyCallbackObj() noexcept;
 	~mcguffinDestroyCallbackObj() noexcept;
 
-	void destroyed() noexcept;
+	void destroyed();
 };
 
 repoclusterinfoObj::mcguffinDestroyCallbackObj::mcguffinDestroyCallbackObj()
@@ -334,7 +333,7 @@ repoclusterinfoObj::mcguffinDestroyCallbackObj::~mcguffinDestroyCallbackObj()
 {
 }
 
-void repoclusterinfoObj::mcguffinDestroyCallbackObj::destroyed() noexcept
+void repoclusterinfoObj::mcguffinDestroyCallbackObj::destroyed()
 {
 	x::stoppableptr stopthis(terminator.getptr());
 
@@ -382,7 +381,10 @@ void repoclusterinfoObj::startmaster(const newnodeclusterstatus &newStatus)
 
 	x::ptr<x::obj> mcguffin(x::ptr<x::obj>::create());
 
-	mcguffin->addOnDestroy(mcguffin_destroy_callback);
+	mcguffin->ondestroy([mcguffin_destroy_callback]
+			    {
+				    mcguffin_destroy_callback->destroyed();
+			    });
 
 	this->mcguffin=mcguffin;
 

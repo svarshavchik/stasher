@@ -146,9 +146,9 @@ static void test1()
 	x::destroyCallbackFlag monitor(x::destroyCallbackFlag::create());
 
 	auto runthread=({
-			x::ptr<x::obj> mcguffin(x::ptr<x::obj>::create());
+			auto mcguffin=x::ref<x::obj>::create();
 
-			mcguffin->addOnDestroy(monitor);
+			mcguffin->ondestroy([monitor]{monitor->destroyed();});
 
 			x::run(test_thread, repo,
 			       x::weakptr<objrepocopysrcinterfaceptr>
@@ -322,9 +322,9 @@ static void test3()
 	x::destroyCallbackFlag monitor(x::destroyCallbackFlag::create());
 
 	auto runthread=({
-			x::ptr<x::obj> mcguffin(x::ptr<x::obj>::create());
+			auto mcguffin=x::ref<x::obj>::create();
 
-			mcguffin->addOnDestroy(monitor);
+			mcguffin->ondestroy([monitor]{monitor->destroyed();});
 
 			x::run(test_thread, repo,
 			       x::weakptr<objrepocopysrcinterfaceptr>(src),
@@ -601,7 +601,7 @@ void test7()
 			x::destroyCallbackFlag
 				monitor(x::destroyCallbackFlag::create());
 
-			batonp->addOnDestroy(monitor);
+			batonp->ondestroy([monitor]{monitor->destroyed();});
 
 			x::weakptr<batonptr > wbaton=batonp;
 
@@ -653,7 +653,7 @@ void test7()
 			x::destroyCallbackFlag
 				monitor(x::destroyCallbackFlag::create());
 
-			batonp->addOnDestroy(monitor);
+			batonp->ondestroy([monitor]{monitor->destroyed();});
 
 			x::weakptr<batonptr > wbaton=batonp;
 

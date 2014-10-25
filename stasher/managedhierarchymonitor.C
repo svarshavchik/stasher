@@ -11,8 +11,6 @@
 #include <stasher/managedsubscriber.H>
 #include <x/logger.H>
 
-#include <x/destroycallbackobj.H>
-
 LOG_CLASS_INIT(STASHER_NAMESPACE::managedhierarchymonitorObj);
 
 STASHER_NAMESPACE_START
@@ -72,7 +70,7 @@ public:
 	// Mcguffin callback that handles the response to the
 	// connection_update()'s request for the hierarchy's current contents.
 
-	class getdirCompleteMcguffinObj : public x::destroyCallbackObj {
+	class getdirCompleteMcguffinObj : virtual public x::obj {
 	public:
 
 		x::weakptr<x::ptr<implObj> > mon;
@@ -89,7 +87,7 @@ public:
 		// Directory request complete. Instantiate the first
 		// processDirResultsObj, and kick it off to process the first
 		// batch of results from the directory request.
-		void destroyed() noexcept;
+		void destroyed();
 	};
 
 	// A mcguffin that sends a request for the contents of the next chunk
@@ -105,7 +103,7 @@ public:
 	// Then, attach another mcguffin to that request, so when it's done,
 	// the next request gets sent.
 
-	class processDirResultsObj : public x::destroyCallbackObj {
+	class processDirResultsObj : virtual public x::obj {
 
 	public:
 
@@ -126,7 +124,7 @@ public:
 		}
 
 		// Do the next chunk.
-		void destroyed() noexcept;
+		void destroyed();
 	};
 
 	// Send a request to return the uuid of the given entry(es) in the
@@ -157,7 +155,7 @@ public:
 		       // which get removed from unprocessed, accordingly.
 		       std::set<std::string> &unprocessed);
 
-	class updateCallbackObj : public x::destroyCallbackObj {
+	class updateCallbackObj : virtual public x::obj {
 
 	public:
 		x::weakptr<x::ptr<implObj> > mon;
@@ -175,7 +173,7 @@ public:
 		{
 		}
 
-		void destroyed() noexcept;
+		void destroyed();
 	};
 
 };
@@ -279,11 +277,10 @@ void managedhierarchymonitorObj::implObj::req_next_hierarchy(const client &c)
 	auto mcguffin=x::ref<getdirCompleteMcguffinObj>
 		::create(x::ref<implObj>(this), req.first);
 
-	req.second->mcguffin()->addOnDestroy(mcguffin);
+	req.second->mcguffin()->ondestroy([mcguffin]{mcguffin->destroyed();});
 }
 
 void managedhierarchymonitorObj::implObj::getdirCompleteMcguffinObj::destroyed()
-	noexcept
 {
 	auto results=req->getmsg();
 	auto m=mon.getptr();
@@ -307,8 +304,7 @@ void managedhierarchymonitorObj::implObj::getdirCompleteMcguffinObj::destroyed()
 	x::ref<processDirResultsObj>::create(m, results)->destroyed();
 }
 
-void managedhierarchymonitorObj::implObj::processDirResultsObj
-::destroyed() noexcept
+void managedhierarchymonitorObj::implObj::processDirResultsObj::destroyed()
 {
 	auto m=mon.getptr();
 
@@ -346,7 +342,9 @@ void managedhierarchymonitorObj::implObj::processDirResultsObj
 	if (mcguffin.null())
 		return;
 
-	mcguffin->addOnDestroy(x::ref<processDirResultsObj>(this));
+	auto cb=x::ref<processDirResultsObj>(this);
+
+	mcguffin->ondestroy([cb]{cb->destroyed();});
 }
 
 
@@ -402,12 +400,12 @@ x::ptr<x::obj> managedhierarchymonitorObj::implObj
 	auto callback=x::ref<updateCallbackObj>::create(mon, client_req.first,
 							req);
 
-	client_req.second->mcguffin()->addOnDestroy(callback);
+	client_req.second->mcguffin()->ondestroy([callback]
+						 {callback->destroyed();});
 	return callback;
 }
 
 void managedhierarchymonitorObj::implObj::updateCallbackObj::destroyed()
-	noexcept
 {
 	contents resp=req->getmsg()->objects;
 

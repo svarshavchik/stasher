@@ -557,7 +557,7 @@ void localconnectionObj::started()
 
 // This gets attached as a destructor callback on the transaction's mcguffin.
 //
-class localconnectionObj::put_cb : public x::destroyCallbackObj {
+class localconnectionObj::put_cb : virtual public x::obj {
 
 public:
 	x::weakptr<x::ptr<localconnectionObj> > conn;
@@ -569,8 +569,7 @@ public:
 	put_cb(const x::ptr<localconnectionObj> &connArg,
 	       const x::uuid &requuidArg,
 	       const trandistributorObj::transtatus &statArg)
- : conn(connArg), requuid(requuidArg),
-				      stat(statArg)
+		: conn(connArg), requuid(requuidArg), stat(statArg)
 	{
 	}
 
@@ -578,7 +577,7 @@ public:
 	{
 	}
 
-	void destroyed() noexcept
+	void destroyed()
 	{
 		x::ptr<localconnectionObj> ptr=conn.getptr();
 
@@ -671,7 +670,7 @@ void localconnectionObj::check_deserialized_transaction()
 			 stat);
 
 	deser->diskspace->commit();
-	mcguffin->addOnDestroy(cb);
+	mcguffin->ondestroy([cb]{cb->destroyed();});
 }
 
 bool localconnectionObj::allow_admin_get()

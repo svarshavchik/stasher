@@ -18,7 +18,6 @@
 #include "trandistreceived.H"
 #include "trandistuuid.H"
 #include "baton.H"
-#include <x/destroycallback.H>
 #include <x/destroycallbackflag.H>
 #include <x/threads/run.H>
 #include <x/eventqueuemsgdispatcher.H>
@@ -197,7 +196,7 @@ public:
 
 	//! Destructor callback on copysrc's mcguffin
 
-	class syncobjcbObj : public x::destroyCallbackObj {
+	class syncobjcbObj : virtual public x::obj {
 
 	public:
 		x::weakptr<repocontrollermasterptr > controller;
@@ -207,7 +206,7 @@ public:
 			noexcept;
 		~syncobjcbObj() noexcept;
 
-		void destroyed() noexcept;
+		void destroyed();
 	};
 
 	bool synced;
@@ -783,8 +782,12 @@ void repocontrollermasterObj::dispatch(const syncslave_msg &msg)
 
 	x::ptr<x::obj> copysrc_mcguffin(x::ptr<x::obj>::create());
 
-	copysrc_mcguffin->addOnDestroy(x::ref<slaveinfo::syncobjcbObj>::create
-				       (repocontrollermasterptr(this)));
+	{
+		auto cb=x::ref<slaveinfo::syncobjcbObj>::create
+			(repocontrollermasterptr(this));
+
+		copysrc_mcguffin->ondestroy([cb]{cb->destroyed();});
+	}
 
 	LOG_DEBUG("Starting repository sync to " << msg.name);
 
@@ -816,13 +819,11 @@ repocontrollermasterObj::slaveinfo::syncobjcbObj
 {
 }
 
-repocontrollermasterObj::slaveinfo::syncobjcbObj
-::~syncobjcbObj() noexcept
+repocontrollermasterObj::slaveinfo::syncobjcbObj::~syncobjcbObj() noexcept
 {
 }
 
-void repocontrollermasterObj::slaveinfo::syncobjcbObj
-::destroyed() noexcept
+void repocontrollermasterObj::slaveinfo::syncobjcbObj::destroyed()
 {
 	repocontrollermasterptr ptr(controller.getptr());
 
@@ -1055,10 +1056,9 @@ repocontrollermasterObj::debugGetPeerConnection(const std::string &peername)
 
 	// Wait for the mcguffin to go away
 
-	x::ptr<x::destroyCallbackFlagObj> flag(x::ptr<x::destroyCallbackFlagObj>
-					       ::create());
+	auto flag=x::ref<x::destroyCallbackFlagObj>::create();
 
-	mcguffin->addOnDestroy(flag);
+	mcguffin->ondestroy([flag]{flag->destroyed();});
 
 	mcguffin=x::ptr<x::obj>();
 	flag->wait();
@@ -1121,12 +1121,6 @@ void repocontrollermasterObj::commitJobObj
 			// Wait until the objects are locked, or until
 			// the master controller wants to stop.
 
-			auto signal_eventfd=x::destroyCallback
-				::create([eventfd]
-					 {
-						 eventfd->event(1);
-					 });
-
 			auto ondestroy=({
 					auto mcguffinptr=stop_mcguffin.getptr();
 
@@ -1139,7 +1133,10 @@ void repocontrollermasterObj::commitJobObj
 						return;
 					}
 
-					x::ondestroy::create(signal_eventfd,
+					x::ondestroy::create([eventfd]
+							     {
+								     eventfd->event(1);
+							     },
 							     mcguffinptr,
 							     true);
 				});
@@ -1214,8 +1211,11 @@ void repocontrollermasterObj::commitJobObj
 				return;
 			}
 
-			cb->onAnyDestroyed(both_mcguffins,
-					   both_mcguffins+2);
+			x::on_any_destroyed([cb]
+					    {
+						    cb->destroyed();
+					    }, both_mcguffins,
+					    both_mcguffins+2);
 		}
 
 		mcguffin=x::ptr<x::obj>();
@@ -1302,7 +1302,7 @@ public:
 // commit thread.
 
 class repocontrollermasterObj::handoff_destroy_cb
-	: public x::destroyCallbackObj {
+	: virtual public x::obj {
 
 public:
 	x::weakptr<repocontrollermasterptr > master;
@@ -1318,7 +1318,7 @@ public:
 	{
 	}
 
-	void destroyed() noexcept
+	void destroyed()
 	{
 		repocontrollermasterptr ptr=master.getptr();
 
@@ -1373,8 +1373,9 @@ void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
 
 		msg.msg->mcguffin_destroyed=true;
 
-		x::ptr<x::obj> mcguffin=commit_mcguffin;
-		mcguffin->addOnDestroy(callback_lock);
+		x::ref<x::obj> mcguffin=commit_mcguffin;
+		mcguffin->ondestroy([callback_lock]
+				    { callback_lock->destroyed();});
 		commit_mcguffin=x::ptr<x::obj>();
 		return;
 	}
@@ -1395,7 +1396,7 @@ void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
 			x::ref<handoff_destroy_cb>::create
 			(repocontrollermasterptr(this), msg.msg);
 		msg.msg->commitlock=repo->commitlock(eventfd);
-		thr->addOnDestroy(callback_lock);
+		thr->ondestroy([callback_lock]{callback_lock->destroyed();});
 		tracker->start(thr, msg.msg);
 		return;
 	}
@@ -1542,7 +1543,7 @@ void repocontrollermasterObj::dispatch(const masterbaton_handedover_msg &msg)
 // Once the halt status gets sent to the client, and the messages goes out of
 // scope, this node can be stopped.
 
-class repocontrollermasterObj::halt_cbObj : public x::destroyCallbackObj {
+class repocontrollermasterObj::halt_cbObj : virtual public x::obj {
 
 public:
 	x::stoppable stop;
@@ -1550,7 +1551,7 @@ public:
 	halt_cbObj(const x::stoppable &stopArg) : stop(stopArg) {}
 	~halt_cbObj() noexcept {}
 
-	void destroyed() noexcept
+	void destroyed()
 	{
 		stop->stop();
 	}
@@ -1559,7 +1560,7 @@ public:
 // Wait until all pending commits are done, before proceeding with a halt.
 
 class repocontrollermasterObj::halt_continue_cbObj
-	: public x::destroyCallbackObj {
+	: virtual public x::obj {
 
 public:
 	halt_msg req;
@@ -1575,7 +1576,7 @@ public:
 	{
 	}
 
-	void destroyed() noexcept
+	void destroyed()
 	{
 		try {
 			auto m=master.getptr();
@@ -1613,9 +1614,9 @@ void repocontrollermasterObj::dispatch(const halt_msg &req)
 
 	LOG_INFO("Halt request received, stopping all commits");
 
-	mcguffin->addOnDestroy(x::ref<halt_continue_cbObj>
-			       ::create(req, x::ptr<repocontrollermasterObj>
-					(this)));
+	auto cb=x::ref<halt_continue_cbObj>
+		::create(req, x::ptr<repocontrollermasterObj>(this));
+	mcguffin->ondestroy([cb]{cb->destroyed();});
 
 	commit_mcguffin=x::ptr<x::obj>();
 }
@@ -1627,7 +1628,7 @@ void repocontrollermasterObj::dispatch(const halt_continue_msg &req_msg)
 	// When the result message gets destroyed, stop this node.
 
 	x::ref<halt_cbObj> cb=x::ref<halt_cbObj>::create(haltstop);
-	req_msg.req.req->addOnDestroy(cb);
+	req_msg.req.req->ondestroy([cb]{cb->destroyed();});
 
 	// Send a halt message to all peers. Use the connecting client's
 	// supplied mcguffin as the mcguffin for all the peers. When all the

@@ -472,10 +472,9 @@ static void test2()
 	std::cout << "waiting for source thread" << std::endl;
 
 	{
-		x::ptr<x::destroyCallbackFlagObj>
-			cb(x::ptr<x::destroyCallbackFlagObj>::create());
+		auto cb=x::destroyCallbackFlag::create();
 
-		mcguffin->addOnDestroy(cb);
+		mcguffin->ondestroy([cb]{cb->destroyed();});
 		mcguffin=x::ptr<x::obj>();
 		cb->wait();
 	}
@@ -774,9 +773,9 @@ void wait_mcguffin(ref_type &ptr)
 
 	ptr=ref_type();
 
-	x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
+	auto flag=x::destroyCallbackFlag::create();
 
-	obj->addOnDestroy(flag);
+	obj->ondestroy([flag]{flag->destroyed();});
 
 	obj=x::ptr<x::obj>();
 
@@ -908,10 +907,9 @@ static void test3()
 		  << std::endl;
 
 	{
-		x::ptr<x::destroyCallbackFlagObj>
-			cb(x::ptr<x::destroyCallbackFlagObj>::create());
+		auto cb=x::destroyCallbackFlag::create();
 
-		copysrc_mcguffin->addOnDestroy(cb);
+		copysrc_mcguffin->ondestroy([cb]{cb->destroyed();});
 		copysrc_mcguffin=x::ptr<x::obj>();
 		cb->wait();
 	}

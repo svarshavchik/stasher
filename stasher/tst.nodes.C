@@ -301,7 +301,7 @@ void tstnodes::thesecantbemaster(std::vector<noderef> &nodes,
 
 	x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
 
-	mcguffin->addOnDestroy(flag);
+	mcguffin->ondestroy([flag]{flag->destroyed();});
 
 	mcguffin=x::ptr<x::obj>();
 	flag->wait();

@@ -503,7 +503,7 @@ void clientObj::requestObj::wait()
 {
 	x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
 
-	mcguffin()->addOnDestroy(cb);
+	mcguffin()->ondestroy([cb]{cb->destroyed();});
 
 	cb->wait();
 }
@@ -519,7 +519,7 @@ void clientObj::shutdown()
 			return;
 
 		c->shutdown();
-		c->addOnDestroy(flag);
+		c->ondestroy([flag]{flag->destroyed();});
 	}
 	flag->wait();
 }
@@ -539,7 +539,7 @@ void clientObj::disconnect()
 			x::destroyCallbackFlag::create();
 
 		ptr->stop();
-		ptr->addOnDestroy(flag);
+		ptr->ondestroy([flag]{flag->destroyed();});
 		ptr=x::ptr<implObj>();
 		flag->wait();
 	}
@@ -645,7 +645,8 @@ void clientBase::connect_socket(const client &cl)
 	connstatus status=({
 			do_connect_t conn=do_connect(cl);
 
-			std::get<1>(conn)->mcguffin()->addOnDestroy(cb);
+			std::get<1>(conn)->mcguffin()
+				->ondestroy([cb]{cb->destroyed();});
 
 			std::get<2>(conn);
 		});
@@ -895,7 +896,7 @@ void clientObj::debugWaitDisconnection()
 	{
 		x::destroyCallbackFlag flag=x::destroyCallbackFlag::create();
 
-		p->addOnDestroy(flag);
+		p->ondestroy([flag]{flag->destroyed();});
 		p=x::ptr<implObj>();
 		flag->wait();
 	}
@@ -1068,7 +1069,7 @@ userhelo clientObj::gethelo()
 		if (!c.null())
 			c->gethelo(resp, mcguffin);
 
-		mcguffin->addOnDestroy(cb);
+		mcguffin->ondestroy([cb]{cb->destroyed();});
 	}
 
 	cb->wait();

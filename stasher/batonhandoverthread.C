@@ -7,8 +7,6 @@
 #include "batonhandoverthread.H"
 #include "clusterinfo.H"
 
-#include <x/destroycallbackobj.H>
-
 LOG_CLASS_INIT(batonhandoverthreadObj);
 
 #include "batonhandoverthread.msgs.def.H"
@@ -27,7 +25,7 @@ std::string batonhandoverthreadObj::getName() const
 }
 
 class batonhandoverthreadObj::baton_destroyed_callback
-	: public x::destroyCallbackObj {
+	: virtual public x::obj {
 public:
 	x::weakptr<x::ptr<batonhandoverthreadObj> > thr;
 
@@ -96,9 +94,9 @@ void batonhandoverthreadObj::run(const std::string &newmasterref,
 			ptr=x::ptr<x::obj>::create();
 		// use a dummy one, for immediate effect.
 
-		ptr->addOnDestroy(x::ref<baton_destroyed_callback>
-				  ::create
-				  (x::ptr<batonhandoverthreadObj>(this)));
+		auto callback=x::ref<baton_destroyed_callback>::create
+			       (x::ptr<batonhandoverthreadObj>(this));
+		ptr->ondestroy([callback] {callback->destroyed();});
 	}
 
 	clusterquorum->install(quorum_status_callbackref);

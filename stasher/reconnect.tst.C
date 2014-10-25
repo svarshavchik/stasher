@@ -30,9 +30,9 @@ static void dummytran(std::vector<tstnodes::noderef> &tnodes,
 
 		stat=tnodes[i]->distributor->newtransaction(tr, mcguffin);
 
-		x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
+		auto flag=x::destroyCallbackFlag::create();
 
-		mcguffin->addOnDestroy(flag);
+		mcguffin->ondestroy([flag]{flag->destroyed();});
 
 		mcguffin=x::ptr<x::obj>();
 		flag->wait();

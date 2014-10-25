@@ -344,10 +344,10 @@ static void test5()
 
 	auto second=two.makeconn(0, "node1");
 
-	x::destroyCallbackFlag destroycb(x::destroyCallbackFlag::create());
+	auto destroycb=x::destroyCallbackFlag::create();
 
-	first.first->addOnDestroy(destroycb);
-	second.first->addOnDestroy(destroycb);
+	first.first->ondestroy([destroycb]{destroycb->destroyed();});
+	second.first->ondestroy([destroycb]{destroycb->destroyed();});
 	
 	first.first=second.first=repopeerconnectionptr();
 

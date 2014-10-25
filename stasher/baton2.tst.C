@@ -72,7 +72,7 @@ static void verifymaster(size_t whichone,
 
 			x::destroyCallbackFlag cb=
 				x::destroyCallbackFlag::create();
-			batonp->addOnDestroy(cb);
+			batonp->ondestroy([cb]{cb->destroyed();});
 			batonp=batonptr();
 			cb->wait();
 		}
@@ -107,7 +107,7 @@ static void test1(tstnodes &t, size_t n)
 
 	tnodes[n]->repocluster->
 		master_handover_request(tstnodes::getnodefullname(1), status)
-		->addOnDestroy(cb);
+		->ondestroy([cb]{cb->destroyed();});
 
 	wait4quorum(cb, status, tnodes);
 
@@ -148,7 +148,8 @@ static void test2(tstnodes &t)
 		x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
 
 		// [RESIGN]
-		tnodes[0]->repocluster->resign(status)->addOnDestroy(cb);
+		tnodes[0]->repocluster->resign(status)
+			->ondestroy([cb]{cb->destroyed();});
 
 		wait4quorum(cb, status, tnodes);
 
@@ -162,7 +163,8 @@ static void test2(tstnodes &t)
 
 		x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
 
-		tnodes.back()->repocluster->resign(status)->addOnDestroy(cb);
+		tnodes.back()->repocluster->resign(status)
+			->ondestroy([cb]{cb->destroyed();});
 
 		wait4quorum(cb, status, tnodes);
 

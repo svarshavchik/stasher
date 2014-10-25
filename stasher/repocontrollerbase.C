@@ -116,7 +116,7 @@ repocontrollerbaseObj::debug_inquorum()
 
 	x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
 
-	mcguffin->addOnDestroy(cb);
+	mcguffin->ondestroy([cb]{cb->destroyed();});
 	mcguffin=x::ptr<x::obj>();
 
 	cb->wait();

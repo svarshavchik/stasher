@@ -342,8 +342,7 @@ static void test1()
 class test2connectionObj: public repopeerconnectionObj {
 
 public:
-	class copydstObj : public objrepocopydstinterfaceObj,
-			   public x::destroyCallbackObj {
+	class copydstObj : public objrepocopydstinterfaceObj {
 
 	public:
 
@@ -352,7 +351,7 @@ public:
 
 		tobjrepo masterrepo;
 
-		class resultObj : public x::destroyCallbackObj {
+		class resultObj : virtual public x::obj {
 
 		public:
 			boolref result;
@@ -371,7 +370,7 @@ public:
 
 			}
 
-			void destroyed() noexcept
+			void destroyed()
 			{
 				std::unique_lock<std::mutex> lock(mutex);
 
@@ -388,14 +387,14 @@ public:
 			}
 		};
 
-		x::ptr<resultObj> result;
+		x::ref<resultObj> result;
 
 		copydstObj(const tobjrepo &repoArg,
 			   const tobjrepo &masterrepoArg)
 			: thread(objrepocopydstptr::create()),
 			  repo(repoArg),
 			  masterrepo(masterrepoArg),
-			  result(x::ptr<resultObj>::create())
+			  result(x::ref<resultObj>::create())
 		{
 		}
 
@@ -406,9 +405,11 @@ public:
 		void start(const objrepocopysrcinterfaceptr &srcArg)
 
 		{
-			x::ptr<x::obj> mcguffin(x::ptr<x::obj>::create());
+			auto mcguffin=x::ref<x::obj>::create();
 
-			mcguffin->addOnDestroy(result);
+			auto r=result;
+
+			mcguffin->ondestroy([r]{r->destroyed();});
 
 			thread->start(repo, srcArg, result->result,
 				      batonptr(), mcguffin);

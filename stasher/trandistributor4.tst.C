@@ -82,9 +82,9 @@ void test1()
 			stat=anode.distributor->newtransaction(tr, mcguffin);
 		}
 
-		x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
+		auto flag=x::destroyCallbackFlag::create();
 
-		mcguffin->addOnDestroy(flag);
+		mcguffin->ondestroy([flag]{flag->destroyed();});
 
 		mcguffin=x::ptr<x::obj>();
 		flag->wait();
@@ -278,8 +278,8 @@ void test3()
 
 		stat=anode.distributor->newtransaction(tr, mcguffin);
 
-		x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
-		mcguffin->addOnDestroy(flag);
+		auto flag=x::destroyCallbackFlag::create();
+		mcguffin->ondestroy([flag]{flag->destroyed();});
 		mcguffin=x::ptr<x::obj>();
 		flag->wait();
 	}
@@ -297,8 +297,8 @@ void test3()
 
 		stat=bnode.distributor->newtransaction(tr, mcguffin);
 
-		x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
-		mcguffin->addOnDestroy(flag);
+		auto flag=x::destroyCallbackFlag::create();
+		mcguffin->ondestroy([flag]{flag->destroyed();});
 		mcguffin=x::ptr<x::obj>();
 		flag->wait();
 	}

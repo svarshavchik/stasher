@@ -9,7 +9,6 @@
 
 #include <x/property_value.H>
 #include <x/weakptr.H>
-#include <x/destroycallback.H>
 #include <x/destroycallbackflagwait4.H>
 #include <x/threads/timer.H>
 #include <x/mpobj.H>
@@ -49,7 +48,7 @@ class LIBCXX_HIDDEN managerObj::retmcguffinBaseObj {
 	template<typename ptrType> class objfactory {
 
 	public:
-		// addOnDestroy should not be invoked in the constructor.
+		// ondestroy() should not be invoked in the constructor.
 		// Do this, instead.
 
 		static ptrType create(const x::ref<x::obj> &implArg)
@@ -59,8 +58,9 @@ class LIBCXX_HIDDEN managerObj::retmcguffinBaseObj {
 			ptrType p=x::ptrrefBase::objfactory<ptrType>
 				::create(implArg);
 
-			p->addOnDestroy(x::destroyCallbackFlagWait4
-					::create(implArg));
+			auto cb=x::destroyCallbackFlagWait4::create(implArg);
+
+			p->ondestroy([cb]{cb->destroyed();});
 			return p;
 		}
 	};
@@ -254,7 +254,7 @@ public:
 
 template<typename info>
 class LIBCXX_HIDDEN managerObj::implObj::objectsubscribeRequestObj
-	: public x::destroyCallbackObj {
+	: virtual public x::obj {
 
 public:
 	// The subscription request
@@ -274,14 +274,14 @@ public:
 	~objectsubscribeRequestObj() noexcept {
 	}
 
-	void destroyed() noexcept;
+	void destroyed();
 };
 
 // The destructor callback for the subscription cancellation mcguffin.
 
 template<typename info>
 class LIBCXX_HIDDEN managerObj::implObj::objectsubscribeCancelledObj
-	: public x::destroyCallbackObj {
+	: virtual public x::obj {
 
 public:
 	x::weakptr<x::ptr<managedObjectObj<info> > > savedsubscriber;
@@ -300,7 +300,7 @@ public:
 	}
 
 	// Subscription has been cancelled, schedule a resubscribe
-	void destroyed() noexcept;
+	void destroyed();
 
 	// This also serves as a timer job that gets invoked to resubscribe.
 	void run() noexcept;
@@ -364,13 +364,15 @@ void managerObj::implObj::start(const x::ref<managedObjectObj<info> >
 
 	auto req=subscriber->impl.request(subscriber->savedclient);
 
-	req.second->mcguffin()
-		->addOnDestroy(x::ref<objectsubscribeRequestObj<info> >
-			       ::create(req.first, subscriber));
+	auto mcguffin=req.second->mcguffin();
+
+	auto cb=x::ref<objectsubscribeRequestObj<info> >
+		::create(req.first, subscriber);
+	mcguffin->ondestroy([cb]{cb->destroyed();});
 }
 
 template<typename info>
-void managerObj::implObj::objectsubscribeRequestObj<info>::destroyed() noexcept
+void managerObj::implObj::objectsubscribeRequestObj<info>::destroyed()
 {
 	LOG_FUNC_SCOPE(impl_logger);
 
@@ -394,10 +396,15 @@ void managerObj::implObj::objectsubscribeRequestObj<info>::destroyed() noexcept
 		case req_processed_stat:
 		case req_disconnected_stat:
 			sub.current_mcguffin=msg->mcguffin;
-			msg->cancel_mcguffin->
-				addOnDestroy(x::ref<objectsubscribeCancelledObj
-						    <info> >
-					     ::create(subscriber_ptr));
+
+			{
+				auto cb=x::ref<objectsubscribeCancelledObj
+					       <info> >
+					::create(subscriber_ptr);
+
+				msg->cancel_mcguffin
+					->ondestroy([cb]{cb->destroyed();});
+			}
 			break;
 		default:
 			sub.current_mcguffin=x::ptr<x::obj>();
@@ -438,8 +445,7 @@ void managerObj::implObj::objectsubscribeCancelledObj<info>
 }
 
 template<typename info>
-void managerObj::implObj::objectsubscribeCancelledObj<info>
-::destroyed() noexcept
+void managerObj::implObj::objectsubscribeCancelledObj<info>::destroyed()
 {
 	LOG_FUNC_SCOPE(impl_logger);
 
@@ -579,7 +585,7 @@ public:
 	// When it gets processed, pass through the object's retrieved
 	// contents to the callback.
 
-	class mcguffinObj : public x::destroyCallbackObj {
+	class mcguffinObj : virtual public x::obj {
 
 	public:
 		x::ref<managedObjectSubscriberObj> man;
@@ -596,7 +602,7 @@ public:
 		~mcguffinObj() noexcept {
 		}
 
-		void destroyed() noexcept
+		void destroyed()
 		{
 			try {
 				auto p=contentsreq->getmsg()->objects;
@@ -651,7 +657,8 @@ public:
 			::create(x::ref<managedObjectSubscriberObj>(this),
 				 req, getcontents.first);
 
-		getcontents.second->mcguffin()->addOnDestroy(mcguffin);
+		getcontents.second->mcguffin()
+			->ondestroy([mcguffin]{mcguffin->destroyed();});
 	}
 };
 

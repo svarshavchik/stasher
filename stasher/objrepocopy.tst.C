@@ -211,10 +211,9 @@ static void test1()
 		realsrc->start(repo, dst, batonptr(), mcguffin);
 
 	{
-		x::ptr<x::destroyCallbackFlagObj>
-			cb(x::ptr<x::destroyCallbackFlagObj>::create());
+		auto cb=x::ref<x::destroyCallbackFlagObj>::create();
 
-		mcguffin->addOnDestroy(cb);
+		mcguffin->ondestroy([cb]{cb->destroyed();});
 		mcguffin=x::ptr<x::obj>();
 		std::cout << "Testing [COPYSRCMCGUFFIN]" << std::endl;
 		cb->wait(); // [COPYSRCMCGUFFIN]

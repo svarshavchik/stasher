@@ -1368,7 +1368,7 @@ void repopeerconnectionObj::run(const x::fdbase &subcl_transport,
 	}
 }
 
-class repopeerconnectionObj::installattempt_cb : public x::destroyCallbackObj {
+class repopeerconnectionObj::installattempt_cb : virtual public x::obj {
 
 public:
 	x::weakptr<repopeerconnectionptr > conn;
@@ -1379,7 +1379,7 @@ public:
 ;
 	~installattempt_cb() noexcept;
 
-	void destroyed() noexcept;
+	void destroyed();
 };
 
 void repopeerconnectionObj
@@ -1444,10 +1444,12 @@ void repopeerconnectionObj
 			LOG_WARNING("Waiting for duplicate connection with "
 				    << peername << " to terminate");
 			x::stoppable(install_ret.second)->stop();
-			install_ret.second->addOnDestroy
-				(x::ref<installattempt_cb>
-				 ::create(repopeerconnectionptr(this),
-					  cluster));
+
+			auto cb=x::ref<installattempt_cb>
+				::create(repopeerconnectionptr(this),
+					 cluster);
+
+			install_ret.second->ondestroy([cb]{cb->destroyed();});
 			return;
 		}
 	}
@@ -1469,7 +1471,7 @@ repopeerconnectionObj::installattempt_cb::~installattempt_cb() noexcept
 {
 }
 
-void repopeerconnectionObj::installattempt_cb::destroyed() noexcept
+void repopeerconnectionObj::installattempt_cb::destroyed()
 {
 	repopeerconnectionptr conn_ptr(conn.getptr());
 	clusterinfoptr cluster_ptr(cluster.getptr());
@@ -2182,8 +2184,7 @@ void repopeerconnectionObj::deserialized(const master_quorum &msg)
 	slave->master_quorum_announce(msg.state);
 }
 
-class repopeerconnectionObj::handover_request_cb
-	: public x::destroyCallbackObj {
+class repopeerconnectionObj::handover_request_cb : virtual public x::obj {
 
 public:
 	x::uuid request_uuid;
@@ -2204,7 +2205,7 @@ public:
 			ptr->handover_request_processed(request_uuid);
 	}
 
-	void destroyed() noexcept
+	void destroyed()
 	{
 		// Implemented in the destructor, in case the handover_request
 		// cannot be forwarded to the master controller
@@ -2246,7 +2247,7 @@ void repopeerconnectionObj::deserialized(const handover_request &msg)
 			 << msg.newmastername);
 
 		mastermetaptr->master->handoff_request(msg.newmastername)
-			->addOnDestroy(resp);
+			->ondestroy([resp]{resp->destroyed();});
 	}
 }
 

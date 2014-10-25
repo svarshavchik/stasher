@@ -215,7 +215,7 @@ static bool test3_cancelled;
 			std::cout << "Announce messages processed"	\
 				  << std::endl;				\
 			test3_baton_announced=true;			\
-			test3_cond.notify_all();				\
+			test3_cond.notify_all();			\
 			return;						\
 		}							\
 	} while (0)
@@ -243,13 +243,13 @@ static bool test3_cancelled;
 		}							\
 	} while (0)
 
-class test3_dcb : public x::destroyCallbackObj {
+class test3_dcb : virtual public x::obj {
 
 public:
 	test3_dcb() {}
 	~test3_dcb() noexcept {}
 
-	void destroyed() noexcept
+	void destroyed()
 	{
 		std::unique_lock<std::mutex> lock(test3_mutex);
 
@@ -261,7 +261,10 @@ public:
 
 #define DEBUG_BATON_TEST_3_CANCELLED_HOOK() do {			\
 		if (test3_enabled)					\
-			batonp->addOnDestroy(x::ptr<test3_dcb>::create()); \
+		{							\
+			auto cb=x::ref<test3_dcb>::create();		\
+			batonp->ondestroy([cb]{cb->destroyed();});	\
+		}							\
 	} while (0)
 
 static std::mutex test4_mutex;
@@ -507,7 +510,7 @@ void test1()
 
 	x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
 
-	mcguffin->addOnDestroy(flag);
+	mcguffin->ondestroy([flag]{flag->destroyed();});
 
 	mcguffin=x::ptr<x::obj>();
 	flag->wait();
@@ -534,7 +537,7 @@ static void put_object(node &a, const std::string &objname,
 
 	x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
 
-	mcguffin->addOnDestroy(flag);
+	mcguffin->ondestroy([flag]{flag->destroyed();});
 
 	mcguffin=x::ptr<x::obj>();
 	flag->wait();
@@ -685,10 +688,9 @@ void test3p2(tstnodes &t)
 		c.repocluster->pingallpeers(mcguffin);
 
 		{
-			x::ptr<x::destroyCallbackFlagObj>
-				flag(x::ptr<x::destroyCallbackFlagObj>::create());
+			auto flag=x::destroyCallbackFlag::create();
 
-			mcguffin->addOnDestroy(flag);
+			mcguffin->ondestroy([flag]{flag->destroyed();});
 
 			mcguffin=x::ptr<x::obj>();
 			flag->wait(); // [PINGALLPEERS]
@@ -914,10 +916,11 @@ static void test7(tstnodes &t, int n)
 
 	std::string newmaster=tstnodes::getnodefullname(1);
 
-	x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+	auto cb=x::destroyCallbackFlag::create();
 
 	tnodes[n]->repocluster->
-		master_handover_request(newmaster, status)->addOnDestroy(cb);
+		master_handover_request(newmaster, status)
+		->ondestroy([cb]{cb->destroyed();});
 
 	cb->wait(); // [BATONHANDOVERTHREAD]
 
@@ -950,10 +953,11 @@ static void test8(tstnodes &t, size_t n)
 
 	std::string newmaster="xxxx";
 
-	x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+	auto cb=x::destroyCallbackFlag::create();
 
 	tnodes[0]->repocluster->
-		master_handover_request(newmaster, status)->addOnDestroy(cb);
+		master_handover_request(newmaster, status)
+		->ondestroy([cb]{cb->destroyed();});
 
 	cb->wait();
 

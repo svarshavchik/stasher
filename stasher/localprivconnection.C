@@ -12,7 +12,6 @@
 #include "repoclusterinfoimpl.H"
 #include "repomg.H"
 #include "clusterlistener.H"
-#include <x/destroycallbackobj.H>
 #include <x/property_list.H>
 #include <x/eventdestroynotify.H>
 #include <algorithm>
@@ -52,7 +51,7 @@ void localprivconnectionObj::deserialized(const STASHER_NAMESPACE::adminstop
 }
 
 class LIBCXX_INTERNAL localprivconnectionObj::getserverstatusdonecb
-	: public x::destroyCallbackObj {
+	: virtual public x::obj {
 
  public:
 	x::weakptr<x::ptr<localprivconnectionObj> > conn;
@@ -93,7 +92,7 @@ void localprivconnectionObj::deserialized(const getserverstatus_req_t
 		::create(x::ptr<localprivconnectionObj>(this), report,
 			 msg.requuid);
 
-	mcguffin->addOnDestroy(cb);
+	mcguffin->ondestroy([cb]{cb->destroyed();});
 
 	report->mcguffin=x::ptr<x::obj>();
 }
@@ -311,7 +310,7 @@ void localprivconnectionObj::deserialized(const certreload_req_t &msg)
 
 
 class LIBCXX_INTERNAL localprivconnectionObj::resigndonecb
-	: public x::destroyCallbackObj {
+	: virtual public x::obj {
 
  public:
 	x::weakptr<x::ptr<localprivconnectionObj> > conn;
@@ -343,10 +342,12 @@ void localprivconnectionObj::deserialized(const resign_req_t &msg)
 {
 	boolref status=boolref::create();
 
-	cluster->resign(status)
-		->addOnDestroy(x::ref<resigndonecb>::create
-			       (x::ptr<localprivconnectionObj>
-				(this), status, msg.requuid));
+	auto resign_ret=cluster->resign(status);
+
+	auto cb=x::ref<resigndonecb>::create
+		(x::ptr<localprivconnectionObj>(this), status, msg.requuid);
+
+	resign_ret->ondestroy([cb]{cb->destroyed();});
 }
 
 void localprivconnectionObj::dispatch(const resign_done_msg &msg)
@@ -368,7 +369,7 @@ std::string localprivconnectionObj::report(std::ostream &rep)
 }
 
 class LIBCXX_INTERNAL localprivconnectionObj::newcertdonecb
-	: public x::destroyCallbackObj {
+	: virtual public x::obj {
 
  public:
 	x::weakptr<x::ptr<localprivconnectionObj> > conn;
@@ -403,7 +404,7 @@ void localprivconnectionObj::deserialized(const setnewcert_req_t &msg)
 		::create(x::ptr<localprivconnectionObj>(this),
 			 req, msg.requuid);
 
-	mcguffin->addOnDestroy(callback);
+	mcguffin->ondestroy([callback]{callback->destroyed();});
 
 	std::string peername=repomg::certificate_name(msg.certificate,
 						      "certificate");
@@ -431,7 +432,7 @@ void localprivconnectionObj::dispatch(const setnewcert_done_msg &msg)
 }
 
 class localprivconnectionObj::halted_cbObj
-	: virtual public x::destroyCallbackObj {
+	: virtual public x::obj {
 
 public:
 
@@ -464,7 +465,7 @@ void localprivconnectionObj::deserialized(const haltrequest_req_t &msg)
 	auto cb=x::ref<halted_cbObj>
 		::create(x::ptr<localprivconnectionObj>(this), msg.requuid);
 
-	mcguffin->addOnDestroy(cb);
+	mcguffin->ondestroy([cb]{cb->destroyed();});
 
 	STASHER_NAMESPACE::haltrequestresults res(&cb->resp.getmsg());
 

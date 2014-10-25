@@ -132,7 +132,7 @@ void wait_mcguffin(x::ptr<x::obj> &mcguffin) // [RWMCGUFFIN]
 {
 	x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
 
-	mcguffin->addOnDestroy(cb);
+	mcguffin->ondestroy([cb]{cb->destroyed();});
 
 	mcguffin=x::ptr<x::obj>();
 

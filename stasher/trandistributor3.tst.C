@@ -121,9 +121,9 @@ void test1()
 			stat=a.distributor->newtransaction(tr, mcguffin);
 		}
 
-		x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
+		auto flag=x::destroyCallbackFlag::create();
 
-		mcguffin->addOnDestroy(flag);
+		mcguffin->ondestroy([flag]{flag->destroyed();});
 
 		mcguffin=x::ptr<x::obj>();
 		flag->wait(); // [TRANDISTDONE]
@@ -167,9 +167,9 @@ void test1()
 	}
 
 	{
-		x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
+		auto flag=x::destroyCallbackFlag::create();
 
-		mcguffin->addOnDestroy(flag);
+		mcguffin->ondestroy([flag]{flag->destroyed();});
 
 		mcguffin=x::ptr<x::obj>();
 		flag->wait();
@@ -424,9 +424,9 @@ void test2()
 		stat=b.distributor->newtransaction(tr, mcguffin);
 	}
 
-	x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
+	auto flag=x::destroyCallbackFlag::create();
 
-	mcguffin->addOnDestroy(flag);
+	mcguffin->ondestroy([flag]{flag->destroyed();});
 
 	mcguffin=x::ptr<x::obj>();
 	flag->wait();
@@ -469,7 +469,7 @@ void test2()
 
 	flag=x::destroyCallbackFlag::create();
 
-	mcguffin->addOnDestroy(flag);
+	mcguffin->ondestroy([flag]{flag->destroyed();});
 
 	mcguffin=x::ptr<x::obj>();
 	flag->wait();
@@ -555,7 +555,8 @@ void test3()
 		flag=x::destroyCallbackFlag::create();
 
 		repocontrollermasterptr(a.repocluster->getCurrentController())
-			->debugGetPeerConnection(bname)->addOnDestroy(flag);
+			->debugGetPeerConnection(bname)
+			->ondestroy([flag]{flag->destroyed();});
 
 		mcguffin=x::ptr<x::obj>::create();
 
@@ -585,7 +586,7 @@ void test3()
 		std::cerr << "Waiting for transaction to complete" << std::endl;
 
 		flag=x::destroyCallbackFlag::create();
-		mcguffin->addOnDestroy(flag);
+		mcguffin->ondestroy([flag]{flag->destroyed();});
 		mcguffin=x::ptr<x::obj>();
 		flag->wait();
 
@@ -726,7 +727,7 @@ void test4()
 	}
 
 	flag=x::destroyCallbackFlag::create();
-	mcguffin->addOnDestroy(flag);
+	mcguffin->ondestroy([flag]{flag->destroyed();});
 	mcguffin=x::ptr<x::obj>();
 	std::cout << "Waiting for a fail" << std::endl;
 	flag->wait();
@@ -753,7 +754,7 @@ void test4()
 	}
 
 	flag=x::destroyCallbackFlag::create();
-	mcguffin->addOnDestroy(flag);
+	mcguffin->ondestroy([flag]{flag->destroyed();});
 	mcguffin=x::ptr<x::obj>();
 	std::cout << "Waiting for a fail" << std::endl;
 	flag->wait();

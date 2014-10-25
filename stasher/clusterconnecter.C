@@ -285,7 +285,10 @@ void clusterconnecterObj::connect(connect_common &common,
 
 			auto destroy_cb(x::destroyCallbackFlag::create());
 
-			install_peers->addOnDestroy(destroy_cb);
+			install_peers->ondestroy([destroy_cb]
+						 {
+							 destroy_cb->destroyed();
+						 });
 
 			install_peers=x::ptr<installPeers>();
 

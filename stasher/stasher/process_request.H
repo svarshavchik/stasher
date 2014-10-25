@@ -8,7 +8,6 @@
 
 #include <stasher/namespace.H>
 #include <stasher/client.H>
-#include <x/destroycallback.H>
 
 STASHER_NAMESPACE_START
 
@@ -38,22 +37,25 @@ void process_request(const std::pair<req_type, client::base::request> &req,
 	cb_type cb_cpy(std::move(cbArg));
 
 	req.second->mcguffin()
-		->addOnDestroy(x::destroyCallback
-			       ::create([cb_cpy, reqmsg]
-					{
-						typedef typename std::enable_if<
-							!std::is_rvalue_reference<cb_type>::value &&
+		->ondestroy([cb_cpy, reqmsg]
+			    {
+				    // A compilation error here indicates
+				    // that the functor/lambda is passed
+				    // by reference, or the request type is
+				    // a reference. They should not be.
+				    typedef typename std::enable_if<
+					    !std::is_rvalue_reference<cb_type>::value &&
 
-							!std::is_lvalue_reference<cb_type>::value
-							>::type cannot_be_ref_type __attribute__((unused));
-						typedef typename std::enable_if<
-							!std::is_rvalue_reference<req_type>::value &&
+					    !std::is_lvalue_reference<cb_type>::value
+					    >::type cannot_be_ref_type __attribute__((unused));
+				    typedef typename std::enable_if<
+					    !std::is_rvalue_reference<req_type>::value &&
 
-							!std::is_lvalue_reference<req_type>::value
-							>::type cannot_be_ref_type_too __attribute__((unused));
+					    !std::is_lvalue_reference<req_type>::value
+					    >::type cannot_be_ref_type_too __attribute__((unused));
 
-						cb_cpy(reqmsg->getmsg());
-					}));
+				    cb_cpy(reqmsg->getmsg());
+			    });
 }
 
 STASHER_NAMESPACE_END

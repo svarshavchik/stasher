@@ -12,7 +12,6 @@
 #include "repopeerconnection.H"
 #include "baton.H"
 #include <x/logger.H>
-#include <x/destroycallbackobj.H>
 
 class clusterinfoObj::cluster_notification {
 
@@ -214,7 +213,7 @@ clusterinfoObj::installpeer(const std::string &nodename,
 	return retval;
 }
 
-class clusterinfoObj::destroycb : public x::destroyCallbackObj {
+class clusterinfoObj::destroycb : virtual public x::obj {
 
 	std::string name;
 
@@ -271,7 +270,7 @@ clusterinfoObj::installpeer_locked(const std::string &nodename,
 	auto cb=x::ref<destroycb>::create(clusterinfo(this),
 					  "Connection with " + nodename);
 
-	node->addOnDestroy(cb);
+	node->ondestroy([cb]{ cb->destroyed(); });
 
 	p->second.connection=node;
 
@@ -495,7 +494,7 @@ bool clusterinfoObj::installbaton(const baton &batonArg)
 						  "Baton transfer: "
 						  + (std::string)*batonArg);
 
-	batonArg->addOnDestroy(destructor);
+	batonArg->ondestroy([destructor]{destructor->destroyed();});
 
 	batonp=batonArg;
 

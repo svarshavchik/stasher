@@ -7,7 +7,6 @@
 #include "clustertlsconnectshutdown.H"
 #include "stoppablethreadtracker.H"
 
-#include <x/destroycallbackobj.H>
 #include <x/timespec.H>
 
 LOG_CLASS_INIT(clustertlsconnectshutdownObj);
@@ -51,8 +50,7 @@ clustertlsconnectshutdownObj::mcguffin_destructor_cb
 {
 }
 
-void clustertlsconnectshutdownObj::mcguffin_destructor_cb
-::destroyed() noexcept
+void clustertlsconnectshutdownObj::mcguffin_destructor_cb::destroyed()
 {
 	tracker->start(shutdown, socket, session);
 }
@@ -68,7 +66,7 @@ void clustertlsconnectshutdownObj
 	auto cb=x::ref<mcguffin_destructor_cb>
 		::create(tracker, thr, socket, session);
 
-	connection_mcguffin->addOnDestroy(cb);
+	connection_mcguffin->ondestroy([cb]{cb->destroyed();});
 }
 
 void clustertlsconnectshutdownObj::run(const x::fd &socket,

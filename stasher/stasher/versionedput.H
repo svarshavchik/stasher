@@ -22,7 +22,7 @@ STASHER_NAMESPACE_START
 //! The destroyed() callback invoked the functor.
 
 template<typename Functor>
-class versionedDestroyCallbackObj : public x::destroyCallbackObj {
+class versionedDestroyCallbackObj : virtual public x::obj {
 
 	//! The saved function
 	typename std::enable_if<
@@ -172,8 +172,12 @@ void versioned_put_request(//! Client connection handle
 					return;
 				}
 
-				cb->onAnyDestroyed(versions.begin(),
-						   versions.end());
+				x::on_any_destroyed([cb]
+						    {
+							    cb->destroyed();
+						    },
+						    versions.begin(),
+						    versions.end());
 			});
 }
 

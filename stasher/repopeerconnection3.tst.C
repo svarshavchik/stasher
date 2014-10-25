@@ -549,10 +549,9 @@ void test4()
 			   mcguffin);
 
 	{
-		x::ptr<x::destroyCallbackFlagObj>
-			flag(x::ptr<x::destroyCallbackFlagObj>::create());
+		auto flag=x::destroyCallbackFlag::create();
 
-		mcguffin->addOnDestroy(flag);
+		mcguffin->ondestroy([flag]{flag->destroyed();});
 
 		mcguffin=x::ptr<x::obj>();
 		flag->wait(); // [COMMITPEER]
@@ -585,10 +584,9 @@ void test4()
 			   mcguffin);
 
 	{
-		x::ptr<x::destroyCallbackFlagObj>
-			flag(x::ptr<x::destroyCallbackFlagObj>::create());
+		auto flag=x::destroyCallbackFlag::create();
 
-		mcguffin->addOnDestroy(flag);
+		mcguffin->ondestroy([flag]{flag->destroyed();});
 
 		mcguffin=x::ptr<x::obj>();
 		flag->wait(); // [COMMITPEERRACE]
@@ -648,20 +646,18 @@ void test5()
 	p->ping(mcguffin2);
 
 	{
-		x::ptr<x::destroyCallbackFlagObj>
-			flag(x::ptr<x::destroyCallbackFlagObj>::create());
+		auto flag=x::destroyCallbackFlag::create();
 
-		mcguffin1->addOnDestroy(flag);
+		mcguffin1->ondestroy([flag]{flag->destroyed();});
 
 		mcguffin1=x::ptr<x::obj>();
 		flag->wait(); // [PINGPONG]
 	}
 
 	{
-		x::ptr<x::destroyCallbackFlagObj>
-			flag(x::ptr<x::destroyCallbackFlagObj>::create());
+		auto flag=x::destroyCallbackFlag::create();
 
-		mcguffin2->addOnDestroy(flag);
+		mcguffin2->ondestroy([flag]{flag->destroyed();});
 
 		mcguffin2=x::ptr<x::obj>();
 		flag->wait(); // [PINGPONG]

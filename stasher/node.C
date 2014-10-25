@@ -303,13 +303,13 @@ void node::start_reconnecter()
 						       x::locale::create(""));
 }
 
-class node::stop_cb : public x::destroyCallbackObj {
+class node::stop_cb : virtual public x::obj {
 
 public:
 	stop_cb() {}
 	~stop_cb() noexcept {}
 
-	void destroyed() noexcept
+	void destroyed()
 	{
 	}
 };
@@ -324,9 +324,9 @@ void node::wait()
 
 	x::ptr<stop_cb> cb(x::ptr<stop_cb>::create());
 
-	repo->addOnDestroy(cb);
-	distributor->addOnDestroy(cb);
-	listener->addOnDestroy(cb);
+	repo->ondestroy([cb]{cb->destroyed();});
+	distributor->ondestroy([cb]{cb->destroyed();});
+	listener->ondestroy([cb]{cb->destroyed();});
 
 	x::fdptr stopfd=repocluster->getstopfd();
 
@@ -337,7 +337,7 @@ void node::wait()
 
 	x::destroyCallbackFlag dcf=x::destroyCallbackFlag::create();
 
-	cb->addOnDestroy(dcf);
+	cb->ondestroy([dcf]{dcf->destroyed();});
 	cb=x::ptr<stop_cb>();
 	dcf->wait();
 }

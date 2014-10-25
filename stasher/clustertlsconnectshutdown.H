@@ -55,7 +55,7 @@ public:
 	//! The destructor callback starts a separate thread that invokes
 	//! gnutls_bye(), to orderly shut down the connection.
 
-	class mcguffin_destructor_cb : public x::destroyCallbackObj {
+	class mcguffin_destructor_cb : virtual public x::obj {
 
 	public:
 		//! The tracker that starts the shutdown thread.
@@ -83,7 +83,7 @@ public:
 		~mcguffin_destructor_cb() noexcept;
 
 		//! Destructor callback
-		void destroyed() noexcept;
+		void destroyed();
 	};
 
 

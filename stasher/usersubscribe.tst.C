@@ -282,15 +282,15 @@ static void do_test1(const STASHER_NAMESPACE::client &cl0,
 		throw EXCEPTION("Did not received expected update for obj1/2");
 
 	x::destroyCallbackFlag cbroot=x::destroyCallbackFlag::create();
-	rootsub->addOnDestroy(cbroot);
+	rootsub->ondestroy([cbroot]{cbroot->destroyed();});
 	rootsub=x::ptr<test1subscriber>();
 
 	x::destroyCallbackFlag cbobj1=x::destroyCallbackFlag::create();
-	obj1sub->addOnDestroy(cbobj1);
+	obj1sub->ondestroy([cbobj1]{cbobj1->destroyed();});
 	obj1sub=x::ptr<test1subscriber>();
 
 	x::destroyCallbackFlag cbobj1hier=x::destroyCallbackFlag::create();
-	obj1hiersub->addOnDestroy(cbobj1hier);
+	obj1hiersub->ondestroy([cbobj1hier]{cbobj1hier->destroyed();});
 	obj1hiersub=x::ptr<test1subscriber>();
 
 	std::cerr << "Unsubscribing" << std::endl;

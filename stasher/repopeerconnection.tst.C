@@ -123,7 +123,7 @@ public:
 
 		x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
 
-		mcguffin->addOnDestroy(cb);
+		mcguffin->ondestroy([cb]{cb->destroyed();});
 
 		mcguffin=x::ptr<x::obj>();
 		cb->wait();
@@ -218,7 +218,7 @@ static void test1()
 				 "nodea", x::uuid());
 
 		conn.conn->connect_peer(req);
-		req->addOnDestroy(cb);
+		req->ondestroy([cb]{cb->destroyed();});
 
 		req=repopeerconnectionbaseObj::peerlinkptr();
 
@@ -248,7 +248,7 @@ static void test1()
 			::create(dummy, mcguffin, "nodeb", x::uuid());
 
 		conn.conn->connect_peer(req);
-		req->addOnDestroy(cb);
+		req->ondestroy([cb]{cb->destroyed();});
 
 		req=repopeerconnectionbaseObj::peerlinkptr();
 
@@ -267,7 +267,7 @@ static void test1()
 		if (origreq.null()) // [PEERCONNECT]
 			throw EXCEPTION("[PEERCONNECT] failed");
 
-		origreq->addOnDestroy(cb);
+		origreq->ondestroy([cb]{cb->destroyed();});
 	}
 
 	conn.sendstatus(nodeclusterstatus("nodeb", x::uuid(), 0, false));
@@ -294,7 +294,7 @@ static void test1()
 			::create(dummy, mcguffin, "nodeb", x::uuid());
 
 		conn.conn->connect_peer(req);
-		req->addOnDestroy(cb);
+		req->ondestroy([cb]{cb->destroyed();});
 
 		req=repopeerconnectionbaseObj::peerlinkptr();
 
@@ -312,7 +312,7 @@ static void test1()
 			if (link.null())
 				throw EXCEPTION("[CONTROLLERGONE] failed (1 of 2)");
 
-			link->addOnDestroy(cb);
+			link->ondestroy([cb]{cb->destroyed();});
 
 			mcguffin=x::ptr<x::obj>(); // [CONTROLLERGONE]
 		}
@@ -322,7 +322,7 @@ static void test1()
 	{
 		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
 
-		dummy->addOnDestroy(cb);
+		dummy->ondestroy([cb]{cb->destroyed();});
 
 		dummy=x::ptr<dummyController>();
 		cb->wait();
@@ -346,9 +346,9 @@ static void test2()
 	conn.conn->installformermasterbaton(batonp);
 
 	{
-		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+		auto cb=x::destroyCallbackFlag::create();
 
-		batonp->addOnDestroy(cb);
+		batonp->ondestroy([cb]{cb->destroyed();});
 		batonp=batonptr();
 		cb->wait(); // [INSTALLFORMERMASTERBATONIMM]
 	}

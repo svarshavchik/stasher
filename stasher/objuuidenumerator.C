@@ -8,7 +8,6 @@
 #include "objuuidlist.H"
 #include "objsink.H"
 #include "objwriter.H"
-#include <x/destroycallbackobj.H>
 
 objuuidenumeratorObj::objuuidenumeratorObj(const tobjrepo &repoArg)
 	: repo(repoArg),
