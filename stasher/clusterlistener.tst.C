@@ -67,13 +67,13 @@ static void test1(const char *clusterdir,
 				  now,
 				  now + 365 * 24 * 60 * 60,
 				  "rsa",
-				  "weak",
+				  "medium",
 				  "sha1");
 
 	repomg::nodekey_generate(nodedir, clusterdir, "",
 				 "node",
 				 now, now + 7 * 24 * 60 * 60,
-				 "weak",
+				 "medium",
 				 "sha1");
 
 	STASHER_NAMESPACE::stoppableThreadTrackerImpl

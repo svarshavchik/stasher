@@ -48,7 +48,7 @@ void tstnodes::clustkey_generate(time_t now)
 				  now,
 				  now + 365 * 24 * 60 * 60,
 				  "rsa",
-				  "weak",
+				  "medium",
 				  "sha1");
 }
 
@@ -81,7 +81,7 @@ void tstnodes::update_node_key(time_t now, size_t i)
 {
 	repomg::nodekey_generate(getnodedir(i), clusterdir, "",
 				 getnodename(i),
-				 now, now + 7 * 24 * 60 * 60, "weak", "sha1");
+				 now, now + 7 * 24 * 60 * 60, "medium", "sha1");
 }
 
 tstnodes::~tstnodes()

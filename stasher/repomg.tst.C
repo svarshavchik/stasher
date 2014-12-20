@@ -12,7 +12,7 @@
 #include <x/gnutls/credentials.H>
 #include <list>
 
-#define BITSIZE "weak"
+#define BITSIZE "medium"
 #define ALGO	"sha1"
 #define CERTTYPE "rsa"
 

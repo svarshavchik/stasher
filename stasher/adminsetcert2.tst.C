@@ -33,7 +33,7 @@ static void test1(tstnodes &t)
 
 	repomg::nodekey_generate(t.getnodedir(0), t.clusterdir, "",
 				 t.getnodename(1),
-				 now, now + 7 * 24 * 60 * 60, "weak", "sha1");
+				 now, now + 7 * 24 * 60 * 60, "medium", "sha1");
 	x::gnutls::datum_t after=
 		repomg::loadcerts(repomg::nodecert(tstnodes::getnodedir(1)),
 				  dummy);
