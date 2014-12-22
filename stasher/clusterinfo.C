@@ -13,44 +13,6 @@
 #include "baton.H"
 #include <x/logger.H>
 
-class clusterinfoObj::cluster_notification {
-
-public:
-
-	inline static void event(const clusternotifier &notifier,
-				 const clusterinfoObj::cluster_t &arg)
-
-	{
-		notifier->clusterupdated(arg);
-	}
-
-};
-
-class clusterinfoObj::node_initial_notification {
-
-public:
-
-	inline static void event(const clusterstatusnotifier &notifier,
-				 const nodeclusterstatus &arg)
-
-	{
-		notifier->initialstatus(arg);
-	}
-};
-
-class clusterinfoObj::node_update_notification {
-
-public:
-
-	inline static void event(const clusterstatusnotifier &notifier,
-				 const nodeclusterstatus &arg)
-
-	{
-		notifier->statusupdated(arg);
-	}
-};
-
-
 clusterinfoObj::newnodeclusterstatus
 ::newnodeclusterstatus(const nodeclusterstatus &statusArg)
  : status(statusArg)
@@ -391,8 +353,24 @@ void clusterinfoObj::installnotifycluster(const clusternotifier &notifier)
 
 	vipcluster_t::handlerlock handler_lock(cluster);
 
-	handler_lock.install(notifier, *vipcluster_t::readlock(cluster));
+	handler_lock.attach_back
+		(notifier,
+		 []
+		 (const clusternotifier &notifier,
+		  const cluster_t &arg)
+		 {
+			 notifier->clusterupdated(arg);
+		 }, *vipcluster_t::readlock(cluster));
 }
+
+class LIBCXX_HIDDEN initial_flagObj : virtual public x::obj {
+ public:
+
+	x::mpobj<bool> flag;
+
+	initial_flagObj() : flag(true) {}
+	~initial_flagObj() noexcept {}
+};
 
 void clusterinfoObj::installnotifyclusterstatus(const clusterstatusnotifier
 						&notifier)
@@ -404,8 +382,27 @@ void clusterinfoObj::installnotifyclusterstatus(const clusterstatusnotifier
 
 	thisnodestatus_t::handlerlock handler_lock(thisnodestatus);
 
-	handler_lock.install(notifier,
-			     *thisnodestatus_t::readlock(thisnodestatus));
+	handler_lock.attach_back
+		(notifier,
+		 [flag=x::ref<initial_flagObj>::create()]
+		 (const clusterstatusnotifier &notifier,
+		  const nodeclusterstatus &status)
+		 {
+			 bool first_time;
+
+			 {
+				 x::mpobj<bool>::lock lock(flag->flag);
+
+				 first_time=*lock;
+				 *lock=false;
+			 }
+
+			 if (first_time)
+				 notifier->initialstatus(status);
+			 else
+				 notifier->statusupdated(status);
+		 },
+		 *thisnodestatus_t::readlock(thisnodestatus));
 }
 
 void clusterinfoObj::peerstatusupdated(const x::ptr<peerstatusObj> &peerRef,

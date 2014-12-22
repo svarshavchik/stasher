@@ -42,5 +42,13 @@ void repoclusterquorumObj::install(const
 
 	STASHER_NAMESPACE::quorumstate value=*readlock(*this);
 
-	handler_lock.install(notifier, value);
+	handler_lock.attach_back(notifier,
+				 []
+				 (const x::ref<STASHER_NAMESPACE
+				  ::repoclusterquorumcallbackbaseObj>
+				  &notifier,
+				  const STASHER_NAMESPACE::quorumstate &value)
+				 {
+					 notifier->quorum(value);
+				 }, value);
 }

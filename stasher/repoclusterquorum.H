@@ -13,33 +13,6 @@
 #include "stasher/repoclusterquorumcallbackbase.H"
 #include "stasher/quorumstate.H"
 
-//! Base class for repoclusterquorumObj
-
-//! The base class implements the invocation class used by \c x::vipobj
-
-class repoclusterquorumbaseObj {
-
-public:
-
-	//! Invocation class for quorum announcements, used by \c x::vipobj
-
-	class quorum_invoke {
-
-	public:
-
-		//! New quorum value announcement
-
-		inline static
-		void event(const x::ref<STASHER_NAMESPACE::
-					repoclusterquorumcallbackbaseObj> &h,
-			   const STASHER_NAMESPACE::quorumstate &value)
-
-		{
-			h->quorum(value);
-		}
-	};
-};
-
 //! Implement the semantics of a cluster's quorum status
 
 //! When there's a change in the node's state, a new controller object gets
@@ -111,10 +84,7 @@ public:
 
 class repoclusterquorumObj
 	: public x::vipobj<quorumstatus_impl,
-			   STASHER_NAMESPACE::repoclusterquorumcallbackbaseObj,
-			   repoclusterquorumbaseObj::quorum_invoke,
-			   repoclusterquorumbaseObj::quorum_invoke,
-			   STASHER_NAMESPACE::quorumstate>,
+			   const STASHER_NAMESPACE::quorumstate &>,
 	  virtual public x::obj {
 public:
 	//! Constructor

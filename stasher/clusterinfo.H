@@ -211,16 +211,9 @@ private:
 	//! This node's info
 	STASHER_NAMESPACE::nodeinfo thisnode;
 
-	class cluster_notification;
-	class node_initial_notification;
-	class node_update_notification;
-
 	//! This node's status is a Very Important Object
 
-	typedef x::vipobj<nodeclusterstatus,
-			  clusterstatusnotifierObj,
-			  node_update_notification,
-			  node_initial_notification> thisnodestatus_t;
+	typedef x::vipobj<nodeclusterstatus> thisnodestatus_t;
 
 	//! Calculated status of this node
 	thisnodestatus_t thisnodestatus;
@@ -234,8 +227,7 @@ public:
 
 private:
 	//! cluster_t is a Very Important Object
-	typedef x::vipobj<cluster_t, clusternotifierObj,
-			  cluster_notification> vipcluster_t;
+	typedef x::vipobj<cluster_t> vipcluster_t;
 
 	class destroycb;
 
