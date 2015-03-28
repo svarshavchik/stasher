@@ -49,6 +49,9 @@ size_t fdobjwriterthreadObj::flush(const char *ptr, size_t cnt)
 		if (n > 0)
 			return n;
 
+		if (errno != EAGAIN && errno != EWOULDBLOCK)
+			throw SYSEXCEPTION("write");
+
 		if (!timeout)
 			expired=now + 300;
 

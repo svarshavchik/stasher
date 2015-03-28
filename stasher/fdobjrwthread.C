@@ -91,13 +91,16 @@ size_t fdobjrwthreadObj::pubread(const x::fdbase &transport,
 		if (errno == 0)
 			break;
 
+		if (errno != EAGAIN && errno != EWOULDBLOCK)
+			throw SYSEXCEPTION("read");
+
 		wait_socket((expired - now) * 1000);
 
 		now=time(NULL);
 
 		if (readTimeout_value == 0)
 			expired=now+300; // No effective timeout
-	
+
 		if (now >= expired)
 		{
 			errno=ETIMEDOUT;

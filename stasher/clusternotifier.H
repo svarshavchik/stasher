@@ -7,7 +7,6 @@
 #define clusternotifier_H
 
 #include <x/obj.H>
-#include <x/eventcallback.H>
 
 #include "clusterinfo.H"
 #include "clusternotifierfwd.H"

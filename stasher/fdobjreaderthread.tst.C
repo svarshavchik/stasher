@@ -74,7 +74,7 @@ public:
 
 		received.push_back(msg.str);
 		cond.notify_all();
-	
+
 	}
 
 	size_t pubread(const x::fdbase &transport,
@@ -102,7 +102,8 @@ public:
 
 			if (rc == 0)
 				continue;
-		} while ((n=transport->pubread(buffer, cnt)) == 0 && errno);
+		} while ((n=transport->pubread(buffer, cnt)) == 0
+			 && (errno == EAGAIN || errno == EWOULDBLOCK));
 
 		return n;
 	}

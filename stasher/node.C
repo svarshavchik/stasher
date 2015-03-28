@@ -299,7 +299,7 @@ void node::start_reconnecter()
 
 	reconnecter_thread->timer->scheduleAtFixedRate(chkjob,
 						       L"certcheck::interval",
-						       std::chrono::seconds(3600),
+						       std::chrono::hours(12),
 						       x::locale::create(""));
 }
 
