@@ -277,7 +277,7 @@ libstasher_la_SOURCES=\
 	tranmeta.H \
 	userput.C userput_deserialized.H
 
-libstasher_client_la_LIBADD=$(XLIBS) 
+libstasher_client_la_LIBADD=$(XLIBS) -lpthread
 libstasher_client_la_LDFLAGS=-version-info 1
 
 @LIBCXX_AM@
@@ -303,7 +303,7 @@ $(call MSGDISPATCHER_GEN,localprivconnection.msgs,def decl)
 $(call MSGDISPATCHER_GEN,client.msgs,all)
 $(call MSGDISPATCHER_GEN,threadreportimpl.msgs,def decl)
 
-libstasher_la_LIBADD=libstasher-client.la -lcxxtls
+libstasher_la_LIBADD=libstasher-client.la -lcxxtls -lpthread
 
 $(call OPTIONS_GEN,repomgcliopts.h,repomgcli.xml)
 
