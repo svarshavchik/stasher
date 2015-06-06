@@ -8,7 +8,7 @@ AC_CONFIG_SRCDIR([objrepo.H])
 AC_CONFIG_HEADERS([objrepo_config.h])
 LT_INIT
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.18.1])
+AM_GNU_GETTEXT_VERSION([0.19.4])
 AM_XGETTEXT_OPTION([--directory=\${top_builddir}])
 
 AC_ARG_WITH(extratests,[Additional testing (may fail on busy build servers)],

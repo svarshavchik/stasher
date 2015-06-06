@@ -146,20 +146,6 @@ public:
 			const;
 	};
 
-	//! Comparator for a dev/ino pair.
-	class devinocmp {
-	public:
-
-		//! < operator
-
-		bool operator()(const std::pair<dev_t, ino_t> &a,
-				const std::pair<dev_t, ino_t> &b)
-		{
-			return a.first < b.first ||
-				(!b.first < a.first && a.second < b.second);
-		}
-	};
-
 	//! Locally-defined application mappings
 
 	//! This map is keyed by dev/ino pair, identifying an installed

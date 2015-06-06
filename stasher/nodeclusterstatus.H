@@ -62,7 +62,7 @@ public:
 	bool reluctant;	//!< Whether the master is reluctant to be one.
 
 	//! Constructor
-	nodeclusterstatus() noexcept : slavecount(0), 
+	nodeclusterstatus() noexcept : slavecount(0),
 		timestamp(0), reluctant(false)
 	{
 	}
@@ -183,9 +183,8 @@ public:
 
 		x::locale l(x::locale::base::global());
 
-		std::ostreambuf_iterator<char> iter(o.rdbuf());
-
-		localtimestamp.toString(iter, l, "%Y-%m-%d %H:%M:%S %z");
+		o << x::tostring(localtimestamp.format("%Y-%m-%d %H:%M:%S %z"),
+				 l);
 
 		if (reluctant)
 			o << ", inferior";
