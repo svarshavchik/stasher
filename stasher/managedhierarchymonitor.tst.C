@@ -314,7 +314,7 @@ static void test4(tstnodes &t)
 
 	auto client=STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
 
-	auto manager=STASHER_NAMESPACE::manager::create(L"autoreconnect", 2);
+	auto manager=STASHER_NAMESPACE::manager::create("autoreconnect", 2);
 
 	auto tester=x::ref<test1subscriber>::create();
 
@@ -416,9 +416,9 @@ int main(int argc, char **argv)
 	try {
 		tstnodes nodes(3);
 
-		x::property::load_property(L"objrepo::manager", L"2 seconds",
+		x::property::load_property("objrepo::manager", "2 seconds",
 					   true, true);
-		x::property::load_property(L"reconnect", L"4", true, true);
+		x::property::load_property("reconnect", "4", true, true);
 
 		std::cerr << "test1 (Part I)" << std::endl;
 

@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 {
 #include "opts.parse.inc.tst.C"
 
-	x::property::load_property(L"reconnect", L"4", true, true);
+	x::property::load_property("reconnect", "4", true, true);
 
 	try {
 		tstnodes nodes(2);

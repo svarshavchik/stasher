@@ -90,7 +90,7 @@ public:
 
 	//! Constructor, non-default retry property.
 
-	managerObj(const x::property::propvalue &property_name,
+	managerObj(const std::string &property_name,
 		   const x::hms &default_value=x::hms(0, 1, 0));
 
 	//! Destructor

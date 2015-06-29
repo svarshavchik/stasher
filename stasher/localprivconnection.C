@@ -130,11 +130,9 @@ void localprivconnectionObj::deserialized(const getprops_req_t &msg)
 	resp.write(writer);
 }
 
-x::property::propvalue localprivconnectionObj::normalize(const std::wstring
-							 &name)
-
+std::string localprivconnectionObj::normalize(const std::string &name)
 {
-	std::list<x::property::propvalue> hier_list;
+	std::list<std::string> hier_list;
 
 	x::property::parsepropname(name.begin(), name.end(), hier_list,
 				   x::locale::create(""));
@@ -148,8 +146,8 @@ class LIBCXX_INTERNAL localprivconnectionObj::propsetresetaction {
 	propsetresetaction() {}
 	~propsetresetaction() noexcept {}
 
-	virtual void operator()(std::map<x::property::propvalue,
-					 x::property::propvalue> &propmap)=0;
+	virtual void operator()(std::map<std::string,
+					 std::string> &propmap)=0;
 
 	class setpropvalue;
 	class resetpropvalue;
@@ -159,16 +157,16 @@ class LIBCXX_INTERNAL localprivconnectionObj::propsetresetaction::setpropvalue :
 	public propsetresetaction {
 
  public:
-	x::property::propvalue name, value;
+	std::string name, value;
 
-	setpropvalue(const x::property::propvalue &nameArg,
-		     const x::property::propvalue &valueArg)
+	setpropvalue(const std::string &nameArg,
+		     const std::string &valueArg)
 		: name(nameArg), value(valueArg) {}
 
 	~setpropvalue() noexcept {}
 
-	void operator()(std::map<x::property::propvalue,
-				 x::property::propvalue> &propmap)
+	void operator()(std::map<std::string,
+				 std::string> &propmap)
 
 	{
 		x::property::load_property(name, value, true,
@@ -176,8 +174,8 @@ class LIBCXX_INTERNAL localprivconnectionObj::propsetresetaction::setpropvalue :
 					   x::property::errhandler::errthrow(),
 					   x::locale::create(""));
 
-		propmap[name]=value=x::property::value<x::property::propvalue>
-			(name, x::property::propvalue()).getValue();
+		propmap[name]=value=x::property::value<std::string>
+			(name, std::string()).getValue();
 	}
 };
 
@@ -185,15 +183,15 @@ class LIBCXX_INTERNAL localprivconnectionObj::propsetresetaction::resetpropvalue
 	public propsetresetaction {
 
  public:
-	x::property::propvalue name;
+	std::string name;
 
-	resetpropvalue(const x::property::propvalue &nameArg)
+	resetpropvalue(const std::string &nameArg)
 		: name(nameArg) {}
 
 	~resetpropvalue() noexcept {}
 
-	void operator()(std::map<x::property::propvalue,
-				 x::property::propvalue> &propmap)
+	void operator()(std::map<std::string,
+				 std::string> &propmap)
 
 	{
 		propmap.erase(name);
@@ -206,7 +204,7 @@ void localprivconnectionObj::deserialized(const setprop_req_t &msg)
 	setprop_resp_msg_t::resp_t &msgres=resp.getmsg();
 
 	try {
-		x::property::propvalue name=normalize(msg.propname);
+		std::string name=normalize(msg.propname);
 
 		propsetresetaction::setpropvalue action(name, msg.propvalue);
 
@@ -234,7 +232,7 @@ void localprivconnectionObj::deserialized(const resetprop_req_t &msg)
 	resetprop_resp_msg_t::resp_t &msgres=resp.getmsg();
 
 	try {
-		x::property::propvalue name=normalize(msg.propname);
+		std::string name=normalize(msg.propname);
 
 		propsetresetaction::resetpropvalue action(name);
 
@@ -252,10 +250,10 @@ void localprivconnectionObj::deserialized(const resetprop_req_t &msg)
 }
 
 void localprivconnectionObj::dopropsetreset(propsetresetaction &action,
-					    const x::property::propvalue &name)
+					    const std::string &name)
 
 {
-	std::map<x::property::propvalue, x::property::propvalue> props;
+	std::map<std::string, std::string> props;
 
 	x::property::enumerate_properties(props);
 

@@ -834,8 +834,8 @@ int main(int argc, char **argv)
 		std::cout << "test4" << std::endl;
 		test4();
 
-		if (LIBCXX_NAMESPACE::property::value<bool>(L"extratests",
-							  false).getValue())
+		if (LIBCXX_NAMESPACE::property::value<bool>("extratests",
+							    false).getValue())
 		{
 			std::cout << "test5" << std::endl;
 			test5();

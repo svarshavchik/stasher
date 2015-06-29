@@ -10,7 +10,7 @@ See COPYING for distribution information.
   <method name="shutdown">
     <comment>
       //! Stop the node
-    </comment>    
+    </comment>
   </method>
 
   <method name="getserverstatus">
@@ -179,14 +179,14 @@ See COPYING for distribution information.
       <comment>
 	//! Property name
       </comment>
-      <decl>x::property::propvalue <name>propname</name></decl>
+      <decl>std::string <name>propname</name></decl>
     </param>
 
     <param type="class">
       <comment>
 	//! Property value
       </comment>
-      <decl>x::property::propvalue <name>propvalue</name></decl>
+      <decl>std::string <name>propvalue</name></decl>
     </param>
 
     <param type="class">
@@ -213,7 +213,7 @@ See COPYING for distribution information.
       <comment>
 	//! Property name
       </comment>
-      <decl>x::property::propvalue <name>propname</name></decl>
+      <decl>std::string <name>propname</name></decl>
     </param>
 
     <param type="class">

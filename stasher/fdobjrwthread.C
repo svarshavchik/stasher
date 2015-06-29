@@ -13,9 +13,9 @@ LOG_CLASS_INIT(STASHER_NAMESPACE::fdobjrwthreadObj);
 
 STASHER_NAMESPACE_START
 
-x::property::value<unsigned> fdobjrwthreadBase::writeTimeout(L"objrepo::timeoutwrite",
+x::property::value<unsigned> fdobjrwthreadBase::writeTimeout("objrepo::timeoutwrite",
 							     10);
-x::property::value<unsigned> fdobjrwthreadBase::readTimeout(L"objrepo::timeoutread",
+x::property::value<unsigned> fdobjrwthreadBase::readTimeout("objrepo::timeoutread",
 							     90);
 
 fdobjrwthreadObj::fdobjrwthreadObj(const std::string &writeThreadNameArg)

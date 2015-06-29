@@ -72,7 +72,7 @@ public:
 
 private:
 	//! Normalize property name
-	static x::property::propvalue normalize(const std::wstring &name);
+	static std::string normalize(const std::string &name);
 
 
 	class propsetresetaction;
@@ -85,8 +85,7 @@ private:
 
 	//! Handle property sets and resets
 	void dopropsetreset(propsetresetaction &action,
-			    const x::property::propvalue &name);
-
+			    const std::string &name);
 
 	//! Return this thread's status
 	std::string report(std::ostream &rep);

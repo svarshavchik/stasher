@@ -25,10 +25,10 @@ LOG_CLASS_INIT(clusterlistenerObj);
 #include "clusterlistener.msgs.def.H"
 
 x::property::value<x::ymd::interval> clusterlistenerObj
-::certwarntime(L"certcheck::warntime", x::ymd::interval(0, 1, 0, 0));
+::certwarntime("certcheck::warntime", x::ymd::interval(0, 1, 0, 0));
 
 x::property::value<x::ymd::interval> clusterlistenerObj
-::certerrtime(L"certcheck::errtime", x::ymd::interval(0, 0, 1, 0));
+::certerrtime("certcheck::errtime", x::ymd::interval(0, 0, 1, 0));
 
 clusterlistenerObj::clusterlistenerObj(const std::string &directoryArg)
 	: directory(directoryArg),
@@ -379,7 +379,7 @@ void clusterlistenerObj::accept_pubsock(const x::fd &sock)
 		x::sockaddrptr addr;
 
 		x::fdptr fd(sock->accept(addr));
-		
+
 		if (!fd.null())
 			start_pubsock(fd, addr);
 	} catch (const x::exception &e)

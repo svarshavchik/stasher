@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 {
 #include "opts.parse.inc.tst.C"
 
-	x::property::load_property(L"objrepo::timeoutread", L"2", true, false);
+	x::property::load_property("objrepo::timeoutread", "2", true, false);
 
 	try {
 		tstnodes nodes(2);

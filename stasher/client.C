@@ -289,7 +289,7 @@ public:
 
 	public:
 		serverstatusSubscriptionMcguffinObj() {}
-		
+
 		x::weakptr<x::ptr<implObj> > conn;
 		server_status_subscribers_t::iterator subscriber;
 
@@ -429,10 +429,10 @@ const char clientObj::implObj::DISCONNECTED_MSG[]
 ="Disconnected from the server";
 
 x::property::value<time_t> clientObj::implObj
-::connect_timeout(L"objrepo::client::connect_timeout", 15);
+::connect_timeout("objrepo::client::connect_timeout", 15);
 
 x::property::value<std::string>
-clientObj::implObj::default_nodedir(L"objrepo::nodedir",
+clientObj::implObj::default_nodedir("objrepo::nodedir",
 				    localstatedir "/stasher/nodes");
 
 clientObj::clientObj(const std::string &socknameArg)
@@ -1033,7 +1033,7 @@ void clientObj::implObj::deserialized(const usergetuuidsreply &msg)
 				p->second.fd=*b;
 				++p;
 			}
-				
+
 		}
 
 		auto res=getresults::create();

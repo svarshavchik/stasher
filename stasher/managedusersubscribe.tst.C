@@ -51,7 +51,7 @@ static void test1(tstnodes &t)
 
 	auto client=STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
 
-	auto manager=STASHER_NAMESPACE::manager::create(L"", "2 seconds");
+	auto manager=STASHER_NAMESPACE::manager::create("", "2 seconds");
 
 	std::cerr << "Subscribing" << std::endl;
 
@@ -171,7 +171,7 @@ static void test3(tstnodes &t)
 
 	{
 		std::unique_lock<std::mutex> lock(rootsub->mutex);
-			
+
 		rootsub->cond.wait(lock, [&rootsub] {
 				return rootsub->stat_received;
 				});
@@ -189,7 +189,7 @@ int main(int argc, char **argv)
 		tstnodes nodes(1);
 
 		test1(nodes);
-		x::property::load_property(L"objrepo::manager", L"5 minutes",
+		x::property::load_property("objrepo::manager", "5 minutes",
 					   true, true);
 		std::cerr << "test2" << std::endl;
 		test2(nodes);

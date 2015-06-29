@@ -46,7 +46,7 @@ static size_t server_queue_cnt;
 
 static void test1(tstnodes &t)
 {
-	x::property::load_property(L"connection::maxgetobjects", L"10",
+	x::property::load_property("connection::maxgetobjects", "10",
 				   true, true);
 
 	std::cerr << "test 1" << std::endl;

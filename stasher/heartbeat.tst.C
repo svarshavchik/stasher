@@ -109,9 +109,9 @@ void test1(tstnodes &t)
 	auto hba=test1_hb::create(manager, client1,
 				  "heartbeat",
 				  "a",
-				  L"refresh",
+				  "refresh",
 				  std::chrono::seconds(2),
-				  L"stale",
+				  "stale",
 				  std::chrono::seconds(3),
 				  [thra]
 				  (test1_hb::base::update_type_t update_type)
@@ -121,9 +121,9 @@ void test1(tstnodes &t)
 		hbb=test1_hb::create(manager, client2,
 				     "heartbeat",
 				     "b",
-				     L"refresh",
+				     "refresh",
 				     std::chrono::seconds(2),
-				     L"stale",
+				     "stale",
 				     std::chrono::seconds(3),
 				     [thrb]
 				     (test1_hb::base::update_type_t update_type)
@@ -211,9 +211,9 @@ void test2(tstnodes &t)
 	auto hba=test1_hb::create(manager1, client1,
 				  "heartbeat",
 				  "a",
-				  L"refresh",
+				  "refresh",
 				  std::chrono::seconds(2),
-				  L"stale",
+				  "stale",
 				  std::chrono::seconds(3),
 				  [thra]
 				  (test1_hb::base::update_type_t update_type)
@@ -223,9 +223,9 @@ void test2(tstnodes &t)
 		hbb=test1_hb::create(manager2, client2,
 				     "heartbeat",
 				     "b",
-				     L"refresh",
+				     "refresh",
 				     std::chrono::seconds(2),
-				     L"stale",
+				     "stale",
 				     std::chrono::seconds(3),
 				     [thrb]
 				     (test1_hb::base::update_type_t update_type)

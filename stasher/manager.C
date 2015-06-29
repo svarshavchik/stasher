@@ -91,7 +91,7 @@ class LIBCXX_HIDDEN managerObj::implObj : virtual public x::obj {
 
 	x::mpobj<meta_t> meta;
 
-	implObj(const x::property::propvalue &propname,
+	implObj(const std::string &propname,
 		const x::hms &propvalue)
 		: resubscribe_interval(propname, std::move(propvalue))
 	{
@@ -185,12 +185,12 @@ class LIBCXX_HIDDEN managerObj::implObj : virtual public x::obj {
 	class managedObjectSubscriberObj;
 };
 
-managerObj::managerObj() : impl(x::ref<implObj>::create(L"objrepo::manager",
+managerObj::managerObj() : impl(x::ref<implObj>::create("objrepo::manager",
 							x::hms(0, 1, 0)))
 {
 }
 
-managerObj::managerObj(const x::property::propvalue &property_name,
+managerObj::managerObj(const std::string &property_name,
 		       const x::hms &default_value)
 	: impl(x::ref<implObj>::create(property_name, default_value))
 {

@@ -129,7 +129,7 @@ class cli {
 	};
 
 	x::ptr<currentns> ns;
- 
+
 	void do_disconnect()
 	{
 		client=STASHER_NAMESPACE::clientptr();
@@ -414,7 +414,7 @@ public:
 	}
 };
 
-x::property::value<std::string> cli::stasherd(L"objrepo::stasherd",
+x::property::value<std::string> cli::stasherd("objrepo::stasherd",
 					      stasherdpath);
 
 void cli::command(const std::string &s)
@@ -1242,7 +1242,7 @@ void cli::getprops(const std::list<std::string> &args)
 
 	bool all=false;
 
-	std::set<x::property::propvalue> wanted;
+	std::set<std::string> wanted;
 
 	for (std::list<std::string>::const_iterator b=args.begin(),
 		     e=args.end(); b != e; ++b)
@@ -1259,13 +1259,13 @@ void cli::getprops(const std::list<std::string> &args)
 
 		std::wstring w=x::towstring(*b);
 
-		std::list<x::property::propvalue> hier;
+		std::list<std::string> hier;
 		x::property::parsepropname(w.begin(), w.end(), hier,
 					   locale);
 		wanted.insert(x::property::combinepropname(hier));
 	}
 
-	for (std::map<x::property::propvalue, x::property::propvalue>
+	for (std::map<std::string, std::string>
 		     ::iterator b=res->properties.begin(),
 		     e=res->properties.end(), p; (p=b) != e; b=p)
 	{
@@ -1298,8 +1298,7 @@ void cli::setprop(const std::string &propname, const std::string &propvalue)
 	connected();
 
 	STASHER_NAMESPACE::setpropresults res=
-		client->setprop(x::towstring(propname, locale),
-				x::towstring(propvalue, locale));
+		client->setprop(propname, propvalue);
 
 	if (!res->succeeded)
 		throw EXCEPTION(res->errmsg);
@@ -1313,7 +1312,7 @@ void cli::resetprop(const std::string &propname)
 	connected();
 
 	STASHER_NAMESPACE::resetpropresults res=
-		client->resetprop(x::towstring(propname, locale));
+		client->resetprop(propname);
 
 	std::cout << res->resultmsg << std::endl;
 }

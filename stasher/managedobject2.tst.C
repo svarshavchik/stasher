@@ -226,7 +226,7 @@ int main(int argc, char **argv)
 	try {
 		tstnodes nodes(3);
 
-		x::property::load_property(L"objrepo::manager", L"2 seconds",
+		x::property::load_property("objrepo::manager", "2 seconds",
 					   true, true);
 
 		test1(nodes);

@@ -290,15 +290,15 @@ void node::start_reconnecter()
 	job->run();
 
 	reconnecter_thread->timer->
-		scheduleAtFixedRate(job, L"reconnect", std::chrono::seconds(60),
-						       x::locale::create(""));
+		scheduleAtFixedRate(job, "reconnect", std::chrono::seconds(60),
+				    x::locale::create(""));
 
 	auto chkjob=x::ref<certcheck_job>::create(listener);
 
 	chkjob->run();
 
 	reconnecter_thread->timer->scheduleAtFixedRate(chkjob,
-						       L"certcheck::interval",
+						       "certcheck::interval",
 						       std::chrono::hours(12),
 						       x::locale::create(""));
 }

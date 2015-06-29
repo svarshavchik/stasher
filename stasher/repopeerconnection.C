@@ -37,7 +37,7 @@ MAINLOOP_IMPL(repopeerconnectionObj)
 #include "repopeerconnection.msgs.def.H"
 
 x::property::value<bool>
-repopeerconnectionObj::debugnotimeout(L"debugnotimeout", false);
+repopeerconnectionObj::debugnotimeout("debugnotimeout", false);
 
 // Thread that acquires the commitlock and hands off the baton back to the
 // connection thread for the current master.
@@ -662,7 +662,7 @@ void repopeerconnectionObj::dispatch(const connect_peer_msg &msg)
 
 	*currentpeerlink=msg.peerlinkArg;
 	*currentconnect=newdisconnect;
-		
+
 	LOG_INFO(getthisnodename()
 		 << ": Connected controller with peer: master "
 		 << msg.peerlinkArg->mastername
@@ -1420,7 +1420,7 @@ void repopeerconnectionObj
 				  stat->master + " (" +
 					  x::tostring(stat->uuid) + ")";
 			  }));
-	
+
 	std::pair<bool, peerstatus> install_ret=install(cluster);
 
 	if (install_ret.first)
@@ -1511,7 +1511,7 @@ void repopeerconnectionObj::check_sync_start()
 
 	x::ptr<syncslave_cbObj>
 		cb(x::ptr<syncslave_cbObj>::create(dst, peername));
-	
+
 	LOG_INFO(getthisnodename() << ": started syncing slave " << peername);
 
 	mastermetaptr->master->syncslave(connuuid,

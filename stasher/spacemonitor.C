@@ -7,7 +7,7 @@
 #include "spacemonitor.H"
 
 x::property::value<long>
-spacemonitorObj::reserved_refresh(L"reserved::refresh", 100);
+spacemonitorObj::reserved_refresh("reserved::refresh", 100);
 
 spacemonitorObj::spacemonitorObj(const x::df &freespacerefArg)
  : freespaceref(freespacerefArg)
@@ -89,4 +89,3 @@ long spacemonitorObj::calculate_inode(const std::string &objectname)
 			++n;
 	return n;
 }
-

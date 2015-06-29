@@ -11,7 +11,7 @@
 STASHER_NAMESPACE_START
 
 x::property::value<size_t>
-objwriterObj::default_bufsize(L"objrepo::writebufsize", 8192);
+objwriterObj::default_bufsize("objrepo::writebufsize", 8192);
 
 objwriterObj::objwriterObj(size_t bufsize)
  : buf_ptr(0), ser_iter(*this)

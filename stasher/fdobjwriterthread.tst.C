@@ -194,7 +194,7 @@ public:
 
 static void test5()
 {
-	static x::property::value<unsigned> testprop(L"testprop1", 0);
+	static x::property::value<unsigned> testprop("testprop1", 0);
 
 	std::pair<x::fd, x::fd> socks(x::fd::base::socketpair());
 

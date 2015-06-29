@@ -8,7 +8,7 @@
 #include "objwriter.H"
 
 x::property::value<size_t>
-objuuidlistObj::default_chunksize(L"copychunksize", 16);
+objuuidlistObj::default_chunksize("copychunksize", 16);
 
 objuuidlistObj::objuuidlistObj() noexcept
 {

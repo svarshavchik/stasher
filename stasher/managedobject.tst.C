@@ -234,7 +234,7 @@ int main(int argc, char **argv)
 	try {
 		tstnodes nodes(1);
 
-		x::property::load_property(L"objrepo::manager", L"2 seconds",
+		x::property::load_property("objrepo::manager", "2 seconds",
 					   true, true);
 		std::cerr << "test1" << std::endl;
 

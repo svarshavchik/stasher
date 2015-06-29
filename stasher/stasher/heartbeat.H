@@ -636,13 +636,13 @@ public:
 		     const I &nodenameArg,
 
 		     //! Application property that specifies the refresh interval
-		     const x::property::propvalue &defaultTimeoutProp,
+		     const std::string &defaultTimeoutProp,
 
 		     //! Default refresh interval
 		     const defaultTimeoutType &defaultTimeout,
 
 		     //! Application property that specifies the stale purge timeout
-		     const x::property::propvalue &defaultStaleProp,
+		     const std::string &defaultStaleProp,
 
 		     //! Default refresh interval
 		     const defaultStaleType &defaultStale,
@@ -806,7 +806,7 @@ public:
 	{
 		if (update_type == heartbeatCommonBase::subsequent_update)
 			// A node (possibly this one) updated its own heartbeat,
-			// we don't need to do anything. 
+			// we don't need to do anything.
 			return;
 
 		x::ptr<x::obj> request_mcguffin;

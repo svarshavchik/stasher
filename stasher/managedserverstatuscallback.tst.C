@@ -149,9 +149,9 @@ int main(int argc, char **argv)
 	try {
 		tstnodes nodes(3);
 
-		x::property::load_property(L"objrepo::manager", L"2 seconds",
+		x::property::load_property("objrepo::manager", "2 seconds",
 					   true, true);
-		x::property::load_property(L"reconnect", L"4", true, true);
+		x::property::load_property("reconnect", "4", true, true);
 
 		std::cerr << "test1" << std::endl;
 

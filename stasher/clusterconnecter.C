@@ -24,9 +24,9 @@
 LOG_CLASS_INIT(clusterconnecterObj);
 
 x::property::value<unsigned>
-clusterconnecterObj::connect_timeout(L"connecttimeout", 30);
+clusterconnecterObj::connect_timeout("connecttimeout", 30);
 
-x::property::value<bool> clusterconnecterObj::debugnotls(L"debugnotls", false);
+x::property::value<bool> clusterconnecterObj::debugnotls("debugnotls", false);
 
 clusterconnecterObj::clusterconnecterObj(const std::string &nameArg)
 

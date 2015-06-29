@@ -3,12 +3,12 @@
 ** See COPYING for distribution information.
 */
 
-static x::property::value<bool> noalarm(L"noalarm", false);
+static x::property::value<bool> noalarm("noalarm", false);
 
 {
 #ifndef ENABLE_NEWNODERECONNECT
-	x::property::load_property(L"connection::debugnonewconnect",
-				   L"true", true, true,
+	x::property::load_property("connection::debugnonewconnect",
+				   "true", true, true,
 				   x::property::errhandler::errlog(),
 				   x::locale::create("C"));
 #endif

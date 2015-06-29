@@ -27,16 +27,16 @@ MAINLOOP_IMPL(localconnectionObj)
 LOG_CLASS_INIT(localconnectionObj);
 
 x::property::value<size_t>
-localconnectionObj::maxgets_prop(L"connection::maxgets", 10);
+localconnectionObj::maxgets_prop("connection::maxgets", 10);
 
 x::property::value<size_t>
-localconnectionObj::writequeuesize_prop(L"connection::writequeuesize", 100);
+localconnectionObj::writequeuesize_prop("connection::writequeuesize", 100);
 
 x::property::value<size_t>
-localconnectionObj::diritersize_prop(L"connection::diritersize", 10);
+localconnectionObj::diritersize_prop("connection::diritersize", 10);
 
 x::property::value<size_t>
-localconnectionObj::maxsubs_prop(L"connection::maxsubs", 10);
+localconnectionObj::maxsubs_prop("connection::maxsubs", 10);
 
 class localconnectionObj::quorumstatusObj
 	: public STASHER_NAMESPACE::repoclusterquorumcallbackbaseObj {

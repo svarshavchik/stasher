@@ -28,13 +28,13 @@
 LOG_CLASS_INIT(clusterlistenerimplObj);
 
 x::property::value<size_t>
-clusterlistenerimplObj::maxgetobjects(L"connection::maxgetobjects", 100);
+clusterlistenerimplObj::maxgetobjects("connection::maxgetobjects", 100);
 
 x::property::value<bool>
-clusterlistenerimplObj::debugnonewconnect(L"connection::debugnonewconnect", false);
+clusterlistenerimplObj::debugnonewconnect("connection::debugnonewconnect", false);
 
 x::property::value<std::string>
-clusterlistenerimplObj::appsdir(L"appsdir", localstatedir "/stasher/apps");
+clusterlistenerimplObj::appsdir("appsdir", localstatedir "/stasher/apps");
 
 clusterlistenerimplObj
 ::clusterlistenerimplObj(const std::string &directoryArg)
@@ -400,7 +400,7 @@ void clusterlistenerimplObj::start_conn(const x::ref<localconnectionObj> &conn,
 
 
 x::property::value<time_t> clusterlistenerimplObj::retr_credentialsObj
-::timeout_interval(L"localcredtimeout", 15);
+::timeout_interval("localcredtimeout", 15);
 
 clusterlistenerimplObj::retr_credentialsObj::
 retr_credentialsObj(const x::fd &sockArg,
@@ -488,10 +488,10 @@ void clusterlistenerimplObj::retr_credentialsObj::run()
 
 
 x::property::value<x::memsize>
-clusterlistenerimplObj::reserved_space(L"reserved::diskspace",
+clusterlistenerimplObj::reserved_space("reserved::diskspace",
 				       x::memsize(1024L * 1024L * 16));
 x::property::value<size_t>
-clusterlistenerimplObj::reserved_inodes(L"reserved::inodes", 100);
+clusterlistenerimplObj::reserved_inodes("reserved::inodes", 100);
 
 void clusterlistenerimplObj::dispatch(const update_reserved_space_msg &msg)
 {

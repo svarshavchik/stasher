@@ -12,7 +12,7 @@
 LOG_CLASS_INIT(clustertlsconnectshutdownObj);
 
 x::property::value<unsigned>
-clustertlsconnectshutdownObj::bye_timeout(L"byetimeout", 15);
+clustertlsconnectshutdownObj::bye_timeout("byetimeout", 15);
 
 unsigned clustertlsconnectshutdownObj::getTimeout()
 {
@@ -54,7 +54,7 @@ void clustertlsconnectshutdownObj::mcguffin_destructor_cb::destroyed()
 {
 	tracker->start(shutdown, socket, session);
 }
-			      
+
 void clustertlsconnectshutdownObj
 ::create(const x::ptr<x::obj> &connection_mcguffin,
 	 const x::ptr<STASHER_NAMESPACE::stoppableThreadTrackerObj> &tracker,

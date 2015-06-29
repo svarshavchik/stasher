@@ -75,7 +75,7 @@ See COPYING for distribution information.
 	<comment>
 	  //! Enumerated server properties
 	</comment>
-	<decl>std::map&lt;x::property::propvalue, x::property::propvalue&gt; <name>properties</name></decl>
+	<decl>std::map&lt;std::string, std::string&gt; <name>properties</name></decl>
       </field>
     </results>
   </message>
@@ -90,14 +90,14 @@ See COPYING for distribution information.
 	<comment>
 	  //! Name of the property to set
 	</comment>
-	<decl type='class'>x::property::propvalue <name>propname</name></decl>
+	<decl type='class'>std::string <name>propname</name></decl>
       </field>
 
       <field>
 	<comment>
 	  //! Property's new value
 	</comment>
-	<decl type='class'>x::property::propvalue <name>propvalue</name></decl>
+	<decl type='class'>std::string <name>propvalue</name></decl>
       </field>
     </request>
 
@@ -123,7 +123,7 @@ See COPYING for distribution information.
 	  //! The adjusted property value
 	</comment>
 
-	<decl>x::property::propvalue <name>newvalue</name></decl>
+	<decl>std::string <name>newvalue</name></decl>
       </field>
     </results>
   </message>
@@ -137,7 +137,7 @@ See COPYING for distribution information.
 	<comment>
 	  //! Reset this property to default value
 	</comment>
-	<decl type='class'>x::property::propvalue <name>propname</name></decl>
+	<decl type='class'>std::string <name>propname</name></decl>
       </field>
     </request>
 

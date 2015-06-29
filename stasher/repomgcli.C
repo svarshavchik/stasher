@@ -78,10 +78,10 @@ public:
 #include "repomgcliopts.h"
 #include "localstatedir.h"
 
-x::property::value<std::string> default_clusterdir(L"objrepo::clusterdir",
+x::property::value<std::string> default_clusterdir("objrepo::clusterdir",
 						   localstatedir "/stasher/clusters");
 
-x::property::value<std::string> default_newnodedir(L"objrepo::newnodedir",
+x::property::value<std::string> default_newnodedir("objrepo::newnodedir",
 						   localstatedir "/stasher/newnodes");
 
 class display_keys : public repomg::key_list_callback {
@@ -151,23 +151,23 @@ static x::property::list mkconfig()
 
 	x::locale env=x::locale::create("");
 
-	proplist->load(L"x::logger::handler::objrepo=logs/%Y-%m-%d.log"
-		       L"\n"
-		       L"x::logger::handler::objrepo::rotate=logs/*.log"
-		       L"\n"
-		       L"x::logger::handler::objrepo::keep=7"
-		       L"\n"
-		       L"x::logger::format::objrepo=%Y-%m-%d %H:%M:%S"
-		       L" @{level}: @{msg}"
-		       L"\n"
-		       L"x::logger::log::handler::default=objrepo"
-		       L"\n"
-		       L"x::logger::log::handler::default::format=objrepo"
-		       L"\n"
-		       L"x::logger::log::level=info"
-		       L"\n"
-		       L"x::@log::level=error"
-		       L"\n", true, true,
+	proplist->load("x::logger::handler::objrepo=logs/%Y-%m-%d.log"
+		       "\n"
+		       "x::logger::handler::objrepo::rotate=logs/*.log"
+		       "\n"
+		       "x::logger::handler::objrepo::keep=7"
+		       "\n"
+		       "x::logger::format::objrepo=%Y-%m-%d %H:%M:%S"
+		       " @{level}: @{msg}"
+		       "\n"
+		       "x::logger::log::handler::default=objrepo"
+		       "\n"
+		       "x::logger::log::handler::default::format=objrepo"
+		       "\n"
+		       "x::logger::log::level=info"
+		       "\n"
+		       "x::@log::level=error"
+		       "\n", true, true,
 		       x::property::errhandler::errthrow(), env);
 
 	return proplist;
@@ -358,8 +358,8 @@ static int clustmg(int argc, char **argv)
 							     "/properties",
 							     0644);
 
-				std::map<x::property::propvalue,
-					 x::property::propvalue> propmap;
+				std::map<std::string,
+					 std::string> propmap;
 
 				mkconfig()->enumerate(propmap);
 

@@ -384,7 +384,7 @@ void repocontrollermasterObj::run(x::ref<x::obj> &start_arg)
 
 		worker_pool_t
 			commitqueueref(worker_pool_t
-				       ::create(2, 8, "commit", L"commitjobs"));
+				       ::create(2, 8, "commit", "commitjobs"));
 		commitqueue= &*commitqueueref;
 
 		auto stop_mcguffinref=x::ref<x::obj>::create();
@@ -1698,4 +1698,3 @@ std::string repocontrollermasterObj::report(std::ostream &rep)
 	return "master(" + mastername + ", uuid" + x::tostring(masteruuid)
 		+ ")";
 }
-

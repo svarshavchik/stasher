@@ -63,7 +63,7 @@ void test1(tstnodes &t)
 
 	auto sub0=cl0->subscribeserverstatus(cb0);
 	auto sub1=cl1->subscribeserverstatus(cb1);
-	
+
 	{
 		std::unique_lock<std::mutex> lock(cb0->mutex);
 
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 
 #include "opts.parse.inc.tst.C"
 
-	x::property::load_property(L"reconnect", L"4", true, true);
+	x::property::load_property("reconnect", "4", true, true);
 
 	try {
 		{
