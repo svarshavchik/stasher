@@ -20,34 +20,34 @@ class repomgcliopts_base {
 
 public:
 	x::const_locale l;
-	x::wctype wc;
+	x::ctype wc;
 
-	std::wstring keystrengths;
+	std::string keystrengths;
 
-	std::wstring defaultkeystrength;
+	std::string defaultkeystrength;
 
-	std::wstring digests;
+	std::string digests;
 
-	std::wstring quoted_list(std::vector<std::wstring> &list)
+	std::string quoted_list(std::vector<std::string> &list)
 	{
 		std::transform(list.begin(),
 			       list.end(),
 			       list.begin(),
-			       [&](const std::wstring &w)
+			       [&](const std::string &w)
 			       {
-				       return L"\""
+				       return "\""
 					       + wc.tolower(w)
-					       + L"\"";
+					       + "\"";
 			       });
 		return x::join(list, L", ");
 	}
 
-	repomgcliopts_base(const x::wmessagesptr &msgcat)
+	repomgcliopts_base(const x::messagesptr &msgcat)
 		: l(msgcat->getLocale()),
 		  wc(l),
 		  keystrengths(
 			       ({
-				       std::vector<std::wstring> list;
+				       std::vector<std::string> list;
 
 				       x::gnutls::sec_param::enumerate(list, l);
 
@@ -56,14 +56,14 @@ public:
 			       ),
 
 		  defaultkeystrength
-		  (L"\""
-		   + wc.tolower(x::towstring(x::gnutls::sec_param
-					     (GNUTLS_SEC_PARAM_NORMAL), l))
-		   + L"\""),
+		  ("\""
+		   + wc.tolower(x::tostring(x::gnutls::sec_param
+					    (GNUTLS_SEC_PARAM_NORMAL)))
+		   + "\""),
 
 		  digests(
 			  ({
-				  std::vector<std::wstring> list;
+				  std::vector<std::string> list;
 
 				  x::gnutls::digest_algorithm::enumerate(list,
 									 l);
