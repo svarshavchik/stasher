@@ -34,13 +34,7 @@ STASHER_NAMESPACE_END
 namespace x {
 	template<>
 	std::string tostring(const STASHER_NAMESPACE::req_stat_t &,
-			     const const_locale &localeRef)
-;
-
-	template<>
-	std::wstring towstring(const STASHER_NAMESPACE::req_stat_t &,
-			       const const_locale &localeRef)
-;
+			     const const_locale &localeRef);
 };
 
 LIBCXX_SERIALIZE_ENUMERATION(STASHER_NAMESPACE::req_stat_t,char);

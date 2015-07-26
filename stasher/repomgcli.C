@@ -178,7 +178,7 @@ static x::property::list mkconfig()
 static int clustmg(int argc, char **argv)
 {
 	x::locale locale(x::locale::create(""));
-	x::wmessages msgcat(x::wmessages::create(locale, "stasher"));
+	x::messages msgcat(x::messages::create(locale, "stasher"));
 	repomgcliopts opts(msgcat);
 	std::list<std::string> args(opts.parse(argc, argv, locale)->args);
 
@@ -367,7 +367,7 @@ static int clustmg(int argc, char **argv)
 
 				x::locale env=x::locale::create("");
 
-				x::property::save_properties<char>
+				x::property::save_properties
 					(propmap,
 					 std::ostreambuf_iterator<char>(*w),
 					 env);

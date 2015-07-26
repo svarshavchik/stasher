@@ -61,10 +61,6 @@ public:
 		return !operator==(o);
 	}
 
-	//! This is a stringable class
-
-	static const x::stringable_t stringable = x::class_tostring;
-
 	//! Convert a class instance to a string.
 	template<typename OutputIterator>
 	OutputIterator toString(OutputIterator iter,

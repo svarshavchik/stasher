@@ -18,6 +18,7 @@
 #include <x/fmtsize.H>
 #include <x/dir.H>
 #include <x/sysexception.H>
+#include <courier-unicode.h>
 
 #include <iterator>
 #include <algorithm>
@@ -220,26 +221,19 @@ class cli {
 	}
 
 	// By convention object names are coded in utf-8
-	//
-	// Take the specified object name, convert to wide string using
-	// the environment locale, then convert back to narrow string
-	// using a utf-8 locale.
-	//
-	// If you know that you're grokking utf-8 already, or us-ascii, there's
-	// no need for this.
 
 	static std::string toutf8(const std::string &n)
 	{
-		return x::tostring(x::towstring(n, x::locale::create("")),
-				  x::locale::base::utf8());
+		return unicode::iconvert::convert(n, unicode_default_chset(),
+						  unicode::utf_8);
 	}
 
 	// And now, the other way
 
 	static std::string fromutf8(const std::string &n)
 	{
-		return x::tostring(x::towstring(n, x::locale::base::utf8()),
-				   x::locale::create(""));
+		return unicode::iconvert::convert(n, unicode::utf_8,
+						  unicode_default_chset());
 	}
 
 	static char needquote(char c)
@@ -1257,10 +1251,8 @@ void cli::getprops(const std::list<std::string> &args)
 
 		// Standardize the property name
 
-		std::wstring w=x::towstring(*b);
-
 		std::list<std::string> hier;
-		x::property::parsepropname(w.begin(), w.end(), hier,
+		x::property::parsepropname(b->begin(), b->end(), hier,
 					   locale);
 		wanted.insert(x::property::combinepropname(hier));
 	}
@@ -1287,10 +1279,9 @@ void cli::getprops(const std::list<std::string> &args)
 		}
 	}
 
-	x::property::save_properties<char>(res->properties,
-					   std::ostreambuf_iterator<char>
-					   (std::cout),
-					   locale);
+	x::property::save_properties(res->properties,
+				     std::ostreambuf_iterator<char>(std::cout),
+				     locale);
 }
 
 void cli::setprop(const std::string &propname, const std::string &propvalue)

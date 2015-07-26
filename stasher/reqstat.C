@@ -54,12 +54,3 @@ std::string x::tostring(const STASHER_NAMESPACE::req_stat_t &value,
 
 	return p;
 }
-
-template<>
-std::wstring x::towstring(const STASHER_NAMESPACE::req_stat_t &value,
-			  const const_locale &localeRef)
-
-{
-	return x::towstring(x::tostring(value, localeRef), localeRef);
-}
-

@@ -593,10 +593,10 @@ noinst_PROGRAMS += stashercli
 $(call OPTIONS_GEN,stasher.h,stasher.xml)
 
 stashercli_SOURCES=stasher.C
-stashercli_LDADD=libstasher-client.la @LIBREADLINE@
+stashercli_LDADD=libstasher-client.la @LIBREADLINE@ -lcourier-unicode
 
 stasher_static_SOURCES=stasher.C
-stasher_static_LDADD=libstasher-client.la @LIBREADLINE@
+stasher_static_LDADD=libstasher-client.la @LIBREADLINE@ -lcourier-unicode
 stasher_static_LDFLAGS=-static
 
 check-am:
