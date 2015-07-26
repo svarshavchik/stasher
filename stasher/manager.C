@@ -78,6 +78,10 @@ class LIBCXX_HIDDEN managerObj::implObj : virtual public x::obj {
 		// A timer that schedules retry requests
 		x::timer timer;
 
+		// The manager object's destructor was invoked
+
+		bool destroying=false;
+
 		meta_t() : timer(x::timer::create())
 		{
 			timer->setTimerName("stashermanager");
@@ -198,6 +202,10 @@ managerObj::managerObj(const std::string &property_name,
 
 managerObj::~managerObj() noexcept
 {
+	x::mpobj<implObj::meta_t>::lock lock(impl->meta);
+
+	lock->destroying=true;
+	lock->timer->cancel();
 }
 
 // A managed subscriber
@@ -469,6 +477,9 @@ void managerObj::implObj::objectsubscribeCancelledObj<info>
 		auto interval=manager->resubscribe_interval.getValue();
 
 		x::mpobj<implObj::meta_t>::lock lock(manager->meta);
+
+		if (lock->destroying)
+			return;
 
 		if (subscriber->request_stat != req_processed_stat)
 		{
