@@ -8,7 +8,7 @@
 #include <x/dir.H>
 #include <x/fd.H>
 #include <x/locale.H>
-#include <x/ctype.H>
+#include <x/strtok.H>
 #include <x/fileattr.H>
 #include <sstream>
 
@@ -106,7 +106,7 @@ void nsmap::parse_local_map(const std::string &configfile,
 
 	x::istream i= x::fd::base::open(configfile, O_RDONLY)->getistream();
 
-	x::ctype ct(x::locale::base::environment());
+	auto l=x::locale::base::environment();
 
 	do
 	{
@@ -116,12 +116,12 @@ void nsmap::parse_local_map(const std::string &configfile,
 
 		std::list<std::string> words;
 
-		ct.strtok_is(s, words, std::ctype_base::space, '"');
+		x::strtok_str(s, " \t\r\n", '"', words);
 
 		if (words.empty())
 			continue;
 
-		std::string cmd=ct.toupper(words.front());
+		std::string cmd=l->toupper(words.front());
 
 		words.pop_front();
 

@@ -312,7 +312,7 @@ localstatedir.h: Makefile
 	mv -f localstatedir.h.tmp localstatedir.h
 
 stashermg_SOURCES=repomgcli.C
-stashermg_LDADD=libstasher.la
+stashermg_LDADD=libstasher.la -lcourier-unicode
 
 maxintsize_tst_SOURCES=maxintsize.tst.C
 maxintsize_tst_LDADD=-lcxx
@@ -396,7 +396,7 @@ clusterlistener_tst_LDADD=libstasher.la
 clusterlistener_tst_LDFLAGS=-static
 
 clusterconnecter_tst_SOURCES=clusterconnecter.tst.C tst.nodes.C tst.nodes.H
-clusterconnecter_tst_LDADD=libstasher.la
+clusterconnecter_tst_LDADD=libstasher.la -lcourier-unicode
 clusterconnecter_tst_LDFLAGS=-static
 
 fdobjrwthread_tst_SOURCES=fdobjrwthread.tst.C
@@ -404,7 +404,7 @@ fdobjrwthread_tst_LDADD=libstasher.la
 fdobjrwthread_tst_LDFLAGS=-static
 
 peerstatusannouncer_tst_SOURCES=peerstatusannouncer.tst.C tst.nodes.C tst.nodes.H
-peerstatusannouncer_tst_LDADD=libstasher.la
+peerstatusannouncer_tst_LDADD=libstasher.la -lcourier-unicode
 peerstatusannouncer_tst_LDFLAGS=-static
 
 repoclusterinfo_tst_SOURCES=repoclusterinfo.tst.C
@@ -424,7 +424,7 @@ repocontrollermaster_tst_LDADD=libstasher.la
 repocontrollermaster_tst_LDFLAGS=-static
 
 repocontrollermaster2_tst_SOURCES=repocontrollermaster2.tst.C tst.nodes.C tst.nodes.H
-repocontrollermaster2_tst_LDADD=libstasher.la
+repocontrollermaster2_tst_LDADD=libstasher.la -lcourier-unicode
 repocontrollermaster2_tst_LDFLAGS=-static
 
 repopeerconnection2_tst_SOURCES=repopeerconnection2.tst.C
@@ -456,117 +456,117 @@ trancanceller_tst_LDADD=libstasher.la
 trancanceller_tst_LDFLAGS=-static
 
 trandistributor3_tst_SOURCES=trandistributor3.tst.C tst.nodes.C tst.nodes.H
-trandistributor3_tst_LDADD=libstasher.la
+trandistributor3_tst_LDADD=libstasher.la -lcourier-unicode
 trandistributor3_tst_LDFLAGS=-static
 
 trandistributor4_tst_SOURCES=trandistributor4.tst.C tst.nodes.C tst.nodes.H
-trandistributor4_tst_LDADD=libstasher.la
+trandistributor4_tst_LDADD=libstasher.la -lcourier-unicode
 trandistributor4_tst_LDFLAGS=-static
 
 baton_tst_SOURCES=baton.tst.C tst.nodes.C tst.nodes.H
-baton_tst_LDADD=libstasher.la
+baton_tst_LDADD=libstasher.la -lcourier-unicode
 baton_tst_LDFLAGS=-static
 
 baton2_tst_SOURCES=baton2.tst.C tst.nodes.C tst.nodes.H
-baton2_tst_LDADD=libstasher.la
+baton2_tst_LDADD=libstasher.la -lcourier-unicode
 baton2_tst_LDFLAGS=-static
 
 readtimeout_tst_SOURCES=readtimeout.tst.C tst.nodes.C tst.nodes.H
-readtimeout_tst_LDADD=libstasher.la
+readtimeout_tst_LDADD=libstasher.la -lcourier-unicode
 readtimeout_tst_LDFLAGS=-static
 
 reconnect_tst_SOURCES=reconnect.tst.C tst.nodes.C tst.nodes.H
-reconnect_tst_LDADD=libstasher.la
+reconnect_tst_LDADD=libstasher.la -lcourier-unicode
 reconnect_tst_LDFLAGS=-static
 
 adminstop_tst_SOURCES=adminstop.tst.C tst.nodes.C tst.nodes.H
-adminstop_tst_LDADD=libstasher.la
+adminstop_tst_LDADD=libstasher.la -lcourier-unicode
 adminstop_tst_LDFLAGS=-static
 
 userput_tst_SOURCES=userput.tst.C tst.nodes.C tst.nodes.H
-userput_tst_LDADD=libstasher.la
+userput_tst_LDADD=libstasher.la -lcourier-unicode
 userput_tst_LDFLAGS=-static
 
 usergetuuids_tst_SOURCES=usergetuuids.tst.C tst.nodes.C tst.nodes.H
-usergetuuids_tst_LDADD=libstasher.la
+usergetuuids_tst_LDADD=libstasher.la -lcourier-unicode
 usergetuuids_tst_LDFLAGS=-static
 
 userdir_tst_SOURCES=userdir.tst.C tst.nodes.C tst.nodes.H
-userdir_tst_LDADD=libstasher.la
+userdir_tst_LDADD=libstasher.la -lcourier-unicode
 userdir_tst_LDFLAGS=-static
 
 usergetuuids2_tst_SOURCES=usergetuuids2.tst.C tst.nodes.C tst.nodes.H
-usergetuuids2_tst_LDADD=libstasher.la
+usergetuuids2_tst_LDADD=libstasher.la -lcourier-unicode
 usergetuuids2_tst_LDFLAGS=-static
 
 usersubscribe_tst_SOURCES=usersubscribe.tst.C tst.nodes.C tst.nodes.H
-usersubscribe_tst_LDADD=libstasher.la
+usersubscribe_tst_LDADD=libstasher.la -lcourier-unicode
 usersubscribe_tst_LDFLAGS=-static
 
 adminsetcert_tst_SOURCES=adminsetcert.tst.C tst.nodes.C tst.nodes.H
-adminsetcert_tst_LDADD=libstasher.la
+adminsetcert_tst_LDADD=libstasher.la -lcourier-unicode
 adminsetcert_tst_LDFLAGS=-static
 
 statuscallback_tst_SOURCES=statuscallback.tst.C tst.nodes.C tst.nodes.H
-statuscallback_tst_LDADD=libstasher.la
+statuscallback_tst_LDADD=libstasher.la -lcourier-unicode
 statuscallback_tst_LDFLAGS=-static
 
 newnode_tst_SOURCES=newnode.tst.C tst.nodes.C tst.nodes.H
-newnode_tst_LDADD=libstasher.la
+newnode_tst_LDADD=libstasher.la -lcourier-unicode
 newnode_tst_LDFLAGS=-static
 
 clientreconnect_tst_SOURCES=clientreconnect.tst.C tst.nodes.C tst.nodes.H
-clientreconnect_tst_LDADD=libstasher.la
+clientreconnect_tst_LDADD=libstasher.la -lcourier-unicode
 clientreconnect_tst_LDFLAGS=-static
 
 adminsetcert2_tst_SOURCES=adminsetcert2.tst.C tst.nodes.C tst.nodes.H
-adminsetcert2_tst_LDADD=libstasher.la
+adminsetcert2_tst_LDADD=libstasher.la -lcourier-unicode
 adminsetcert2_tst_LDFLAGS=-static
 
 adminhalt_tst_SOURCES=adminhalt.tst.C tst.nodes.C tst.nodes.H
-adminhalt_tst_LDADD=libstasher.la
+adminhalt_tst_LDADD=libstasher.la -lcourier-unicode
 adminhalt_tst_LDFLAGS=-static
 
 managedusersubscribe_tst_SOURCES=managedusersubscribe.tst.C tst.nodes.C tst.nodes.H
-managedusersubscribe_tst_LDADD=libstasher.la
+managedusersubscribe_tst_LDADD=libstasher.la -lcourier-unicode
 managedusersubscribe_tst_LDFLAGS=-static
 
 managedserverstatuscallback_tst_SOURCES=managedserverstatuscallback.tst.C tst.nodes.C tst.nodes.H
-managedserverstatuscallback_tst_LDADD=libstasher.la
+managedserverstatuscallback_tst_LDADD=libstasher.la -lcourier-unicode
 managedserverstatuscallback_tst_LDFLAGS=-static
 
 managedhierarchymonitor_tst_SOURCES=managedhierarchymonitor.tst.C tst.nodes.C tst.nodes.H
-managedhierarchymonitor_tst_LDADD=libstasher.la
+managedhierarchymonitor_tst_LDADD=libstasher.la -lcourier-unicode
 managedhierarchymonitor_tst_LDFLAGS=-static
 
 managedobject_tst_SOURCES=managedobject.tst.C tst.nodes.C tst.nodes.H
-managedobject_tst_LDADD=libstasher.la
+managedobject_tst_LDADD=libstasher.la -lcourier-unicode
 managedobject_tst_LDFLAGS=
 
 managedobject2_tst_SOURCES=managedobject2.tst.C tst.nodes.C tst.nodes.H
-managedobject2_tst_LDADD=libstasher.la
+managedobject2_tst_LDADD=libstasher.la -lcourier-unicode
 managedobject2_tst_LDFLAGS=
 
 managedobject3_tst_SOURCES=managedobject3.tst.C tst.nodes.C tst.nodes.H
-managedobject3_tst_LDADD=libstasher.la
+managedobject3_tst_LDADD=libstasher.la -lcourier-unicode
 managedobject3_tst_LDFLAGS=
 
 appsdir_tst_SOURCES=appsdir.tst.C tst.nodes.C tst.nodes.H
-appsdir_tst_LDADD=libstasher.la
+appsdir_tst_LDADD=libstasher.la -lcourier-unicode
 appsdir_tst_LDFLAGS=-static
 
 $(call MSGDISPATCHER_GEN,verify.tst.msgs,all)
 
 verify_tst_SOURCES=verify.tst.C tst.nodes.C tst.nodes.H
-verify_tst_LDADD=libstasher.la
+verify_tst_LDADD=libstasher.la -lcourier-unicode
 verify_tst_LDFLAGS=-static
 
 reconnectsync_tst_SOURCES=reconnectsync.tst.C tst.nodes.C tst.nodes.H
-reconnectsync_tst_LDADD=libstasher.la
+reconnectsync_tst_LDADD=libstasher.la -lcourier-unicode
 reconnectsync_tst_LDFLAGS=-static
 
 heartbeat_tst_SOURCES=heartbeat.tst.C tst.nodes.C tst.nodes.H
-heartbeat_tst_LDADD=libstasher.la
+heartbeat_tst_LDADD=libstasher.la -lcourier-unicode
 heartbeat_tst_LDFLAGS=-static
 
 EXTRATESTS=

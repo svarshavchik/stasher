@@ -6,7 +6,7 @@
 #include "objrepo_config.h"
 #include "stasher/nodeinfo.H"
 
-#include <x/ctype.H>
+#include <x/locale.H>
 
 STASHER_NAMESPACE_START
 
@@ -88,14 +88,14 @@ void nodeinfo::ordernum(int n) noexcept
 
 void nodeinfo::toString(std::ostream &o)
 {
-	x::ctype c(x::locale::base::utf8());
+	auto utf8=x::locale::base::utf8();
 
 	for (auto opt:options)
 	{
 		if (opt.first == ordernum_option)
 			continue;
 
-		o << "    " << c.toupper(opt.first) << "="
+		o << "    " << utf8->toupper(opt.first) << "="
 		  << opt.second << std::endl;
 	}
 }

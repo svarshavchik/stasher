@@ -450,7 +450,7 @@ void cli::do_command(std::list<std::string> &args)
 	if (args.empty())
 		return;
 
-	std::string cmd=x::ctype(locale).tolower(args.front());
+	std::string cmd=locale->tolower(args.front());
 	args.pop_front();
 
 	if (cmd == "put")
@@ -746,7 +746,7 @@ void cli::setlimits(const std::string &maxobjects,
 	std::map<std::string, std::string> replace;
 	std::set<std::string> remove;
 
-	if (x::ctype(locale).tolower(maxobjects) == "default")
+	if (locale->tolower(maxobjects) == "default")
 	{
 		remove.insert(STASHER_NAMESPACE::client::base
 			      ::maxobjects);
@@ -777,7 +777,7 @@ void cli::setlimits(const std::string &maxobjects,
 			});
 	}
 
-	if (x::ctype(locale).tolower(maxobjectsize) == "default")
+	if (locale->tolower(maxobjectsize) == "default")
 	{
 		remove.insert(STASHER_NAMESPACE::client::base
 			      ::maxobjectsize);
@@ -869,7 +869,7 @@ void cli::put(const std::list<std::string> &args)
 	for (std::list<std::string>::const_iterator
 		     b=args.begin(), e=args.end(); b != e; )
 	{
-		std::string cmd=x::ctype(locale).tolower(*b);
+		std::string cmd=locale->tolower(*b);
 
 		std::string content_str;
 		x::fdptr content_fd;
@@ -910,7 +910,7 @@ void cli::put(const std::list<std::string> &args)
 		if (b == e)
 			put_syntax_error();
 
-		std::string src=x::ctype(locale).tolower(*b);
+		std::string src=locale->tolower(*b);
 
 		if (++b == e)
 			put_syntax_error();
@@ -1241,7 +1241,7 @@ void cli::getprops(const std::list<std::string> &args)
 	for (std::list<std::string>::const_iterator b=args.begin(),
 		     e=args.end(); b != e; ++b)
 	{
-		std::string src=x::ctype(locale).tolower(*b);
+		std::string src=locale->tolower(*b);
 
 		if (src == "/all")
 		{
@@ -1319,7 +1319,7 @@ void cli::editcluster(std::list<std::string> &args)
 
 	while (!args.empty())
 	{
-		std::string cmd=x::ctype(locale).tolower(args.front());
+		std::string cmd=locale->tolower(args.front());
 
 		if (cmd == "force")
 		{
@@ -1392,7 +1392,7 @@ void cli::cluster(std::list<std::string> &args)
 
 	while (!args.empty())
 	{
-		std::string cmd=x::ctype(locale).tolower(args.front());
+		std::string cmd=locale->tolower(args.front());
 
 		args.pop_front();
 
@@ -1476,7 +1476,7 @@ void cli::cluster(std::list<std::string> &args)
 				if (args.empty())
 					break;
 
-				cmd=x::ctype(locale).tolower(args.front());
+				cmd=locale->tolower(args.front());
 
 				if (cmd != "before" && cmd != "after")
 					break;
@@ -1627,8 +1627,8 @@ void cli::cluster(std::list<std::string> &args)
 				continue;
 
 			std::cout << "    "
-				  << x::ctype(x::locale::base::utf8())
-				.toupper(b->first);
+				  << x::locale::base::utf8()
+				->toupper(b->first);
 
 			if (b->second != "1")
 				std::cout << "=" << b->second;
@@ -1646,7 +1646,7 @@ void cli::savecluster(std::list<std::string> &args)
 
 	while (!args.empty())
 	{
-		std::string cmd=x::ctype(locale).tolower(args.front());
+		std::string cmd=locale->tolower(args.front());
 
 		if (cmd == "force")
 			forceflag=true;
@@ -1756,13 +1756,13 @@ void cli::namespacecmd(std::list<std::string> &args)
 		return;
 	}
 
-	std::string rwro=x::ctype(locale).tolower(args.front());
+	std::string rwro=locale->tolower(args.front());
 	args.pop_front();
 
 	if (args.empty() || (rwro != "rw" && rwro != "ro"))
 		namespace_syntax_error();
 
-	std::string cmd=x::ctype(locale).tolower(args.front());
+	std::string cmd=locale->tolower(args.front());
 	args.pop_front();
 
 	if (cmd == "move")
@@ -1780,7 +1780,7 @@ void cli::namespacecmd(std::list<std::string> &args)
 			namespace_syntax_error();
 
 		std::string verb=
-			x::ctype(locale).tolower(args.front());
+			locale->tolower(args.front());
 		args.pop_front();
 
 		if (verb != "before" && verb != "after")
@@ -1813,7 +1813,7 @@ void cli::namespacecmd(std::list<std::string> &args)
 		while (!args.empty())
 		{
 			std::string verb=
-				x::ctype(locale).tolower(args.front());
+				locale->tolower(args.front());
 			args.pop_front();
 
 			if (verb == "unsetroot")
@@ -1947,7 +1947,7 @@ void cli::namespaceparseid(std::list<std::string> &args,
 {
 	while (!args.empty())
 	{
-		std::string verb=x::ctype(locale).tolower(args.front());
+		std::string verb=locale->tolower(args.front());
 
 		std::string *argptr;
 

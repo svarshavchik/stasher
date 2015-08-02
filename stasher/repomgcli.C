@@ -20,7 +20,6 @@ class repomgcliopts_base {
 
 public:
 	x::const_locale l;
-	x::ctype wc;
 
 	std::string keystrengths;
 
@@ -36,7 +35,7 @@ public:
 			       [&](const std::string &w)
 			       {
 				       return "\""
-					       + wc.tolower(w)
+					       + l->tolower(w)
 					       + "\"";
 			       });
 		return x::join(list, L", ");
@@ -44,7 +43,6 @@ public:
 
 	repomgcliopts_base(const x::messagesptr &msgcat)
 		: l(msgcat->getLocale()),
-		  wc(l),
 		  keystrengths(
 			       ({
 				       std::vector<std::string> list;
@@ -57,7 +55,7 @@ public:
 
 		  defaultkeystrength
 		  ("\""
-		   + wc.tolower(x::tostring(x::gnutls::sec_param
+		   + l->tolower(x::tostring(x::gnutls::sec_param
 					    (GNUTLS_SEC_PARAM_NORMAL)))
 		   + "\""),
 
