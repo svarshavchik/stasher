@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Double Precision, Inc.
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the stasher package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: stasher 0.05\n"
+"Project-Id-Version: stasher 0.06\n"
 "Report-Msgid-Bugs-To: mrsam@courier-mta.com\n"
-"POT-Creation-Date: 2014-05-18 14:04-0400\n"
+"POT-Creation-Date: 2015-11-04 20:05-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
