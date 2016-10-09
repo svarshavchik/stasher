@@ -12,7 +12,7 @@ Requires(postun): /sbin/ldconfig systemd-units
 %define _hardened_build 1
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: libcxx-devel
+BuildRequires: libcxxbase-devel
 BuildRequires: perl-devel
 
 %description
@@ -21,7 +21,7 @@ multiple servers, and keeps them in sync.
 
 %package devel
 Summary: Stasher object repository server development files
-Requires: libcxx-devel %{name} = 0:%{version}-%{release}
+Requires: libcxxbase-devel %{name} = 0:%{version}-%{release}
 Group: Development/Libraries
 
 %description devel
@@ -116,6 +116,5 @@ rm -rf $RPM_BUILD_ROOT
 %{perl_vendorarch}/auto/Stasher/Stasher*
 
 %changelog
-* Tue Jan 10 2012 Sam Varshavchik <mrsam@octopus.email-scan.com> - 
+* Tue Jan 10 2012 Sam Varshavchik <mrsam@octopus.email-scan.com> -
 - Initial build.
-
