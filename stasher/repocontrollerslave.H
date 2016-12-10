@@ -9,7 +9,6 @@
 #undef libx_autogen_suppress_inner
 
 #include <x/weakptr.H>
-#include <x/msgdispatcher.H>
 #include <x/logger.H>
 #include "stasher/quorumstate.H"
 #include "repocontrollerbasehandoff.H"

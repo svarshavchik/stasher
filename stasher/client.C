@@ -27,7 +27,6 @@
 #include "userchanged.H"
 #include "localstatedir.h"
 
-#include <x/msgdispatcher.H>
 #include <x/threads/run.H>
 #include <x/property_properties.H>
 #include <x/timerfd.H>

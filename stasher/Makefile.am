@@ -555,7 +555,7 @@ appsdir_tst_SOURCES=appsdir.tst.C tst.nodes.C tst.nodes.H
 appsdir_tst_LDADD=libstasher.la -lcourier-unicode
 appsdir_tst_LDFLAGS=-static
 
-$(call MSGDISPATCHER_GEN,verify.tst.msgs,all)
+$(call THREADMSGDISPATCHER_GEN, verify.tst.msgs.all.H, verify.tst.msgs.xml)
 
 verify_tst_SOURCES=verify.tst.C tst.nodes.C tst.nodes.H
 verify_tst_LDADD=libstasher.la -lcourier-unicode

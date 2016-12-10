@@ -13,7 +13,7 @@ See COPYING for distribution information.
   <method name="check_put">
 
     <param type="class">
-      <decl>STASHER_NAMESPACE::putresults <name>res</name></decl>
+      <decl>const STASHER_NAMESPACE::putresults &amp;res</decl>
     </param>
 
   </method>

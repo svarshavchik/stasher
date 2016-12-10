@@ -15,7 +15,7 @@
 #include <x/ref.H>
 #include <x/ptr.H>
 #include <x/threads/run.H>
-#include <x/dequemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 #include <x/uuid.H>
 #include <x/fd.H>
 #include <x/destroycallbackflag.H>
@@ -55,8 +55,7 @@ public:
 	~counterObj() noexcept {}
 };
 
-class keepitObj : public x::dequemsgdispatcherObj,
-		  public x::runthreadsingleton {
+class keepitObj : public x::threadmsgdispatcherObj {
 
 	dummy *instance;
 	const STASHER_NAMESPACE::manager *manager;
@@ -82,14 +81,19 @@ public:
 	{
 	}
 
-	void run(const STASHER_NAMESPACE::client &client);
+	void run(x::ptr<x::obj> &mcguffin,
+		 const STASHER_NAMESPACE::client &client);
 
 #include "verify.tst.msgs.all.H"
 
 };
 
-void keepitObj::run(const STASHER_NAMESPACE::client &clientInstance)
+void keepitObj::run(x::ptr<x::obj> &start_mcguffin,
+		    const STASHER_NAMESPACE::client &clientInstance)
 {
+	msgqueue_auto q(this);
+	start_mcguffin=x::ptr<x::obj>();
+
 	x::destroyCallbackFlag::base::guard guard;
 
 	auto managerInstance=STASHER_NAMESPACE::manager::create();
@@ -120,29 +124,14 @@ void keepitObj::run(const STASHER_NAMESPACE::client &clientInstance)
 
 	try {
 		while (1)
-		{
-			auto msg=({
-					msgqueue_t::lock lock(msgqueue);
+			q.event();
 
-					lock.wait([&lock]
-						  {
-							  return !lock->empty();
-						  });
-
-					auto front=lock->front();
-					lock->pop_front();
-
-					front;
-				});
-
-			msg->dispatch();
-		}
 	} catch (const x::stopexception &e)
 	{
 	}
 }
 
-void keepitObj::dispatch(const check_msg &msg)
+void keepitObj::dispatch_check()
 {
 	if (update_pending)
 		return;
@@ -181,14 +170,14 @@ void keepitObj::dispatch(const check_msg &msg)
 
 }
 
-void keepitObj::dispatch(const check_put_msg &msg)
+void keepitObj::dispatch_check_put(const STASHER_NAMESPACE::putresults &res)
 {
 	update_pending=false;
 
 	std::cout << "Update: " << name << ": "
-		  << x::tostring(msg.res->status) << std::endl;
+		  << x::tostring(res->status) << std::endl;
 
-	if (msg.res->status == STASHER_NAMESPACE::req_processed_stat)
+	if (res->status == STASHER_NAMESPACE::req_processed_stat)
 	{
 		x::mpcobj<int>::lock lock(counter->counter);
 
@@ -197,7 +186,7 @@ void keepitObj::dispatch(const check_put_msg &msg)
 		lock.notify_all();
 	}
 
-	dispatch(check_msg());
+	dispatch_check();
 }
 
 void test1(tstnodes &t)
@@ -223,9 +212,9 @@ void test1(tstnodes &t)
 		secondone=x::ref<keepitObj>::create("object", "name2", counter),
 		thirdone=x::ref<keepitObj>::create("object", "name3", counter);
 
-	auto thread1=x::run(firstone, cl0);
-	auto thread2=x::run(secondone, cl1);
-	auto thread3=x::run(thirdone, cl2);
+	auto thread1=x::start_thread(firstone, cl0);
+	auto thread2=x::start_thread(secondone, cl1);
+	auto thread3=x::start_thread(thirdone, cl2);
 
 	std::cout << "Waiting for 100 completed updates..." << std::endl;
 
