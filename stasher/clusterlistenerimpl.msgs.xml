@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2012 Double Precision, Inc.
+Copyright 2012-2016 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -17,7 +17,7 @@ See COPYING for distribution information.
     <comment>/*!
     Recompute amount of space reserved.
     */</comment>
-    <param type="class"><decl>margin_message <name>margin</name></decl></param>
+    <param><decl>const margin_message &amp;margin</decl></param>
   </method>
 
   <method name="start_localconn">
@@ -25,8 +25,8 @@ See COPYING for distribution information.
       //! Start a non-privileged local connection thrad
     </comment>
 
-    <param type="class"><decl>x::fd <name>sock</name></decl></param>
-    <param type="class"><decl>nsmap::clientcred <name>fromwho</name></decl></param>
+    <param><decl>const x::fd &amp;sock</decl></param>
+    <param><decl>const nsmap::clientcred &amp;fromwho</decl></param>
   </method>
 
   <method name="start_privlocalconn">
@@ -34,8 +34,8 @@ See COPYING for distribution information.
       //! Start a privileged local connection thrad
     </comment>
 
-    <param type="class"><decl>x::fd <name>sock</name></decl></param>
-    <param type="class"><decl>nsmap::clientcred <name>fromwho</name></decl></param>
+    <param><decl>const x::fd &amp;sock</decl></param>
+    <param><decl>const nsmap::clientcred &amp;fromwho</decl></param>
   </method>
 
 </class>

@@ -46,8 +46,7 @@ class localconnectionObj;
 //! of inodes to reserve for a file with the given filename (one, plus one for
 //! each hierarchy delimiter character in the filename).
 
-class clusterlistenerimplObj : public clusterlistenerObj,
-			       public x::runthreadsingleton {
+class clusterlistenerimplObj : public clusterlistenerObj {
 
 	//! The logging object
 
@@ -75,7 +74,7 @@ class clusterlistenerimplObj : public clusterlistenerObj,
 		margin_message(size_t n) : set_new_peers(true), npeers(n) {}
 	};
 
-#include "clusterlistenerimpl.msgs.decl.H"
+#include "clusterlistenerimpl.msgs.H"
 
 private:
 	//! Free space monitor
@@ -146,7 +145,8 @@ private:
 public:
 
 	//! The thread run function
-	void run(const STASHER_NAMESPACE::stoppableThreadTracker  &trackerArg,
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const STASHER_NAMESPACE::stoppableThreadTracker  &trackerArg,
 		 const x::ptr<trandistributorObj> &distributorArg,
 		 const tobjrepo &distrepoArg,
 		 const x::ptr<clustertlsconnectshutdownObj> &shutdownArg,
@@ -213,6 +213,9 @@ private:
 public:
 	//! Directory with predefined application namespaces
 	static x::property::value<std::string> appsdir;
+
+
+	void foo() override {}
 };
 
 #endif

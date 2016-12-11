@@ -16,7 +16,6 @@
 #include "localconnection.H"
 #include "localprivconnection.H"
 #include "repoclusterinfoimpl.H"
-#include "clusterlistenerimpl.msgs.def.H"
 #include "nslist.H"
 #include "nsview.H"
 #include "localstatedir.h"
@@ -83,13 +82,18 @@ void clusterlistenerimplObj::connectnewpeers()
 		connectpeers();
 }
 
-void clusterlistenerimplObj::run(const STASHER_NAMESPACE::stoppableThreadTracker
+void clusterlistenerimplObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+				 const STASHER_NAMESPACE::stoppableThreadTracker
 				 &trackerArg,
 				 const x::ptr<trandistributorObj> &distributorArg,
 				 const tobjrepo &distrepoArg,
 				 const x::ptr<clustertlsconnectshutdownObj> &shutdownArg,
 				 const repoclusterinfoimpl &clusterArg)
 {
+	msgqueue_auto msgqueue(this);
+
+	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+
 	tracker= &trackerArg;
 	distributor= &distributorArg;
 	distrepo= &distrepoArg;
@@ -107,7 +111,7 @@ void clusterlistenerimplObj::run(const STASHER_NAMESPACE::stoppableThreadTracker
 
 	clusterArg->installnotifycluster(margin_callbackRef);
 
-	clusterlistenerObj::run();
+	clusterlistenerObj::run(msgqueue);
 }
 
 void clusterlistenerimplObj::start_network(const x::fd &sock,
@@ -196,7 +200,7 @@ x::ptr<x::obj> clusterlistenerimplObj::connectpeers_cb
 	return connecter;
 }
 
-void clusterlistenerimplObj::dispatch(const connectpeers_msg &dummy)
+void clusterlistenerimplObj::dispatch_connectpeers()
 {
 	LOG_DEBUG(nodeName() << ": contacting peers");
 	(*cluster)
@@ -261,9 +265,10 @@ start_credentials(const x::fd &sock,
 				   start_connArg));
 }
 
-void clusterlistenerimplObj::dispatch(const start_localconn_msg &msg)
+void clusterlistenerimplObj::dispatch_start_localconn(const x::fd &sock,
+						      const nsmap::clientcred &fromwho)
 {
-	std::string name=msg.fromwho;
+	std::string name=fromwho;
 
 	std::string host=nodeName();
 	std::string clustersuffix="." + clusterName();
@@ -292,7 +297,7 @@ void clusterlistenerimplObj::dispatch(const start_localconn_msg &msg)
 			localmap_iter=localmap_end_iter;
 
 		try {
-			auto s=x::fileattr::create(msg.fromwho.path)->stat();
+			auto s=x::fileattr::create(fromwho.path)->stat();
 
 			localmap_iter=localmap.find(std::make_pair(s->st_dev,
 								   s->st_ino));
@@ -336,8 +341,8 @@ void clusterlistenerimplObj::dispatch(const start_localconn_msg &msg)
 		nslist map;
 
 		deserialize_iter(map);
-		rwnamespaces=msg.fromwho.computemappings(map.rw, host);
-		ronamespaces=msg.fromwho.computemappings(map.ro, host);
+		rwnamespaces=fromwho.computemappings(map.rw, host);
+		ronamespaces=fromwho.computemappings(map.ro, host);
 	}
 
 	nsview namespaceview=nsview::create(ronamespaces, rwnamespaces,
@@ -362,14 +367,15 @@ void clusterlistenerimplObj::dispatch(const start_localconn_msg &msg)
 			    *cluster,
 			    spacedf,
 			    getsemaphore),
-		   msg.sock,
-		   x::fd::base::inputiter(msg.sock),
+		   sock,
+		   x::fd::base::inputiter(sock),
 		   x::ptr<x::obj>());
 }
 
-void clusterlistenerimplObj::dispatch(const start_privlocalconn_msg &msg)
+void clusterlistenerimplObj::dispatch_start_privlocalconn(const x::fd &sock,
+							  const nsmap::clientcred &fromwho)
 {
-	std::string name=msg.fromwho;
+	std::string name=fromwho;
 
 	LOG_DEBUG(nodeName() << ": admin connection from " << name);
 
@@ -382,8 +388,8 @@ void clusterlistenerimplObj::dispatch(const start_privlocalconn_msg &msg)
 			    spacedf,
 			    getsemaphore,
 			    clusterlistener(this)),
-		   msg.sock,
-		   x::fd::base::inputiter(msg.sock),
+		   sock,
+		   x::fd::base::inputiter(sock),
 		   x::ptr<x::obj>());
 }
 
@@ -493,10 +499,10 @@ clusterlistenerimplObj::reserved_space("reserved::diskspace",
 x::property::value<size_t>
 clusterlistenerimplObj::reserved_inodes("reserved::inodes", 100);
 
-void clusterlistenerimplObj::dispatch(const update_reserved_space_msg &msg)
+void clusterlistenerimplObj::dispatch_update_reserved_space(const margin_message &margin)
 {
-	if (msg.margin.set_new_peers)
-		npeers=msg.margin.npeers;
+	if (margin.set_new_peers)
+		npeers=margin.npeers;
 
 	*reservation_margin=spacemonitorObj::reservationptr();
 	// Release space first

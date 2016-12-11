@@ -270,12 +270,12 @@ void node::start(bool noreconnecter)
 		       repocluster, repo,
 		       x::ptr<distributorMonitorObj>::create(repocluster));
 
-	tracker->start(clusterlistenerimpl(listener),
-		       tracker,
-		       distributor,
-		       repo,
-		       x::ptr<clustertlsconnectshutdownObj>::create(),
-		       repocluster);
+	tracker->start_thread(clusterlistenerimpl(listener),
+			      tracker,
+			      distributor,
+			      repo,
+			      x::ptr<clustertlsconnectshutdownObj>::create(),
+			      repocluster);
 
 	if (noreconnecter)
 		return;

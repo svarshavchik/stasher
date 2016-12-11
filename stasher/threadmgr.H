@@ -11,7 +11,7 @@
 #include <x/weakptr.H>
 #include <x/mcguffinref.H>
 #include <x/threads/run.H>
-
+#include <x/threadmsgdispatcher.H>
 #include <type_traits>
 
 //! Manage a object run()ing a stoppable thread.
@@ -76,6 +76,28 @@ public:
 
 		thr->install(thrArg, ret);
 	}
+
+	//! Start a thread.
+
+	//! Invoke the thread's run() method using x::start_thread().
+	//! If the thread is still running by the time this object gets
+	//! destroyed, it gets stopped.
+
+	template<typename ...Args>
+	void start_thread(const x::ref<typename ref_type::obj_type,
+			  typename ref_type::base> &thrArg,
+			  Args && ...args)
+	{
+		std::lock_guard<std::mutex> lock(objmutex);
+
+		x::runthreadbase ret=x::start_thread(thrArg,
+						     std::forward<Args>(args)...);
+
+		threadret=ret;
+
+		thr->install(thrArg, ret);
+	}
+
 
 	//! Check if the thread is still running.
 

@@ -50,7 +50,7 @@ public:
 	std::mutex mutex;
 	std::condition_variable cond;
 	bool flag;
-		
+
 	quorumcbObj() : flag(false)
 	{
 	}
@@ -120,12 +120,12 @@ public:
 		  quorumstatus(x::ptr<quorumcbObj>::create())
 	{
 		repocluster->initialize();
-		tracker->start(listener,
-			       tracker,
-			       x::ptr<trandistributorObj>(),
-			       repo,
-			       x::ptr<mytlsshutdown>::create(),
-			       repocluster);
+		tracker->start_thread(listener,
+				      tracker,
+				      x::ptr<trandistributorObj>(),
+				      repo,
+				      x::ptr<mytlsshutdown>::create(),
+				      repocluster);
 
 		repocluster->installQuorumNotification(quorumstatus);
 

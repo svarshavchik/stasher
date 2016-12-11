@@ -22,8 +22,6 @@
 
 LOG_CLASS_INIT(clusterlistenerObj);
 
-#include "clusterlistener.msgs.def.H"
-
 x::property::value<x::ymd::interval> clusterlistenerObj
 ::certwarntime("certcheck::warntime", x::ymd::interval(0, 1, 0, 0));
 
@@ -160,7 +158,7 @@ void clusterlistenerObj::reload()
 	}
 }
 
-void clusterlistenerObj::dispatch(const checkcert_msg &msg)
+void clusterlistenerObj::dispatch_checkcert()
 {
 	try {
 		x::ymdhms now;
@@ -284,7 +282,7 @@ public:
 	}
 };
 
-void clusterlistenerObj::run()
+void clusterlistenerObj::run(msgqueue_auto &msgqueue)
 {
 	x::httportmap portmapper_cpy=portmapper;
 
@@ -320,7 +318,7 @@ void clusterlistenerObj::run()
 		while (1)
 		{
 			while (!msgqueue->empty())
-				msgqueue->pop()->dispatch();
+				msgqueue.event();
 
 			epollfd->epoll_wait();
 		}
@@ -390,7 +388,10 @@ void clusterlistenerObj::accept_pubsock(const x::fd &sock)
 
 void clusterlistenerObj::tickle_eventfd(const x::fd &sock)
 {
-	msgqueue->getEventfd()->event();
+	auto p=get_msgqueue();
+
+	if (!p.null())
+		p->getEventfd()->event();
 }
 
 

@@ -25,16 +25,23 @@ public:
 	}
 
 	void start_network(const x::fd &sock,
-				   const x::sockaddr &addr)
-;
+				   const x::sockaddr &addr);
 
 	void start_privsock(const x::fd &sock,
-				    const x::sockaddr &addr)
-;
+				    const x::sockaddr &addr);
 
 	void start_pubsock(const x::fd &sock,
-				    const x::sockaddr &addr)
-;
+				    const x::sockaddr &addr);
+
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
+	{
+		msgqueue_auto msgqueue(this);
+
+		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		clusterlistenerObj::run(msgqueue);
+	}
+
+	void foo() override {}
 };
 
 void testclusterlistenerObj::start_network(const x::fd &sock,
@@ -79,7 +86,7 @@ static void test1(const char *clusterdir,
 	STASHER_NAMESPACE::stoppableThreadTrackerImpl
 		threads(STASHER_NAMESPACE::stoppableThreadTrackerImpl::create());
 
-	threads->start(x::ref<testclusterlistenerObj>::create(nodedir));
+	threads->start_thread(x::ref<testclusterlistenerObj>::create(nodedir));
 
 	{
 		bool caught=false;

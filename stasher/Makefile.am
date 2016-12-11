@@ -196,6 +196,7 @@ libstasher_client_la_SOURCES=\
         stoppablethreadtrackerfwd.H                        \
 	threadmgr.H                                        \
 	threadreportimpl.C threadreportimpl.H              \
+	threadreportimpl2.C threadreportimpl2.H            \
 	userchanged.C userchanged.H                        \
 	usergetuuids.C usergetuuids.H                      \
 	usergetuuidsreply.C usergetuuidsreply.H            \
@@ -288,8 +289,8 @@ $(call MSGDISPATCHER_GEN,trandistributor.msgs,messagedef apidef,scope=outer)
 $(call MSGDISPATCHER_GEN,repopeerconnection.msgs,def decl)
 $(call MSGDISPATCHER_GEN,repopeerconnection.msgs,messagedef,scope=outer)
 $(call MSGDISPATCHER_GEN,repocontrollerslave.msgs,def decl)
-$(call MSGDISPATCHER_GEN,clusterlistenerimpl.msgs,def decl)
-$(call MSGDISPATCHER_GEN,clusterlistener.msgs,def decl)
+$(call THREADMSGDISPATCHER_GEN,clusterlistenerimpl.msgs.H,clusterlistenerimpl.msgs.xml)
+$(call THREADMSGDISPATCHER_GEN,clusterlistener.msgs.H,clusterlistener.msgs.xml)
 $(call MSGDISPATCHER_GEN,objrepocopydstthread.msgs,all)
 $(call MSGDISPATCHER_GEN,objrepocopysrcthread.msgs,all)
 $(call MSGDISPATCHER_GEN,peerstatusannouncer.msgs,def decl)
@@ -302,6 +303,7 @@ $(call MSGDISPATCHER_GEN,localprivconnection.msgs,def decl)
 
 $(call MSGDISPATCHER_GEN,client.msgs,all)
 $(call MSGDISPATCHER_GEN,threadreportimpl.msgs,def decl)
+$(call THREADMSGDISPATCHER_GEN,threadreportimpl2.msgs.H, threadreportimpl2.msgs.xml)
 
 libstasher_la_LIBADD=libstasher-client.la -lcxxtls -lpthread
 

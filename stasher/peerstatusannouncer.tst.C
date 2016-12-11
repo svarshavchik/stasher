@@ -103,15 +103,21 @@ public:
 	~myListener() noexcept;
 
 	void start_network(const x::fd &sock,
-			   const x::sockaddr &addr)
-;
+			   const x::sockaddr &addr);
 	void start_privsock(const x::fd &sock,
-			    const x::sockaddr &addr)
-;
+			    const x::sockaddr &addr);
 
 	void start_pubsock(const x::fd &sock,
-			   const x::sockaddr &addr)
-;
+			   const x::sockaddr &addr);
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
+	{
+		msgqueue_auto msgqueue(this);
+
+		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		clusterlistenerObj::run(msgqueue);
+	}
+
+	void foo() override {}
 };
 
 testpeerstatusannouncerObj
@@ -289,7 +295,7 @@ public:
 					      tracker, clusterinfomap))
 	{
 		listener->cluster=cluster;
-		tracker->start(listener);
+		tracker->start_thread(listener);
 	}
 
 	void connectpeers()

@@ -305,7 +305,15 @@ public:
 	void start_pubsock(const x::fd &sock,
 			   const x::sockaddr &addr);
 
-	using clusterlistenerObj::run;
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
+	{
+		msgqueue_auto msgqueue(this);
+
+		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		clusterlistenerObj::run(msgqueue);
+	}
+
+	void foo() override {}
 };
 
 class listener_owner {
@@ -320,7 +328,7 @@ public:
 						      infoArg)),
 		  thread(x::ref<threadmgrObj<x::ref<mylistener> > >::create())
 	{
-		thread->run(listener);
+		thread->start_thread(listener);
 	}
 };
 

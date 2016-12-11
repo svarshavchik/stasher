@@ -172,13 +172,13 @@ public:
 		tracker->start(x::ref<mydistributor>(distributor),
 			       repocluster, repo, x::ptr<x::obj>::create());
 
-		tracker->start(listener,
-			       tracker,
-			       distributor,
-			       repo,
-			       x::ptr<clustertlsconnectshutdownObj>
-			       ::create(),
-			       repocluster);
+		tracker->start_thread(listener,
+				      tracker,
+				      distributor,
+				      repo,
+				      x::ptr<clustertlsconnectshutdownObj>
+				      ::create(),
+				      repocluster);
 		repocluster->installQuorumNotification(quorumstatus);
 		(void)repocluster->debug_inquorum();
 	}

@@ -8,7 +8,7 @@
 
 #undef libx_autogen_suppress_inner
 
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 #include <x/threads/run.H>
 #include <x/httportmap.H>
 #include <x/gnutls/credentials.H>
@@ -17,7 +17,7 @@
 #include <x/ymd.H>
 #include <x/property_properties.H>
 
-#include "threadreportimpl.H"
+#include "threadreportimpl2.H"
 #include "clusterlistenerfwd.H"
 
 //! A thread that listens and accept cluster connections
@@ -66,11 +66,11 @@
 //!
 //! This is a one-time use class.
 
-class clusterlistenerObj : virtual public x::eventqueuemsgdispatcherObj,
+class clusterlistenerObj : virtual public x::threadmsgdispatcherObj,
 			   public x::runthreadname,
-			   public STASHER_NAMESPACE::threadreportimplObj {
+			   public STASHER_NAMESPACE::threadreportimpl2Obj {
 
-#include "clusterlistener.msgs.decl.H"
+#include "clusterlistener.msgs.H"
 
 protected:
 	//! The logger object
@@ -192,7 +192,7 @@ public:
 	bool install(const std::string &certificate);
 
 	//! Execution thread
-	void run();
+	void run(msgqueue_auto &q);
 
 protected:
 

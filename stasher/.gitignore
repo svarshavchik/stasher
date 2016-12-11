@@ -5,6 +5,7 @@
 *.sig
 /*.tst
 /*.msgs.*.H
+/*.msgs.H
 /*.auto.[CH]
 /*.stamp
 /Doxyfile

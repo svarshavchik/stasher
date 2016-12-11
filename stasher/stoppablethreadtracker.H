@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -13,8 +13,9 @@
 #include <x/exception.H>
 #include <x/threads/run.H>
 #include <x/logger.H>
-
+#include <x/refptr_traits.H>
 #include <x/stoppable.H>
+#include <x/threadmsgdispatcher.H>
 #include "stasher/namespace.H"
 #include "stoppablethreadtrackerfwd.H"
 
@@ -126,6 +127,37 @@ class stoppableThreadTrackerImplObj : virtual public x::obj {
 			return ret;
 		}
 
+		//! Start a thread.
+
+		template<typename objClass, typename baseClass,
+			 typename ...Args>
+		auto start_thread(const x::ref<objClass, baseClass> &thread,
+				  Args && ...args)
+		{
+			typedef typename x::refptr_traits<
+				decltype(x::start_thread(thread,
+							 std::forward<Args>
+							 (args)...))>
+				::ptr_t returnedptr_t;
+
+			// Make sure the thread object implements the stoppable
+			// interface
+			x::stoppableObj &s= *thread;
+
+			std::lock_guard<std::mutex> lock(objmutex);
+
+			if (stopping)
+				return returnedptr_t();
+
+			auto ret=x::start_thread(thread,
+						 std::forward<Args>(args)...);
+
+			thread_list->insert(std::make_pair(ret->get_id(),
+							   x::stoppable(&s)));
+			running_threads->push_back(ret);
+			return returnedptr_t(ret);
+		}
+
 		//! Request a report from all the running threads
 		x::ptr<threadreportObj> getReport();
 	};
@@ -170,6 +202,14 @@ public:
 					     ...))>
 	{
 		return implref->start(thread, std::forward<Args>(args)...);
+	}
+
+	template<typename objClass, typename baseClass,
+		 typename ...Args>
+	auto start_thread(const x::ref<objClass, baseClass> &thread,
+			  Args && ...args)
+	{
+		return implref->start_thread(thread, std::forward<Args>(args)...);
 	}
 
 	//! Return a reference to a tracker object that uses implObj
@@ -226,6 +266,23 @@ public:
 			decltype(thread->run(x::invoke_run_param_helper<Args>()
 					     ...))
 				>();
+	}
+
+	//! Start a thread, unless we're stopping all the threads.
+
+	template<typename objClass, typename baseClass,
+		 typename ...Args>
+	auto start_thread(const x::ref<objClass, baseClass> &thread,
+			  Args && ...args)
+	{
+		stoppableThreadTrackerImplObj::implptr s(implref.getptr());
+
+		if (!s.null())
+			return s->start_thread(thread,
+					       std::forward<Args>(args)...);
+
+		return decltype(s->start_thread(thread,
+						std::forward<Args>(args)...))();
 	}
 
 	//! Request a report from all the running threads
