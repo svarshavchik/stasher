@@ -306,4 +306,3 @@ void tstnodes::thesecantbemaster(std::vector<noderef> &nodes,
 	mcguffin=x::ptr<x::obj>();
 	flag->wait();
 }
-

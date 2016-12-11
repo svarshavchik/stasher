@@ -265,11 +265,17 @@ void node::certcheck_job::run()
 
 void node::start(bool noreconnecter)
 {
-	repocluster->initialize();
-	tracker->start(x::ref<trandistributorObj>(distributor),
-		       repocluster, repo,
-		       x::ptr<distributorMonitorObj>::create(repocluster));
+	// Need to construct the queue for trandistributor first, because
+	// repocluster pokes the distributor
 
+	auto msgqueue = trandistributorObj::msgqueue_obj::create(distributor);
+
+	repocluster->initialize();
+
+	tracker->start_thread(x::ref<trandistributorObj>(distributor),
+			      msgqueue,
+			      repocluster, repo,
+			      x::ptr<distributorMonitorObj>::create(repocluster));
 	tracker->start_thread(clusterlistenerimpl(listener),
 			      tracker,
 			      distributor,

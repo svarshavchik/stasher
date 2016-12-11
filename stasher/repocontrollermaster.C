@@ -974,6 +974,7 @@ void repocontrollermasterObj::checkcommit(const trandistuuid &uuids,
 
 		if (p != ready.end())
 		{
+
 			LOG_TRACE("Checking if "
 				  << x::tostring(b->first)
 				  << " can be commited");

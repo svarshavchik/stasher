@@ -8,7 +8,6 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include <x/exception.H>
-
 #include <list>
 #include "trandistihave.H"
 #include "trandistcancel.H"
@@ -221,8 +220,10 @@ static void test1()
 				tr->finalize();
 			}));
 
-	tracker->start(distributor, cluster, repo,
-		       x::ptr<x::obj>::create());
+	tracker->start_thread(distributor,
+			      trandistributorObj::msgqueue_obj::create(distributor),
+			      cluster, repo,
+			      x::ptr<x::obj>::create());
 
 	auto conn=repopeerconnection::create("nodeb");
 
@@ -339,7 +340,9 @@ static void test2()
 	x::ref<trandistributorObj>
 		distributor(x::ref<trandistributorObj>::create());
 
-	tracker->start(distributor, cluster, repo, x::ptr<x::obj>());
+	tracker->start_thread(distributor,
+			      trandistributorObj::msgqueue_obj::create(distributor),
+			      cluster, repo, x::ptr<x::obj>());
 
 	x::uuid trannodea;
 

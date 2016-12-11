@@ -92,10 +92,10 @@ public:
 	std::mutex mutex;
 	std::condition_variable cond;
 
-	void dispatch_cluster_update(const clusterinfoObj::cluster_t &newStatus)
+	void do_dispatch_cluster_update(const clusterinfoObj::cluster_t &newStatus) override
 
 	{
-		trandistributorObj::dispatch_cluster_update(newStatus);
+		trandistributorObj::do_dispatch_cluster_update(newStatus);
 
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -181,6 +181,9 @@ static void test1() // [PURGETRANSOURCEUNKNOWN].
 	auto cluster=x::ref<myclusterinfo>::create("node1", repo,
 						   tracker->getTracker());
 
+	x::ref<mydistributor> distributor(x::ref<mydistributor>::create());
+
+	auto msgqueue = trandistributorObj::msgqueue_obj::create(distributor);
 
 	cluster->initialize();
 
@@ -215,9 +218,9 @@ static void test1() // [PURGETRANSOURCEUNKNOWN].
 		node3tran=tr->finalize();
 	}
 
-	x::ref<mydistributor> distributor(x::ref<mydistributor>::create());
-
-	tracker->start(distributor, cluster, repo, x::ptr<x::obj>());
+	tracker->start_thread(distributor,
+			      msgqueue,
+			      cluster, repo, x::ptr<x::obj>());
 	distributor->wait();
 
 	std::cout << distributor->debugGetReport()->report << std::endl;

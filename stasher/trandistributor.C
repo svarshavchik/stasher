@@ -21,9 +21,6 @@
 
 LOG_CLASS_INIT(trandistributorObj);
 
-#include "trandistributor.msgs.messagedef.H"
-#include "trandistributor.msgs.apidef.H"
-
 trandistributorObj::transtatusObj::transtatusObj()
 	: status(STASHER_NAMESPACE::req_failed_stat)
 {
@@ -91,10 +88,15 @@ std::string trandistributorObj::getName() const
 }
 
 
-void trandistributorObj::run(const repoclusterinfo &clusterArg,
+void trandistributorObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+			     const msgqueue_obj &msgqueue_arg,
+			     const repoclusterinfo &clusterArg,
 			     const tobjrepo &repoArg,
 			     const x::ptr<x::obj> &mcguffin)
 {
+	auto &msgqueue=*msgqueue_arg;
+	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+
 	cluster=&*clusterArg;
 	repo=&*repoArg;
 
@@ -139,7 +141,7 @@ void trandistributorObj::run(const repoclusterinfo &clusterArg,
 		trandistlist= &trandistlistref;
 
 		load_trandistlist();
-		runloop();
+		runloop(msgqueue);
 	} catch (const x::stopexception &dummy)
 	{
 		LOG_INFO("Stopped");
@@ -149,10 +151,10 @@ void trandistributorObj::run(const repoclusterinfo &clusterArg,
 	}
 }
 
-void trandistributorObj::runloop()
+void trandistributorObj::runloop(msgqueue_auto &msgqueue)
 {
 	while (1)
-		msgqueue->pop()->dispatch();
+		msgqueue.event();
 }
 
 class trandistributorObj::purge_cb : public tobjrepoObj::finalized_cb {
@@ -196,19 +198,27 @@ void trandistributorObj
 	submit_internal_transaction(tran);
 }
 
-void trandistributorObj::dispatch(const submit_internal_transaction_msg &msg)
+void trandistributorObj
+::dispatch_submit_internal_transaction(const x::ref<internalTransactionObj>
+				       &tran)
 {
-	msg.tran->doit();
-}
-
-void trandistributorObj::dispatch(const clusterupdated_msg &msg)
-
-{
-	dispatch_cluster_update(msg.status);
+	tran->doit();
 }
 
 void trandistributorObj
-::dispatch_cluster_update(const clusterinfoObj::cluster_t &newStatus)
+::clusterupdated(const clusterinfoObj::cluster_t &status_arg)
+{
+	notify_clusterupdated(status_arg);
+}
+
+void trandistributorObj
+::dispatch_notify_clusterupdated(const clusterinfoObj::cluster_t &status)
+{
+	do_dispatch_cluster_update(status);
+}
+
+void trandistributorObj
+::do_dispatch_cluster_update(const clusterinfoObj::cluster_t &newStatus)
 
 {
 	purge_cb cb;
@@ -253,8 +263,9 @@ public:
 	}
 };
 
-void trandistributorObj::dispatch(const connected_msg &msg)
-
+void trandistributorObj
+::dispatch_connected(const std::string &peername,
+		     const x::weakptr<repopeerconnectionptr> &wconnection)
 {
 	trandistihave ihave;
 
@@ -262,15 +273,15 @@ void trandistributorObj::dispatch(const connected_msg &msg)
 		enumerate_ihave e;
 
 		e.repo=repo;
-		e.peername=msg.peername;
+		e.peername=peername;
 		e.ihave= &ihave;
-	
+
 		repo->enumerate(e);
 
-		LOG_DEBUG("Sending IHAVE to " << msg.peername);
+		LOG_DEBUG("Sending IHAVE to " << peername);
 	}
 
-	repopeerconnectionptr connection(msg.connection.getptr());
+	repopeerconnectionptr connection(wconnection.getptr());
 
 	if (connection.null())
 	{
@@ -281,27 +292,29 @@ void trandistributorObj::dispatch(const connected_msg &msg)
 	connection->distribute_peer(ihave);
 }
 
-void trandistributorObj::dispatch(const submit_newtransaction_msg &msg)
-
+void trandistributorObj
+::dispatch_submit_newtransaction(const newtran &tran,
+				 const transtatus &status,
+				 const x::ptr<x::obj> &mcguffin)
 {
-	msg.tran->getOptions()[tobjrepoObj::node_opt]=nodename;
+	tran->getOptions()[tobjrepoObj::node_opt]=nodename;
 
-	x::uuid msguuid(process_received(msg.tran));
+	x::uuid msguuid(process_received(tran));
 
-	msg.status->uuid=msguuid;
+	status->uuid=msguuid;
 
 	tobjrepo reporef(repo);
 
 	trandistlist->insert(std::make_pair(msguuid,
-					    trandistinfo_t(msg.status,
-							   msg.mcguffin)
+					    trandistinfo_t(status,
+							   mcguffin)
 					    ));
 
 	x::ref<STASHER_NAMESPACE::writtenObj<transerializer> > serializer=
 		create_serialization_msg(reporef, msguuid);
 
 	LOG_DEBUG("Distributing " << x::tostring(msguuid)
-		  << " to peers");
+		  << " to " << peer_list->size() << " peers");
 
 	for (auto peerp: *peer_list)
 	{
@@ -317,10 +330,10 @@ void trandistributorObj::dispatch(const submit_newtransaction_msg &msg)
 	}
 }
 
-void trandistributorObj::dispatch(const canceltransaction_msg &msg)
+void trandistributorObj::dispatch_canceltransaction(const x::uuid &uuid)
 
 {
-	dispatch_cancel(msg.uuid);
+	dispatch_cancel(uuid);
 }
 
 void trandistributorObj::dispatch_cancel(const x::uuid &uuid)
@@ -371,10 +384,18 @@ void trandistributorObj::load_trandistlist()
 	}
 }
 
-void trandistributorObj::dispatch(const deserialized_ihave_msg &msg)
-
+void trandistributorObj::deserialized(const trandistihave &msg,
+				      const repopeerconnectionptr &connection)
 {
-	repopeerconnectionptr connection(msg.connection.getptr());
+	deserialized_ihave(msg, connection);
+}
+
+void trandistributorObj
+::dispatch_deserialized_ihave(const trandistihave &msg,
+			      const x::weakptr<repopeerconnectionptr>
+			      &wconnection)
+{
+	repopeerconnectionptr connection(wconnection.getptr());
 
 	if (connection.null())
 	{
@@ -388,8 +409,8 @@ void trandistributorObj::dispatch(const deserialized_ihave_msg &msg)
 
 	trandistcancel cancel;
 
-	for (std::set<x::uuid>::const_iterator b(msg.msg.uuids.begin()),
-		     e(msg.msg.uuids.end()); b != e; ++b)
+	for (std::set<x::uuid>::const_iterator b(msg.uuids.begin()),
+		     e(msg.uuids.end()); b != e; ++b)
 		if (trandistlist->find(*b) == trandistlist->end())
 			cancel.uuids.insert(*b);
 
@@ -400,7 +421,7 @@ void trandistributorObj::dispatch(const deserialized_ihave_msg &msg)
 
 	for (trandistlist_t::iterator b=trandistlist->begin(),
 		     e=trandistlist->end(); b != e; ++b)
-		if (msg.msg.uuids.find(b->first) == msg.msg.uuids.end())
+		if (msg.uuids.find(b->first) == msg.uuids.end())
 		{
 			connection->distribute_peer
 				(create_serialization_msg(reporef, b->first));
@@ -409,32 +430,56 @@ void trandistributorObj::dispatch(const deserialized_ihave_msg &msg)
 	peer_list->push_back(connection);
 }
 
-void trandistributorObj::dispatch(const deserialized_cancel_msg &msg)
+void trandistributorObj::deserialized(const trandistcancel &msg)
 {
-	for (std::set<x::uuid>::const_iterator b(msg.cancel.uuids.begin()),
-		     e(msg.cancel.uuids.end()); b != e; ++b)
+	deserialized_cancel(msg);
+}
+
+void trandistributorObj
+::dispatch_deserialized_cancel(const trandistcancel &cancel)
+{
+	do_dispatch_deserialized_cancel(cancel);
+}
+
+void trandistributorObj
+::do_dispatch_deserialized_cancel(const trandistcancel &cancel)
+{
+	for (std::set<x::uuid>::const_iterator b(cancel.uuids.begin()),
+		     e(cancel.uuids.end()); b != e; ++b)
 	{
 		LOG_DEBUG("Cancelled " << x::tostring(*b) << " from peer");
 		cancelled(*b);
 	}
 }
 
-void trandistributorObj::dispatch(const deserialized_transaction_msg &msg)
-
+void trandistributorObj::deserialized(const transerializer &msg)
 {
-	x::uuid uuid(process_received(msg.tran));
-
-	LOG_DEBUG("Received " << x::tostring(uuid) << " from peer");
+	deserialized_transaction(msg.tran, msg.uuid);
 }
 
-void trandistributorObj::dispatch(const deserialized_fail_msg &msg)
+void trandistributorObj::dispatch_deserialized_transaction(const newtran &tran,
+							   const x::uuid &uuid)
+{
+	do_dispatch_deserialized_transaction(tran, uuid);
+}
+
+void trandistributorObj::do_dispatch_deserialized_transaction(const newtran &tran,
+							      const x::uuid &uuid)
+{
+	x::uuid received_uuid(process_received(tran));
+
+	LOG_DEBUG("Received " << x::tostring(received_uuid) << " from peer");
+}
+
+void trandistributorObj::dispatch_deserialized_fail(const x::uuid &uuid,
+						    const dist_received_status_t &errcode)
 
 {
-	LOG_DEBUG("Failure receiving " << x::tostring(msg.uuid)
-		  << " from peer " << msg.errcode.sourcenode);
+	LOG_DEBUG("Failure receiving " << x::tostring(uuid)
+		  << " from peer " << errcode.sourcenode);
 
-	repo->failedlist_insert(msg.uuid, msg.errcode);
-	process_received(msg.uuid, msg.errcode);
+	repo->failedlist_insert(uuid, errcode);
+	process_received(uuid, errcode);
 }
 
 // ----------------------------------------------------------------------------
@@ -466,12 +511,12 @@ public:
 	}
 };
 
-void trandistributorObj::dispatch(const installreceiver_msg &msg)
-
+void trandistributorObj
+::dispatch_installreceiver(const x::weakptr<trandistreceivedptr> &newreceiver)
 {
 	receiver=NULL;
 
-	*receiverref=msg.newreceiver.getptr();
+	*receiverref=newreceiver.getptr();
 
 	if (receiverref->null())
 		return;
@@ -567,18 +612,18 @@ void trandistributorObj::cancelled(const x::uuid &uuid)
 	}
 }
 
-void trandistributorObj::dispatch(const completed_msg &msg)
+void trandistributorObj::dispatch_completed(const x::uuid &uuid)
 {
 	STASHER_NAMESPACE::req_stat_t
-		res=repo->get_tran_stat(nodename, msg.uuid);
+		res=repo->get_tran_stat(nodename, uuid);
 
-	LOG_DEBUG("Transaction completed: " << x::tostring(msg.uuid)
+	LOG_DEBUG("Transaction completed: " << x::tostring(uuid)
 		  << ", status=" << (int)res);
 
 #ifdef DEBUG_DISTRIBUTOR_CANCEL_HOOK
 	DEBUG_DISTRIBUTOR_CANCEL_HOOK();
 #endif
-	dispatch_cancel(msg.uuid);
+	dispatch_cancel(uuid);
 }
 
 std::string trandistributorObj::report(std::ostream &rep)
@@ -602,4 +647,3 @@ std::string trandistributorObj::report(std::ostream &rep)
 	}
 	return "distributor(" + nodename + ")";
 }
-

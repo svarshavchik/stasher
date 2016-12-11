@@ -1324,6 +1324,8 @@ void repopeerconnectionObj::run(const x::fdbase &subcl_transport,
 	slavemetaptr= &slavemetainstance;
 	mastermetaptr= &mastermetainstance;
 
+	LOG_TRACE("Connection, distributor: " << distributor);
+
 	if (distributor)
 		distributor->connected(peername,
 				       repopeerconnectionptr(this));

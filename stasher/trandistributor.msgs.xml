@@ -6,19 +6,26 @@ See COPYING for distribution information.
 -->
 
 <class name="trandistributorObj">
-  <method name="clusterupdated">
+  <method name="notify_clusterupdated">
     <comment>/*!
     Cluster status notifier's notification: cluster has been updated
     */</comment>
-    <param type="class"><decl>clusterinfoObj::cluster_t <name>status</name></decl></param>
+    <param><decl>
+      const clusterinfoObj::cluster_t &amp;status
+    </decl></param>
   </method>
 
   <method name="connected">
     <comment>/*!
     Connection request from a peer
     */</comment>
-    <param type="class"><decl>std::string <name>peername</name></decl></param>
-    <param type="weakptr"><decl>repopeerconnectionptr <name>connection</name></decl></param>
+    <param><decl>const std::string &amp;peername</decl></param>
+    <param>
+      <as>x::weakptr&lt;repopeerconnectionptr&gt;</as>
+      <decl>
+	const x::weakptr&lt;repopeerconnectionptr&gt; &amp;connection
+      </decl>
+    </param>
   </method>
 
   <method name="installreceiver">
@@ -29,61 +36,80 @@ See COPYING for distribution information.
     all transactions that have been received by this node. Afterwards,
     received() and cancelled() get called to keep the list up to date.
     */</comment>
-    <param type="weakptr"><decl>trandistreceivedptr <name>newreceiver</name></decl></param>
+    <param>
+      <as>x::weakptr&lt;trandistreceivedptr&gt;</as>
+      <decl>
+	const x::weakptr&lt;trandistreceivedptr&gt; &amp;newreceiver
+      </decl>
+    </param>
   </method>
 
   <method name="submit_newtransaction">
     <comment>/*!
     Internal message sent by newtransaction().
     */</comment>
-    <param type="class"><decl>newtran <name>tran</name></decl></param>
-    <param type="class"><decl>transtatus <name>status</name></decl></param>
-    <param type="class"><decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl></param>
+    <param><decl>const newtran &amp;tran</decl></param>
+    <param><decl>const transtatus &amp;status</decl></param>
+    <param><decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl></param>
   </method>
 
   <method name="submit_internal_transaction">
     <comment>
       //! Internal message sent by internal_transaction().
     </comment>
-    <param type="class"><decl>x::ref&lt;internalTransactionObj&gt; <name>tran</name></decl></param>
+    <param><decl>const x::ref&lt;internalTransactionObj&gt; &amp;tran</decl></param>
   </method>
 
   <method name="canceltransaction">
     <comment>/*!
     A request to cancel a message.
     */</comment>
-    <param type="class"><decl>x::uuid <name>uuid</name></decl></param>
+    <param><decl>const x::uuid &amp;uuid</decl></param>
   </method>
 
   <method name="deserialized_ihave">
     <comment>/*!
     Received an IHAVE message, when synchronizing from a master.
     */</comment>
-    <param type="class"><decl>trandistihave <name>msg</name></decl></param>
-    <param type="weakptr"><decl>repopeerconnectionptr <name>connection</name></decl></param>
+    <param><decl>const trandistihave &amp;msg</decl></param>
+    <param>
+      <as>x::weakptr&lt;repopeerconnectionptr&gt;</as>
+      <decl>
+	const x::weakptr&lt;repopeerconnectionptr&gt; &amp;connection
+      </decl>
+    </param>
   </method>
-  
+
   <method name="deserialized_cancel">
     <comment>/*!
     Received a CANCEL message, when synchonizing from a master.
-    */</comment>    
-    <param type="class"><decl>trandistcancel <name>cancel</name></decl></param>
+
+    Overridden in a unit test.
+
+    */</comment>
+
+    <virtual />
+    <param><decl>const trandistcancel &amp;cancel</decl></param>
   </method>
 
   <method name="deserialized_transaction">
     <comment>/*!
     A transaction from a peer has been deserialized
+
+    Overridden in a unit test.
+
     */</comment>
-    <param type="class"><decl>newtran <name>tran</name></decl></param>
-    <param type="class"><decl>x::uuid <name>uuid</name></decl></param>
+    <virtual />
+    <param><decl>const newtran &amp;tran</decl></param>
+    <param><decl>const x::uuid &amp;uuid</decl></param>
   </method>
 
   <method name="deserialized_fail">
     <comment>/*!
     Failed to deserialize a transaction from a peer
     */</comment>
-    <param type="class"><decl>x::uuid <name>uuid</name></decl></param>
-    <param type="class"><decl>dist_received_status_t <name>errcode</name></decl></param>
+    <param><decl>const x::uuid &amp;uuid</decl></param>
+    <param><decl>const dist_received_status_t &amp;errcode</decl></param>
   </method>
 
   <method name="completed">
@@ -93,6 +119,6 @@ See COPYING for distribution information.
     This is invoked by an object repository callback that detects
     done_hier/{node}/uuid objects.
     */</comment>
-    <param type="class"><decl>x::uuid <name>uuid</name></decl></param>
+    <param><decl>const x::uuid &amp;uuid</decl></param>
   </method>
 </class>

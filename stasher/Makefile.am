@@ -284,8 +284,7 @@ libstasher_client_la_LDFLAGS=-version-info 1
 @LIBCXX_AM@
 
 $(call MSGDISPATCHER_GEN,repocontrollermaster.msgs,def decl)
-$(call MSGDISPATCHER_GEN,trandistributor.msgs,decl,messages=protected)
-$(call MSGDISPATCHER_GEN,trandistributor.msgs,messagedef apidef,scope=outer)
+$(call THREADMSGDISPATCHER_GEN,trandistributor.msgs.H,trandistributor.msgs.xml)
 $(call MSGDISPATCHER_GEN,repopeerconnection.msgs,def decl)
 $(call MSGDISPATCHER_GEN,repopeerconnection.msgs,messagedef,scope=outer)
 $(call MSGDISPATCHER_GEN,repocontrollerslave.msgs,def decl)

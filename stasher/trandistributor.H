@@ -8,7 +8,7 @@
 
 #undef libx_autogen_suppress_inner
 
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 #include <x/threads/run.H>
 #include <x/weaklist.H>
 #include <x/logger.H>
@@ -18,7 +18,7 @@
 #include "trandistuuid.H"
 #include "newtran.H"
 #include "transerializer.H"
-#include "threadreportimpl.H"
+#include "threadreportimpl2.H"
 #include "repoclusterinfofwd.H"
 #include "trandistreceivedfwd.H"
 #include "repopeerconnectionfwd.H"
@@ -152,10 +152,10 @@ STASHER_NAMESPACE_END
 //! If the sending node is removed, the failed transaction is removed, and
 //! reported to the receiver as being cancelled [TRANFAILEDREMOVERECV].
 
-class trandistributorObj : virtual public x::eventqueuemsgdispatcherObj,
+class trandistributorObj : virtual public x::threadmsgdispatcherObj,
 			   public x::runthreadname,
 			   public clusternotifierObj,
-			   public STASHER_NAMESPACE::threadreportimplObj {
+			   public STASHER_NAMESPACE::threadreportimpl2Obj {
 
 	//! The logger object
 	LOG_CLASS_SCOPE;
@@ -233,6 +233,11 @@ private:
 	create_serialization_msg(const tobjrepo &repo,
 				 const x::uuid &uuid);
 
+public:
+
+	void clusterupdated(const clusterinfoObj::cluster_t &status_arg)
+		override;
+private:
 	//! Most recent list of all nodes in the cluster
 
 	//! Accessed by the executing thread, only.
@@ -248,9 +253,18 @@ public:
 	//! Destructor
 	~trandistributorObj() noexcept;
 
+	void foo() override {}
+
 	//! The execution thread
 
-	void run(//! The repoclusterinfo object.
+	void run(//! start_thread()'s mcguffin
+		 x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+
+		 //! My message queue, constructed in advance.
+
+		 const msgqueue_obj &msgqueue,
+
+		 //! The repoclusterinfo object.
 		 const repoclusterinfo &cluster,
 
 		 //! The repository
@@ -266,8 +280,8 @@ private:
 protected:
 	//! Implement dispatch of cluster update, overridden by a subclass in a regression test
 
-	virtual void dispatch_cluster_update(const clusterinfoObj::cluster_t
-					     &newStatus);
+	virtual void do_dispatch_cluster_update(const clusterinfoObj::cluster_t
+						&newStatus);
 
 
 public:
@@ -318,25 +332,15 @@ public:
 			  const trandistihave &msg,
 
 			  //! The connection that sent the message
-			  const repopeerconnectionptr &connection)
-
-	{
-		deserialized_ihave(msg, connection);
-	}
+			  const repopeerconnectionptr &connection);
 
 	//! Received a trandistcancel message
 	void deserialized(//! The message
-			  const trandistcancel &msg)
-	{
-		deserialized_cancel(msg);
-	}
+			  const trandistcancel &msg);
 
 	//! Deserialized a message
 	void deserialized(//! The message
-			  const transerializer &msg)
-	{
-		deserialized_transaction(msg.tran, msg.uuid);
-	}
+			  const transerializer &msg);
 
 private:
 
@@ -364,7 +368,7 @@ private:
 	void process_received(const x::uuid &uuid,
 			      const dist_received_status_t &status);
 
-	
+
 	//! Cancelling an existing transaction.
 
 	//! The transaction was originated here or was distributed by another
@@ -372,18 +376,20 @@ private:
 
 	void cancelled(const x::uuid &uuid);
 
-	//! Internal run loop, overridden in a regression test
+	//! Internal run loop.
 
-	virtual void runloop();
+	void runloop(msgqueue_auto &msgqueue);
 
 	//! Report on the distributor's status
 
-	std::string report(std::ostream &rep);
+	std::string report(std::ostream &rep) override;
 
-#include "trandistributor.msgs.decl.H"
+#include "trandistributor.msgs.H"
 
-
+protected:
+	void do_dispatch_deserialized_cancel(const trandistcancel &cancel) ;
+	void do_dispatch_deserialized_transaction(const newtran &tran,
+						  const x::uuid &uuid) ;
 };
 
 #endif
-

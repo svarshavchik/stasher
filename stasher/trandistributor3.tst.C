@@ -108,6 +108,7 @@ void test1()
 
 	for (size_t pass=0; pass<2; ++pass)
 	{
+		std::cout << "PASS " << pass << std::endl;
 		trandistributorObj::transtatus stat;
 		x::ptr<x::obj> mcguffin(x::ptr<x::obj>::create());
 
@@ -824,6 +825,8 @@ int main(int argc, char **argv)
 
 		std::cout << "test1" << std::endl;
 		test1();
+
+		exit(0);
 
 		std::cout << "test2" << std::endl;
 		test2();

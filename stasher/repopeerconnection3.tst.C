@@ -28,7 +28,6 @@ static int debug_ping_cnt=0;
 #include "stoppablethreadtracker.H"
 #include "clustertlsconnectshutdown.H"
 #include "trandistributor.H"
-#include "trandistributor.msgs.messagedef.H"
 
 #include "tranreceived.H"
 #include "trandistreceived.H"
@@ -89,48 +88,32 @@ public:
 	std::set<x::uuid> deserialized;
 	std::set<x::uuid> cancelled;
 
-	void runloop()
+	void dispatch_deserialized_cancel(const trandistcancel &cancel)
+		override
 	{
-		while (1)
-		{
-			auto msg(msgqueue->pop());
+		do_dispatch_deserialized_cancel(cancel);
 
-			msg->dispatch();
+		std::unique_lock<std::mutex> lock(mutex);
 
-			{
-				deserialized_cancel_msg *p=
-					dynamic_cast<deserialized_cancel_msg *>
-					(&*msg);
+		cancelled.insert(cancel.uuids.begin(),
+				 cancel.uuids.end());
+		cond.notify_all();
+	}
 
-				if (p)
-				{
-					std::unique_lock<std::mutex> lock(mutex);
+	void dispatch_deserialized_transaction(const newtran &tran,
+					       const x::uuid &uuid)
+		override
+	{
+		do_dispatch_deserialized_transaction(tran, uuid);
 
-					cancelled.insert(p->cancel.uuids.begin(),
-							 p->cancel.uuids.end());
-					cond.notify_all();
-				}
-			}
+		std::unique_lock<std::mutex> lock(mutex);
 
-			{
-				deserialized_transaction_msg *p=
-					dynamic_cast<deserialized_transaction_msg *>
-					(&*msg);
+		std::cerr << "Deserialized "
+			  << x::tostring(uuid)
+			  << std::endl;
 
-				if (p)
-				{
-					std::unique_lock<std::mutex> lock(mutex);
-
-					std::cerr << "Deserialized "
-						  << x::tostring(p->uuid)
-						  << std::endl;
-
-					deserialized.insert(p->uuid);
-					cond.notify_all();
-				}
-			}
-
-		}
+		deserialized.insert(uuid);
+		cond.notify_all();
 	}
 };
 
@@ -168,9 +151,13 @@ public:
 
 	void start()
 	{
+		auto msgqueue=mydistributor::msgqueue_obj::create(distributor);
+
 		repocluster->initialize();
-		tracker->start(x::ref<mydistributor>(distributor),
-			       repocluster, repo, x::ptr<x::obj>::create());
+		tracker->start_thread(x::ref<mydistributor>(distributor),
+				      msgqueue,
+				      repocluster, repo,
+				      x::ptr<x::obj>::create());
 
 		tracker->start_thread(listener,
 				      tracker,
