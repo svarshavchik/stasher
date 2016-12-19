@@ -7,14 +7,12 @@
 #define batonhandoverthread_H
 
 #include <x/threads/run.H>
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
 
 #include "boolref.H"
 #include "repoclusterquorum.H"
 #include "clusterinfofwd.H"
-
-#undef libx_autogen_suppress_inner
 
 //! Baton handover monitoring thread
 
@@ -40,7 +38,7 @@
 //! name [BATONHANDOVERTHREAD].
 
 class batonhandoverthreadObj : public x::runthreadname,
-			       virtual public x::eventqueuemsgdispatcherObj {
+			       virtual public x::threadmsgdispatcherObj {
 
 	//! The logger
 
@@ -75,7 +73,8 @@ public:
 	~batonhandoverthreadObj() noexcept;
 
 	//! The thread
-	void run(const std::string &newmasterref,
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const std::string &newmasterref,
 		 const boolref &completed_statusref,
 		 x::weakptr<x::ptr<x::obj> > &baton_handedover,
 		 const x::ptr<repoclusterquorumObj> &clusterquorum,
@@ -87,7 +86,7 @@ private:
 
 	void check_transfer_completed();
 
-#include "batonhandoverthread.msgs.decl.H"
+#include "batonhandoverthread.msgs.H"
 
 };
 

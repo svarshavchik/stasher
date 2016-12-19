@@ -9,8 +9,6 @@
 
 LOG_CLASS_INIT(batonhandoverthreadObj);
 
-#include "batonhandoverthread.msgs.def.H"
-
 batonhandoverthreadObj::batonhandoverthreadObj()
 {
 }
@@ -62,7 +60,7 @@ public:
 	~quorum_status_callback() noexcept
 	{
 	}
-	
+
 	void quorum(const STASHER_NAMESPACE::quorumstate &inquorum)
 
 	{
@@ -73,13 +71,17 @@ public:
 	}
 };
 
-void batonhandoverthreadObj::run(const std::string &newmasterref,
+void batonhandoverthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+				 const std::string &newmasterref,
 				 const boolref &completed_statusref,
 				 x::weakptr<x::ptr<x::obj> > &baton_handedover,
 				 const x::ptr<repoclusterquorumObj>
 				 &clusterquorum,
 				 const clusterinfo &clusterref)
 {
+	msgqueue_auto msgqueue(this);
+	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+
 	baton_destroyed_flag=false;
 	quorum_flag=false;
 
@@ -108,22 +110,20 @@ void batonhandoverthreadObj::run(const std::string &newmasterref,
 	cluster= &clusterref;
 
 	while (1)
-		msgqueue->pop()->dispatch();
+		msgqueue.event();
 }
 
-void batonhandoverthreadObj::dispatch(const baton_destroyed_msg &msg)
-
+void batonhandoverthreadObj::dispatch_baton_destroyed()
 {
 	LOG_DEBUG("Baton has been destroyed");
 	baton_destroyed_flag=true;
 	check_transfer_completed();
 }
 
-void batonhandoverthreadObj::dispatch(const quorum_msg &msg)
-
+void batonhandoverthreadObj::dispatch_quorum(bool flag)
 {
-	LOG_DEBUG("Quorum status: " << x::tostring(msg.flag));
-	quorum_flag=msg.flag;
+	LOG_DEBUG("Quorum status: " << x::tostring(flag));
+	quorum_flag=flag;
 	check_transfer_completed();
 }
 
@@ -140,4 +140,3 @@ void batonhandoverthreadObj::check_transfer_completed()
 
 	stop();
 }
-

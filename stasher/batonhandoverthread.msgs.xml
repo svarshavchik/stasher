@@ -26,7 +26,7 @@ See COPYING for distribution information.
 	//! Whether the cluster is currently in quorum
       </comment>
 
-      <decl>bool <name>flag</name></decl>
+      <decl>bool flag</decl>
     </param>
   </method>
 </class>

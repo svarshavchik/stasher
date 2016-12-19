@@ -246,7 +246,7 @@ repoclusterinfoObj::installpeer_locked(const std::string &name,
 
 	if (peerstatusObj::status(node)->master == nodename)
 	{
-		LOG_FATAL("Newly connected node " << nodename 
+		LOG_FATAL("Newly connected node " << nodename
 			  << " claims that I, "
 			  << getthisnodename()
 			  << ", is already its master");
@@ -418,11 +418,11 @@ start_handover_thread(const std::string &newmaster,
 	x::ref<batonhandoverthreadObj>
 		thr(x::ref<batonhandoverthreadObj>::create());
 
-	thread_tracker->start(thr,
-			      newmaster, succeeded,
-			      x::weakptr<x::ptr<x::obj> > (mcguffin),
-			      quorum_callback_list,
-			      clusterinfo(this));
+	thread_tracker->start_thread(thr,
+				     newmaster, succeeded,
+				     x::weakptr<x::ptr<x::obj> > (mcguffin),
+				     quorum_callback_list,
+				     clusterinfo(this));
 
 	return thr;
 }

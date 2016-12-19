@@ -296,7 +296,7 @@ $(call MSGDISPATCHER_GEN,peerstatusannouncer.msgs,def decl)
 $(call MSGDISPATCHER_GEN,objwriterthread.msgs,all)
 $(call MSGDISPATCHER_GEN,fdobjwriterthread.msgs,def decl)
 $(call MSGDISPATCHER_GEN,repocontrollerbasehandoff.msgs,all)
-$(call MSGDISPATCHER_GEN,batonhandoverthread.msgs,def decl)
+$(call THREADMSGDISPATCHER_GEN,batonhandoverthread.msgs.H,batonhandoverthread.msgs.xml)
 $(call MSGDISPATCHER_GEN,localconnection.msgs,def decl)
 $(call MSGDISPATCHER_GEN,localprivconnection.msgs,def decl)
 
