@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -65,14 +65,16 @@ objrepocopydstthreadObj::uuidenumObj::nextbatch(const std::set<std::string>
 						&objectnames)
 
 {
-	x::eventfd eventfd(parent->msgqueue->getEventfd());
+	auto msgqueue=parent->get_msgqueue();
+
+	x::eventfd eventfd(msgqueue->getEventfd());
 
 	tobjrepoObj::lockentry_t lock(repo->lock(objectnames, eventfd));
 
 	while (!lock->locked())
 	{
-		while (!parent->msgqueue->empty())
-			parent->msgqueue->pop()->dispatch();
+		while (!msgqueue->empty())
+			msgqueue->pop()->dispatch();
 
 		eventfd->event();
 	}
@@ -134,7 +136,7 @@ void objrepocopydstthreadObj::event(const objrepocopy::masterack &msg)
 	event_masterack(msg);
 }
 
-void objrepocopydstthreadObj::dispatch(const event_batonrequest_msg &msg)
+void objrepocopydstthreadObj::dispatch_event_batonrequest()
 {
 	LOG_DEBUG("Received BATONREQUEST");
 
@@ -146,14 +148,14 @@ void objrepocopydstthreadObj::dispatch(const event_batonrequest_msg &msg)
 	getsrc()->event(ack);
 }
 
-void objrepocopydstthreadObj::dispatch(const event_masterlist_msg &msg)
+void objrepocopydstthreadObj::dispatch_event_masterlist(const objrepocopy::masterlist &msg)
 
 {
 	*batonp=batonptr();
 
 	objrepocopy::slavelist ack;
 
-	process_dispatch(msg.msg, ack);
+	process_dispatch(msg, ack);
 
 	getsrc()->event(ack);
 }
@@ -168,6 +170,8 @@ void objrepocopydstthreadObj
 	tobjrepoObj::values_t values;
 
 	ack.uuids=objuuidlist::create();
+
+	auto msgqueue=get_msgqueue();
 
 	{
 		std::set<std::string> names;
@@ -214,7 +218,7 @@ void objrepocopydstthreadObj
 	}
 }
 
-void objrepocopydstthreadObj::dispatch(const event_masterlistdone_msg &msg)
+void objrepocopydstthreadObj::dispatch_event_masterlistdone(const objrepocopy::masterlistdone &msg)
 {
 	LOG_DEBUG("Received MASTERLISTDONE");
 	objrepocopy::slavelistready ack;
@@ -222,7 +226,7 @@ void objrepocopydstthreadObj::dispatch(const event_masterlistdone_msg &msg)
 	getsrc()->event(ack);
 }
 
-void objrepocopydstthreadObj::dispatch(const event_slaveliststart_msg &msg)
+void objrepocopydstthreadObj::dispatch_event_slaveliststart(const objrepocopy::slaveliststart &msg)
 {
 	LOG_DEBUG("Received SLAVELISTSTART");
 
@@ -230,10 +234,10 @@ void objrepocopydstthreadObj::dispatch(const event_slaveliststart_msg &msg)
 
 	objrepocopy::masterack dummy;
 
-	dispatch(dummy);
+	dispatch_event_masterack(dummy);
 }
 
-void objrepocopydstthreadObj::dispatch(const event_masterack_msg &msg)
+void objrepocopydstthreadObj::dispatch_event_masterack(const objrepocopy::masterack &msg)
 
 {
 	objuuidlist uuids;
@@ -272,12 +276,17 @@ void objrepocopydstthreadObj::event(const objserializer &msg)
 	throw EXCEPTION("Internal error: objserializer message received where it shouldn't be");
 }
 
-void objrepocopydstthreadObj::run(tobjrepo &repocpy,
+void objrepocopydstthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+				  start_thread_sync &sync_arg,
+				  tobjrepo &repocpy,
 				  x::weakptr<objrepocopysrcinterfaceptr> &srcArg,
 				  boolref &flagref,
 				  batonptr &batonref,
 				  const x::ptr<x::obj> &mcguffin)
 {
+	msgqueue_auto msgqueue(this);
+	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	sync_arg->thread_started();
 	repo= &repocpy;
 	src=srcArg;
 	flag= &*flagref;
@@ -285,7 +294,7 @@ void objrepocopydstthreadObj::run(tobjrepo &repocpy,
 
 	try {
 		while (1)
-			msgqueue->pop()->dispatch();
+			msgqueue.event();
 	} catch (const x::stopexception &e)
 	{
 	} catch (const x::exception &e)
@@ -293,4 +302,3 @@ void objrepocopydstthreadObj::run(tobjrepo &repocpy,
 		LOG_FATAL(e);
 	}
 }
-

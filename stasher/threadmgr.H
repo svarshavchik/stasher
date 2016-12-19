@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -13,6 +13,35 @@
 #include <x/threads/run.H>
 #include <x/threadmsgdispatcher.H>
 #include <type_traits>
+
+//! Additional parameter to threadmgr-managed threads.
+
+//! A \c start_thread_sync parameter gets passed to all threadmgr-managed
+//! threads. After instantiating a msgqueue_auto, and clearing the
+//! x::threadmsgdispatcher's mcguffin, the thread must invoke
+//! thread_started().
+//!
+//! This blocks the execution thread until threadmgr's start_thread() finishes
+//! initializing itself.
+
+class start_thread_syncObj : virtual public x::obj {
+
+public:
+
+	//! Synchronization mutex
+	std::mutex mutex;
+
+	//! Constructor
+	start_thread_syncObj();
+
+	//! Destructor
+	~start_thread_syncObj() noexcept;
+
+	//! Invoked in the threadmgr-managed execution thread.
+	void thread_started();
+};
+
+typedef x::ref<start_thread_syncObj> start_thread_sync;
 
 //! Manage a object run()ing a stoppable thread.
 
@@ -88,11 +117,21 @@ public:
 			  typename ref_type::base> &thrArg,
 			  Args && ...args)
 	{
-		std::lock_guard<std::mutex> lock(objmutex);
+		// Create an additional start_thread_sync parameter that the
+		// thread gets. The thread calls its thread_started() method
+		// that attempts to acquires its mutex. We acquires the
+		// mutex first, here. This blocks the execution thread until
+		// we finish initializing threadret.
+
+		auto sync_arg=start_thread_sync::create();
+		std::unique_lock<std::mutex> sync_lock{sync_arg->mutex};
 
 		x::runthreadbase ret=x::start_thread(thrArg,
+						     sync_arg,
 						     std::forward<Args>(args)...);
-
+#ifdef THREADMGR_DEBUG_HOOK
+		THREADMGR_DEBUG_HOOK;
+#endif
 		threadret=ret;
 
 		thr->install(thrArg, ret);

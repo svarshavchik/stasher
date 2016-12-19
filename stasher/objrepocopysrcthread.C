@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -10,11 +10,35 @@
 #include "objserializer.H"
 #include "tobjrepo.H"
 #include "baton.H"
+#include "threadmgr.H"
 
 #include <x/threads/run.H>
 #include <x/join.H>
 
 LOG_CLASS_INIT(objrepocopysrcthreadObj);
+
+#ifdef DEBUG_THIS
+
+struct DEBUG_COPYSRCTHREAD {
+	int dispatch_event_batonresponse=0;
+	int dispatch_event_slavelist=0;
+	int dispatch_ack_slavelist_masterlistdone=0;
+	int dispatch_ack_slavelist_masterlist=0;
+	int dispatch_ack_slavelist_masterack=0;
+	int dispatch_handle_slavelist=0;
+	int dispatch_event_slavelistready=0;
+	int dispatch_event_slavelistdone=0;
+	int event_loop;
+
+	x::eventqueueObj<x::dispatchablebase> *qptr=0;
+};
+
+static DEBUG_COPYSRCTHREAD debug_this;
+
+#define ENTERED(x) (++debug_this.x)
+#else
+#define ENTERED(x) do {} while(0)
+#endif
 
 class objrepocopysrcthreadObj::dispatch_lock : public std::lock_guard<std::mutex> {
 
@@ -69,14 +93,16 @@ objrepocopysrcthreadObj::uuidenumObj::nextbatch(const std::set<std::string>
 						&objectnames)
 
 {
-	x::eventfd eventfd(parent->msgqueue->getEventfd());
+	auto msgqueue=parent->get_msgqueue();
+
+	x::eventfd eventfd(msgqueue->getEventfd());
 
 	tobjrepoObj::lockentry_t lock(repo->lock(objectnames, eventfd));
 
 	while (!lock->locked())
 	{
-		while (!parent->msgqueue->empty())
-			parent->msgqueue->pop()->dispatch();
+		while (!msgqueue->empty())
+			msgqueue->pop()->dispatch();
 
 		eventfd->event();
 	}
@@ -247,10 +273,11 @@ void objrepocopysrcthreadObj::event(const objrepocopy::slavelistdone &msg)
 	event_slavelistdone(msg);
 }
 
-void objrepocopysrcthreadObj::dispatch(const event_batonresponse_msg &msg)
-
+void objrepocopysrcthreadObj::dispatch_event_batonresponse(const objrepocopy::batonresponse &msg)
 {
-	if (!batonp->null() && x::tostring((*batonp)->batonuuid) == msg.msg.uuid)
+	ENTERED(dispatch_event_batonresponse);
+
+	if (!batonp->null() && x::tostring((*batonp)->batonuuid) == msg.uuid)
 	{
 		LOG_DEBUG("Received valid BATONRESPONSE");
 
@@ -260,7 +287,7 @@ void objrepocopysrcthreadObj::dispatch(const event_batonresponse_msg &msg)
 		DEBUG_BATON_TEST_6_VERIFY();
 #endif
 
-		dispatch(event_slavelistdone_msg(objrepocopy::slavelistdone()));
+		dispatch_event_slavelistdone(objrepocopy::slavelistdone());
 		return;
 	}
 
@@ -275,16 +302,18 @@ void objrepocopysrcthreadObj::dispatch(const event_batonresponse_msg &msg)
 	objrepocopy::slavelist dummy;
 
 	dummy.uuids=objuuidlist::create();
-	dispatch(dummy);
+	dispatch_event_slavelist(dummy);
 }
 
-void objrepocopysrcthreadObj::dispatch(const event_slavelist_msg &msg)
+void objrepocopysrcthreadObj::dispatch_event_slavelist(const objrepocopy::slavelist &msg)
 {
+	ENTERED(dispatch_event_slavelist);
+
 	void (objrepocopysrcthreadObj::*ack_func)(objuuidlist &uuidlist);
 
 	objuuidlist uuid;
 
-	dispatch_handle_slavelist(msg.msg);
+	dispatch_handle_slavelist(msg);
 
 	{
 		DISPATCH(slavelist);
@@ -318,8 +347,9 @@ void objrepocopysrcthreadObj::dispatch(const event_slavelist_msg &msg)
 
 void objrepocopysrcthreadObj
 ::dispatch_ack_slavelist_masterlistdone(objuuidlist &uuidList)
-
 {
+	ENTERED(dispatch_ack_slavelist_masterlistdone);
+
 	objrepocopy::masterlistdone ack;
 
 	getdst()->event(ack);
@@ -327,8 +357,9 @@ void objrepocopysrcthreadObj
 
 void objrepocopysrcthreadObj
 ::dispatch_ack_slavelist_masterlist(objuuidlist &uuidList)
-
 {
+	ENTERED(dispatch_ack_slavelist_masterlist);
+
 	objrepocopy::masterlist ack;
 
 	ack.uuids=uuidList;
@@ -337,16 +368,20 @@ void objrepocopysrcthreadObj
 
 void objrepocopysrcthreadObj
 ::dispatch_ack_slavelist_masterack(objuuidlist &uuidList)
-
 {
+	ENTERED(dispatch_ack_slavelist_masterack);
+
 	objrepocopy::masterack ack;
 	getdst()->event(ack);
 }
 
 void objrepocopysrcthreadObj
 ::dispatch_handle_slavelist(const objrepocopy::slavelist &msg)
-
 {
+	ENTERED(dispatch_handle_slavelist);
+
+	auto msgqueue=get_msgqueue();
+
 	std::set<std::string> object_names=msg.uuids->objnouuids;
 
 	tobjrepoObj::values_t values;
@@ -412,8 +447,10 @@ void objrepocopysrcthreadObj
 	}
 }
 
-void objrepocopysrcthreadObj::dispatch(const event_slavelistready_msg &msg)
+void objrepocopysrcthreadObj::dispatch_event_slavelistready(const objrepocopy::slavelistready &msg)
 {
+	ENTERED(dispatch_event_slavelistready);
+
 	LOG_DEBUG("Received SLAVELISTREADY");
 
 	objrepocopy::slaveliststart ack;
@@ -421,9 +458,11 @@ void objrepocopysrcthreadObj::dispatch(const event_slavelistready_msg &msg)
 	getdst()->event(ack);
 }
 
-void objrepocopysrcthreadObj::dispatch(const event_slavelistdone_msg &msg)
+void objrepocopysrcthreadObj::dispatch_event_slavelistdone(const objrepocopy::slavelistdone &msg)
 
 {
+	ENTERED(dispatch_event_slavelistdone);
+
 	LOG_DEBUG("Received SLAVELISTDONE");
 
 	(*complete_ptr)->setSuccesfull(*batonp);
@@ -433,6 +472,8 @@ void objrepocopysrcthreadObj::dispatch(const event_slavelistdone_msg &msg)
 
 tobjrepoObj::commitlock_t objrepocopysrcthreadObj::getcommitlock()
 {
+	auto msgqueue=get_msgqueue();
+
 	LOG_DEBUG("Acquiring commit lock");
 
 	x::eventfd eventfd(msgqueue->getEventfd());
@@ -451,11 +492,24 @@ tobjrepoObj::commitlock_t objrepocopysrcthreadObj::getcommitlock()
 	return commitLock;
 }
 
-void objrepocopysrcthreadObj::run(tobjrepo &repocopy,
+void objrepocopysrcthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+				  start_thread_sync &sync_arg,
+				  tobjrepo &repocopy,
 				  batonptr &batonref,
 				  copycomplete &ret,
 				  const x::ptr<x::obj> &mcguffinref)
 {
+#ifdef DEBUG_THIS
+	debug_this=DEBUG_COPYSRCTHREAD();
+#endif
+	msgqueue_auto msgqueue(this);
+	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	sync_arg->thread_started();
+
+#ifdef DEBUG_THIS
+	debug_this.qptr=&*msgqueue;
+#endif
+
 	repo= &repocopy;
 	dst=ret->dst;
 	batonp= &batonref;
@@ -480,9 +534,13 @@ void objrepocopysrcthreadObj::run(tobjrepo &repocopy,
 		getdst()->event(objrepocopy::batonrequest());
 
 		while (1)
-			msgqueue->pop()->dispatch();
+		{
+			ENTERED(event_loop);
+			msgqueue.event();
+		}
 	} catch (const x::stopexception &e)
 	{
+		LOG_DEBUG("Thread stopped");
 	} catch (const x::exception &e)
 	{
 		LOG_FATAL(e);

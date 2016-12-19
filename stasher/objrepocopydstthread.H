@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -14,8 +14,9 @@
 #include "boolref.H"
 #include "tobjrepofwd.H"
 #include "batonfwd.H"
+#include "threadmgr.H"
 #include <x/threads/runthreadname.H>
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 #include <x/weakptr.H>
 #include <x/logger.H>
 
@@ -69,9 +70,9 @@
 
 class objrepocopydstthreadObj : public objrepocopydstinterfaceObj,
 				public x::runthreadname,
-				virtual public x::eventqueuemsgdispatcherObj {
+				virtual public x::threadmsgdispatcherObj {
 
-#include "objrepocopydstthread.msgs.all.H"
+#include "objrepocopydstthread.msgs.H"
 
 private:
 	//! The logger object
@@ -161,7 +162,9 @@ private:
 public:
 	//! The execution thread
 
-	void run(tobjrepo &repocpy,
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 start_thread_sync &sync_arg,
+		 tobjrepo &repocpy,
 		 x::weakptr<objrepocopysrcinterfaceptr> &srcArg,
 		 boolref &flagref,
 		 batonptr &batonref,

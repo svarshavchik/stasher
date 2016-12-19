@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -8,6 +8,7 @@
 #include "objrepocopysrc.H"
 #include "tobjrepo.H"
 #include "baton.H"
+#include <x/threadmsgdispatcher.H>
 
 objrepocopydstObj::objrepocopydstObj()
 {
@@ -28,8 +29,9 @@ void objrepocopydstObj::start(const tobjrepo &repoArg,
 {
 	auto thr=x::ref<objrepocopydstthreadObj>::create("objrepocopydst");
 
-	run(thr, repoArg, x::weakptr<objrepocopysrcinterfaceptr>(srcArg),
-	    flagArg, batonArg, mcguffinArg);
+	this->start_thread(thr, repoArg,
+			   x::weakptr<objrepocopysrcinterfaceptr>(srcArg),
+			   flagArg, batonArg, mcguffinArg);
 }
 
 void objrepocopydstObj::event(const objrepocopy::batonrequest &msg)

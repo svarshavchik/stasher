@@ -305,11 +305,13 @@ public:
 	void start_pubsock(const x::fd &sock,
 			   const x::sockaddr &addr);
 
-	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 start_thread_sync &sync_arg)
 	{
 		msgqueue_auto msgqueue(this);
 
 		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		sync_arg->thread_started();
 		clusterlistenerObj::run(msgqueue);
 	}
 

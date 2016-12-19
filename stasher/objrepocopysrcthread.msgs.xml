@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2012 Double Precision, Inc.
+Copyright 2012-2016 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -14,7 +14,7 @@ See COPYING for distribution information.
       //! \see objrepocopy
       //!
     </comment>
-    <param type="class"><decl>objrepocopy::batonresponse <name>msg</name></decl></param>
+    <param><decl>const objrepocopy::batonresponse &amp;msg</decl></param>
   </method>
 
   <method name="event_slavelist">
@@ -24,7 +24,7 @@ See COPYING for distribution information.
       //! \see objrepocopy
       //!
     </comment>
-    <param type="class"><decl>objrepocopy::slavelist <name>msg</name></decl></param>
+    <param><decl>const objrepocopy::slavelist &amp;msg</decl></param>
   </method>
 
   <method name="event_slavelistready">
@@ -34,7 +34,7 @@ See COPYING for distribution information.
       //! \see objrepocopy
       //!
     </comment>
-    <param type="class"><decl>objrepocopy::slavelistready <name>msg</name></decl></param>
+    <param><decl>const objrepocopy::slavelistready &amp;msg</decl></param>
   </method>
 
   <method name="event_slavelistdone">
@@ -44,6 +44,6 @@ See COPYING for distribution information.
       //! \see objrepocopy
       //!
     </comment>
-    <param type="class"><decl>objrepocopy::slavelistdone <name>msg</name></decl></param>
+    <param><decl>const objrepocopy::slavelistdone &amp;msg</decl></param>
   </method>
 </class>

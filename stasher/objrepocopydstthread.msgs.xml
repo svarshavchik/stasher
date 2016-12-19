@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2012 Double Precision, Inc.
+Copyright 2012-2016 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -13,7 +13,7 @@ See COPYING for distribution information.
 
     //! \see objrepocopy
     </comment>
-    
+
   </method>
 
   <method name="event_masterlist">
@@ -22,8 +22,8 @@ See COPYING for distribution information.
 
     //! \see objrepocopy
     </comment>
-    
-    <param type="class"><decl>objrepocopy::masterlist <name>msg</name></decl></param>
+
+    <param><decl>const objrepocopy::masterlist &amp;msg</decl></param>
   </method>
 
   <method name="event_masterlistdone">
@@ -32,8 +32,8 @@ See COPYING for distribution information.
 
     //! \see objrepocopy
     </comment>
-    
-    <param type="class"><decl>objrepocopy::masterlistdone <name>msg</name></decl></param>
+
+    <param><decl>const objrepocopy::masterlistdone &amp;msg</decl></param>
   </method>
 
   <method name="event_slaveliststart">
@@ -42,8 +42,8 @@ See COPYING for distribution information.
 
     //! \see objrepocopy
     </comment>
-    
-    <param type="class"><decl>objrepocopy::slaveliststart <name>msg</name></decl></param>
+
+    <param><decl>const objrepocopy::slaveliststart &amp;msg</decl></param>
   </method>
 
   <method name="event_masterack">
@@ -52,8 +52,8 @@ See COPYING for distribution information.
 
     //! \see objrepocopy
     </comment>
-    
-    <param type="class"><decl>objrepocopy::masterack <name>msg</name></decl></param>
+
+    <param><decl>const objrepocopy::masterack &amp;msg</decl></param>
   </method>
 
 </class>

@@ -1,11 +1,14 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
 #include "objrepo_config.h"
 #include "objrepocopysrc.H"
 #include "baton.H"
+#include <x/threadmsgdispatcher.H>
+
+#include "threadmgr.H"
 
 objrepocopysrcObj::objrepocopysrcObj()
 {
@@ -29,7 +32,7 @@ objrepocopysrcObj::start(const tobjrepo &repoArg,
 
 	auto thr=x::ref<objrepocopysrcthreadObj>::create("objrepocopydst");
 
-	run(thr, repoArg, batonArg, cc, mcguffin);
+	this->start_thread(thr, repoArg, batonArg, cc, mcguffin);
 
 	return cc;
 }

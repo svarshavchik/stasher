@@ -150,10 +150,12 @@ static void test1()
 
 			mcguffin->ondestroy([monitor]{monitor->destroyed();});
 
-			x::run(test_thread, repo,
-			       x::weakptr<objrepocopysrcinterfaceptr>
-			       (src), flag, batonptr(),
-			       mcguffin);
+			x::start_thread(test_thread,
+					start_thread_sync::create(),
+					repo,
+					x::weakptr<objrepocopysrcinterfaceptr>
+					(src), flag, batonptr(),
+					mcguffin);
 		});
 
 	try {
@@ -280,10 +282,12 @@ static void test2()
 	objrepocopydstthreadptr
 		test_thread(objrepocopydstthreadptr::create("dstcopy"));
 
-	auto runthread=x::run(test_thread, repo,
-			      x::weakptr<objrepocopysrcinterfaceptr>(src),
-			      boolref::create(),
-			      batonptr(), x::ptr<x::obj>());
+	auto runthread=x::start_thread(test_thread,
+				       start_thread_sync::create(),
+				       repo,
+				       x::weakptr<objrepocopysrcinterfaceptr>(src),
+				       boolref::create(),
+				       batonptr(), x::ptr<x::obj>());
 
 	try {
 
@@ -326,10 +330,12 @@ static void test3()
 
 			mcguffin->ondestroy([monitor]{monitor->destroyed();});
 
-			x::run(test_thread, repo,
-			       x::weakptr<objrepocopysrcinterfaceptr>(src),
-			       flag, batonptr(),
-			       mcguffin);
+			x::start_thread(test_thread,
+					start_thread_sync::create(),
+					repo,
+					x::weakptr<objrepocopysrcinterfaceptr>(src),
+					flag, batonptr(),
+					mcguffin);
 		});
 
 	try {
@@ -398,11 +404,13 @@ static void test4()
 	objrepocopydstthreadptr
 		test_thread(objrepocopydstthreadptr::create("objrepocopydstthread"));
 
-	auto runthread=x::run(test_thread, repo,
-			      x::weakptr<objrepocopysrcinterfaceptr>(src),
-			      boolref::create(),
-			      batonptr(),
-			      x::ptr<x::obj>());
+	auto runthread=x::start_thread(test_thread,
+				       start_thread_sync::create(),
+				       repo,
+				       x::weakptr<objrepocopysrcinterfaceptr>(src),
+				       boolref::create(),
+				       batonptr(),
+				       x::ptr<x::obj>());
 
 	test45_sync syncinfo;
 
@@ -465,11 +473,13 @@ static void test5()
 	objrepocopydstthreadptr
 		test_thread(objrepocopydstthreadptr::create("dst"));
 
-	auto runthread=x::run(test_thread, repo,
-			      x::weakptr<objrepocopysrcinterfaceptr>(src),
-			      boolref::create(),
-			      batonptr(),
-			      x::ptr<x::obj>());
+	auto runthread=x::start_thread(test_thread,
+				       start_thread_sync::create(),
+				       repo,
+				       x::weakptr<objrepocopysrcinterfaceptr>(src),
+				       boolref::create(),
+				       batonptr(),
+				       x::ptr<x::obj>());
 
 	test45_sync syncinfo;
 

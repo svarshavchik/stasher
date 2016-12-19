@@ -3,7 +3,13 @@
 ** See COPYING for distribution information.
 */
 
-#include "objrepocopysrc.H"
+static bool threadmgr_debug_flag=false;
+static bool threadmgr_debug_flag_caught=false;
+
+#define THREADMGR_DEBUG_HOOK						\
+	do { if ( threadmgr_debug_flag) { sleep(3); threadmgr_debug_flag_caught=true; } } while(0)
+
+#include "objrepocopysrc.C"
 #include "objrepocopydstinterface.H"
 #include "objserializer.H"
 #include "trancommit.H"
@@ -40,6 +46,26 @@ static void delobj(const tobjrepo &repo,
 
 	repo->begin_commit(tran->finalize(), x::eventfd::create())->commit();
 }
+#define DEBUG_THAT
+
+struct DEBUG_COPYTST {
+	int received_batonrequest=0;
+	int received_masterlist=0;
+	int received_masterlistdone=0;
+	int received_slaveliststart=0;
+	int received_masterack=0;
+	int received_copycomplete=0;
+	int received_serializer=0;
+};
+
+#ifdef DEBUG_THAT
+
+static DEBUG_COPYTST debug_that;
+
+#define ENTERED(x) (++debug_that.x)
+#else
+#define ENTERED(x) do {} while(0)
+#endif
 
 class simdst : public objrepocopydstinterfaceObj {
 
@@ -58,12 +84,14 @@ public:
 
 	x::ptr<simdst> *nukemyself;
 
-	simdst(const tobjrepo &repoArg)
- : repo(repoArg),
-				      complete(false),
-				      inprogress(false),
-				      nukemyself(NULL)
+	simdst(const tobjrepo &repoArg) : repo(repoArg),
+					  complete(false),
+					  inprogress(false),
+					  nukemyself(NULL)
 	{
+#ifdef DEBUG_THAT
+		debug_that=DEBUG_COPYTST();
+#endif
 	}
 
 	~simdst() noexcept
@@ -71,21 +99,21 @@ public:
 	}
 
 	void event(const objrepocopy::batonrequest &msg)
-
 	{
+		ENTERED(received_batonrequest);
 		objrepocopy::batonresponse resp;
 
 		objrepocopysrcinterfaceptr p=src.getptr();
 
 		if (p.null())
 			return;
-		
+
 		p->event(resp);
 	}
 
 	void event(const objrepocopy::masterlist &msg) // [SENDMASTERLIST]
-
 	{
+		ENTERED(received_masterlist);
 		objrepocopysrcinterfaceptr p=src.getptr();
 
 		if (p.null())
@@ -135,8 +163,8 @@ public:
 	}
 
 	void event(const objrepocopy::masterlistdone &msg) // [SENDMASTERLIST]
-
 	{
+		ENTERED(received_masterlistdone);
 		objrepocopy::slavelistready ack;
 
 		objrepocopysrcinterfaceptr p=src.getptr();
@@ -147,8 +175,8 @@ public:
 	}
 
 	void event(const objrepocopy::slaveliststart &msg) // [SLAVELISTSTART]
-
 	{
+		ENTERED(received_slaveliststart);
 		std::unique_lock<std::mutex> lock(mutex);
 
 		inprogress=true;
@@ -166,13 +194,12 @@ public:
 	}
 
 	void event(const objrepocopy::masterack &msg) // [SENDMASTERACK]
-
 	{
+		ENTERED(received_masterack);
 		objrepocopysrcinterfaceptr p=src.getptr();
 
 		if (p.null())
 			return;
-
 
 		x::ptr<objuuidlistObj> uuids(e->next());
 
@@ -193,8 +220,8 @@ public:
 	}
 
 	void event(const objrepocopy::copycomplete &msg) // [SENDCOPYCOMPLETE]
-
 	{
+		ENTERED(received_copycomplete);
 		std::lock_guard<std::mutex> lock(mutex);
 
 		complete=true;
@@ -203,8 +230,8 @@ public:
 	}
 
 	void event(const objserializer &msg)
-
 	{
+		ENTERED(received_serializer);
 		// Serialize this into a temporary buffer
 
 		std::vector<char> buffer;
@@ -279,7 +306,9 @@ static void test1()
 		auto complete=objrepocopysrcthreadObj::copycomplete
 			::create(dst);
 
-		threadrun=x::run(src, repo, batonptr(), complete, mcguffin);
+		threadrun=x::start_thread(src,
+					  start_thread_sync::create(),
+					  repo, batonptr(), complete, mcguffin);
 
 		// [OBJSERIALIZER]
 
@@ -305,7 +334,7 @@ static void test1()
 			std::cout << "Testing [COPYSRCMCGUFFIN]" << std::endl;
 			cb->wait(); // [COPYSRCMCGUFFIN]
 		}
-		
+
 		if (!complete->success())
 			throw EXCEPTION("Did not get success indication");
 
@@ -361,7 +390,10 @@ static void test2()
 		auto complete=objrepocopysrcthreadObj::copycomplete
 			::create(dst);
 
-		threadrun=x::run(src, repo, batonptr(), complete, mcguffin);
+		threadrun=x::start_thread(src,
+					  start_thread_sync::create(),
+					  repo, batonptr(), complete,
+					  mcguffin);
 
 		{
 			auto cb=x::destroyCallbackFlag::create();
@@ -400,11 +432,27 @@ static void test3()
 
 	dst->src=src;
 
+	threadmgr_debug_flag=true;
 	objrepocopysrcthreadObj::copycomplete
 		complete(src->start(repo, dst, batonptr(),
 				    x::ptr<x::obj>()));
-}
 
+	{
+		std::unique_lock<std::mutex> lock(dst->mutex);
+
+		while (!dst->inprogress)
+			dst->cond.wait(lock);
+
+		dst->inprogress=false;
+		dst->cond.notify_all();
+	}
+	threadmgr_debug_flag=false;
+	src->stop();
+	src->wait();
+
+	if (!threadmgr_debug_flag_caught)
+		abort();
+}
 
 class test4_dst : public objrepocopydstinterfaceObj {
 
@@ -424,6 +472,9 @@ public:
 
 		: src(srcArg), uuid(uuidArg), something_received(false)
 	{
+#ifdef DEBUG_THAT
+		debug_that=DEBUG_COPYTST();
+#endif
 	}
 
 	~test4_dst() noexcept
@@ -431,8 +482,8 @@ public:
 	}
 
 	void event(const objrepocopy::batonrequest &msg)
-
 	{
+		ENTERED(received_batonrequest);
 		objrepocopy::batonresponse resp;
 
 		resp.uuid=uuid;
@@ -440,47 +491,47 @@ public:
 	}
 
 	void event(const objrepocopy::masterlist &msg)
-
 	{
+		ENTERED(received_masterlist);
 		std::lock_guard<std::mutex> lock(mutex);
 		something_received=true;
 		cond.notify_all();
 	}
 
 	void event(const objrepocopy::masterlistdone &msg)
-
 	{
+		ENTERED(received_masterlistdone);
 		std::lock_guard<std::mutex> lock(mutex);
 		something_received=true;
 		cond.notify_all();
 	}
 
 	void event(const objrepocopy::slaveliststart &msg)
-
 	{
+		ENTERED(received_slaveliststart);
 		std::lock_guard<std::mutex> lock(mutex);
 		something_received=true;
 		cond.notify_all();
 	}
 
 	void event(const objrepocopy::masterack &msg)
-
 	{
+		ENTERED(received_masterack);
 		std::lock_guard<std::mutex> lock(mutex);
 		something_received=true;
 		cond.notify_all();
 	}
 
 	void event(const objrepocopy::copycomplete &msg)
-
 	{
+		ENTERED(received_copycomplete);
 		std::lock_guard<std::mutex> lock(mutex);
 		cond.notify_all();
 	}
 
 	void event(const objserializer &msg)
-
 	{
+		ENTERED(received_serializer);
 		std::lock_guard<std::mutex> lock(mutex);
 		something_received=true;
 		cond.notify_all();
@@ -544,7 +595,7 @@ void test4()
 		if (dst->something_received)
 			throw EXCEPTION("[BATONSRCCOPYRELEASEDONE] failed");
 	}
-	    
+
 }
 
 int main(int argc, char **argv)

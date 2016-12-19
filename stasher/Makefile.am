@@ -194,7 +194,7 @@ libstasher_client_la_SOURCES=\
 	singlethreadreport.H                               \
 	stoppablethreadtracker.C stoppablethreadtracker.H  \
         stoppablethreadtrackerfwd.H                        \
-	threadmgr.H                                        \
+	threadmgr.C threadmgr.H                            \
 	threadreportimpl.C threadreportimpl.H              \
 	threadreportimpl2.C threadreportimpl2.H            \
 	userchanged.C userchanged.H                        \
@@ -290,8 +290,8 @@ $(call MSGDISPATCHER_GEN,repopeerconnection.msgs,messagedef,scope=outer)
 $(call MSGDISPATCHER_GEN,repocontrollerslave.msgs,def decl)
 $(call THREADMSGDISPATCHER_GEN,clusterlistenerimpl.msgs.H,clusterlistenerimpl.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,clusterlistener.msgs.H,clusterlistener.msgs.xml)
-$(call MSGDISPATCHER_GEN,objrepocopydstthread.msgs,all)
-$(call MSGDISPATCHER_GEN,objrepocopysrcthread.msgs,all)
+$(call THREADMSGDISPATCHER_GEN,objrepocopydstthread.msgs.H,objrepocopydstthread.msgs.xml)
+$(call THREADMSGDISPATCHER_GEN,objrepocopysrcthread.msgs.H,objrepocopysrcthread.msgs.xml)
 $(call MSGDISPATCHER_GEN,peerstatusannouncer.msgs,def decl)
 $(call MSGDISPATCHER_GEN,objwriterthread.msgs,all)
 $(call MSGDISPATCHER_GEN,fdobjwriterthread.msgs,def decl)
