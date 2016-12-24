@@ -6,21 +6,19 @@
 #ifndef objwriterthread_H
 #define objwriterthread_H
 
-#undef libx_autogen_suppress_inner
-
 #include "objsink.H"
 #include "objwriter.H"
 #include "writtenobjbase.H"
 #include <x/eventfd.H>
 #include <x/eventqueue.H>
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
 #include <x/property_value.H>
 
 #include <list>
 #include <queue>
 
-#include "threadreportimpl.H"
+#include "threadreportimpl2.H"
 
 STASHER_NAMESPACE_START
 
@@ -65,12 +63,15 @@ STASHER_NAMESPACE_START
 
 class objwriterthreadObj : protected objwriterObj,
 			   public objsinkObj,
-			   public threadreportimplObj,
-			   virtual public x::eventqueuemsgdispatcherObj
+			   public threadreportimpl2Obj,
+			   virtual public x::threadmsgdispatcherObj
 {
+public:
+	void write(const x::ref<writtenobjbaseObj> &object) override;
 
-#include "objwriterthread.msgs.all.H"
+#include "objwriterthread.msgs.H"
 
+private:
 	//! This thread's name
 
 	std::string name;
@@ -123,7 +124,8 @@ private:
 protected:
 
 	//! The running thread
-	void run(const x::ref<x::obj> &);
+	void run(msgqueue_auto &msgqueue,
+		 const x::ref<x::obj> &);
 
 	//! Process messages for this thread
 	void process_messages();

@@ -40,8 +40,7 @@ public:
         //! Status notification update.
 
         virtual void statusupdated(//! New node status
-                                   const nodeclusterstatus &newStatus)
-=0;
+                                   const nodeclusterstatus &newStatus)=0;
 };
 
 #endif

@@ -22,8 +22,6 @@
 #include <cstring>
 MAINLOOP_IMPL(localconnectionObj)
 
-#include "localconnection.msgs.def.H"
-
 LOG_CLASS_INIT(localconnectionObj);
 
 x::property::value<size_t>
@@ -482,7 +480,10 @@ private:
 	}
 };
 
-void localconnectionObj::run(//! The file descriptor
+void localconnectionObj::run(//! threadmsgdispatcher mcguffin,
+			     x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+
+			     //! The file descriptor
 			     x::fd &transport,
 
 			     //! The input iterator for the file descriptor
@@ -495,6 +496,9 @@ void localconnectionObj::run(//! The file descriptor
 			     //! The fdobjrwthreadObj mcguffin
 			     const x::ptr<x::obj> &mcguffin)
 {
+	msgqueue_auto msgqueue(this);
+	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+
 	try {
 		socket= &transport;
 		readTimeout_value=0; // No effective read timeout
@@ -520,7 +524,7 @@ void localconnectionObj::run(//! The file descriptor
 		x::ptr<subscriptionsObj> subscriptionsref;
 		subscriptions= &subscriptionsref;
 
-		mainloop(transport, inputiter, tracker, mcguffin);
+		mainloop(msgqueue, transport, inputiter, tracker, mcguffin);
 	} catch (const x::stopexception &e)
 	{
 	} catch (const x::exception &e)
@@ -648,7 +652,7 @@ void localconnectionObj::check_deserialized_transaction()
 
 		trancommit commit=
 			deser->repo->begin_commit(uuid,
-						  msgqueue->getEventfd());
+						  get_msgqueue()->getEventfd());
 
 		while (!commit->ready())
 			wait_eventqueue(-1);
@@ -679,10 +683,10 @@ bool localconnectionObj::allow_admin_get()
 	return false;
 }
 
-void localconnectionObj::dispatch(const transaction_done_msg &msg)
-
+void localconnectionObj::dispatch_transaction_done(const x::uuid &uuid,
+						   const trandistributorObj::transtatus &status)
 {
-	done(msg.uuid, msg.status->status, msg.status->uuid);
+	done(uuid, status->status, status->uuid);
 }
 
 void localconnectionObj::done(const x::uuid &uuidArg,
@@ -743,7 +747,7 @@ void localconnectionObj::deserialized(const STASHER_NAMESPACE::usergetuuids
 	if (gi.openobjects)
 	{
 		gi.semaphore=x::ptr<getinfo::getsemaphoreObj>
-			::create(msgqueue->getEventfd());
+			::create(get_msgqueue()->getEventfd());
 		getsemaphore->request(gi.semaphore, gi.objects.size());
 	}
 
@@ -761,7 +765,8 @@ void localconnectionObj::check_get_lock(getinfo &gi)
 	if (currentstate.majority || gi.admin)
 	{
 		if (gi.lock.null())
-			gi.lock=repo->lock(gi.objects, msgqueue->getEventfd());
+			gi.lock=repo->lock(gi.objects,
+					   get_msgqueue()->getEventfd());
 	}
 	else
 	{
@@ -1113,7 +1118,6 @@ void localconnectionObj::deserialized(const beginsub_req_t &msg)
 }
 
 void localconnectionObj::deserialized(const endsub_req_t &msg)
-
 {
 	endsub_resp_msg_t resp(msg.requuid);
 
@@ -1123,16 +1127,15 @@ void localconnectionObj::deserialized(const endsub_req_t &msg)
 
 void localconnectionObj::deserialized(const STASHER_NAMESPACE::sendupdatesreq
 				      &msg)
-
 {
 	wantupdates=msg.wantupdates;
 	quorumstatuschanged();
 }
 
-void localconnectionObj::dispatch(const quorumstatuschanged_msg &msg)
+void localconnectionObj::dispatch_quorumstatuschanged(const STASHER_NAMESPACE::quorumstate &inquorum)
 {
 	stat_quorum_received=true;
-	currentstate=msg.inquorum;
+	currentstate=inquorum;
 
 	for (auto &gi:*getqueue)
 		check_get_lock(gi);
@@ -1140,25 +1143,36 @@ void localconnectionObj::dispatch(const quorumstatuschanged_msg &msg)
 	quorumstatuschanged();
 }
 
-void localconnectionObj::dispatch(const statusupdated_msg &msg)
+void localconnectionObj
+::dispatch_do_statusupdated(const nodeclusterstatus &newStatus)
 {
 	stat_state_received=true;
-	currentstate.master=msg.newStatus.master;
+	currentstate.master=newStatus.master;
 	quorumstatuschanged();
 }
 
-void localconnectionObj::dispatch(const clusterupdated_msg &msg)
+void localconnectionObj
+::dispatch_do_clusterupdated(const clusterinfoObj::cluster_t &newStatus)
 {
 	stat_cluster_received=true;
 	currentstate.nodes.clear();
 
-	for (auto node : msg.newStatus)
+	for (auto node : newStatus)
 		currentstate.nodes.insert(node.first);
 	quorumstatuschanged();
 }
 
 void localconnectionObj::quorumstatuschanged()
 {
+	LOG_DEBUG("quorumstatuschanged: wantupdates="
+		  << wantupdates
+		  << ", stat_quorum_received="
+		  << stat_quorum_received
+		  << ", stat_state_received="
+		  << stat_state_received
+		  << ", stat_cluster_received="
+		  << stat_cluster_received);
+
 	if (!wantupdates ||
 	    !stat_quorum_received ||
 	    !stat_state_received ||

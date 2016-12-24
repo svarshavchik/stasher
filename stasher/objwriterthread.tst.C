@@ -33,6 +33,17 @@ public:
 	{
 	}
 
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const x::ref<x::obj> &mcguffin)
+	{
+		msgqueue_auto msgqueue(this);
+
+		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		STASHER_NAMESPACE::objwriterthreadObj::run(msgqueue, mcguffin);
+	}
+
+	void foo() override {}
+
 	std::vector<char> buffer;
 
 	// [SUBCLASS]
@@ -78,7 +89,7 @@ static void test1()
 	auto t=x::ref<test>::create();
 	auto d=x::ref<dummy>::create();
 
-	auto retval=x::run(t, x::ref<x::obj>::create());
+	auto retval=x::start_thread(t, x::ref<x::obj>::create());
 
 	t->write(d); // [WRITE]
 	t->request_close(); // [CLOSE]

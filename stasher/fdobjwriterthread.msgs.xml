@@ -11,11 +11,11 @@ See COPYING for distribution information.
     <comment>
       //! Proceed with sending a file descriptor
     </comment>
-    <param type="class">
+    <param>
       <comment>
 	//! The proceed message from the peer
       </comment>
-    <decl>sendfd_ready <name>ack</name></decl></param>
+    <decl>const sendfd_ready &amp;ack</decl></param>
   </method>
 
 </class>

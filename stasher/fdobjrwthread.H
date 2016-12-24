@@ -80,7 +80,7 @@ public:
 //! the writing thread. [RWSTOP]
 //!
 //! The subclass may override started() to perform initialization tasks right
-//! after mainloop() finishes initializing the 
+//! after mainloop() finishes initializing the
 //! \ref fdobjrwthreadObj::writer "writer" pointer.
 //!
 //! In all cases, the native \ref fdobjrwthreadObj::writer "writer" pointer
@@ -181,7 +181,10 @@ protected:
 	//! The subclass must invoke mainloop() in the context of the
 	//! execution thread.
 
-	void mainloop(//! The file descriptor
+	void mainloop(//! Thread message queue
+		      msgqueue_auto &msgqueue,
+
+		      //! The file descriptor
 		      const x::fdbase &transport,
 
 		      //! The input iterator for the file descriptor

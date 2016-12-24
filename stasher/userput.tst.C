@@ -45,7 +45,8 @@ public:
 
 		socks.second->nonblock(true);
 
-		tracker->start(writer, socks.second, x::ref<x::obj>::create());
+		tracker->start_thread(writer, socks.second,
+				      x::ref<x::obj>::create());
 	}
 
 	void verify(const std::string &objname,
@@ -97,7 +98,7 @@ void test1()
 
 	newtran tr=({
 			auto deser=
-				x::ref<STASHER_NAMESPACE::userput::deserializedObj> 
+				x::ref<STASHER_NAMESPACE::userput::deserializedObj>
 				::create((
 					{
 						STASHER_NAMESPACE::userput up(limits);
@@ -762,7 +763,7 @@ static void test11(tstnodes &t)
 	t.startmastercontrolleron0_int(tnodes);
 
 
-	{	
+	{
 		STASHER_NAMESPACE::client cl=STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
 
 		cl->debugSetLimits(STASHER_NAMESPACE::userinit(10, 100,
@@ -788,7 +789,7 @@ static void test11(tstnodes &t)
 		std::cerr << "Expected error: " << x::tostring(res->status) << std::endl;
 	}
 
-	{	
+	{
 		STASHER_NAMESPACE::client cl=STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
 
 		cl->debugSetLimits(STASHER_NAMESPACE::userinit(10, 100,
@@ -807,7 +808,7 @@ static void test11(tstnodes &t)
 		std::cerr << "Expected error: " << x::tostring(res->status) << std::endl;
 	}
 
-	{	
+	{
 		STASHER_NAMESPACE::client cl=STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
 
 		cl->debugSetLimits(STASHER_NAMESPACE::userinit(10, 100,
@@ -832,7 +833,7 @@ static void test11(tstnodes &t)
 		std::cerr << "Expected error: " << x::tostring(res->status) << std::endl;
 	}
 
-	{	
+	{
 		STASHER_NAMESPACE::client cl=STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(0));
 
 		STASHER_NAMESPACE::client::base::transaction tran=STASHER_NAMESPACE::client::base::transaction::create();

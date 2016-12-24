@@ -38,7 +38,7 @@
 //! It installs a destructor callback on this
 //! object that invokes clusterinfoObj::recalculate() upon this object's
 //! destruction.
- 
+
 class peerstatusObj : public clusterstatusnotifierObj {
 
 	//! A lock on the status object
@@ -179,12 +179,11 @@ public:
 	//! Destructor
 	~adapterObj() noexcept;
 
-	void statusupdated(const nodeclusterstatus &newStatus);
+	void statusupdated(const nodeclusterstatus &newStatus) override;
 
 
-	void initialstatus(const nodeclusterstatus &newStatus);
+	void initialstatus(const nodeclusterstatus &newStatus) override;
 
 };
 
 #endif
-

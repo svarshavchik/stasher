@@ -6,8 +6,6 @@
 #ifndef localconnection_H
 #define localconnection_H
 
-#undef libx_autogen_suppress_inner
-
 #include "fdobjrwthread.H"
 #include "writtenobj.H"
 #include "stoppablethreadtracker.H"
@@ -22,7 +20,7 @@
 #include "usergetuuids.H"
 #include "usergetuuidsreply.H"
 #include "trandistributor.H"
-#include "threadreportimpl.H"
+#include "threadreportimpl2.H"
 #include "nsview.H"
 #include "sendupdatesreq.H"
 #include <x/semaphore.H>
@@ -37,13 +35,28 @@ class spacemonitorObj;
 //! A local client connection
 
 class localconnectionObj : public STASHER_NAMESPACE::fdobjrwthreadObj,
-			   public STASHER_NAMESPACE::threadreportimplObj,
+			   public STASHER_NAMESPACE::threadreportimpl2Obj,
 			   public clusterstatusnotifierObj,
 			   public clusternotifierObj {
 
-#include "localconnection.msgs.decl.H"
+#include "localconnection.msgs.H"
 
 protected:
+
+        //! Status notification update.
+
+	void statusupdated(const nodeclusterstatus &newStatus) override
+	{
+		do_statusupdated(newStatus);
+	}
+
+        //! Status notification update.
+
+	void clusterupdated(const clusterinfoObj::cluster_t &newStatus) override
+	{
+		do_clusterupdated(newStatus);
+	}
+
 	//! The logger
 
 	LOG_CLASS_SCOPE;
@@ -159,7 +172,10 @@ public:
 	~localconnectionObj() noexcept;
 
 	//! The thread
-	void run(//! The file descriptor
+	void run(//! threadmsgdispatcher mcguffin,
+		 x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+
+		 //! The file descriptor
 		 x::fd &transport,
 
 		 //! The input iterator for the file descriptor
@@ -170,6 +186,8 @@ public:
 
 		 //! The fdobjrwthreadObj mcguffin
 		 const x::ptr<x::obj> &mcguffin);
+
+	void foo() override {}
 
 	//! Start deserializing a transaction
 	void deserialized(const STASHER_NAMESPACE::userput &msg);
@@ -241,7 +259,7 @@ private:
 
 	//! Processing before main thread loop waits for I/O
 
-	void drain();
+	void drain() override;
 
 	//! Pending GET request metadata
 

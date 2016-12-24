@@ -639,19 +639,23 @@ public:
 		src->event(msg);
 	}
 
-	void run(const x::fdbase &transport,
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const x::fdbase &transport,
 		 const x::fd::base::inputiter &inputiter,
 		 const STASHER_NAMESPACE::stoppableThreadTracker &tracker,
 		 const x::ptr<x::obj> &mcguffin)
 
 	{
-		mainloop(transport, inputiter, tracker, mcguffin);
+		msgqueue_auto msgqueue(this);
+
+		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		mainloop(msgqueue, transport, inputiter, tracker, mcguffin);
 	}
 
 	template<typename msg_type> void submit(const msg_type &msg)
 
 	{
-		sendevent<msg_type>(this, msg);
+		sendevent(&test3deser::dispatch<msg_type>, this, msg);
 	}
 
 	template<typename obj_type> void dispatch(const obj_type &msg)
@@ -836,16 +840,16 @@ static void test3()
 
 		sock=socks.first;
 
-		tracker->start(peer, socks.second,
-			       x::fd::base::inputiter(socks.second),
-			       tracker->getTracker(),
-			       peer_mcguffin,
-			       false,
-			       x::ptr<trandistributorObj>(),
-			       clusterlistenerptr(),
-			       nodeclusterstatus(),
-			       clusterinfoptr(),
-			       tobjrepo::create("repo.tst"));
+		tracker->start_thread(peer, socks.second,
+				      x::fd::base::inputiter(socks.second),
+				      tracker->getTracker(),
+				      peer_mcguffin,
+				      false,
+				      x::ptr<trandistributorObj>(),
+				      clusterlistenerptr(),
+				      nodeclusterstatus(),
+				      clusterinfoptr(),
+				      tobjrepo::create("repo.tst"));
 	}
 
 	// Fake peer status.
@@ -877,10 +881,10 @@ static void test3()
 
 	x::ptr<x::obj> masterdeser_mcguffin(x::ptr<x::obj>::create());
 
-	tracker->start(masterdeser,
-		       sock, x::fdinputiter(sock),
-		       tracker->getTracker(),
-		       masterdeser_mcguffin);
+	tracker->start_thread(masterdeser,
+			      sock, x::fdinputiter(sock),
+			      tracker->getTracker(),
+			      masterdeser_mcguffin);
 
 	std::cout << "Started master deserializer" << std::endl;
 

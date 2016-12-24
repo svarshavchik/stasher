@@ -7,10 +7,10 @@ See COPYING for distribution information.
 
 <class name="peerstatusannouncerObj">
 
-  <method name="statusupdated">
+  <method name="do_statusupdated">
     <comment>/*!
     Update to this node's status, sent to the execution thread.
     */</comment>
-    <param type="class"><decl>nodeclusterstatus <name>newStatus</name></decl></param>
+    <param><decl>const nodeclusterstatus &amp;newStatus</decl></param>
   </method>
 </class>

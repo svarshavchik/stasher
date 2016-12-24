@@ -8,7 +8,10 @@
 
 MAINLOOP_IMPL(peerstatusannouncerObj)
 
-#include "peerstatusannouncer.msgs.def.H"
+void peerstatusannouncerObj::statusupdated(const nodeclusterstatus &newStatus)
+{
+	do_statusupdated(newStatus);
+}
 
 void peerstatusannouncerObj::initialstatus(const nodeclusterstatus
 					   &newStatus)
@@ -33,10 +36,9 @@ void peerstatusannouncerObj::deserialized(const nodeclusterstatus &newStatus)
 	peerstatusupdate(newStatus);
 }
 
-void peerstatusannouncerObj::dispatch(const statusupdated_msg &msg)
-
+void peerstatusannouncerObj::dispatch_do_statusupdated(const nodeclusterstatus &newStatus)
 {
-	thisstatus=msg.newStatus;
+	thisstatus=newStatus;
 
 	sendthisstatus();
 	thisstatusupdated();

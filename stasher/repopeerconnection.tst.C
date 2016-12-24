@@ -15,8 +15,6 @@
 #include <x/options.H>
 #include <x/destroycallbackflag.H>
 
-#include "repopeerconnection.msgs.messagedef.H"
-
 class testconnection : public repopeerconnectionObj {
 
 public:
@@ -77,17 +75,17 @@ public:
 	{
 		socks.second->nonblock(true);
 
-		tracker->start(conn,
-			       socks.second,
-			       x::fd::base::inputiter(socks.second),
-			       tracker->getTracker(),
-			       x::ptr<x::obj>::create(),
-			       false,
-			       x::ptr<trandistributorObj>(),
-			       clusterlistenerptr(),
-			       nodeclusterstatus(),
-			       clusterinfoptr(),
-			       tobjrepo::create("repo.tst"));
+		tracker->start_thread(conn,
+				      socks.second,
+				      x::fd::base::inputiter(socks.second),
+				      tracker->getTracker(),
+				      x::ptr<x::obj>::create(),
+				      false,
+				      x::ptr<trandistributorObj>(),
+				      clusterlistenerptr(),
+				      nodeclusterstatus(),
+				      clusterinfoptr(),
+				      tobjrepo::create("repo.tst"));
 
 		// Wait for the initial status update
 		nodeclusterstatus dummy;
@@ -137,7 +135,7 @@ public:
 
 		for (int i=0; i<2; ++i)
 		{
-			conn->statusupdated(stat);
+			conn->do_statusupdated(stat);
 
 			nodeclusterstatus dummy;
 
@@ -203,7 +201,7 @@ static void test1()
 	nodeclusterstatus mastera("nodea", x::uuid(), 0, false);
 
 	conn.sendstatus(mastera);
-	
+
 	x::ptr<dummyController> dummy(x::ptr<dummyController>::create());
 	x::ptr<x::obj> mcguffin(x::ptr<x::obj>::create());
 

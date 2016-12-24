@@ -23,7 +23,7 @@ define genxsl
 
 $(1): $(2) $(srcdir)/message.xsl
 	mkdir -p $(patsubst %/,%,$(dir $(1)))
-	xsltproc --stringparam mode $(3) $(srcdir)/message.xsl $$< >$$@.tmp
+	xsltproc --xinclude --stringparam mode $(3) $(srcdir)/message.xsl $$< >$$@.tmp
 	mv -f $$@.tmp $$@
 
 all: $(1)
@@ -285,22 +285,21 @@ libstasher_client_la_LDFLAGS=-version-info 1
 
 $(call MSGDISPATCHER_GEN,repocontrollermaster.msgs,def decl)
 $(call THREADMSGDISPATCHER_GEN,trandistributor.msgs.H,trandistributor.msgs.xml)
-$(call MSGDISPATCHER_GEN,repopeerconnection.msgs,def decl)
-$(call MSGDISPATCHER_GEN,repopeerconnection.msgs,messagedef,scope=outer)
+$(call THREADMSGDISPATCHER_GEN,repopeerconnection.msgs.H,repopeerconnection.msgs.xml)
 $(call MSGDISPATCHER_GEN,repocontrollerslave.msgs,def decl)
 $(call THREADMSGDISPATCHER_GEN,clusterlistenerimpl.msgs.H,clusterlistenerimpl.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,clusterlistener.msgs.H,clusterlistener.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,objrepocopydstthread.msgs.H,objrepocopydstthread.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,objrepocopysrcthread.msgs.H,objrepocopysrcthread.msgs.xml)
-$(call MSGDISPATCHER_GEN,peerstatusannouncer.msgs,def decl)
-$(call MSGDISPATCHER_GEN,objwriterthread.msgs,all)
-$(call MSGDISPATCHER_GEN,fdobjwriterthread.msgs,def decl)
+$(call THREADMSGDISPATCHER_GEN,peerstatusannouncer.msgs.H,peerstatusannouncer.msgs.xml)
+$(call THREADMSGDISPATCHER_GEN,objwriterthread.msgs.H,objwriterthread.msgs.xml)
+$(call THREADMSGDISPATCHER_GEN,fdobjwriterthread.msgs.H,fdobjwriterthread.msgs.xml)
 $(call MSGDISPATCHER_GEN,repocontrollerbasehandoff.msgs,all)
 $(call THREADMSGDISPATCHER_GEN,batonhandoverthread.msgs.H,batonhandoverthread.msgs.xml)
-$(call MSGDISPATCHER_GEN,localconnection.msgs,def decl)
-$(call MSGDISPATCHER_GEN,localprivconnection.msgs,def decl)
+$(call THREADMSGDISPATCHER_GEN,localconnection.msgs.H,localconnection.msgs.xml)
+$(call THREADMSGDISPATCHER_GEN,localprivconnection.msgs.H,localprivconnection.msgs.xml)
 
-$(call MSGDISPATCHER_GEN,client.msgs,all)
+$(call THREADMSGDISPATCHER_GEN,client.msgs.H,client.msgs.xml)
 $(call MSGDISPATCHER_GEN,threadreportimpl.msgs,def decl)
 $(call THREADMSGDISPATCHER_GEN,threadreportimpl2.msgs.H, threadreportimpl2.msgs.xml)
 

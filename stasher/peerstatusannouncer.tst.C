@@ -44,7 +44,8 @@ public:
 	testpeerstatusannouncerObj(const x::ptr<myListener> &listenerArg,
 				   const std::string &peername);
 	~testpeerstatusannouncerObj() noexcept;
-	void run(const x::fdbase &transport,
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const x::fdbase &transport,
 		 const x::fd::base::inputiter &inputiter,
 		 const STASHER_NAMESPACE::stoppableThreadTracker &tracker,
 		 const x::ptr<x::obj> &mcguffin);
@@ -132,14 +133,19 @@ testpeerstatusannouncerObj::~testpeerstatusannouncerObj() noexcept
 {
 }
 
-void testpeerstatusannouncerObj::run(const x::fdbase &transport,
+void testpeerstatusannouncerObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+				     const x::fdbase &transport,
 				     const x::fd::base::inputiter &inputiter,
 				     const STASHER_NAMESPACE::
 				     stoppableThreadTracker &tracker,
 				     const x::ptr<x::obj> &mcguffin)
 
 {
-	mainloop(transport, inputiter, tracker, mcguffin);
+	msgqueue_auto msgqueue(this);
+
+	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+
+	mainloop(msgqueue, transport, inputiter, tracker, mcguffin);
 }
 
 void testpeerstatusannouncerObj::deserialized(const nodeclusterstatus
@@ -194,7 +200,7 @@ void myConnecter::connected(const std::string &peername,
 		return;
 	}
 
-	tracker->start(testthread, socket, inputiter, tracker, mcguffin);
+	tracker->start_thread(testthread, socket, inputiter, tracker, mcguffin);
 	std::cerr << "Started connection with " << peername
 		  << std::endl;
 }

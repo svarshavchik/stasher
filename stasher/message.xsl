@@ -7,7 +7,7 @@ See COPYING for distribution information.
 
 -->
 
-<xsl:stylesheet  
+<xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
   <xsl:output method="text" />
@@ -637,7 +637,7 @@ See COPYING for distribution information.
 	  <xsl:text><![CDATA[)
 {
     x::ref<x::obj> mcguffin=x::ref<x::obj>::create();
-    ]]></xsl:text>    
+    ]]></xsl:text>
 	  <xsl:value-of select="@name" />
 	  <xsl:text>request res=</xsl:text>
 
@@ -659,21 +659,27 @@ See COPYING for distribution information.
 	</xsl:for-each>
 
 	<xsl:for-each select="message">
-	  <xsl:text>&#10;void clientObj::implObj::dispatch(const </xsl:text>
+	  <xsl:text>&#10;void clientObj::implObj::dispatch_</xsl:text>
 	  <xsl:value-of select="@name" />
-	  <xsl:text>_msg &amp;msg)&#10;{&#10;    typedef x::ref&lt;writtenObj&lt;</xsl:text>
+	  <xsl:text>(</xsl:text>
+	  <xsl:call-template name="copy-dispatch-params">
+	    <xsl:with-param name="name">
+	      <xsl:value-of select="@name" />
+	    </xsl:with-param>
+	  </xsl:call-template>
+	  <xsl:text>)&#10;{&#10;    typedef x::ref&lt;writtenObj&lt;</xsl:text>
 	  <xsl:value-of select="@name" />
 	  <xsl:text>req&gt; &gt; req_t;&#10;&#10;    req_t req=req_t::create();&#10;&#10;</xsl:text>
 
 	  <xsl:for-each select="request/field">
 	    <xsl:text>    req-&gt;msg.</xsl:text>
 	    <xsl:value-of select="decl/name" />
-	    <xsl:text>=msg.</xsl:text>
+	    <xsl:text>=</xsl:text>
 	    <xsl:value-of select="decl/name" />
 	    <xsl:text>;&#10;</xsl:text>
 	  </xsl:for-each>
 
-	  <xsl:text>    writer-&gt;write(req);&#10;    reqs->insert(std::make_pair(req->msg.requuid,&#10;                reqinfo(msg.mcguffin, msg.results)));&#10;}&#10;&#10;</xsl:text>
+	  <xsl:text>    writer-&gt;write(req);&#10;    reqs->insert(std::make_pair(req->msg.requuid,&#10;                reqinfo(mcguffin, results)));&#10;}&#10;&#10;</xsl:text>
 
 	  <xsl:text>void clientObj::implObj::deserialized(const </xsl:text>
 
@@ -763,6 +769,16 @@ See COPYING for distribution information.
     </xsl:copy>
   </xsl:template>
 
+  <xsl:template name="copy-dispatch-params">
+    <xsl:param name="name" />
+    <xsl:for-each select="/messages/class/method[@name=$name]/param/decl">
+      <xsl:if test="position() != 1">
+	<xsl:text>,</xsl:text>
+      </xsl:if>
+      <xsl:text>&#10;        </xsl:text>
+      <xsl:value-of select="node()" />
+    </xsl:for-each>
+  </xsl:template>
   <xsl:template match="name" mode="args-decl">
     <xsl:if test="../@type = 'weakref'">
       <xsl:text>&gt; &amp;</xsl:text>
@@ -776,6 +792,9 @@ See COPYING for distribution information.
       <xsl:apply-templates mode="args-decl" />
     </xsl:copy>
   </xsl:template>
+
+  <!-- Ignore included client.msgs.xml -->
+  <xsl:template match="class" />
 
   <xsl:template match="@*|node()" mode="copy">
     <xsl:copy>

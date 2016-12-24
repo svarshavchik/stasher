@@ -160,7 +160,8 @@ public:
 
 	// Client service thread
 
-	void run(x::ptr<x::obj> &conn_mcguffin,
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 x::ptr<x::obj> &conn_mcguffin,
 		 clientBase::connstatusptr &conn_status,
 		 const x::ref<x::obj> &mcguffin);
 
@@ -245,8 +246,16 @@ public:
 
 	// A container for active subscriptions
 
-	//! The value is the subscribe callback, and a mcguffin.
-	//!
+	// The value is the subscribe callback, and a mcguffin.
+	// Each subscription for an object is registered here, and the mcguffin
+	// send the unsubscribe() message.
+	//
+	// The same object name may have multiple client subscriptions
+	// outstanding, hence the multimap. When an unsubscribe() message
+	// gets received, it gets removed from the multimap, and if this is
+	// the last logical client subscription for this object, an
+	// endsub request is sent to the server.
+
 	typedef std::multimap<std::string, std::pair<x::ref<subscriberObj>,
 						     x::ref<x::obj> > >
 		subscriber_map_t;
@@ -304,7 +313,7 @@ public:
 
  public:
 
-#include "client.msgs.all.H"
+#include "client.msgs.H"
 
  public:
 #include "client.deserialized.auto.H"
@@ -355,7 +364,9 @@ public:
 
 	// Add a subscription
 
-	void register_subscription(const subscribe_msg &msg,
+	void register_subscription(const std::string &objname,
+				   const client::base::subscriber &subscriber,
+				   const x::ref<subscriberesultsObj::recvObj> &results,
 				   req_stat_t status);
 
 	// A container for a list of pending subscription requests.
@@ -363,8 +374,24 @@ public:
 	// in, a beginsub message is sent to the server. If another subscription
 	// request gets received before the response from the server, it gets
 	// appended to the list.
+	//
+	// subscribe_info holds the original parameters to subscribe(),
+	// including the request mcguffin. The subscribe() request isn't
+	// considered to be processed until the beginsub response is received.
+	//
+	// We are responsible for sending a subscription request for a
+	// particular object name exactly once, even if we get multiple
+	// subscription requests for the same object from the clients.
 
-	typedef std::map<std::string, std::list<subscribe_msg> > subq_t;
+	class subscribe_info {
+	public:
+		std::string objname;
+		client::base::subscriber subscriber;
+		x::ref<subscriberesultsObj::recvObj> results;
+		x::ptr<x::obj> mcguffin;
+	};
+
+	typedef std::map<std::string, std::list<subscribe_info> > subq_t;
 
 	// Pending subscription requests
 
@@ -679,7 +706,7 @@ clientBase::do_connect_t clientBase::do_connect(const client &cl)
 
 	x::ref<x::obj> mcguffin=x::ref<x::obj>::create();
 
-	auto impl(clientObj::implref::create(cl->sockname));
+	auto impl=clientObj::implref::create(cl->sockname);
 
 	do_connect_t ret(impl, request::create(mcguffin), connstatus::create());
 
@@ -687,18 +714,22 @@ clientBase::do_connect_t clientBase::do_connect(const client &cl)
 
 	x::ref<x::obj> thread_mcguffin(x::ref<x::obj>::create());
 
-	x::run(impl, x::ptr<x::obj>(mcguffin),
-	       connstatusptr(std::get<2>(ret)), thread_mcguffin);
+	x::start_thread(impl, x::ptr<x::obj>(mcguffin),
+			connstatusptr(std::get<2>(ret)), thread_mcguffin);
 
 	cl->impl->install(impl, thread_mcguffin);
 
 	return ret;
 }
 
-void clientObj::implObj::run(x::ptr<x::obj> &conn_mcguffin,
+void clientObj::implObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+			     x::ptr<x::obj> &conn_mcguffin,
 			     clientBase::connstatusptr &conn_status,
 			     const x::ref<x::obj> &mcguffin)
 {
+	msgqueue_auto msgqueue(this);
+        threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+
 	bool connected=false;
 
 	try {
@@ -735,7 +766,8 @@ void clientObj::implObj::run(x::ptr<x::obj> &conn_mcguffin,
 		update_server_status_subscription();
 		// A noop, for completeness' sake
 
-		mainloop(socket,
+		mainloop(msgqueue,
+			 socket,
 			 x::fd::base::inputiter(socket),
 			 tracker->getTracker(),
 			 x::ptr<x::obj>());
@@ -773,7 +805,7 @@ void clientObj::implObj::received_fd_unknown(const std::vector<x::fdptr> &fdArg)
 	throw EXCEPTION("Unexpectedly received file descriptors from the server");
 }
 
-void clientObj::implObj::dispatch(const shutdown_msg &msg)
+void clientObj::implObj::dispatch_shutdown()
 {
 	writer->write(x::ref<writtenObj<adminstop> >::create(adminstop()));
 }
@@ -786,25 +818,27 @@ clientObj::transactionObj::~transactionObj() noexcept
 {
 }
 
-void clientObj::implObj::dispatch(const put_msg &msg)
+void clientObj::implObj::dispatch_put(const x::ref<puttransactionObj> &transaction,
+				      const x::ref<putresultsObj::recvObj> &results,
+				      const x::ptr<x::obj> &mcguffin)
 {
-	if (msg.transaction->empty())
+	if (transaction->empty())
 	{
-		set_putresults(msg.results, req_processed_stat);
+		set_putresults(results, req_processed_stat);
 		return;
 	}
 
-	if (msg.transaction->objects.size() > helo.limits.maxobjects)
+	if (transaction->objects.size() > helo.limits.maxobjects)
 	{
-		set_putresults(msg.results, req_toomany_stat);
+		set_putresults(results, req_toomany_stat);
 		return;
 	}
 
-	for (auto putobj: msg.transaction->objects)
+	for (auto putobj: transaction->objects)
 	{
 		if (putobj.name.size() > objrepoObj::maxnamesize)
 		{
-			set_putresults(msg.results, req_name2big_stat);
+			set_putresults(results, req_name2big_stat);
 			return;
 		}
 
@@ -813,23 +847,23 @@ void clientObj::implObj::dispatch(const put_msg &msg)
 		    !S_ISREG(putobj.contents->contents_filedesc->stat()
 			     ->st_mode))
 		{
-			set_putresults(msg.results, req_2large_stat);
+			set_putresults(results, req_2large_stat);
 			return;
 		}
 	}
 
-	if (msg.transaction->totsize() > helo.limits.maxobjectsize)
+	if (transaction->totsize() > helo.limits.maxobjectsize)
 	{
-		set_putresults(msg.results, req_2large_stat);
+		set_putresults(results, req_2large_stat);
 		return;
 	}
 
-	userput up(msg.transaction, helo.limits);
+	userput up(transaction, helo.limits);
 
 	up.write(x::ptr<fdobjwriterthreadObj>(writer));
 
-	reqs->insert(std::make_pair(up.uuid, reqinfo(msg.mcguffin,
-						     msg.results)));
+	reqs->insert(std::make_pair(up.uuid, reqinfo(mcguffin,
+						     results)));
 }
 
 void clientObj::implObj
@@ -934,26 +968,27 @@ getresults clientObj::get(const std::set<std::string> &objnames,
 	return get(req);
 }
 
-void clientObj::implObj::dispatch(const get_msg &msg)
+void clientObj::implObj::dispatch_get(const x::ref<getreqObj> &req,
+				      const x::ref<getresultsObj::recvObj> &results,
+				      const x::ptr<x::obj> &mcguffin)
 {
-	if (msg.req->objects.size() > helo.limits.maxobjects)
+	if (req->objects.size() > helo.limits.maxobjects)
 	{
 		contents resp=contents::create();
 
 		resp->errmsg="Number of objects requested exceeds server's limits";
-		msg.results->installmsg(resp);
+		results->installmsg(resp);
+		return;
 	}
 
-	for (std::set<std::string>::const_iterator
-		     b=msg.req->objects.begin(), e=msg.req->objects.end();
-	     b != e; ++b)
+	for (auto b=req->objects.begin(), e=req->objects.end(); b != e; ++b)
 	{
 		if (b->size() > objrepoObj::maxnamesize)
 		{
 			contents resp=contents::create();
 
 			resp->errmsg="Object name too big";
-			msg.results->installmsg(resp);
+			results->installmsg(resp);
 			return;
 		}
 	}
@@ -961,16 +996,16 @@ void clientObj::implObj::dispatch(const get_msg &msg)
 	x::ref<writtenObj<usergetuuids> >
 		wmsg=x::ref<writtenObj<usergetuuids> >::create();
 
-	wmsg->msg.reqinfo->openobjects=msg.req->openobjects;
-	wmsg->msg.reqinfo->admin=msg.req->admin;
+	wmsg->msg.reqinfo->openobjects=req->openobjects;
+	wmsg->msg.reqinfo->admin=req->admin;
 
-	wmsg->msg.reqinfo->objects.insert(msg.req->objects.begin(),
-					  msg.req->objects.end());
+	wmsg->msg.reqinfo->objects.insert(req->objects.begin(),
+					  req->objects.end());
 
 	reqs->insert(std::make_pair(wmsg->msg.requuid,
-				    reqinfo(msg.mcguffin,
+				    reqinfo(mcguffin,
 					    x::ref<implObj::uuidgetinfoObj>
-					    ::create(msg.results))));
+					    ::create(results))));
 	getqueue->push(wmsg);
 	sendgetrequests();
 
@@ -1076,10 +1111,10 @@ userhelo clientObj::gethelo()
 	return *resp;
 }
 
-void clientObj::implObj::dispatch(const gethelo_msg &msg)
-
+void clientObj::implObj::dispatch_gethelo(const x::ref<getheloObj> &limits,
+					  const x::ptr<x::obj> &mcguffin)
 {
-	static_cast<userhelo &>(*msg.limits)=helo;
+	static_cast<userhelo &>(*limits)=helo;
 }
 
 // ----------------------------------------------------------------------------
@@ -1092,26 +1127,30 @@ clientObj::subscriberObj::~subscriberObj() noexcept
 {
 }
 
-void clientObj::implObj::dispatch(const subscribe_msg &msg)
+void clientObj::implObj::dispatch_subscribe(const std::string &objname,
+					    const client::base::subscriber &subscriber,
+					    const x::ref<subscriberesultsObj::recvObj> &results,
+					    const x::ptr<x::obj> &mcguffin)
 {
-	LOG_DEBUG("subscribe: " + msg.objname);
+	LOG_DEBUG("subscribe: " + objname);
 
-	if (msg.objname.size() > objrepoObj::maxnamesize)
+	if (objname.size() > objrepoObj::maxnamesize)
 	{
 		x::ref<subscriberesultsObj>
 			res=x::ref<subscriberesultsObj>::create();
 
 		res->status=req_name2big_stat;
-		msg.results->installmsg(res);
+		results->installmsg(res);
 		return;
 	}
 
-	if (subscriber_map->find(msg.objname) != subscriber_map->end())
+	if (subscriber_map->find(objname) != subscriber_map->end())
 	{
-		LOG_TRACE(msg.objname + ": subscription already exists");
+		LOG_TRACE(objname + ": subscription already exists");
 
 		// There's an existing subscription, just piggy-back on it
-		register_subscription(msg, req_processed_stat);
+		register_subscription(objname, subscriber, results,
+				      req_processed_stat);
 		return;
 	}
 
@@ -1119,14 +1158,14 @@ void clientObj::implObj::dispatch(const subscribe_msg &msg)
 	// and awaiting confirmation. If this object name is in the queue, just
 	// add it.
 
-	subq_t::iterator p=subq.find(msg.objname);
+	subq_t::iterator p=subq.find(objname);
 
 	if (p != subq.end())
 	{
-		LOG_TRACE(msg.objname +
+		LOG_TRACE(objname +
 			  ": subscription request already pending");
 
-		p->second.push_back(msg);
+		p->second.push_back({objname, subscriber, results, mcguffin});
 		return;
 	}
 
@@ -1136,15 +1175,15 @@ void clientObj::implObj::dispatch(const subscribe_msg &msg)
 	x::ref<writtenObj<STASHER_NAMESPACE::beginsubreq> > wmsg=
 		x::ref<writtenObj<STASHER_NAMESPACE::beginsubreq> >::create();
 
-	LOG_TRACE(msg.objname + ": subscription request "
+	LOG_TRACE(objname + ": subscription request "
 		  + x::tostring(wmsg->msg.requuid));
 
-	wmsg->msg.objname=msg.objname;
+	wmsg->msg.objname=objname;
 
 	writer->write(wmsg);
 
-	subquuids.insert(std::make_pair(wmsg->msg.requuid, msg.objname));
-	subq[msg.objname].push_back(msg);
+	subquuids.insert(std::make_pair(wmsg->msg.requuid, objname));
+	subq[objname].push_back({objname, subscriber, results, mcguffin});
 }
 
 void clientObj::implObj::deserialized(const beginsubreply &msg)
@@ -1156,8 +1195,7 @@ void clientObj::implObj::deserialized(const beginsubreply &msg)
 	// Find the queue, and ack the waiting requests.
 
 	subq_t::iterator p=({
-			std::map<x::uuid, std::string>::iterator
-				iter=subquuids.find(msg.requuid);
+			auto iter=subquuids.find(msg.requuid);
 
 			if (iter == subquuids.end())
 				throw EXCEPTION("Subscription ack with an "
@@ -1173,17 +1211,23 @@ void clientObj::implObj::deserialized(const beginsubreply &msg)
 	if (p == subq.end())
 		throw EXCEPTION("Subscription ack for an unknown object");
 
-	for (std::list<subscribe_msg>::iterator b=p->second.begin(),
+	for (auto b=p->second.begin(),
 		     e=p->second.end(); b != e; ++b)
-		register_subscription(*b, msg.msg->status);
+		register_subscription(b->objname,
+				      b->subscriber,
+				      b->results, msg.msg->status);
 
 	subq.erase(p);
 }
 
-void clientObj::implObj::register_subscription(const subscribe_msg &msg,
+void clientObj::implObj::register_subscription(const std::string &objname,
+					       const client::base::subscriber &subscriber,
+					       const x::ref<subscriberesultsObj::recvObj> &results,
 					       req_stat_t status)
-
 {
+	LOG_DEBUG("Registered subscription for " << objname <<
+		  x::tostring(status));
+
 	x::ref<subscriberesultsObj>
 		res=x::ref<subscriberesultsObj>::create();
 
@@ -1193,23 +1237,23 @@ void clientObj::implObj::register_subscription(const subscribe_msg &msg,
 	auto mcguffin=x::ref<subscriptionMcguffinObj>::create();
 
 	mcguffin->iterator=subscriber_map
-		->insert(std::make_pair(msg.objname,
-					std::make_pair(msg.subscriber,
+		->insert(std::make_pair(objname,
+					std::make_pair(subscriber,
 						       res->cancel_mcguffin)));
 	mcguffin->client=x::ptr<implObj>(this);
 
 	res->status=status;
 	res->mcguffin=mcguffin;
-	msg.results->installmsg(res);
+	results->installmsg(res);
 }
 
-void clientObj::implObj::dispatch(const unsubscribe_msg &msg)
-
+void clientObj::implObj
+::dispatch_unsubscribe(const subscriber_map_t::iterator &iterator)
 {
-	std::string objname=msg.iterator->first;
+	std::string objname=iterator->first;
 
 	LOG_DEBUG("unsubscribe: " + objname);
-	subscriber_map->erase(msg.iterator);
+	subscriber_map->erase(iterator);
 
 	if (subscriber_map->find(objname) != subscriber_map->end())
 	{
@@ -1238,9 +1282,7 @@ void clientObj::implObj::deserialized(const userchanged &msg)
 {
 	LOG_TRACE("Updated: " << msg.objname);
 
-	for (std::pair<subscriber_map_t::const_iterator,
-		       subscriber_map_t::const_iterator> i=
-		     subscriber_map->equal_range(msg.objname);
+	for (auto i=subscriber_map->equal_range(msg.objname);
 	     i.first != i.second; ++i.first)
 	{
 		LOG_TRACE("Notifying: " << msg.objname);
@@ -1257,39 +1299,45 @@ userinit clientObj::getlimits()
 	return userinit();
 }
 
-void clientObj::implObj::dispatch(const subscribeserverstatus_msg &msg)
+void clientObj::implObj
+::dispatch_subscribeserverstatus(const serverstatuscallback &callback,
+				 const subscribeserverstatusrequest &req,
+				 const x::ref<x::obj> &mcguffin)
 {
+	LOG_DEBUG("subscribeserverstatus");
 	auto res=x::ref<subscribeserverstatusresultsObj>::create();
 
 	auto subscription_mcguffin=
 		x::ref<serverstatusSubscriptionMcguffinObj>::create();
 
 	subscription_mcguffin->subscriber=server_status_subscribers->
-		emplace(server_status_subscribers->end(), msg.callback,
+		emplace(server_status_subscribers->end(), callback,
 			res->cancel_mcguffin,
-			msg.mcguffin, res);
+			mcguffin, res);
 
 	subscription_mcguffin->conn=x::ptr<implObj>(this);
 
 	res->status=req_processed_stat;
 	res->mcguffin=subscription_mcguffin;
 
-	msg.req->installmsg(res);
+	req->installmsg(res);
 
 	if (limits_mcguffin->null())
-		msg.callback->serverinfo(helo);
+		callback->serverinfo(helo);
 	// Wait until the server responds
 
 	if (!update_server_status_subscription())
 	{
+		LOG_TRACE("subscribeserverstatus: already subscribed, acking");
 		subscription_mcguffin->subscriber->ack();
-		msg.callback->state(last_quorum_status_received);
+		callback->state(last_quorum_status_received);
 	}
 }
 
-void clientObj::implObj::dispatch(const unsubscribeserverstatus_msg &msg)
+void clientObj::implObj
+::dispatch_unsubscribeserverstatus(const server_status_subscribers_t::iterator &subscriber)
 {
-	server_status_subscribers->erase(msg.subscriber);
+	server_status_subscribers->erase(subscriber);
 	update_server_status_subscription();
 }
 
@@ -1300,6 +1348,9 @@ bool clientObj::implObj::update_server_status_subscription()
 	if (has_subscribers == server_status_subscribed)
 		return false;
 
+	LOG_TRACE("update_server_status_subscription: "
+		  << has_subscribers);
+
 	writer->write( x::ref<writtenObj<sendupdatesreq> >::create
 		       (has_subscribers));
 	server_status_subscribed=has_subscribers;
@@ -1308,6 +1359,8 @@ bool clientObj::implObj::update_server_status_subscription()
 
 void clientObj::implObj::deserialized(const STASHER_NAMESPACE::clusterstate &msg)
 {
+	LOG_DEBUG("received clusterstate");
+
 	if (have_last_quorum_status_received &&
 	    last_quorum_status_received == msg)
 		return; // Noise
@@ -1315,6 +1368,7 @@ void clientObj::implObj::deserialized(const STASHER_NAMESPACE::clusterstate &msg
 	have_last_quorum_status_received=true;
 	last_quorum_status_received=msg;
 
+	LOG_TRACE("Acking subscribers");
 	for (auto &subscriber: *server_status_subscribers)
 	{
 		subscriber.ack();

@@ -28,7 +28,8 @@ fdobjrwthreadObj::~fdobjrwthreadObj() noexcept
 {
 }
 
-void fdobjrwthreadObj::mainloop(const x::fdbase &transport,
+void fdobjrwthreadObj::mainloop(msgqueue_auto &msgqueue,
+				const x::fdbase &transport,
 				const x::fd::base::inputiter &inputiterArg,
 				const stoppableThreadTracker &tracker,
 				const x::ptr<x::obj> &mcguffin)
@@ -55,7 +56,7 @@ void fdobjrwthreadObj::mainloop(const x::fdbase &transport,
 		stoppable_group->mcguffin(my_mcguffin);
 		stoppable_group->mcguffin(writer_mcguffin);
 
-		tracker->start(w, transport, writer_mcguffin);
+		tracker->start_thread(w, transport, writer_mcguffin);
 	}
 
 
@@ -64,11 +65,11 @@ void fdobjrwthreadObj::mainloop(const x::fdbase &transport,
 	pfd[0].fd=transport->getFd();
 	pfd[0].events=POLLIN;
 
-	pfd[1].fd=this->msgqueue->getEventfd()->getFd();
+	pfd[1].fd=msgqueue->getEventfd()->getFd();
 	pfd[1].events=POLLIN;
 
 	started();
-	fdobjreaderthreadObj::mainloop(transport, inputiter);
+	fdobjreaderthreadObj::mainloop(msgqueue, transport, inputiter);
 	LOG_TRACE("Terminated");
 }
 

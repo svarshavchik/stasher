@@ -52,7 +52,7 @@ clustertlsconnectshutdownObj::mcguffin_destructor_cb
 
 void clustertlsconnectshutdownObj::mcguffin_destructor_cb::destroyed()
 {
-	tracker->start(shutdown, socket, session);
+	tracker->start_thread(shutdown, socket, session);
 }
 
 void clustertlsconnectshutdownObj
@@ -69,9 +69,13 @@ void clustertlsconnectshutdownObj
 	connection_mcguffin->ondestroy([cb]{cb->destroyed();});
 }
 
-void clustertlsconnectshutdownObj::run(const x::fd &socket,
+void clustertlsconnectshutdownObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+				       const x::fd &socket,
 				       const x::gnutls::session &session)
 {
+	msgqueue_auto msgqueue(this);
+	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+
 	struct pollfd pfd[2];
 
 	{
@@ -99,7 +103,7 @@ void clustertlsconnectshutdownObj::run(const x::fd &socket,
 				return;
 
 			while (!msgqueue->empty())
-				msgqueue->pop()->dispatch();
+				msgqueue.event();
 
 			now=x::timespec::getclock(CLOCK_MONOTONIC);
 

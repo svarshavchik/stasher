@@ -398,10 +398,17 @@ void clusterlistenerimplObj::start_conn(const x::ref<localconnectionObj> &conn,
 					const x::fd::base::inputiter &inputiter,
 					const x::ptr<x::obj> &mcguffin)
 {
+	// We must start the new thread first. start_thread() does not return
+	// until the thread starts and creates its message queue.
+	//
+	// installnotifycluster() and installnotifyclusterstatus() send
+	// the current status immediately, so the thread's message queue
+	// must exist by that time.
+
+	(*tracker)->start_thread(conn, transport, inputiter, *tracker,
+				 mcguffin);
 	(*cluster)->installnotifyclusterstatus(conn);
 	(*cluster)->installnotifycluster(conn);
-	(*tracker)->start(conn, transport, inputiter, *tracker,
-			  mcguffin);
 }
 
 

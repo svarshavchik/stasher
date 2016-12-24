@@ -12,18 +12,18 @@ See COPYING for distribution information.
       //! Transaction has been processed
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Original status request uuid
       </comment>
-      <decl>x::uuid <name>uuid</name></decl>
+      <decl>const x::uuid &amp;uuid</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Transaction status
       </comment>
-      <decl>trandistributorObj::transtatus <name>status</name></decl>
+      <decl>const trandistributorObj::transtatus &amp;status</decl>
     </param>
 
   </method>
@@ -32,40 +32,40 @@ See COPYING for distribution information.
     <comment>
       //! The quorum status of this cluster has changed
     </comment>
-    <param type='class'>
+    <param>
       <comment>
 	//! New quorum status
       </comment>
 
-      <decl>STASHER_NAMESPACE::quorumstate <name>inquorum</name></decl>
+      <decl>const STASHER_NAMESPACE::quorumstate &amp;inquorum</decl>
     </param>
   </method>
 
-  <method name="statusupdated">
+  <method name="do_statusupdated">
     <comment>
       //! Cluster status has changed
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! New cluster status
       </comment>
 
-      <decl>nodeclusterstatus <name>newStatus</name></decl>
+      <decl>const nodeclusterstatus &amp;newStatus</decl>
     </param>
   </method>
 
-  <method name="clusterupdated">
+  <method name="do_clusterupdated">
     <comment>
       //! Cluster has changed
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Cluster has changed: added or removed nodes, changed node config...
       </comment>
 
-      <decl>clusterinfoObj::cluster_t <name>newStatus</name></decl>
+      <decl>const clusterinfoObj::cluster_t &amp;newStatus</decl>
     </param>
   </method>
 

@@ -29,8 +29,7 @@ public:
         //! Status notification update.
 
         virtual void clusterupdated(//! New node status
-				    const clusterinfoObj::cluster_t &newStatus)
-=0;
+				    const clusterinfoObj::cluster_t &newStatus)=0;
 };
 
 #endif

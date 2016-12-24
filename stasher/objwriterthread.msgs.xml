@@ -7,15 +7,15 @@ See COPYING for distribution information.
 
 <class name="objwriterthreadObj">
 
-  <method name="write">
+  <method name="write_object">
     <comment>
       //! Write an object
     </comment>
-    <param type="class">
+    <param>
       <comment>
 	//! Object to be written
       </comment>
-    <decl>x::ref&lt;STASHER_NAMESPACE::writtenobjbaseObj&gt; <name>object</name></decl></param>
+    <decl>const x::ref&lt;STASHER_NAMESPACE::writtenobjbaseObj&gt; &amp;object</decl></param>
   </method>
 
   <method name="request_close">
@@ -36,6 +36,6 @@ See COPYING for distribution information.
       <comment>
 	//! If the number of objects in the write queue exceeds the given size, the thread dies
       </comment>
-    <decl>size_t <name>max_request_count</name></decl></param>
+    <decl>size_t max_request_count</decl></param>
   </method>
 </class>

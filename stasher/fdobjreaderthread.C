@@ -55,7 +55,6 @@ size_t fdobjreaderthreadObj::fdadapterObj::pubread(char *buffer, size_t cnt)
 
 fdobjreaderthreadObj::fdobjreaderthreadObj()
 {
-	msgqueue->getEventfd()->nonblock(true);
 }
 
 fdobjreaderthreadObj::~fdobjreaderthreadObj() noexcept
@@ -64,6 +63,8 @@ fdobjreaderthreadObj::~fdobjreaderthreadObj() noexcept
 
 void fdobjreaderthreadObj::drain()
 {
+	msgqueue_t msgqueue=get_msgqueue();
+
 	try {
 		msgqueue->getEventfd()->event();
 		//! Consume anything
@@ -79,13 +80,12 @@ void fdobjreaderthreadObj::drain()
 		msgqueue->pop()->dispatch();
 }
 
-void fdobjreaderthreadObj::mainloop(//! Transport being read from
+void fdobjreaderthreadObj::mainloop(msgqueue_auto &msgqueue,
 				    const x::fdbase &transport,
-
-				    //! Input iterator that's connected to the transport
 				    x::fd::base::inputiter &beg_iter)
 
 {
+	msgqueue->getEventfd()->nonblock(true);
 	x::fd::base::inputiter b(beg_iter), e;
 
 	beg_iter=x::fd::base::inputiter();

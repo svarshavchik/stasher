@@ -28,10 +28,11 @@ public:
 	static std::condition_variable cond;
 	static size_t counter;
 
-	void run(const x::fd &socket,
-		 const x::gnutls::session &session)
+	void run(x::ptr<x::obj> &mcguffin,
+		 const x::fd &socket,
+		 const x::gnutls::session &session) override
 	{
-		clustertlsconnectshutdownObj::run(socket, session);
+		clustertlsconnectshutdownObj::run(mcguffin, socket, session);
 
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -348,7 +349,9 @@ public:
 		c.sess->handshake(dummy);
 		c.sock->nonblock(true);
 
-		clustertlsconnectshutdownObj::run(c.sock, c.sess);
+		auto mcguffin=x::ptr<x::obj>::create();
+
+		clustertlsconnectshutdownObj::run(mcguffin, c.sock, c.sess);
 	}
 
 	unsigned getTimeout()

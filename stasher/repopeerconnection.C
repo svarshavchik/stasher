@@ -34,8 +34,6 @@ LOG_CLASS_INIT(repopeerconnectionObj);
 
 MAINLOOP_IMPL(repopeerconnectionObj)
 
-#include "repopeerconnection.msgs.def.H"
-
 x::property::value<bool>
 repopeerconnectionObj::debugnotimeout("debugnotimeout", false);
 
@@ -173,10 +171,10 @@ public:
 	void copycomplete();
 
 	//! Constructor
-	slavemeta() noexcept;
+	slavemeta()=default;
 
 	//! Destructor
-	~slavemeta() noexcept;
+	~slavemeta() noexcept=default;
 
 	//! Baton received from master, for handing off to another
 
@@ -450,23 +448,6 @@ repopeerconnectionObj::objdeserializer::~objdeserializer() noexcept
 {
 }
 
-repopeerconnectionObj::slavesyncrequest::slavesyncrequest()
-{
-}
-
-repopeerconnectionObj::slavesyncrequest::~slavesyncrequest() noexcept
-{
-}
-
-
-repopeerconnectionObj::slavemeta::slavemeta() noexcept
-{
-}
-
-repopeerconnectionObj::slavemeta::~slavemeta() noexcept
-{
-}
-
 bool repopeerconnectionObj::slavemeta::installed()
 {
 	return !dstrepo.null();
@@ -602,22 +583,22 @@ repopeerconnectionObj::~repopeerconnectionObj() noexcept
 LOG_FUNC_SCOPE_DECL(repopeerconnectionObj::dispatch::connect::peer,
 		    connect_peerLog);
 
-void repopeerconnectionObj::dispatch(const connect_peer_msg &msg)
-
+void repopeerconnectionObj
+::dispatch_do_connect_peer(const peerlinkptr &peerlinkArg)
 {
 	LOG_FUNC_SCOPE(connect_peerLog);
 
 	peerstatusObj::status thisstatus(this);
 
-	if (thisstatus->master != msg.peerlinkArg->mastername ||
-	    thisstatus->uuid != msg.peerlinkArg->masteruuid)
+	if (thisstatus->master != peerlinkArg->mastername ||
+	    thisstatus->uuid != peerlinkArg->masteruuid)
 	{
 		LOG_WARNING(getthisnodename()
 			    << ": Failed controller connection request with"
 			    " peer: master "
-			    << msg.peerlinkArg->mastername
+			    << peerlinkArg->mastername
 			    << " ("
-			    << x::tostring(msg.peerlinkArg->masteruuid)
+			    << x::tostring(peerlinkArg->masteruuid)
 			    << "), peer's master is "
 			    << thisstatus->master
 			    << " ("
@@ -627,28 +608,28 @@ void repopeerconnectionObj::dispatch(const connect_peer_msg &msg)
 	}
 
 	x::ptr<repocontrollerbaseObj>
-		controllerptr(msg.peerlinkArg->controller.getptr());
+		controllerptr(peerlinkArg->controller.getptr());
 
 	if (controllerptr.null())
 	{
 		LOG_WARNING(getthisnodename()
 			    << ": Null controller object: master "
-			    << msg.peerlinkArg->mastername
+			    << peerlinkArg->mastername
 			    << " ("
-			    << x::tostring(msg.peerlinkArg->masteruuid)
+			    << x::tostring(peerlinkArg->masteruuid)
 			    << ")");
 		return;
 	}
 
-	x::ptr<x::obj> mcguffinptr(msg.peerlinkArg->controller_mcguffin.getptr());
+	x::ptr<x::obj> mcguffinptr(peerlinkArg->controller_mcguffin.getptr());
 
 	if (mcguffinptr.null())
 	{
 		LOG_WARNING(getthisnodename()
 			    <<": Null controller object trigger: master "
-			    << msg.peerlinkArg->mastername
+			    << peerlinkArg->mastername
 			    << " ("
-			    << x::tostring(msg.peerlinkArg->masteruuid)
+			    << x::tostring(peerlinkArg->masteruuid)
 			    << ")");
 		return;
 	}
@@ -660,19 +641,18 @@ void repopeerconnectionObj::dispatch(const connect_peer_msg &msg)
 
 	newdisconnect->install(controllerptr, mcguffinptr);
 
-	*currentpeerlink=msg.peerlinkArg;
+	*currentpeerlink=peerlinkArg;
 	*currentconnect=newdisconnect;
 
 	LOG_INFO(getthisnodename()
 		 << ": Connected controller with peer: master "
-		 << msg.peerlinkArg->mastername
+		 << peerlinkArg->mastername
 		 << " ("
-		 << x::tostring(msg.peerlinkArg->masteruuid)
+		 << x::tostring(peerlinkArg->masteruuid)
 		 << ")");
 }
 
-void repopeerconnectionObj::dispatch(const disconnect_peer_msg &dummy)
-
+void repopeerconnectionObj::dispatch_do_disconnect_peer()
 {
 	LOG_DEBUG("Connection to " << peername
 		  << " on " << getthisnodename()
@@ -697,8 +677,8 @@ void repopeerconnectionObj::dispatch(const disconnect_peer_msg &dummy)
 LOG_FUNC_SCOPE_DECL(repopeerconnectionObj::dispatch::connect::slave,
 		    connect_slaveLog);
 
-void repopeerconnectionObj::dispatch(const connect_slave_msg &msg)
-
+void repopeerconnectionObj
+::dispatch_do_connect_slave(const x::ptr<slavesyncinfoObj> &synchandle)
 {
 	LOG_FUNC_SCOPE(connect_slaveLog);
 
@@ -716,22 +696,22 @@ void repopeerconnectionObj::dispatch(const connect_slave_msg &msg)
 		LOG_WARNING(getthisnodename()
 			    << ": connection with " << peername
 			    << ": ignoring slave synchandle for "
-			    << msg.synchandle->mastername
+			    << synchandle->mastername
 			    << " ("
-			    << x::tostring(msg.synchandle->masteruuid)
+			    << x::tostring(synchandle->masteruuid)
 			    << "), not connected to this controller");
 		return;
 	}
 
-	if (msg.synchandle->mastername != thisstatus.master ||
-	    msg.synchandle->masteruuid != thisstatus.uuid)
+	if (synchandle->mastername != thisstatus.master ||
+	    synchandle->masteruuid != thisstatus.uuid)
 	{
 		LOG_WARNING(getthisnodename()
 			    << ": connection with " << peername
 			    << ": ignoring slave synchandle for "
-			    << msg.synchandle->mastername
+			    << synchandle->mastername
 			    << " ("
-			    << x::tostring(msg.synchandle->masteruuid)
+			    << x::tostring(synchandle->masteruuid)
 			    << "), current status announced to peer is "
 			    << thisstatus.master
 			    << " ("
@@ -743,11 +723,11 @@ void repopeerconnectionObj::dispatch(const connect_slave_msg &msg)
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername
 		 << ": slave connection established with: "
-		 << msg.synchandle->mastername
+		 << synchandle->mastername
 		 << " ("
-		 << x::tostring(msg.synchandle->masteruuid) << ")");
+		 << x::tostring(synchandle->masteruuid) << ")");
 
-	objrepocopydstptr dstptr(msg.synchandle->dstinterface.getptr());
+	objrepocopydstptr dstptr(synchandle->dstinterface.getptr());
 
 	if (dstptr.null())
 	{
@@ -766,21 +746,21 @@ void repopeerconnectionObj::dispatch(const connect_slave_msg &msg)
 	if (slavemetaptr->installed() || mastermetaptr->installed())
 		throw EXCEPTION("Internal error - peer already linked");
 
-	dstptr->start(msg.synchandle->repo,
+	dstptr->start(synchandle->repo,
 		      srcmaster,
-		      msg.synchandle->dstflag,
+		      synchandle->dstflag,
 		      syncbaton,
-		      msg.synchandle->dstmcguffin);
+		      synchandle->dstmcguffin);
 
-	slavemetaptr->dstrepo=msg.synchandle->repo;
+	slavemetaptr->dstrepo=synchandle->repo;
 	slavemetaptr->dstptr=dstptr;
 	slavemetaptr->srcmaster=srcmaster;
-	slavemetaptr->slave=msg.synchandle->controller;
+	slavemetaptr->slave=synchandle->controller;
 
 	slavemetaptr->receivednotify=
 		x::ptr<repopeerconnectionObj::slavemeta::tranreceivednotifyObj>
-		::create(msg.synchandle->mastername,
-			 msg.synchandle->masteruuid,
+		::create(synchandle->mastername,
+			 synchandle->masteruuid,
 			 x::ref<STASHER_NAMESPACE::fdobjwriterthreadObj>(writer));
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<slavesyncrequest> >
@@ -790,7 +770,8 @@ void repopeerconnectionObj::dispatch(const connect_slave_msg &msg)
 LOG_FUNC_SCOPE_DECL(repopeerconnectionObj::dispatch::connect::master,
 		    connect_masterLog);
 
-void repopeerconnectionObj::dispatch(const connect_master_msg &msg)
+void repopeerconnectionObj
+::dispatch_do_connect_master(const x::ref<mastersyncinfoObj> &synchandle)
 {
 	LOG_FUNC_SCOPE(connect_masterLog);
 
@@ -803,22 +784,22 @@ void repopeerconnectionObj::dispatch(const connect_master_msg &msg)
 		LOG_WARNING(getthisnodename()
 			    << ": connection with " << peername
 			    << ": ignoring master synchandle for "
-			    << msg.synchandle->mastername
+			    << synchandle->mastername
 			    << " ("
-			    << x::tostring(msg.synchandle->masteruuid)
+			    << x::tostring(synchandle->masteruuid)
 			    << "), not connected to this controller");
 		return;
 	}
 
-	if (msg.synchandle->mastername != thisstatus.master ||
-	    msg.synchandle->masteruuid != thisstatus.uuid)
+	if (synchandle->mastername != thisstatus.master ||
+	    synchandle->masteruuid != thisstatus.uuid)
 	{
 		LOG_WARNING(getthisnodename()
 			    << ": connection with " << peername
 			    << ": ignoring master synchandle for "
-			    << msg.synchandle->mastername
+			    << synchandle->mastername
 			    << " ("
-			    << x::tostring(msg.synchandle->masteruuid)
+			    << x::tostring(synchandle->masteruuid)
 			    << "), current status announced to peer is "
 			    << thisstatus.master
 			    << " ("
@@ -830,11 +811,11 @@ void repopeerconnectionObj::dispatch(const connect_master_msg &msg)
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername
 		 << ": master connection established with "
-		 << msg.synchandle->mastername
+		 << synchandle->mastername
 		 << " ("
-		 << x::tostring(msg.synchandle->masteruuid) << ")");
+		 << x::tostring(synchandle->masteruuid) << ")");
 
-	repocontrollermasterptr ptr(msg.synchandle->controller.getptr());
+	repocontrollermasterptr ptr(synchandle->controller.getptr());
 
 	if (ptr.null())
 	{
@@ -846,7 +827,7 @@ void repopeerconnectionObj::dispatch(const connect_master_msg &msg)
 		throw EXCEPTION("Internal error - peer already linked");
 
 	mastermetaptr->master=ptr;
-	mastermetaptr->peertrans=msg.synchandle->received_uuids;
+	mastermetaptr->peertrans=synchandle->received_uuids;
 
 	if (!(mastermetaptr->newmasterbaton=syncbaton).null())
 		LOG_INFO(getthisnodename()
@@ -855,7 +836,7 @@ void repopeerconnectionObj::dispatch(const connect_master_msg &msg)
 			 " new master");
 
 	ptr->accept(repopeerconnectionptr(this),
-		    msg.synchandle->connection, *currentpeerlink);
+		    synchandle->connection, *currentpeerlink);
 
 	check_sync_start();
 }
@@ -954,33 +935,32 @@ void repopeerconnectionObj::checknewmaster()
 #endif
 }
 
-void repopeerconnectionObj::dispatch(const installformermasterbaton_msg &msg)
-
+void repopeerconnectionObj::dispatch_installformermasterbaton(const baton &batonp)
 {
 	LOG_INFO("On " << getthisnodename()
 		 << ", connection with "
 		 << peername
 		 << " is holding a baton from "
-		 << msg.batonp->resigningnode);
+		 << batonp->resigningnode);
 
-	*formermasterbaton=msg.batonp;
+	*formermasterbaton=batonp;
 
 	nodeclusterstatus peer_status=*peerstatusObj::status(this);
 
 	// Maybe the peer already switched over
 	checkformermasterbaton(peer_status);
 
-	if (msg.batonp->replacementnode == peername &&
+	if (batonp->replacementnode == peername &&
 	    peer_status.master == peername)
 	{
 		LOG_INFO("On " << getthisnodename()
 			 << ", connection with "
 			 << peername
 			 << " is holding a baton from "
-			 << msg.batonp->resigningnode
+			 << batonp->resigningnode
 			 << " pending enslavement");
 
-		*pendingslavebaton=msg.batonp;
+		*pendingslavebaton=batonp;
 	}
 }
 
@@ -1273,7 +1253,8 @@ void repopeerconnectionObj::deserialized(const tranrecvcanc &msg)
 						 msg.cancelled);
 }
 
-void repopeerconnectionObj::run(const x::fdbase &subcl_transport,
+void repopeerconnectionObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+				const x::fdbase &subcl_transport,
 				const x::fd::base::inputiter &subcl_inputiter,
 				STASHER_NAMESPACE::stoppableThreadTracker
 				&trackerref,
@@ -1285,6 +1266,9 @@ void repopeerconnectionObj::run(const x::fdbase &subcl_transport,
 				clusterinfoptr clusterArg,
 				tobjrepo &distreporef)
 {
+	msgqueue_auto msgqueue(this);
+	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+
 	encrypted=encryptedArg;
 
 	// Some regression modules don't use this
@@ -1357,7 +1341,8 @@ void repopeerconnectionObj::run(const x::fdbase &subcl_transport,
 	}
 
 	try {
-		peerstatusannouncerObj::mainloop(subcl_transport,
+		peerstatusannouncerObj::mainloop(msgqueue,
+						 subcl_transport,
 						 subcl_inputiter,
 						 trackerref,
 						 subcl_mcguffin);
@@ -1385,9 +1370,9 @@ public:
 };
 
 void repopeerconnectionObj
-::dispatch(const make_installattempt_msg &msg)
+::dispatch_make_installattempt(const x::weakptr<clusterinfoptr> &cluster)
 {
-	clusterinfoptr ptr=msg.cluster.getptr();
+	clusterinfoptr ptr=cluster.getptr();
 
 	if (!ptr.null())
 		installattempt(ptr);
@@ -1480,7 +1465,8 @@ void repopeerconnectionObj::installattempt_cb::destroyed()
 
 	if (!conn_ptr.null() && !cluster_ptr.null())
 	{
-		conn_ptr->make_installattempt(cluster_ptr);
+		conn_ptr->make_installattempt(x::weakptr<clusterinfoptr>
+					      (cluster_ptr));
 		return;
 	}
 
@@ -1522,8 +1508,7 @@ void repopeerconnectionObj::check_sync_start()
 
 }
 
-void repopeerconnectionObj::dispatch(const check_sync_end_msg &dummy)
-
+void repopeerconnectionObj::dispatch_check_sync_end()
 {
 	if (mastermetaptr->installed() &&
 	    !mastermetaptr->dstcopy.null() &&
@@ -1536,20 +1521,18 @@ void repopeerconnectionObj::dispatch(const check_sync_end_msg &dummy)
 	}
 }
 
-void repopeerconnectionObj::dispatch(const trandistcancel &msg)
-
+void repopeerconnectionObj::dispatch_trandistcancel(const trandistcancel &msg)
 {
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<trandistcancel> >::create(msg));
 }
 
-void repopeerconnectionObj::dispatch(const trandistihave &msg)
-
+void repopeerconnectionObj::dispatch_trandistihave(const trandistihave &msg)
 {
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<trandistihave> >::create(msg));
 }
 
-void repopeerconnectionObj::dispatch(const x::ref<STASHER_NAMESPACE::writtenObj<transerializer>
-						  > &msg)
+void repopeerconnectionObj::dispatch_transerializer
+(const x::ref<STASHER_NAMESPACE::writtenObj<transerializer>> &msg)
 
 {
 	writer->write(msg);
@@ -1565,26 +1548,11 @@ repopeerconnectionObj::commitreq::commitreq(const x::uuid &uuidArg,
 {
 }
 
-repopeerconnectionObj::commitreq::commitreq()
-{
-}
-
-repopeerconnectionObj::commitreq::~commitreq() noexcept
-{
-}
-
 repopeerconnectionObj::commitack::commitack(const x::uuid &uuidArg)
  : uuid(uuidArg)
 {
 }
 
-repopeerconnectionObj::commitack::commitack()
-{
-}
-
-repopeerconnectionObj::commitack::~commitack() noexcept
-{
-}
 repopeerconnectionObj::commitreqObj::commitreqObj(const x::uuid &uuidArg,
 						  const std::string &sourceArg,
 						  STASHER_NAMESPACE::req_stat_t
@@ -1642,13 +1610,13 @@ void repopeerconnectionObj::deserialized(const commitreq &msg)
 
 }
 
-void repopeerconnectionObj::dispatch(const commit_peer_msg &msg)
-
+void repopeerconnectionObj::dispatch_commit_peer(const x::ptr<commitreqObj> &req,
+						 const x::ptr<obj> &mcguffin)
 {
-	x::uuid uuid=msg.req->msg.uuid;
+	x::uuid uuid=req->msg.uuid;
 
 	LOG_DEBUG("Sending commit request: " << x::tostring(uuid)
-		  << ", status: " << (int)msg.req->msg.status);
+		  << ", status: " << (int)req->msg.status);
 
 	if (!mastermetaptr->installed())
 	{
@@ -1658,10 +1626,10 @@ void repopeerconnectionObj::dispatch(const commit_peer_msg &msg)
 	}
 
 	mastermetaptr->pending_commits.insert(std::make_pair(uuid,
-							     msg.mcguffin));
+							     mcguffin));
 	LOG_TRACE("Commit request sent");
 
-	writer->write(msg.req);
+	writer->write(req);
 }
 
 void repopeerconnectionObj::deserialized(const commitack &msg)
@@ -1674,25 +1642,32 @@ void repopeerconnectionObj::deserialized(const commitack &msg)
 
 // ----------------------------------------------------------------------------
 
-void repopeerconnectionObj::dispatch(const baton_master_announce_msg &msg)
-
+void repopeerconnectionObj
+::dispatch_baton_master_announce(const std::string &mastername,
+				 const x::uuid &masteruuid,
+				 const x::uuid &batonuuid,
+				 const std::string &newmasterpeer,
+				 const x::ptr<x::obj> &mcguffin)
 {
-	if (!IS_MASTER(msg.mastername, msg.masteruuid))
+	if (!IS_MASTER(mastername, masteruuid))
 	{
 		LOG_WARNING("Ignoring baton announcement from "
-			    << msg.mastername
+			    << mastername
 			    << " - not currently in master mode");
 		return;
 	}
 
-	mastermetaptr->baton_announce_mcguffin=msg.mcguffin;
+	mastermetaptr->baton_announce_mcguffin=mcguffin;
 
 #ifdef DEBUG_BATON_TEST_2_ANNOUNCE_HOOK
 	DEBUG_BATON_TEST_2_ANNOUNCE_HOOK();
 #endif
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<baton_master_announce_msg> >
-		      ::create(msg));
+		      ::create(baton_master_announce_msg(mastername,
+							 masteruuid,
+							 batonuuid,
+							 newmasterpeer)));
 
 	LOG_INFO("Notified " << peername
 		 << " that we're about to give up masterhood");
@@ -1854,14 +1829,13 @@ void repopeerconnectionObj::baton_slave_commitlock_thread::run()
 	ptr->baton_oldmaster_install(batonp);
 }
 
-void repopeerconnectionObj::dispatch(const baton_oldmaster_install_msg &msg)
-
+void repopeerconnectionObj::dispatch_baton_oldmaster_install(const baton &batonp)
 {
-	if (!IS_SLAVE(msg.batonp->resigningnode,
-		      msg.batonp->resigninguuid))
+	if (!IS_SLAVE(batonp->resigningnode,
+		      batonp->resigninguuid))
 	{
 		LOG_ERROR("Rejected baton from "
-			  << msg.batonp->resigningnode
+			  << batonp->resigningnode
 			  << " who is not my master, "
 			  << (slavemetaptr->installed() &&
 			      !currentpeerlink->null()
@@ -1874,14 +1848,14 @@ void repopeerconnectionObj::dispatch(const baton_oldmaster_install_msg &msg)
 	DEBUG_BATON_TEST_3_COMMITLOCK_HOOK();
 #endif
 
-	baton old_baton(batonptr::create(msg.batonp->resigningnode,
-					 msg.batonp->resigninguuid,
-					 msg.batonp->resigningnode,
-					 msg.batonp->batonuuid));
+	baton old_baton(batonptr::create(batonp->resigningnode,
+					 batonp->resigninguuid,
+					 batonp->resigningnode,
+					 batonp->batonuuid));
 
-	old_baton->temp_baton=msg.batonp->temp_baton;
-	msg.batonp->temp_baton=old_baton;
-	slavemetaptr->slave_baton=msg.batonp;
+	old_baton->temp_baton=batonp->temp_baton;
+	batonp->temp_baton=old_baton;
+	slavemetaptr->slave_baton=batonp;
 	getthiscluster()->installbaton(old_baton);
 
         writer->write(x::ref<STASHER_NAMESPACE::writtenObj<baton_slave_received_msg> >::create());
@@ -1909,13 +1883,13 @@ void repopeerconnectionObj::deserialized(const baton_slave_received_msg &msg)
 
 // Connection thread to the slave receives the handoff release notice.
 
-void repopeerconnectionObj::dispatch(const baton_master_release_msg &msg)
-
+void repopeerconnectionObj::dispatch_baton_master_release(const std::string &mastername,
+							  const x::uuid &masteruuid)
 {
-	if (!IS_MASTER(msg.mastername, msg.masteruuid))
+	if (!IS_MASTER(mastername, masteruuid))
 	{
 		LOG_WARNING("Ignoring baton release from "
-			    << msg.mastername
+			    << mastername
 			    << " - not currently in master mode");
 		return;
 	}
@@ -1930,7 +1904,8 @@ void repopeerconnectionObj::dispatch(const baton_master_release_msg &msg)
 
 	// Send the message to the slave, to release the handoff.
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<baton_master_release_msg> >
-		      ::create(msg));
+		      ::create(baton_master_release_msg(mastername,
+							masteruuid)));
 
 	LOG_INFO("Notified " << peername
 		 << " that we've decided to keep current master status");
@@ -1976,8 +1951,7 @@ public:
 
 LOG_FUNC_SCOPE_DECL(repopeerconnectionObj::dispatch::baton_transfer_request, baton_transfer_requestLog);
 
-void repopeerconnectionObj::dispatch(const baton_transfer_request_msg &msg)
-
+void repopeerconnectionObj::dispatch_baton_transfer_request(const baton &batonp)
 {
 	LOG_FUNC_SCOPE(baton_transfer_requestLog);
 
@@ -1985,20 +1959,20 @@ void repopeerconnectionObj::dispatch(const baton_transfer_request_msg &msg)
 	DEBUG_BATON_TEST_5_ABORT_BATON_TRANSFER_HOOK();
 #endif
 
-	if (msg.batonp->replacementnode != peername)
+	if (batonp->replacementnode != peername)
 	{
 		LOG_FATAL("Baton being transferred to "
-			  << msg.batonp->replacementnode
+			  << batonp->replacementnode
 			  << " was somehow received by connection object to "
 			  << peername);
 		return;
 	}
 
-	if (!IS_MASTER(msg.batonp->resigningnode,
-		       msg.batonp->resigninguuid))
+	if (!IS_MASTER(batonp->resigningnode,
+		       batonp->resigninguuid))
 	{
 		LOG_WARNING("Ignoring baton transfer request to "
-			    << msg.batonp->replacementnode
+			    << batonp->replacementnode
 			    << " - not currently in master mode");
 		return;
 	}
@@ -2006,14 +1980,14 @@ void repopeerconnectionObj::dispatch(const baton_transfer_request_msg &msg)
 	LOG_INFO("Baton being transferred to " << peername);
 
 	auto given_cb=
-		x::ref<baton_given_cb>::create(msg.batonp,
+		x::ref<baton_given_cb>::create(batonp,
 					       mastermetaptr->master);
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<batonisyours> >
-		      ::create(msg.batonp->resigningnode,
-			       msg.batonp->resigninguuid,
-			       msg.batonp->batonuuid));
-	(*pings_outstanding)[x::tostring(msg.batonp->batonuuid)]=given_cb;
+		      ::create(batonp->resigningnode,
+			       batonp->resigninguuid,
+			       batonp->batonuuid));
+	(*pings_outstanding)[x::tostring(batonp->batonuuid)]=given_cb;
 }
 
 LOG_FUNC_SCOPE_DECL(repopeerconnectionObj::deserialized::batonisyours, deserialized_batonisyoursLog);
@@ -2052,14 +2026,13 @@ void repopeerconnectionObj::deserialized(const batonisyours &msg)
 
 }
 
-void repopeerconnectionObj::dispatch(const batonismine_msg &msg)
-
+void repopeerconnectionObj::dispatch_batonismine(const baton &batonp)
 {
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername
 		 << ": disconnecting from old master, holding baton until transfer is complete");
 
-	getthiscluster()->installformermasterbaton(msg.batonp);
+	getthiscluster()->installformermasterbaton(batonp);
 #ifdef DEBUG_BATON_TEST_6_NEWMASTER_FORMERMASTER_DISCONNECT
 	DEBUG_BATON_TEST_6_NEWMASTER_FORMERMASTER_DISCONNECT();
 #endif
@@ -2068,7 +2041,7 @@ void repopeerconnectionObj::dispatch(const batonismine_msg &msg)
 
 	pongm pp;
 
-	pp.uuid=x::tostring(msg.batonp->batonuuid);
+	pp.uuid=x::tostring(batonp->batonuuid);
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<pongm> >::create(pp));
 }
@@ -2089,14 +2062,13 @@ repopeerconnectionObj::baton_given_cb::~baton_given_cb() noexcept
 		masterptr->masterbaton_handedover(batonp);
 }
 
-void repopeerconnectionObj::dispatch(const ping_msg &msg)
-
+void repopeerconnectionObj::dispatch_ping(const x::ptr<x::obj> &mcguffin)
 {
 	pingm pp;
 
 	pp.uuid=x::tostring(x::uuid());
 
-	(*pings_outstanding)[pp.uuid]=msg.mcguffin;
+	(*pings_outstanding)[pp.uuid]=mcguffin;
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<pingm> >::create(pp));
 }
@@ -2120,11 +2092,12 @@ void repopeerconnectionObj::deserialized(const pongm &msg)
 	pings_outstanding->erase(msg.uuid);
 }
 
-void repopeerconnectionObj::dispatch(const master_quorum_announce_msg &msg)
-
+void repopeerconnectionObj::dispatch_master_quorum_announce(const std::string &mastername,
+							    const x::uuid &uuid,
+							    STASHER_NAMESPACE::quorumstate inquorum)
 {
-	if (thisstatus.master != msg.mastername ||
-	    thisstatus.uuid != msg.uuid)
+	if (thisstatus.master != mastername ||
+	    thisstatus.uuid != uuid)
 	{
 		LOG_WARNING(getthisnodename()
 			    << ": connection with " << peername
@@ -2136,12 +2109,12 @@ void repopeerconnectionObj::dispatch(const master_quorum_announce_msg &msg)
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername
 		 << ": notifying of master quorum status update: "
-		 << x::tostring(msg.inquorum));
+		 << x::tostring(inquorum));
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<master_quorum> >
-		      ::create(msg.mastername,
-			       msg.uuid,
-			       msg.inquorum));
+		      ::create(mastername,
+			       uuid,
+			       inquorum));
 }
 
 void repopeerconnectionObj::deserialized(const master_quorum &msg)
@@ -2215,8 +2188,9 @@ public:
 
 };
 
-void repopeerconnectionObj::dispatch(const master_handover_request_msg &msg)
-
+void repopeerconnectionObj
+::dispatch_master_handover_request(const std::string &newmastername,
+				   const x::ptr<x::obj> &mcguffin)
 {
 	x::uuid uuid;
 
@@ -2225,12 +2199,12 @@ void repopeerconnectionObj::dispatch(const master_handover_request_msg &msg)
 		 << ": sending handover request "
 		 << x::tostring(uuid)
 		 << " to "
-		 << msg.newmastername);
+		 << newmastername);
 
-	(*pings_outstanding)[x::tostring(uuid)]=msg.mcguffin;
+	(*pings_outstanding)[x::tostring(uuid)]=mcguffin;
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<handover_request> >
-		      ::create(msg.newmastername, uuid));
+		      ::create(newmastername, uuid));
 }
 
 void repopeerconnectionObj::deserialized(const handover_request &msg)
@@ -2253,35 +2227,17 @@ void repopeerconnectionObj::deserialized(const handover_request &msg)
 	}
 }
 
-void repopeerconnectionObj::dispatch(const handover_request_processed_msg &msg)
-
+void repopeerconnectionObj::dispatch_handover_request_processed(const x::uuid &uuid)
 {
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername
 		 << ": acknowledged handover request "
-		 << x::tostring(msg.uuid));
+		 << x::tostring(uuid));
 
-	deserialized(pingm(x::tostring(msg.uuid))); // Send a pong
+	deserialized(pingm(x::tostring(uuid))); // Send a pong
 }
 
-void repopeerconnectionObj::dispatch(const noop_msg &msg)
-
-{
-}
-
-repopeerconnectionObj::pingm::pingm()
-{
-}
-
-repopeerconnectionObj::pingm::~pingm() noexcept
-{
-}
-
-repopeerconnectionObj::pongm::pongm()
-{
-}
-
-repopeerconnectionObj::pongm::~pongm() noexcept
+void repopeerconnectionObj::dispatch_noop(const x::ptr<x::obj> &mcguffin)
 {
 }
 
@@ -2303,15 +2259,17 @@ public:
 	}
 };
 
-void repopeerconnectionObj::dispatch(const setnewcert_request_msg &msg)
+void repopeerconnectionObj
+::dispatch_setnewcert_request(const x::ref<setnewcertObj> &request,
+			      const x::ptr<x::obj> &mcguffin)
 {
 	auto pending = x::ref<setnewcertObj::pendingObj>
-		::create(msg.request, msg.mcguffin);
+		::create(request, mcguffin);
 
 	x::uuid request_uuid;
 
 	auto req = x::ptr<STASHER_NAMESPACE::writtenObj<setnewcert> >
-		::create(msg.request->certificate,
+		::create(request->certificate,
 		         x::tostring(request_uuid));
 
 	(*pings_outstanding)[req->msg.uuid]=pending;
@@ -2352,20 +2310,22 @@ void repopeerconnectionObj::deserialized(const setnewcert_resp &msg)
 	pings_outstanding->erase(msg.uuid);
 }
 
-void repopeerconnectionObj::dispatch(const halt_request_msg &msg)
+void repopeerconnectionObj::dispatch_halt_request(const std::string &mastername,
+						  const x::uuid &masteruuid,
+						  const x::ptr<x::obj> &mcguffin)
 {
-	if (!IS_MASTER(msg.mastername, msg.masteruuid))
+	if (!IS_MASTER(mastername, masteruuid))
 	{
 		LOG_INFO(getthisnodename()
 			 << ": connection with " << peername
 			 << ": ignoring halt request from: "
-			 << msg.mastername << ", uuid=" << x::tostring(msg.masteruuid));
+			 << mastername << ", uuid=" << x::tostring(masteruuid));
 		return;
 	}
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<halt> >
-		      ::create(msg.mastername, msg.masteruuid));
-	mastermetaptr->halt_mcguffin=msg.mcguffin;
+		      ::create(mastername, masteruuid));
+	mastermetaptr->halt_mcguffin=mcguffin;
 
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername

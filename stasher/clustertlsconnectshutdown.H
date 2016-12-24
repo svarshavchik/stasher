@@ -10,7 +10,7 @@
 #include <x/logger.H>
 #include <x/fd.H>
 #include <x/gnutls/session.H>
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 #include <x/options.H>
 
 #include "stasher/namespace.H"
@@ -25,7 +25,7 @@
 //! The thread terminates the TLS connection, and exits.
 
 class clustertlsconnectshutdownObj
-	: virtual public x::eventqueuemsgdispatcherObj,
+	: virtual public x::threadmsgdispatcherObj,
 	  public x::runthreadname {
 
 	//! Logging
@@ -127,7 +127,8 @@ public:
 
 	//! Main execution thread (virtual override in regression tests)
 
-	virtual void run(const x::fd &socket,
+	virtual void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+			 const x::fd &socket,
 			 const x::gnutls::session &session);
 };
 

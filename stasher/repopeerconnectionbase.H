@@ -96,13 +96,11 @@ public:
 
 	//! Invoked by slave controller, to establish linkage with a connection object to its master
 
-	virtual void connect_slave(const x::ptr<slavesyncinfoObj> &synchandle)
-=0;
+	virtual void connect_slave(const x::ptr<slavesyncinfoObj> &synchandle)=0;
 
 	//! Invoked by master controller, to establish linkage with a connection object to one of its slave
 
-	virtual void connect_master(const x::ref<mastersyncinfoObj> &synchandle)
-=0;
+	virtual void connect_master(const x::ref<mastersyncinfoObj> &synchandle)=0;
 
 	class peerdisconnect_msgObj;
 
@@ -147,9 +145,7 @@ public:
 
 	//! The controller has disconnected
 
-	virtual void disconnect_peer()
-=0;
-
+	virtual void disconnect_peer()=0;
 
 	//! Helper template class for deserializing
 

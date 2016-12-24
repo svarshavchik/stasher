@@ -220,20 +220,20 @@ public:
 		conn->timestamp=timestamp;
 
 		auto runthread=
-			tracker->start(repopeerconnection(conn),
-				       x::fdbase(socks.second),
-				       x::fd::base::inputiter(socks.second),
-				       tracker->getTracker(),
-				       x::ptr<x::obj>::create(),
-				       false,
-				       x::ptr<trandistributorObj>(),
-				       clusterlistenerptr(),
-				       nodeclusterstatus(nodename,
-							 x::uuid(),
-							 0,
-							 false),
-				       cluster,
-				       tobjrepo::create("repo.tst"));
+			tracker->start_thread(repopeerconnection(conn),
+					      x::fdbase(socks.second),
+					      x::fd::base::inputiter(socks.second),
+					      tracker->getTracker(),
+					      x::ptr<x::obj>::create(),
+					      false,
+					      x::ptr<trandistributorObj>(),
+					      clusterlistenerptr(),
+					      nodeclusterstatus(nodename,
+								x::uuid(),
+								0,
+								false),
+					      cluster,
+					      tobjrepo::create("repo.tst"));
 
 		cluster->wait_installpeer();
 
@@ -348,7 +348,7 @@ static void test5()
 
 	first.first->ondestroy([destroycb]{destroycb->destroyed();});
 	second.first->ondestroy([destroycb]{destroycb->destroyed();});
-	
+
 	first.first=second.first=repopeerconnectionptr();
 
 	// one of them should be destroyed

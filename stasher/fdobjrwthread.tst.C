@@ -84,7 +84,7 @@ public:
 			writer->write(x::ptr<makewriteabortObj>::create());
 			return;
 		}
-				
+
 		typedef STASHER_NAMESPACE::writtenObj<testmsg>::ref_t testmsg_reply;
 
 		testmsg_reply reply(testmsg_reply::create());
@@ -103,18 +103,25 @@ public:
 	{
 	}
 
-	void run(const x::fdbase &transport,
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const x::fdbase &transport,
 		 const x::fd::base::inputiter &inputiterArg,
 		 const STASHER_NAMESPACE::stoppableThreadTracker &tracker,
 		 const x::ptr<x::obj> &mcguffin)
 	{
-		mainloop(transport, inputiterArg, tracker, mcguffin);
+		msgqueue_auto msgqueue(this);
+		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+
+		mainloop(msgqueue, transport, inputiterArg, tracker, mcguffin);
 	}
 
-	template<typename msg_type> void submit(const msg_type &msg)
-
+	template<typename ...Args>
+	void submit(Args && ...args)
 	{
-		sendevent<msg_type>(this, msg);
+		x::threadmsgdispatcherObj::sendevent(&testrwthreadObj::dispatch,
+						     this,
+						     std::forward<Args>(args)...
+						     );
 	}
 
 	MAINLOOP_DECL;
@@ -170,9 +177,9 @@ public:
 
 		mcguffin=x::ptr<x::obj>::create();
 
-		tracker->start(p, socks.second,
-			       x::fd::base::inputiter(socks.second),
-			       tracker->getTracker(), mcguffin);
+		tracker->start_thread(p, socks.second,
+				      x::fd::base::inputiter(socks.second),
+				      tracker->getTracker(), mcguffin);
 	}
 };
 

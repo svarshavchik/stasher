@@ -18,8 +18,6 @@
 
 MAINLOOP_IMPL(localprivconnectionObj)
 
-#include "localprivconnection.msgs.def.H"
-
 localprivconnectionObj
 ::localprivconnectionObj(const std::string &threadnameArg,
 			 const tobjrepo &repo,
@@ -97,8 +95,9 @@ void localprivconnectionObj::deserialized(const getserverstatus_req_t
 	report->mcguffin=x::ptr<x::obj>();
 }
 
-void localprivconnectionObj::dispatch(const serverstatusreport_done_msg &msg)
-
+void localprivconnectionObj
+::dispatch_serverstatusreport_done(const x::uuid &requuid,
+				   const x::ptr<STASHER_NAMESPACE::threadreportObj> &report)
 {
 	std::ostringstream o;
 
@@ -111,9 +110,9 @@ void localprivconnectionObj::dispatch(const serverstatusreport_done_msg &msg)
 		o << "  " << e << std::endl;
 	}
 
-	msg.report->format(o);
+	report->format(o);
 
-	getserverstatus_resp_msg_t resp(msg.requuid);
+	getserverstatus_resp_msg_t resp(requuid);
 	getserverstatus_resp_msg_t::resp_t &msgres=resp.getmsg();
 
 	msgres.report=o.str();
@@ -348,13 +347,13 @@ void localprivconnectionObj::deserialized(const resign_req_t &msg)
 	resign_ret->ondestroy([cb]{cb->destroyed();});
 }
 
-void localprivconnectionObj::dispatch(const resign_done_msg &msg)
-
+void localprivconnectionObj::dispatch_resign_done(const x::uuid &requuid,
+						  boolref status)
 {
-	resign_resp_msg_t resp(msg.requuid);
+	resign_resp_msg_t resp(requuid);
 	resign_resp_msg_t::resp_t &msgres=resp.getmsg();
 
-	msgres.status=msg.status->flag;
+	msgres.status=status->flag;
 	msgres.master=clusterinfoObj::status(cluster)->master;
 	resp.write(writer);
 }
@@ -418,13 +417,14 @@ void localprivconnectionObj::deserialized(const setnewcert_req_t &msg)
 	x::ref<repopeerconnectionObj>(peer)->setnewcert_request(req, mcguffin);
 }
 
-void localprivconnectionObj::dispatch(const setnewcert_done_msg &msg)
+void localprivconnectionObj::dispatch_setnewcert_done(const x::uuid &requuid,
+						      const x::ref<repopeerconnectionObj::setnewcertObj> &req)
 {
-	setnewcert_resp_msg_t resp(msg.requuid);
+	setnewcert_resp_msg_t resp(requuid);
 	setnewcert_resp_msg_t::resp_t &msgres=resp.getmsg();
 
-	msgres.success=msg.req->success;
-	msgres.message=msg.req->result;
+	msgres.success=req->success;
+	msgres.message=req->result;
 	resp.write(writer);
 
 }
@@ -470,8 +470,8 @@ void localprivconnectionObj::deserialized(const haltrequest_req_t &msg)
 	cluster->getCurrentController()->halt(res, mcguffin);
 }
 
-void localprivconnectionObj::dispatch(const halt_ack_msg &msg)
+void localprivconnectionObj::dispatch_halt_ack(const haltrequest_resp_msg_t &resp)
 {
 	LOG_INFO("Acknowledging halt");
-	msg.resp.write(writer);
+	resp.write(writer);
 }

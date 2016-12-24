@@ -6,8 +6,6 @@
 #ifndef peerstatusannouncer_H
 #define peerstatusannouncer_H
 
-#undef libx_autogen_suppress_inner
-
 #include "fdobjrwthread.H"
 #include "peerstatus.H"
 #include "writtenobj.H"
@@ -71,9 +69,11 @@ protected:
 
 	nodeclusterstatus thisstatus;
 
+	void statusupdated(const nodeclusterstatus &newStatus) override;
+
 	//! Set the initial status of this node, when installing it into the cluster
 
-	void initialstatus(const nodeclusterstatus &newStatus);
+	void initialstatus(const nodeclusterstatus &newStatus) override;
 
 
 private:
@@ -130,7 +130,7 @@ private:
 
 	MAINLOOP_DECL;
 
-#include "peerstatusannouncer.msgs.decl.H"
+#include "peerstatusannouncer.msgs.H"
 };
 
 #endif

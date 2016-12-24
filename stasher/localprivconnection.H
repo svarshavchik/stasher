@@ -6,8 +6,6 @@
 #ifndef localprivconnection_H
 #define localprivconnection_H
 
-#undef libx_autogen_suppress_inner
-
 #include "localconnection.H"
 #include "repopeerconnection.H"
 #include "adminstop.H"
@@ -26,7 +24,7 @@ class localprivconnectionObj : public localconnectionObj {
 public:
 	class haltrequest_resp_msg_t;
 private:
-#include "localprivconnection.msgs.decl.H"
+#include "localprivconnection.msgs.H"
 
 public:
 	//! Deserialization classlist enumerator

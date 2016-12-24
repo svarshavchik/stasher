@@ -6,8 +6,6 @@
 #ifndef repopeerconnection_H
 #define repopeerconnection_H
 
-#undef libx_autogen_suppress_inner
-
 #include "peerstatusannouncer.H"
 #include "clusterlistenerfwd.H"
 #include "repopeerconnectionfwd.H"
@@ -338,11 +336,9 @@ STASHER_NAMESPACE_END
 
 class repopeerconnectionObj: public peerstatusannouncerObj,
 			     public repopeerconnectionbaseObj,
-			     virtual public x::runthreadsingleton,
-			     public STASHER_NAMESPACE::threadreportimplObj {
+			     public STASHER_NAMESPACE::threadreportimpl2Obj {
 
 	//! Debugging property
-
 	static x::property::value<bool> debugnotimeout;
 	//! The logger object
 
@@ -370,10 +366,10 @@ class repopeerconnectionObj: public peerstatusannouncerObj,
 
 
 		//! Default constructor
-		commitreq();
+		commitreq()=default;
 
 		//! Destructor
-		~commitreq() noexcept;
+		~commitreq() noexcept=default;
 
 		//! Serialization function
 		template<typename iter_type> void serialize(iter_type &iter)
@@ -464,9 +460,7 @@ class repopeerconnectionObj: public peerstatusannouncerObj,
 			  uuid(uuidArg) {}
 
 		//! Destructor
-		~handover_request() noexcept
-		{
-		}
+		~handover_request() noexcept=default;
 
 		//! Serialization function
 
@@ -529,8 +523,6 @@ public:
 		void serialize(STASHER_NAMESPACE::objwriterObj &writer);
 	};
 
-#include "repopeerconnection.msgs.decl.H"
-
 private:
 
 	//! The slave acknowledges master's request
@@ -547,10 +539,10 @@ private:
 
 
 		//! Default constructor
-		commitack();
+		commitack()=default;
 
 		//! Destructor
-		~commitack() noexcept;
+		~commitack() noexcept=default;
 
 		//! Serialization function
 		template<typename iter_type> void serialize(iter_type &iter)
@@ -570,7 +562,7 @@ private:
 		std::string uuid;
 
 		//! Default constructor
-		pingm();
+		pingm()=default;
 
 		//! Constructor
 		pingm(const std::string &uuidArg)
@@ -579,7 +571,7 @@ private:
 		}
 
 		//! Destructor
-		~pingm() noexcept;
+		~pingm() noexcept=default;
 
 		//! Serialization function
 		template<typename iter_type> void serialize(iter_type &iter)
@@ -599,10 +591,10 @@ private:
 		std::string uuid;
 
 		//! Default constructor
-		pongm();
+		pongm()=default;
 
 		//! Destructor
-		~pongm() noexcept;
+		~pongm() noexcept=default;
 
 		//! Serialization function
 		template<typename iter_type> void serialize(iter_type &iter)
@@ -643,10 +635,10 @@ private:
 
 		//! Constructor
 
-		master_quorum() noexcept {}
+		master_quorum()=default;
 
 		//! Destructor
-		~master_quorum() noexcept {}
+		~master_quorum() noexcept=default;
 
 		//! Serialization function
 
@@ -671,7 +663,7 @@ private:
 
 		//! Default constructor
 
-		setnewcert() {}
+		setnewcert()=default;
 
 		//! Constructor
 
@@ -681,7 +673,7 @@ private:
 		{
 		}
 
-		~setnewcert() noexcept {}
+		~setnewcert() noexcept=default;
 
 		//! Serialization function
 
@@ -707,7 +699,7 @@ private:
 
 		//! Default constructor
 
-		setnewcert_resp() {}
+		setnewcert_resp()=default;
 
 		//! Constructor
 
@@ -718,7 +710,7 @@ private:
 		{
 		}
 
-		~setnewcert_resp() noexcept {}
+		~setnewcert_resp() noexcept=default;
 
 		//! Serialization function
 
@@ -750,9 +742,7 @@ private:
 		}
 
 		//! Constructor
-		halt()
-		{
-		}
+		halt()=default;
 
 		//! Destructor
 		~halt() noexcept
@@ -768,6 +758,60 @@ private:
 			iter(masteruuid);
 		}
 	};
+
+	class baton_master_announce_msg {
+	public:
+		std::string mastername;
+		x::uuid masteruuid;
+		x::uuid batonuuid;
+		std::string newmasterpeer;
+
+		baton_master_announce_msg(const std::string &mastername,
+					  const x::uuid &masteruuid,
+					  const x::uuid &batonuuid,
+					  const std::string &newmasterpeer)
+			: mastername(mastername),
+			  masteruuid(masteruuid),
+			  batonuuid(batonuuid),
+			  newmasterpeer(newmasterpeer)
+		{
+		}
+
+		baton_master_announce_msg() = default;
+
+		~baton_master_announce_msg() noexcept=default;
+
+		template<typename iter_type> void serialize(iter_type &iter)
+		{
+			iter(mastername);
+			iter(masteruuid);
+			iter(batonuuid);
+			iter(newmasterpeer);
+		}
+	};
+
+	class baton_master_release_msg {
+	public:
+		std::string mastername;
+		x::uuid masteruuid;
+
+		baton_master_release_msg(const std::string &mastername,
+					 const x::uuid &masteruuid)
+			: mastername(mastername),
+			  masteruuid(masteruuid)
+		{
+		}
+
+		baton_master_release_msg() = default;
+		~baton_master_release_msg() noexcept = default;
+
+		template<typename iter_type> void serialize(iter_type &iter)
+		{
+			iter(mastername);
+			iter(masteruuid);
+		}
+	};
+
 
 public:
 
@@ -863,7 +907,7 @@ private:
 	class dstmasterObj;
 	class syncslave_cbObj;
 
-	//! Syncing object from the master repository 
+	//! Syncing object from the master repository
 
 	//! Must construct an objserializer for deserializing into this
 	//! node's slave repository.
@@ -906,10 +950,10 @@ protected:
 	public:
 		//! Constructor
 
-		slavesyncrequest();
+		slavesyncrequest()=default;
 
 		//! Destructor
-		~slavesyncrequest() noexcept;
+		~slavesyncrequest() noexcept=default;
 
 		//! Serialization function
 
@@ -1020,10 +1064,10 @@ protected:
 	//! - this node's status is that it's a master
 	void checkpendingmasterbaton(const nodeclusterstatus &peerstatus);
 
-	
+
 	//! Check if the pending baton needs to be cleared.
 
-	void thisstatusupdated();
+	void thisstatusupdated() override;
 
 	//! Slave metadata
 
@@ -1103,7 +1147,10 @@ public:
 	//! The last parameter is the repository that's responsible for
 	//! everything.
 
-	void run(//! The file descriptor
+	void run(//! threadmsgdispatcher mcguffin,
+		 x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+
+		 //! The file descriptor
 		 const x::fdbase &transport,
 
 		 //! The input iterator for the file descriptor
@@ -1170,22 +1217,23 @@ public:
 
 	void distribute_peer(const trandistihave &msg)
 	{
-		sendevent<trandistihave>(this, msg);
+		sendevent(&repopeerconnectionObj::dispatch_trandistihave,
+			  this, msg);
 	}
 
 	//! Distributor: trandistcancel message
 
 	void distribute_peer(const trandistcancel &msg)
 	{
-		sendevent<trandistcancel>(this, msg);
+		sendevent(&repopeerconnectionObj::dispatch_trandistcancel,
+			  this, msg);
 	}
 
 	//! Distributor: prepared transerializer message
 
 	void distribute_peer(const x::ref<STASHER_NAMESPACE::writtenObj<transerializer> > &msg)
-
 	{
-		sendevent<x::ref<STASHER_NAMESPACE::writtenObj<transerializer> > >(this, msg);
+		sendevent(&repopeerconnectionObj::dispatch_transerializer, this, msg);
 	}
 
 protected:
@@ -1193,15 +1241,15 @@ protected:
 
 	//! Process distributor message in the context of this thread
 
-	void dispatch(const trandistcancel &msg);
+	void dispatch_trandistcancel(const trandistcancel &msg);
 
 	//! Process distributor message in the context of this thread
 
-	void dispatch(const trandistihave &msg);
+	void dispatch_trandistihave(const trandistihave &msg);
 
 	//! Process distributor message in the context of this thread
 
-	void dispatch(const x::ref<STASHER_NAMESPACE::writtenObj<transerializer> > &msg);
+	void dispatch_transerializer(const x::ref<STASHER_NAMESPACE::writtenObj<transerializer> > &msg);
 
 
 public:
@@ -1367,14 +1415,43 @@ private:
 	//! Report this thread's status
 	std::string report(std::ostream &rep);
 
+public:
+
+	//! Connection request from the controller
+
+	void connect_peer(const peerlinkptr &masterlinkArg) override
+	{
+		do_connect_peer(masterlinkArg);
+	}
+
+	//! The controller has disconnected
+
+	void disconnect_peer() override
+	{
+		do_disconnect_peer();
+	}
+	//! Invoked by slave controller, to establish linkage with a connection object to its master
+
+	void connect_slave(const x::ptr<slavesyncinfoObj> &synchandle) override
+	{
+		do_connect_slave(synchandle);
+	}
+
+	//! Invoked by master controller, to establish linkage with a connection object to one of its slave
+
+	void connect_master(const x::ref<mastersyncinfoObj> &synchandle) override
+	{
+		do_connect_master(synchandle);
+	}
+protected:
+	void foo() override {}
+
 	//! The actual main loop
 
 	MAINLOOP_DECL;
 
-};
+#include "repopeerconnection.msgs.H"
 
-#ifdef DOXYGEN
-#include "repopeerconnection.msgs.def.H"
-#endif
+};
 
 #endif

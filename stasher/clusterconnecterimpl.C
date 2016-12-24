@@ -55,15 +55,16 @@ void clusterconnecterimplObj::connected(const std::string &peername,
 	connection->timestamp=connectTimestamp;
 	connection->connuuid=connuuid;
 
-	tracker->start(connection,
-		       (session.null() ? x::fdbase(socket):x::fdbase(session)),
-		       inputiter,
-		       tracker,
-		       mcguffin,
-		       session.null() ? false:true,
-		       distributor,
-		       listener,
-		       peerstatus,
-		       cluster,
-		       repo);
+	tracker->start_thread(connection,
+			      (session.null() ?
+			       x::fdbase(socket):x::fdbase(session)),
+			      inputiter,
+			      tracker,
+			      mcguffin,
+			      session.null() ? false:true,
+			      distributor,
+			      listener,
+			      peerstatus,
+			      cluster,
+			      repo);
 }

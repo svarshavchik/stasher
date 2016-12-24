@@ -18,21 +18,21 @@ See COPYING for distribution information.
       //! Request the server's status
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! The server's status gets placed here
       </comment>
-      <decl>x::ref&lt;getserverstatusresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;getserverstatusresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request mcguffin
 
 	//! When the request is processed, the implementation thread releases
 	//! its reference on this object.
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -40,14 +40,14 @@ See COPYING for distribution information.
     <comment>
       //! Put object into the repository
     </comment>
-    <param type="class">
+    <param>
       <comment>
 	//! Transaction
       </comment>
-      <decl>x::ref&lt;puttransactionObj&gt; <name>transaction</name></decl>
+      <decl>const x::ref&lt;puttransactionObj&gt; &amp;transaction</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Results of the transaction
 
@@ -55,17 +55,17 @@ See COPYING for distribution information.
 	//!
       </comment>
 
-      <decl>x::ref&lt;putresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;putresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request mcguffin
 
 	//! When the request is processed, the implementation thread releases
 	//! its reference on this object.
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -74,14 +74,14 @@ See COPYING for distribution information.
       //! Return object contents
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Transaction
       </comment>
-      <decl>x::ref&lt;getreqObj&gt; <name>req</name></decl>
+      <decl>const x::ref&lt;getreqObj&gt; &amp;req</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Results of the transaction
 
@@ -89,17 +89,17 @@ See COPYING for distribution information.
 	//!
       </comment>
 
-      <decl>x::ref&lt;getresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;getresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request mcguffin
 
 	//! When the request is processed, the implementation thread releases
 	//! its reference on this object.
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -108,18 +108,18 @@ See COPYING for distribution information.
       //! Return server connection name and limits
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request object
       </comment>
-      <decl>x::ref&lt;getheloObj&gt; <name>limits</name></decl>
+      <decl>const x::ref&lt;getheloObj&gt; &amp;limits</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Mcguffin
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -128,25 +128,25 @@ See COPYING for distribution information.
       //! Get names of all objects in a particular directory hierarchy
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Hierarchy name
       </comment>
-      <decl>std::string <name>hier</name></decl>
+      <decl>const std::string &amp;hier</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Results
       </comment>
-      <decl>x::ref&lt;getdirresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;getdirresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Mcguffin
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -155,18 +155,18 @@ See COPYING for distribution information.
       //! Request server's property settings
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Object where properties are saved
       </comment>
-      <decl>x::ref&lt;getpropsresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;getpropsresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Mcguffin
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -175,32 +175,32 @@ See COPYING for distribution information.
       //! Set a server property
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Property name
       </comment>
-      <decl>std::string <name>propname</name></decl>
+      <decl>const std::string &amp;propname</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Property value
       </comment>
-      <decl>std::string <name>propvalue</name></decl>
+      <decl>const std::string &amp;propvalue</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Object where properties are saved
       </comment>
-      <decl>x::ref&lt;setpropresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;setpropresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Mcguffin
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -209,25 +209,25 @@ See COPYING for distribution information.
       //! Reset the server's property to a default value
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Property name
       </comment>
-      <decl>std::string <name>propname</name></decl>
+      <decl>const std::string &amp;propname</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Object where properties are saved
       </comment>
-      <decl>x::ref&lt;resetpropresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;resetpropresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Mcguffin
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -236,21 +236,21 @@ See COPYING for distribution information.
       //! Message to the server to reload its node certificate
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request results
       </comment>
-      <decl>x::ref&lt;certreloadresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;certreloadresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request mcguffin
 
 	//! When the request is processed, the implementation thread releases
 	//! its reference on this object.
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -258,32 +258,32 @@ See COPYING for distribution information.
     <comment>
       //! Subscribe for object updates
     </comment>
-    <param type='class'>
+    <param>
       <comment>
 	//! Name of an object to subscribe for updates to
       </comment>
-      <decl>std::string <name>objname</name></decl>
+      <decl>const std::string &amp;objname</decl>
     </param>
 
-    <param type='class'>
+    <param>
       <comment>
 	//! The subscriber
       </comment>
-      <decl>client::base::subscriber <name>subscriber</name></decl>
+      <decl>const client::base::subscriber &amp;subscriber</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Object where subscription request status is saved
       </comment>
-      <decl>x::ref&lt;subscriberesultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;subscriberesultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Mcguffin
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -295,7 +295,7 @@ See COPYING for distribution information.
       <comment>
 	//! Subscription to remove
       </comment>
-      <decl>subscriber_map_t::iterator <name>iterator</name></decl>
+      <decl>const subscriber_map_t::iterator &amp;iterator</decl>
     </param>
   </method>
 
@@ -304,18 +304,18 @@ See COPYING for distribution information.
       //! Request that the server resign its master status. Administrative privileges required.
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Object where the status of the resignation goes
       </comment>
-      <decl>x::ref&lt;resignresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;resignresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Mcguffin
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -324,31 +324,31 @@ See COPYING for distribution information.
       //! Subscribe to the server's status
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! The callback
       </comment>
-      <decl>serverstatuscallback <name>callback</name></decl>
+      <decl>const serverstatuscallback &amp;callback</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request mcguffin
 
 	//! When the request is processed, the implementation thread releases
 	//! its reference on this object.
       </comment>
-      <decl>subscribeserverstatusrequest <name>req</name></decl>
+      <decl>const subscribeserverstatusrequest &amp;req</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request mcguffin
 
 	//! When the request is processed, the implementation thread releases
 	//! its reference on this object.
       </comment>
-      <decl>x::ref&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ref&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -360,7 +360,7 @@ See COPYING for distribution information.
 	//! Sent by serverstatusSubscriptionMcguffinObj's destructor.
       </comment>
 
-      <decl>server_status_subscribers_t::iterator <name>subscriber</name></decl>
+      <decl>const server_status_subscribers_t::iterator &amp;subscriber</decl>
     </param>
   </method>
 
@@ -369,25 +369,25 @@ See COPYING for distribution information.
       //! Install a new node certificate
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! The certificate
       </comment>
-      <decl>std::string <name>certificate</name></decl>
+      <decl>const std::string &amp;certificate</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Object where properties are saved
       </comment>
-      <decl>x::ref&lt;setnewcertresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;setnewcertresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Mcguffin
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -396,18 +396,18 @@ See COPYING for distribution information.
       //! Request the master controller to halt the entire cluster.
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Object where the results of the request get saved.
       </comment>
-      <decl>x::ref&lt;haltrequestresultsObj::recvObj&gt; <name>results</name></decl>
+      <decl>const x::ref&lt;haltrequestresultsObj::recvObj&gt; &amp;results</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Mcguffin
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 

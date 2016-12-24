@@ -11,18 +11,18 @@ See COPYING for distribution information.
       //! Server status report is ready
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Original status request uuid
       </comment>
-      <decl>x::uuid <name>requuid</name></decl>
+      <decl>const x::uuid &amp;requuid</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! The report
       </comment>
-      <decl>x::ptr&lt;STASHER_NAMESPACE::threadreportObj&gt; <name>report</name></decl>
+      <decl>const x::ptr&lt;STASHER_NAMESPACE::threadreportObj&gt; &amp;report</decl>
     </param>
   </method>
 
@@ -31,18 +31,18 @@ See COPYING for distribution information.
       //! Resignation is complete
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Original status request uuid
       </comment>
-      <decl>x::uuid <name>requuid</name></decl>
+      <decl>const x::uuid &amp;requuid</decl>
     </param>
 
     <param type="class">
       <comment>
 	//! Whether the server resigned succesfully
       </comment>
-      <decl>boolref <name>status</name></decl>
+      <decl>boolref status</decl>
     </param>
   </method>
 
@@ -51,28 +51,28 @@ See COPYING for distribution information.
       //! New certificate has been installed by the peer.
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Original status request uuid
       </comment>
-      <decl>x::uuid <name>requuid</name></decl>
+      <decl>const x::uuid &amp;requuid</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! The original request
       </comment>
-      <decl>x::ref&lt;repopeerconnectionObj::setnewcertObj&gt; <name>req</name></decl>
+      <decl>const x::ref&lt;repopeerconnectionObj::setnewcertObj&gt; &amp;req</decl>
     </param>
   </method>
 
   <method name="halt_ack">
     //! Send a halt acknowledgement, after the cluster has stopped
 
-    <param type="class">
+    <param>
       //! The response to send
 
-      <decl>haltrequest_resp_msg_t <name>resp</name></decl>
+      <decl>const haltrequest_resp_msg_t &amp;resp</decl>
     </param>
   </method>
 </class>

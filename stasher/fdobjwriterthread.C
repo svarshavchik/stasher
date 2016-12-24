@@ -15,8 +15,6 @@ LOG_CLASS_INIT(STASHER_NAMESPACE::fdobjwriterthreadObj);
 
 STASHER_NAMESPACE_START
 
-#include "fdobjwriterthread.msgs.def.H"
-
 fdobjwriterthreadObj::fdobjwriterthreadObj(const std::string &threadName,
 					   x::property::value<unsigned>
 					   *timeoutArg,
@@ -83,14 +81,12 @@ size_t fdobjwriterthreadObj::flush(const char *ptr, size_t cnt)
 	}
 }
 
-void fdobjwriterthreadObj::run(const x::fdbase &fd,
+void fdobjwriterthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+			       const x::fdbase &fd,
 			       const x::ref<x::obj> &mcguffin)
 {
-	std::unique_lock<std::mutex> one_at_a_time(thread_lock,
-						   std::try_to_lock_t());
-
-	if (!one_at_a_time.owns_lock())
-		throw EXCEPTION("Multiple threads attempting to run on the same fdobjwriterthreadObj");
+	msgqueue_auto msgqueue(this);
+	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
 
 	transport= &*fd;
 
@@ -104,7 +100,7 @@ void fdobjwriterthreadObj::run(const x::fdbase &fd,
 
 	sendfd_mcguffin=&sendfd_mcguffinref;
 
-	objwriterthreadObj::run(fd);
+	objwriterthreadObj::run(msgqueue, fd);
 }
 
 class fdobjwriterthreadObj::sendfdreqObj : public writtenobjbaseObj {
@@ -179,7 +175,7 @@ void fdobjwriterthreadObj::dosendfd(const std::vector<x::fd> &filedesc)
 
 		serialize(comingmsg);
 
-		x::eventdestroynotify::create(msgqueue->getEventfd(),
+		x::eventdestroynotify::create(get_msgqueue()->getEventfd(),
 					      *sendfd_mcguffin);
 	}
 
@@ -216,7 +212,7 @@ void fdobjwriterthreadObj::dosendfd(const std::vector<x::fd> &filedesc)
 	}
 }
 
-void fdobjwriterthreadObj::dispatch(const sendfd_proceed_msg &msg)
+void fdobjwriterthreadObj::dispatch_sendfd_proceed(const sendfd_ready &ack)
 
 {
 	LOG_TRACE("Peer is ready for a file descriptor");

@@ -44,7 +44,7 @@ runw(const x::ref<STASHER_NAMESPACE::fdobjwriterthreadObj> &thr,
 {
 	auto tracker=STASHER_NAMESPACE::stoppableThreadTrackerImpl::create();
 
-	return std::make_pair(tracker, tracker->start(thr, fd, mcguffin));
+	return std::make_pair(tracker, tracker->start_thread(thr, fd, mcguffin));
 }
 
 static void test1()
@@ -155,14 +155,18 @@ static void test4()
 		socks.second->read(&buf, 1);
 	}
 
-	auto thread2=runw(writer, socks.first);
-
 	bool caught=false;
+	bool started=false;
 
 	try {
+		auto thread2=runw(writer, socks.first);
+
+		started=true;
+
 		thread2.second->get();
 	} catch (...) {
-		caught=true;
+		if (!started)
+			caught=true;
 	}
 
 	if (!caught)

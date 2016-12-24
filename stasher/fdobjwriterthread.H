@@ -6,8 +6,6 @@
 #ifndef fdobjwriterthread_H
 #define fdobjwriterthread_H
 
-#undef libx_autogen_suppress_inner
-
 #include "objwriterthread.H"
 #include <x/fd.H>
 #include <x/uuid.H>
@@ -57,9 +55,6 @@ class fdobjwriterthreadObj : public objwriterthreadObj {
 
 	LOG_CLASS_SCOPE LIBCXX_HIDDEN;
 
-	//! One thread at a time, please.
-	std::mutex thread_lock;
-
 	//! Transport on the execution task's stack
 	x::fdbaseObj *transport;
 
@@ -82,7 +77,7 @@ class fdobjwriterthreadObj : public objwriterthreadObj {
 	//! sending a \c sendfd_coming message, waiting for this mcguffin to get
 	//! destroyed, then sending the file descriptor over the socket.
 	//!
-	//! Upon receipt of \c sendfd_coming, the peer replies with a 
+	//! Upon receipt of \c sendfd_coming, the peer replies with a
 	//! \c sendfd_ready. Upon receipt of sendfd_ready, sendfd_proceed()
 	//! gets invoked, which destroys the mcguffin.
 	//!
@@ -161,7 +156,10 @@ public:
 	//! The file descriptor gets passed as the starting argument.
 	//! Initialize transport, pollfd, then invoke objwriterthreadObj::run().
 
-	void run(const x::fdbase &fd, const x::ref<x::obj> &mcguffin);
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const x::fdbase &fd, const x::ref<x::obj> &mcguffin);
+
+	void foo() override {}
 
 	//! Send a file descriptor
 
@@ -199,7 +197,7 @@ private:
 public:
 	friend class sendfdreqObj;
 
-#include "fdobjwriterthread.msgs.decl.H"
+#include "fdobjwriterthread.msgs.H"
 
 };
 

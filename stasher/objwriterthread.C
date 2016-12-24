@@ -112,15 +112,18 @@ objwriterthreadObj::~objwriterthreadObj() noexcept
 {
 }
 
-void objwriterthreadObj::dispatch(const setmaxqueuesize_msg &msg)
-
+void objwriterthreadObj::dispatch_setmaxqueuesize(size_t max_request_count)
 {
-	max_request_count=msg.max_request_count/2;
-	request_count_warn_level=max_request_count/2;
+	this->max_request_count=max_request_count/2;
+	request_count_warn_level=this->max_request_count/2;
 }
 
-void objwriterthreadObj::dispatch(const write_msg &msg)
+void objwriterthreadObj::write(const x::ref<writtenobjbaseObj> &object)
+{
+	write_object(object);
+}
 
+void objwriterthreadObj::dispatch_write_object(const x::ref<writtenobjbaseObj> &object)
 {
 	if (max_request_count)
 	{
@@ -140,11 +143,10 @@ void objwriterthreadObj::dispatch(const write_msg &msg)
 			request_count_warn_level=max_request_count/2;
 	}
 
-	requests.push(x::ref<writeRequestObj>::create(msg.object));
+	requests.push(x::ref<writeRequestObj>::create(object));
 }
 
-void objwriterthreadObj::dispatch(const request_close_msg &msg)
-
+void objwriterthreadObj::dispatch_request_close()
 {
 	requests.push(x::ref<stopRequestObj>::create());
 }
@@ -153,11 +155,14 @@ void objwriterthreadObj::process_messages()
 {
 	LOG_TRACE("Processing messages");
 
+	msgqueue_t msgqueue=get_msgqueue();
+
 	while (!msgqueue->empty())
 		msgqueue->pop()->dispatch();
 }
 
-void objwriterthreadObj::run(const x::ref<x::obj> &mcguffin)
+void objwriterthreadObj::run(msgqueue_auto &msgqueue,
+			     const x::ref<x::obj> &mcguffin)
 {
 	max_request_count=0;
 

@@ -31,8 +31,7 @@ public:
 
 static size_t counter=0;
 
-class dummyhandlerObj : public STASHER_NAMESPACE::fdobjreaderthreadObj,
-			virtual public x::runthreadsingleton {
+class dummyhandlerObj : public STASHER_NAMESPACE::fdobjreaderthreadObj {
 
 public:
 
@@ -57,10 +56,13 @@ public:
 
 	~dummyhandlerObj() noexcept {--counter; }
 
-	template<typename msg_type>
-	void event(const msg_type &msg)
+	template<typename ...Args>
+	void event(Args && ...args)
 	{
-		x::msgdispatcherObj::sendevent<msg_type>(this, msg);
+		x::threadmsgdispatcherObj::sendevent(&dummyhandlerObj::dispatch,
+						     this,
+						     std::forward<Args>(args)...
+						     );
 	}
 
 	void deserialized(const dummymsg &msg)
@@ -90,7 +92,7 @@ public:
 			struct pollfd pfd[2];
 
 			pfd[0].fd=transport->getFd();
-			pfd[1].fd=msgqueue->getEventfd()->getFd();
+			pfd[1].fd=get_msgqueue()->getEventfd()->getFd();
 
 			pfd[0].events=POLLIN;
 			pfd[1].events=POLLIN;
@@ -108,12 +110,17 @@ public:
 		return n;
 	}
 
-	void run(const x::fd &fd)
-
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 start_thread_sync &sync_arg,
+		 const x::fd &fd)
 	{
+		msgqueue_auto msgqueue(this);
+		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		sync_arg->thread_started();
+
 		x::fd::base::inputiter beg_iter(fd);
 
-		mainloop(fd, beg_iter);
+		mainloop(msgqueue, fd, beg_iter);
 	}
 
 	MAINLOOP_DECL;
@@ -135,7 +142,7 @@ static void test1()
 
 	auto howner=x::ref<threadmgrObj<dummyhandler> >::create();
 
-	howner->run(h, socks.second);
+	howner->start_thread(h, socks.second);
 
 	{
 		dummymsg msg;
@@ -164,7 +171,7 @@ static void test2()
 
 	auto howner=x::ref<threadmgrObj<dummyhandler> >::create();
 
-	howner->run(h, socks.second);
+	howner->start_thread(h, socks.second);
 
 	{
 		dummymsg msg;
@@ -193,10 +200,10 @@ static void test3()
 
 	auto howner=x::ref<threadmgrObj<dummyhandler> >::create();
 
-	howner->run(h, socks.second);
+	howner->start_thread(h, socks.second);
 
 	try {
-		howner->run(h, socks.second);
+		howner->start_thread(h, socks.second);
 	} catch (const x::exception &e)
 	{
 		std::cerr << "Expected error: " << e << std::endl;

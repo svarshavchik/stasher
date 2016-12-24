@@ -5,7 +5,8 @@ See COPYING for distribution information.
 
 -->
 
-<messages>
+<messages xmlns:xi="http://www.w3.org/2001/XInclude">
+  <xi:include href='client.msgs.xml' />
   <includes><![CDATA[
 #include <x/ptr.H>
 #include <x/obj.H>

@@ -225,9 +225,9 @@ static bool test3_cancelled;
 		std::cerr << "Baton installed on "			\
 			  << getthisnodename()				\
 			  << ": from "					\
-			  << msg.batonp->resigningnode			\
+			  << batonp->resigningnode			\
 			  << " to "					\
-			  << msg.batonp->replacementnode << std::endl;	\
+			  << batonp->replacementnode << std::endl;	\
 	} while (0)
 
 #define DEBUG_BATON_TEST_3_RELEASE_RECEIVED_HOOK() do {			\

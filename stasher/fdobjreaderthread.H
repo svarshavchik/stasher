@@ -6,7 +6,7 @@
 #ifndef fdobjreaderthread_H
 #define fdobjreaderthread_H
 
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 #include <x/fditer.H>
 #include <string>
 #include "objsource.H"
@@ -64,7 +64,7 @@ STASHER_NAMESPACE_START
 //! descriptor, then check for any pending processing that triggers the
 //! event file descriptor.
 
-class fdobjreaderthreadObj : virtual public x::eventqueuemsgdispatcherObj {
+class fdobjreaderthreadObj : virtual public x::threadmsgdispatcherObj {
 
 public:
 	//! Constructor
@@ -103,7 +103,10 @@ protected:
 	//! mainloop() deserializes objects and dispatches messages until
 	//! an exception gets thrown or the file descriptor goes into EOF
 	//! state.
-	void mainloop(//! Transport being read from
+	void mainloop(//! Thread dispatcher message queue
+		      msgqueue_auto &msgqueue,
+
+		      //! Transport being read from
 		      const x::fdbase &transport,
 
 		      //! Input iterator that's connected to the transport
@@ -115,8 +118,7 @@ protected:
 	//! definition, to fullfill the requirement.
 
 	virtual void mainloop_impl(x::fd::base::inputiter &b,
-				   x::fd::base::inputiter &e)
-=0;
+				   x::fd::base::inputiter &e)=0;
 
 	//! A convenience macro to declare mainloop_impl in a subclass
 #define MAINLOOP_DECL							\

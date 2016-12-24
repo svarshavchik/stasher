@@ -7,33 +7,33 @@ See COPYING for distribution information.
 
 <class name="repopeerconnectionObj">
 
-  <method name="connect_peer">
+  <method name="do_connect_peer">
     <comment>//! Connection request from the current controller
-    </comment>    
-    <param type="class"><decl>peerlinkptr <name>peerlinkArg</name></decl></param>
+    </comment>
+    <param><decl>const peerlinkptr &amp;peerlinkArg</decl></param>
   </method>
 
-  <method name="disconnect_peer">
+  <method name="do_disconnect_peer">
     <comment>//! The current controller has disconnected
     </comment>
   </method>
 
-  <method name="connect_master">
+  <method name="do_connect_master">
     <comment>//! Connection from a master controller
 
     //! Invoked by master controller, to establish linkage with a connection
     //! object to one of its slaves.
     </comment>
-    <param type="class"><decl>x::ref&lt;mastersyncinfoObj&gt; <name>synchandle</name></decl></param>
+    <param><decl>const x::ref&lt;mastersyncinfoObj&gt; &amp;synchandle</decl></param>
   </method>
 
-  <method name="connect_slave">
+  <method name="do_connect_slave">
     <comment>//! Connection from a slave controller
 
     //! Invoked by slave controller, to establish linkage with a connection
     //! object to its master.
     </comment>
-    <param type="class"><decl>x::ptr&lt;slavesyncinfoObj&gt; <name>synchandle</name></decl></param>
+    <param><decl>const x::ptr&lt;slavesyncinfoObj&gt; &amp;synchandle</decl></param>
   </method>
   <method name="check_sync_end">
     <comment>//! Finished syncing a slave
@@ -50,8 +50,8 @@ See COPYING for distribution information.
     //! Invoked by the master controller object to send a message
     //! to commit or cancel a transaction on a slave.
     </comment>
-    <param type="class"><decl>x::ptr&lt;commitreqObj&gt; <name>req</name></decl></param>
-    <param type="class"><decl>x::ptr&lt;obj&gt; <name>mcguffin</name></decl></param>
+    <param><decl>const x::ptr&lt;commitreqObj&gt; &amp;req</decl></param>
+    <param><decl>const x::ptr&lt;obj&gt; &amp;mcguffin</decl></param>
   </method>
 
   <method name="baton_master_announce" default="1" serialize="1">
@@ -61,12 +61,12 @@ See COPYING for distribution information.
     //! that it wants to pass the baton to
     //! some other peer in the cluster (not this one).
     </comment>
-    
-    <param type="class"><decl>std::string <name>mastername</name></decl></param>
-    <param type="class"><decl>x::uuid <name>masteruuid</name></decl></param>
-    <param type="class"><decl>x::uuid <name>batonuuid</name></decl></param>
-    <param type="class"><decl>std::string <name>newmasterpeer</name></decl></param>
-    <param type="class" dontserialize="1"><decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl></param>
+
+    <param><decl>const std::string &amp;mastername</decl></param>
+    <param><decl>const x::uuid &amp;masteruuid</decl></param>
+    <param><decl>const x::uuid &amp;batonuuid</decl></param>
+    <param><decl>const std::string &amp;newmasterpeer</decl></param>
+    <param><decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl></param>
   </method>
 
   <method name="baton_master_release" serialize="1" default="1">
@@ -75,8 +75,8 @@ See COPYING for distribution information.
     //! On the master node, a message from the master controller that it's
     //! releasing the baton.
     </comment>
-    <param type="class"><decl>std::string <name>mastername</name></decl></param>
-    <param type="class"><decl>x::uuid <name>masteruuid</name></decl></param>
+    <param><decl>const std::string &amp;mastername</decl></param>
+    <param><decl>const x::uuid &amp;masteruuid</decl></param>
   </method>
 
   <method name="baton_oldmaster_install">
@@ -89,7 +89,7 @@ See COPYING for distribution information.
       //! acquired, the thread sends the baton back to the slave connection
       //! thread.
     </comment>
-    <param type="class"><decl>baton <name>batonp</name></decl></param>
+    <param><decl>const baton &amp;batonp</decl></param>
   </method>
 
   <method name="baton_transfer_request">
@@ -100,10 +100,10 @@ See COPYING for distribution information.
     //! passed to the new node.
     </comment>
 
-    <param type="class">
+    <param>
       <comment>//! The baton that's being transferred
       </comment>
-      <decl>baton <name>batonp</name></decl>
+      <decl>const baton &amp;batonp</decl>
     </param>
   </method>
 
@@ -115,8 +115,8 @@ See COPYING for distribution information.
       //!
     </comment>
 
-    <param type="class">
-      <decl>baton <name>batonp</name></decl>
+    <param>
+      <decl>const baton &amp;batonp</decl>
     </param>
   </method>
 
@@ -127,7 +127,7 @@ See COPYING for distribution information.
       //! The peer responds with a "pong" message
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request mcguffin
 
@@ -135,7 +135,7 @@ See COPYING for distribution information.
 	//! releases its reference on the mcguffin.
       </comment>
 
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -151,8 +151,8 @@ See COPYING for distribution information.
       //! the baton is dropped immediately.
     </comment>
 
-    <param type="class">
-      <decl>baton <name>batonp</name></decl>
+    <param>
+      <decl>const baton &amp;batonp</decl>
     </param>
   </method>
 
@@ -164,25 +164,25 @@ See COPYING for distribution information.
       //! in the cluster are connected to the master, and in sync.
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Master's name
       </comment>
-      <decl>std::string <name>mastername</name></decl>
+      <decl>const std::string &amp;mastername</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Master's uuid
       </comment>
-      <decl>x::uuid <name>uuid</name></decl>
+      <decl>const x::uuid &amp;uuid</decl>
     </param>
 
     <param>
       <comment>
 	//! Whether all slaves are in sync
       </comment>
-      <decl>STASHER_NAMESPACE::quorumstate <name>inquorum</name></decl>
+      <decl>STASHER_NAMESPACE::quorumstate inquorum</decl>
     </param>
   </method>
 
@@ -191,14 +191,14 @@ See COPYING for distribution information.
       //! On a slave node, send a request to the master to hand over the baton to some other node
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Who should be the new master
       </comment>
-      <decl>std::string <name>newmastername</name></decl>
+      <decl>const std::string &amp;newmastername</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request mcguffin
 
@@ -206,7 +206,7 @@ See COPYING for distribution information.
 	//! when the master acknowledges the request, and the cluster has a
 	//! new master (but may not be in quorum, yet).
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -215,8 +215,8 @@ See COPYING for distribution information.
       //! Slave's request to a master to hand over the baton has been processed
     </comment>
 
-    <param type="class">
-      <decl>x::uuid <name>uuid</name></decl>
+    <param>
+      <decl>const x::uuid &amp;uuid</decl>
     </param>
   </method>
 
@@ -225,11 +225,11 @@ See COPYING for distribution information.
       //! Make another attempt to install this connection, after the conflicting connection terminates
     </comment>
 
-    <param type="weakptr">
+    <param>
       <comment>
 	//! Cluster
       </comment>
-      <decl>clusterinfoptr <name>cluster</name></decl>
+      <decl>const x::weakptr&lt;clusterinfoptr&gt; &amp;cluster</decl>
     </param>
   </method>
 
@@ -238,8 +238,8 @@ See COPYING for distribution information.
       //! Used by regression tests
     </comment>
 
-    <param type="class">
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    <param>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -248,21 +248,21 @@ See COPYING for distribution information.
       //! Forward a request, from admin, to install a new cert on this node.
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! The cert request
       </comment>
-      <decl>x::ref&lt;setnewcertObj&gt; <name>request</name></decl>
+      <decl>const x::ref&lt;setnewcertObj&gt; &amp;request</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request mcguffin
 
 	//! The connection thread releases its reference to this mcguffin
 	//! when the peer responds with the results.
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -271,21 +271,21 @@ See COPYING for distribution information.
       //! Master controller notifies the slave to halt.
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Master's name
       </comment>
-      <decl>std::string <name>mastername</name></decl>
+      <decl>const std::string &amp;mastername</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Master's uuid
       </comment>
-      <decl>x::uuid <name>masteruuid</name></decl>
+      <decl>const x::uuid &amp;masteruuid</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Request mcguffin
 
@@ -295,7 +295,7 @@ See COPYING for distribution information.
 	//! connection process's reference to this mcguffin gets naturally
 	//! released.
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 </class>
