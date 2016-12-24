@@ -11,17 +11,21 @@ See COPYING for distribution information.
     <comment>/*!
     Slave connection object wishes to start received transaction notices
     */</comment>
-    <param name="receiver" type="class"><decl>trandistreceived <name>receiver</name></decl></param>
+    <param>
+      <decl>const trandistreceived &amp;receiver</decl>
+    </param>
   </method>
 
   <method name="synccomplete">
     <comment>/*!
     Object repository sync thread has finished.
     */</comment>
-    <param name="flag" type="class"><decl>boolref <name>flag</name></decl></param>
+    <param>
+      <decl>const boolref &amp;flag</decl>
+    </param>
   </method>
 
-  <method name="get_quorum">
+  <method name="do_get_quorum">
     <comment>
       //! Return the current controller quorum status
 
@@ -29,15 +33,15 @@ See COPYING for distribution information.
       //!
     </comment>
 
-    <param type="class">
-      <decl>STASHER_NAMESPACE::quorumstateref <name>status</name></decl>
+    <param>
+      <decl>const STASHER_NAMESPACE::quorumstateref &amp;status</decl>
     </param>
-    <param type="class">
-      <decl>boolref <name>processed</name></decl>
+    <param>
+      <decl>const boolref &amp;processed</decl>
     </param>
 
-    <param type="class">
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    <param>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -46,8 +50,8 @@ See COPYING for distribution information.
       //! The connection to the master received a quorum status announcement
     </comment>
 
-    <param type="class">
-      <decl>STASHER_NAMESPACE::quorumstate <name>status</name></decl>
+    <param>
+      <decl>const STASHER_NAMESPACE::quorumstate &amp;status</decl>
     </param>
   </method>
 
@@ -56,14 +60,14 @@ See COPYING for distribution information.
       //! Ask a master to hand over to another node
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Which node should become the new master
       </comment>
-      <decl>std::string <name>newmastername</name></decl>
+      <decl>const std::string &amp;newmastername</decl>
     </param>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Transfer mcguffin
 
@@ -72,7 +76,7 @@ See COPYING for distribution information.
 	//! checking who the master is now). Note that the cluster may not be
 	//! fully in quorum, yet.
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 </class>

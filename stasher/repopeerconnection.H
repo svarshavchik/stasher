@@ -22,7 +22,6 @@
 #include "trandistcancel.H"
 #include "transerializer.H"
 #include "tranrecvcanc.H"
-#include "threadreportimpl.H"
 #include "adminstopint.H"
 #include "stasher/reqstat.H"
 

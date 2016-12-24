@@ -6,15 +6,13 @@
 #ifndef repocontrollerslave_H
 #define repocontrollerslave_H
 
-#undef libx_autogen_suppress_inner
-
 #include <x/weakptr.H>
 #include <x/logger.H>
 #include "stasher/quorumstate.H"
 #include "repocontrollerbasehandoff.H"
 #include "repopeerconnectionbase.H"
 #include "boolref.H"
-#include "threadreportimpl.H"
+#include "threadreportimpl2.H"
 #include "trandistreceivedfwd.H"
 #include "objrepocopydstfwd.H"
 #include "tranreceivedfwd.H"
@@ -42,9 +40,9 @@ class trandistributorObj;
 //! return true, and a quorum is announced(). [SLAVEQUORUM]
 
 class repocontrollerslaveObj : public repocontrollerbasehandoffObj,
-			       public STASHER_NAMESPACE::threadreportimplObj {
+			       public STASHER_NAMESPACE::threadreportimpl2Obj {
 
-#include "repocontrollerslave.msgs.decl.H"
+#include "repocontrollerslave.msgs.H"
 
 private:
 	//! The logger object
@@ -82,6 +80,13 @@ private:
 	class dstcopyObj;
 
 public:
+
+	//! Inherited, send a do_get_quorum() message.
+
+	void get_quorum(const STASHER_NAMESPACE::quorumstateref &status,
+			const boolref &processed,
+			const x::ptr<x::obj> &mcguffin) override;
+
 	//! Constructor
 	repocontrollerslaveObj(//! Master node name, either this node or another on in the cluster.
 			       const std::string &masternameArg,
@@ -120,7 +125,7 @@ public:
 	//! A slave controller does not use this, a no-op
 
 	void peernewmaster(const repopeerconnectionptr &peerRef,
-			   const nodeclusterstatus &peerStatus);
+			   const nodeclusterstatus &peerStatus) override;
 
 
 	//! Retrieve the connection object, for debugging purposes
@@ -133,14 +138,20 @@ public:
 	//! Request the master to hand itself off to some other peer
 
 	x::ptr<x::obj>
-	handoff_request(const std::string &peername);
+	handoff_request(const std::string &peername) override;
 
 	//! Start this thread
 
-	start_controller_ret_t start_controller(const x::ref<x::obj> &mcguffin);
+	start_controller_ret_t start_controller(const msgqueue_obj &msgqueue,
+						const x::ref<x::obj> &mcguffin)
+		override;
 
 	//! The thread
-	void run(x::ref<x::obj> &start_arg);
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const msgqueue_obj &msgqueue,
+		 x::ref<x::obj> &start_arg);
+
+	void foo() override {}
 
 private:
 
@@ -156,7 +167,7 @@ private:
 	//! Implement a halt request, by saying that we aren't the master.
 
 	void halt(const STASHER_NAMESPACE::haltrequestresults &req,
-		  const x::ref<x::obj> &mcguffin);
+		  const x::ref<x::obj> &mcguffin) override;
 };
 
 #endif

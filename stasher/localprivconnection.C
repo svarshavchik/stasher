@@ -458,6 +458,8 @@ public:
 
 void localprivconnectionObj::deserialized(const haltrequest_req_t &msg)
 {
+	LOG_DEBUG("Halt request received");
+
 	auto mcguffin=x::ref<x::obj>::create();
 
 	auto cb=x::ref<halted_cbObj>

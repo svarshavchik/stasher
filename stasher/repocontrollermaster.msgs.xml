@@ -7,7 +7,7 @@ See COPYING for distribution information.
 
 <class name="repocontrollermasterObj">
 
-  <method name="set_cluster">
+  <method name="do_set_cluster">
     <comment>
       //! Set the cluster object
 
@@ -15,39 +15,38 @@ See COPYING for distribution information.
       //! on the executing thread's stack.
     </comment>
 
-    <param type="weakptr">
-
-      <decl>clusterinfoptr <name>cluster</name></decl>
+    <param>
+      <decl>const x::weakptr&lt;clusterinfoptr&gt; &amp;cluster</decl>
     </param>
   </method>
 
-  <method name="accept">
+  <method name="do_accept">
     <comment>
       //! Slave accepted a connection request from this master object
     </comment>
 
-    <param type="weakptr">
+    <param>
       <comment>
 	//! The peer connection object
       </comment>
 
-      <decl>repopeerconnectionptr <name>peer</name></decl>
+      <decl>const x::weakptr&lt;repopeerconnectionptr&gt; &amp;peer</decl>
     </param>
 
-    <param type="weakptr">
+    <param>
       <comment>
 	//! The master's connection object for this slave
       </comment>
 
-      <decl>slaveConnectionptr <name>conn</name></decl>
+      <decl>const x::weakptr&lt;slaveConnectionptr&gt; &amp;conn</decl>
     </param>
 
-    <param type="weakptr">
+    <param>
       <comment>
 	//! Peer's linkage mcguffin
       </comment>
 
-      <decl>repopeerconnectionbaseObj::peerlinkptr <name>link</name></decl>
+      <decl>const x::weakptr&lt;repopeerconnectionbaseObj::peerlinkptr&gt; &amp;link</decl>
     </param>
   </method>
 
@@ -56,7 +55,9 @@ See COPYING for distribution information.
       //! Cluster status notifier's notification: cluster has been updated
     </comment>
 
-    <param type="class"><decl>clusterinfoObj::cluster_t <name>newStatus</name></decl></param>
+    <param>
+      <decl>const clusterinfoObj::cluster_t &amp;newStatus</decl>
+    </param>
   </method>
 
   <method name="check_quorum">
@@ -69,7 +70,7 @@ See COPYING for distribution information.
     </comment>
   </method>
 
-  <method name="get_quorum">
+  <method name="do_get_quorum">
     <comment>
       //! Return the current controller quorum status
 
@@ -77,19 +78,19 @@ See COPYING for distribution information.
       //!
     </comment>
 
-    <param type="class">
-      <decl>STASHER_NAMESPACE::quorumstateref <name>status</name></decl>
+    <param>
+      <decl>const STASHER_NAMESPACE::quorumstateref &amp;status</decl>
     </param>
-    <param type="class">
-      <decl>boolref <name>processed</name></decl>
+    <param>
+      <decl>const boolref &amp;processed</decl>
     </param>
 
-    <param type="class">
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+    <param>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
-  <method name="peernewmaster">
+  <method name="do_peernewmaster">
     <comment>//! A peer has a new master
 
     //! A peer wants to report that it switched to a new master.
@@ -97,20 +98,34 @@ See COPYING for distribution information.
     //! to this master.
     </comment>
 
-    <param type="weakptr"><decl>repopeerconnectionptr <name>peerRef</name></decl></param>
-    <param type="class"><decl>nodeclusterstatus <name>peerStatus</name></decl></param>
+    <param>
+      <decl>const x::weakptr&lt;repopeerconnectionptr&gt; &amp;peerRef</decl>
+    </param>
+    <param>
+      <decl>const nodeclusterstatus &amp;peerStatus</decl>
+    </param>
   </method>
 
-  <method name="syncslave">
+  <method name="do_syncslave">
     <comment>
       //! A new slave connection object requests to be synced
 
     </comment>
-    <param type="class"><decl>x::uuid <name>connuuid</name></decl></param>
-    <param type="weakptr"><decl>objrepocopydstinterfaceptr <name>peer</name></decl></param>
-    <param type="class"><decl>std::string <name>name</name></decl></param>
-    <param type="class"><decl>batonptr <name>newmasterbaton</name></decl></param>
-    <param type="class"><decl>x::ptr&lt;syncslave_cbObj&gt; <name>cb</name></decl></param>
+    <param>
+      <decl>const x::uuid &amp;connuuid</decl>
+    </param>
+    <param>
+      <decl>const x::weakptr&lt;objrepocopydstinterfaceptr&gt; &amp;peer</decl>
+    </param>
+    <param>
+      <decl>const std::string &amp;name</decl>
+    </param>
+    <param>
+      <decl>const batonptr &amp;newmasterbaton</decl>
+    </param>
+    <param>
+      <decl>const x::ptr&lt;syncslave_cbObj&gt; &amp;cb</decl>
+    </param>
   </method>
 
   <method name="check_repo_copy_completion">
@@ -127,8 +142,12 @@ See COPYING for distribution information.
     //! A node (this one or a peer) reports that it received a transaction.
     //! If all peers now have this transaction, commit it (or reject it).
     </comment>
-    <param type="class"><decl>trandistreceived <name>node</name></decl></param>
-    <param type="class"><decl>trandistuuid <name>uuids</name></decl></param>
+    <param>
+      <decl>const trandistreceived &amp;node</decl>
+    </param>
+    <param>
+      <decl>const trandistuuid &amp;uuids</decl>
+    </param>
   </method>
 
   <method name="transactions_cancelled">
@@ -136,8 +155,12 @@ See COPYING for distribution information.
 
     //! A node (this one or a peer) reports that it cancelled transactions.
     </comment>
-    <param type="class"><decl>x::ptr&lt;trancancelleduuidObj&gt; <name>node</name></decl></param>
-    <param type="class"><decl>tranuuid <name>uuids</name></decl></param>
+    <param>
+      <decl>const x::ptr&lt;trancancelleduuidObj&gt; &amp;node</decl>
+    </param>
+    <param>
+      <decl>const tranuuid &amp;uuids</decl>
+    </param>
   </method>
 
   <method name="handoff_request_continue">
@@ -146,7 +169,9 @@ See COPYING for distribution information.
     //! An internal message.
     //!
     </comment>
-    <param type="class"><decl>x::ref&lt;handoff_msgObj&gt; <name>msg</name></decl></param>
+    <param>
+      <decl>const x::ref&lt;handoff_msgObj&gt; &amp;msg</decl>
+    </param>
   </method>
 
   <method name="handoff_failed">
@@ -162,7 +187,9 @@ See COPYING for distribution information.
   <method name="debugGetPeerConnectionImpl">
     <comment>//! Internal message used by debugGetPeerConnection().
     </comment>
-    <param type="class"><decl>debug_get_peer_msg <name>msg</name></decl></param>
+    <param>
+      <decl>const debug_get_peer_msg &amp;msg</decl>
+    </param>
   </method>
 
   <method name="masterbaton_announced">
@@ -173,7 +200,7 @@ See COPYING for distribution information.
     <param>
       <comment>//! The announced baton
       </comment>
-      <decl type="class">baton <name>batonp</name></decl>
+      <decl>const baton &amp;batonp</decl>
     </param>
   </method>
 
@@ -187,27 +214,28 @@ See COPYING for distribution information.
       //! slave, and switched their allegiance to the new master.
     </comment>
 
-    <param type="class">
+    <param>
       <comment>//! The baton that was just handed over
       </comment>
-      <decl>baton <name>batonp</name></decl>
+      <decl>const baton &amp;batonp</decl>
     </param>
   </method>
 
-  <method name="halt">
+  <method name="do_halt">
     <comment>
       //! Halt the entire cluster, preserving integrity.
 
     </comment>
-    <param type='class'>
+
+    <param>
       <comment>
 	//! Result of the halt request
       </comment>
 
-      <decl>STASHER_NAMESPACE::haltrequestresults <name>req</name></decl>
+      <decl>const STASHER_NAMESPACE::haltrequestresults &amp;req</decl>
     </param>
 
-    <param type='class'>
+    <param>
       <comment>
 	//! After all peers have stopped, the controller releases its reference on this mcguffin.
 
@@ -217,7 +245,7 @@ See COPYING for distribution information.
 
       </comment>
 
-      <decl>x::ref&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ref&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 
@@ -226,12 +254,25 @@ See COPYING for distribution information.
       //! Continuing the halt, after all commits have been stopped.
 
     </comment>
-    <param type='class'>
+    <param>
       <comment>
 	//! Result of the halt request
       </comment>
 
-      <decl>halt_msg <name>req</name></decl>
+      <decl>const STASHER_NAMESPACE::haltrequestresults &amp;req</decl>
+    </param>
+
+    <param>
+      <comment>
+	//! After all peers have stopped, the controller releases its reference on this mcguffin.
+
+	//! The haltrequestresults object is sent expected to be sent back to
+	//! the client connection. When the haltrequestresults object goes out
+	//! of scope, the master node gets stopped.
+
+      </comment>
+
+      <decl>const x::ref&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 

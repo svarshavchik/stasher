@@ -24,6 +24,8 @@
 #include <x/pwd.H>
 #include <x/grp.H>
 
+#include <x/eventqueuemsgdispatcher.H>
+
 LOG_CLASS_INIT(clusterlistenerimplObj);
 
 x::property::value<size_t>

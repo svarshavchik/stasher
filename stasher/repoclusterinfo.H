@@ -9,6 +9,7 @@
 #include "clusterinfo.H"
 #include "nodeclusterstatus.H"
 #include "repoclusterquorum.H"
+#include "repocontrollerbasefwd.H"
 #include "stasher/repoclusterquorumcallbackbase.H"
 #include "stasher/quorumstateobj.H"
 #include "repoclusterinfofwd.H"
@@ -199,8 +200,11 @@ private:
 
 	class mcguffinDestroyCallbackObj;
 
+	//! Thread-safe container for the current master or slave.
+	typedef x::mpobj<x::ptr<repocontrollerbaseObj>> curmaster_t;
+
 	//! Current master (or slave)
-	x::ptr<repocontrollerbaseObj> curmaster;
+	curmaster_t curmaster;
 
 public:
 
@@ -219,7 +223,7 @@ private:
 
 
 	//! Subclass must instantiate a new repository controller in master mode
-	virtual x::ptr<repocontrollerbaseObj>
+	virtual repocontroller_start_info
 	create_master_controller(//! Master's name, this node's name
 				 const std::string &mastername,
 
@@ -234,7 +238,7 @@ private:
 =0;
 
 	//! Subclass must instantiate a new repository controller in slave mode
-	virtual x::ptr<repocontrollerbaseObj>
+	virtual repocontroller_start_info
 	create_slave_controller(//! Name of this node's object
 				const std::string &mastername,
 

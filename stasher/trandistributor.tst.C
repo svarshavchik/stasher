@@ -23,10 +23,11 @@ static const char repo1[]="conftest1.dir";
 class dummyhalt : public x::stoppableObj {
 
 public:
-	dummyhalt() {}
-	~dummyhalt() noexcept {}
+	dummyhalt()=default;
+	~dummyhalt() noexcept=default;
 
-	void stop() {
+	void stop() override
+	{
 	}
 };
 
@@ -46,38 +47,42 @@ public:
 
 	~myclusterinfo() noexcept {}
 
-	x::ptr<repocontrollerbaseObj>
+	repocontroller_start_info
 	create_master_controller(const std::string &mastername,
 				 const x::uuid &masteruuid,
 				 const tobjrepo &repo,
 				 const repoclusterquorum &callback_listArg)
-
+		override
 	{
-		return x::ptr<repocontrollermasterObj>
+		auto controller=repocontrollermaster
 			::create(mastername, masteruuid,
 				 repo,
 				 callback_listArg,
 				 x::ptr<trandistributorObj>(),
 				 tracker, x::ref<dummyhalt>::create());
+
+		return repocontroller_start_info::create(controller);
 	}
 
-	x::ptr<repocontrollerbaseObj>
+	repocontroller_start_info
 	create_slave_controller(const std::string &mastername,
 				const x::ptr<peerstatusObj> &peer,
 				const x::uuid &masteruuid,
 				const tobjrepo &repo,
 				const repoclusterquorum &callback_listArg)
-
+		override
 	{
-		return x::ptr<repocontrollerslaveObj>
+		auto controller=x::ref<repocontrollerslaveObj>
 			::create(mastername, peer,
 				 masteruuid, repo,
 				 callback_listArg,
 				 x::ptr<trandistributorObj>(), tracker,
 				 x::ref<dummyhalt>::create());
+
+		return repocontroller_start_info::create(controller);
 	}
 
-	void stop()
+	void stop() override
 	{
 	}
 };

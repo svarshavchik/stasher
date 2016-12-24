@@ -7,10 +7,10 @@ See COPYING for distribution information.
 
 <class name="repocontrollerbasehandoffObj">
 
-  <method name="handoff">
+  <method name="do_handoff">
     <comment>/*!
     Hand off control to the next controller.
     */</comment>
-    <param type="class"><decl>x::ptr&lt;repocontrollerbaseObj&gt; <name>next</name></decl></param>
+    <param><decl>const repocontroller_start_info &amp;next</decl></param>
   </method>
 </class>

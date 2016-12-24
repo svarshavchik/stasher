@@ -106,12 +106,12 @@ private:
 	//! This default implementation instantiates a repocontrollermasterObj
 	//! thread.
 
-	x::ptr<repocontrollerbaseObj>
+	repocontroller_start_info
 	create_master_controller(const std::string &mastername,
 				 const x::uuid &masteruuid,
 				 const tobjrepo &repo,
-				 const repoclusterquorum &callback_listArg);
-
+				 const repoclusterquorum &callback_listArg)
+		override;
 
 
 	//! Instantiate a slave controller
@@ -119,12 +119,13 @@ private:
 	//! This default implementation instantiates a repocontrollerslaveObj
 	//! thread.
 
-	x::ptr<repocontrollerbaseObj>
+	repocontroller_start_info
 	create_slave_controller(const std::string &mastername,
 				const x::ptr<peerstatusObj> &peer,
 				const x::uuid &masteruuid,
 				const tobjrepo &repo,
-				const repoclusterquorum &callback_listArg);
+				const repoclusterquorum &callback_listArg)
+		override;
 
 
 public:

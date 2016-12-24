@@ -51,7 +51,7 @@ repoclusterinfoimplObj::~repoclusterinfoimplObj() noexcept
 {
 }
 
-x::ptr<repocontrollerbaseObj> repoclusterinfoimplObj
+repocontroller_start_info repoclusterinfoimplObj
 ::create_master_controller(const std::string &mastername,
 			   const x::uuid &masteruuid,
 			   const tobjrepo &repo,
@@ -61,16 +61,18 @@ x::ptr<repocontrollerbaseObj> repoclusterinfoimplObj
 	LOG_DEBUG("Creating master controller on "
 		  << nodename << " for " << mastername);
 
-	auto controller(repocontrollermaster::create
-			(mastername, masteruuid, repo,
-			 callback_listArg, distributor.getptr(), tracker,
-			 x::ref<haltstopObj>::create(x::stoppableptr(this))));
+	auto controller=repocontrollermaster::create
+		(mastername, masteruuid, repo,
+		 callback_listArg, distributor.getptr(), tracker,
+		 x::ref<haltstopObj>::create(x::stoppableptr(this)));
+
+	auto start_info=repocontroller_start_info::create(controller);
 
 	controller->initialize(clusterinfo(this));
-	return controller;
+	return start_info;
 }
 
-x::ptr<repocontrollerbaseObj> repoclusterinfoimplObj
+repocontroller_start_info repoclusterinfoimplObj
 ::create_slave_controller(const std::string &mastername,
 			  const x::ptr<peerstatusObj> &peer,
 			  const x::uuid &masteruuid,
@@ -81,13 +83,15 @@ x::ptr<repocontrollerbaseObj> repoclusterinfoimplObj
 	LOG_DEBUG("Creating slave controller on "
 		  << nodename << " for " << mastername);
 
-	return x::ptr<repocontrollerslaveObj>
+	auto slave=x::ref<repocontrollerslaveObj>
 		::create(mastername, peer,
 			 masteruuid, repo,
 			 callback_listArg,
 			 distributor.getptr(),
 			 tracker,
 			 x::ref<haltstopObj>::create(x::stoppableptr(this)));
+
+	return repocontroller_start_info::create(slave);
 }
 
 void repoclusterinfoimplObj::stop()
@@ -122,4 +126,3 @@ x::fdptr repoclusterinfoimplObj::getstopfd()
 
 	return stop_fd;
 }
-

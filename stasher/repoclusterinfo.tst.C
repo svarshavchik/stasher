@@ -12,7 +12,8 @@
 #include <x/options.H>
 #include <x/stoppable.H>
 
-class mycontroller : public repocontrollerbaseObj {
+class mycontroller : public repocontrollerbaseObj,
+		     public x::threadmsgdispatcherObj {
 
 public:
 
@@ -52,7 +53,8 @@ public:
 	}
 
 	start_controller_ret_t
-	start_controller(const x::ref<x::obj> &mcguffinArg)
+	start_controller(const x::threadmsgdispatcherObj::msgqueue_obj &msgqueue,
+			 const x::ref<x::obj> &mcguffinArg)
 	{
 		mcguffin=mcguffinArg;
 		++mcguffin_counter;
@@ -60,15 +62,14 @@ public:
 		return start_controller_ret_t::create();
 	}
 
-	void handoff(const x::ptr<repocontrollerbaseObj> &next)
-
+	void handoff(const repocontroller_start_info &next)
 	{
 		x::ptr<x::obj> obj(mcguffin);
 
 		mcguffin=nullptr;
 		--mcguffin_counter;
 
-		next->start_controller(obj);
+		next->start(obj);
 	}
 
 	void peernewmaster(const repopeerconnectionptr &peerRef,
@@ -124,7 +125,7 @@ public:
 			::operator->()->stop_threads(permanently);
 	}
 
-	x::ptr<repocontrollerbaseObj>
+	repocontroller_start_info
 	create_master_controller(const std::string &mastername,
 				 const x::uuid &masteruuid,
 				 const tobjrepo &repo,
@@ -133,12 +134,14 @@ public:
 	{
 		++master_cnt;
 
-		return mastercontroller=x::ptr<mycontroller>
+		auto p=x::ref<mycontroller>
 			::create(mastername, masteruuid, repo,
 				 callback_listArg);
+		mastercontroller=p;
+		return repocontroller_start_info::create(p);
 	}
 
-	x::ptr<repocontrollerbaseObj>
+	repocontroller_start_info
 	create_slave_controller(const std::string &mastername,
 				const x::ptr<peerstatusObj> &peer,
 				const x::uuid &masteruuid,
@@ -148,9 +151,11 @@ public:
 	{
 		++slave_cnt;
 
-		return x::ptr<mycontroller>::create(mastername, masteruuid,
+		auto p=x::ref<mycontroller>::create(mastername, masteruuid,
 						    repo,
 						    callback_listArg);
+
+		return repocontroller_start_info::create(p);
 	}
 
 	void stop()

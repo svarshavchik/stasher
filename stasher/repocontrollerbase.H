@@ -14,12 +14,11 @@
 
 #include "repopeerconnectionfwd.H"
 #include "repoclusterquorum.H"
+#include "repocontrollerbasefwd.H"
 #include "boolref.H"
 #include "tobjrepofwd.H"
 #include "stasher/quorumstateobj.H"
 #include "stasher/results.auto.H"
-
-class nodeclusterstatus;
 
 //! Base class for repository controllers.
 
@@ -175,13 +174,14 @@ public:
 	//! The controller must release this mcguffin when it's done.
 
 	virtual start_controller_ret_t
-	start_controller(const x::ref<x::obj> &mcguffin)=0;
+	start_controller(const x::threadmsgdispatcherObj::msgqueue_obj &msgqueue,
+			 const x::ref<x::obj> &mcguffin)=0;
 
 	//! The controller can stop now, and start the next controller.
 
 	virtual void handoff( //! Start this controller, pass along the mcguffin
 
-			     const x::ptr<repocontrollerbaseObj> &next)=0;
+			     const repocontroller_start_info &next)=0;
 
 
 	//! A peer has switched to a new master
@@ -220,20 +220,18 @@ protected:
 	//! subclass should then relinquish its reference to the mcguffin.
 	//!
 	void handoff_next(//! Next controller to start
-			  const x::ptr<repocontrollerbaseObj> &next,
+			  const repocontroller_start_info &next,
 
 			  //! Mcguffin to pass along
 			  const x::ref<x::obj> &mcguffin);
 
 private:
 	//! Controller reference saved by handoff_next()
-	x::ptr<repocontrollerbaseObj> next_controller;
+	repocontroller_start_infoptr next_controller;
 
 	//! Mcguffin reference saved by handoff_next()
 	x::ref<x::obj> next_controller_mcguffin;
 };
-//! A reference to a repocontrollerbaseObj
 
-typedef x::ptr<repocontrollerbaseObj> repocontrollerbase;
 
 #endif

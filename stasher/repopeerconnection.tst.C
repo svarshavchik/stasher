@@ -159,35 +159,37 @@ public:
 
 	void get_quorum(const STASHER_NAMESPACE::quorumstateref &status_arg,
 			const boolref &processed_arg,
-			const x::ptr<x::obj> &mcguffin_arg)
+			const x::ptr<x::obj> &mcguffin_arg) override
 	{
 		static_cast<STASHER_NAMESPACE::quorumstate &>(*status_arg)=
 			STASHER_NAMESPACE::quorumstate();
 		processed_arg->flag=true;
 	}
 
-	start_controller_ret_t start_controller(const x::ref<x::obj> &mcguffin)
+	start_controller_ret_t
+	start_controller(const x::threadmsgdispatcherObj::msgqueue_obj &msgqueue,
+			 const x::ref<x::obj> &mcguffin) override
 	{
 		return start_controller_ret_t::create();
 	}
 
-	void handoff(const x::ptr<repocontrollerbaseObj> &next)
+	void handoff(const repocontroller_start_info &next) override
 	{
 	}
 
 	void peernewmaster(const repopeerconnectionptr &peerRef,
-			   const nodeclusterstatus &peerStatus)
+			   const nodeclusterstatus &peerStatus) override
 	{
 	}
 
 	x::ptr<x::obj>
-	handoff_request(const std::string &peername)
+	handoff_request(const std::string &peername) override
 	{
 		return x::ptr<x::obj>();
 	}
 
 	void halt(const STASHER_NAMESPACE::haltrequestresults &req,
-		  const x::ref<x::obj> &mcguffin)
+		  const x::ref<x::obj> &mcguffin) override
 	{
 	}
 };

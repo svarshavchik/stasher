@@ -20,7 +20,7 @@
 #include "baton.H"
 #include <x/destroycallbackflag.H>
 #include <x/threads/run.H>
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 
 LOG_CLASS_INIT(repocontrollermasterObj);
 
@@ -73,8 +73,6 @@ public:
 
 	x::ptr<x::obj> mcguffin;
 };
-
-#include "repocontrollermaster.msgs.def.H"
 
 class repocontrollermasterObj::commitThreadObj : virtual public x::obj {
 
@@ -330,13 +328,20 @@ public:
 };
 
 repocontrollermasterObj::start_controller_ret_t
-repocontrollermasterObj::start_controller(const x::ref<x::obj> &mcguffin)
+repocontrollermasterObj::start_controller(const msgqueue_obj &msgqueue,
+					  const x::ref<x::obj> &mcguffin)
 {
-	return tracker->start(x::ref<repocontrollermasterObj>(this), mcguffin);
+	return tracker->start_thread(x::ref<repocontrollermasterObj>(this),
+				     msgqueue,
+				     mcguffin);
 }
 
-void repocontrollermasterObj::run(x::ref<x::obj> &start_arg)
+void repocontrollermasterObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+				  const msgqueue_obj &msgqueue,
+				  x::ref<x::obj> &start_arg)
 {
+	threadmsgdispatcher_mcguffin=nullptr;
+
 	mcguffin= &start_arg; // The global mcguffin that's passed between controllers
 
 	x::logger::context thread("master(" + mastername + ", "
@@ -401,11 +406,11 @@ void repocontrollermasterObj::run(x::ref<x::obj> &start_arg)
 
 		while (1)
 		{
-			while (!msgqueue->empty())
-				msgqueue->pop()->dispatch();
+			while (!(*msgqueue)->empty())
+				msgqueue->event();
 			check_copy_completed();
 
-			msgqueue->getEventfd()->event();
+			(*msgqueue)->getEventfd()->event();
 		}
 	} catch (const x::stopexception &msg)
 	{
@@ -427,22 +432,26 @@ void repocontrollermasterObj::initialize(const clusterinfo &cluster)
 	cluster->installnotifycluster(clusterNotifierCallback);
 }
 
-void repocontrollermasterObj::dispatch(const set_cluster_msg &msg)
+void repocontrollermasterObj::set_cluster(const x::weakptr<clusterinfoptr> &cluster)
 {
-	if ( (*cluster=msg.cluster.getptr()).null())
+	do_set_cluster(cluster);
+}
+
+void repocontrollermasterObj
+::dispatch_do_set_cluster(const x::weakptr<clusterinfoptr> &clusterArg)
+{
+	if ( (*cluster=clusterArg.getptr()).null())
 		stop();
 }
 
 // Process cluster composition update
-
-void repocontrollermasterObj::dispatch(const clusterupdated_msg &msg)
+void repocontrollermasterObj::dispatch_clusterupdated(const clusterinfoObj::cluster_t &newStatus)
 {
 	bool received_cluster_update_already=received_cluster_update;
 
 	received_cluster_update=true;
 
-	for (clusterinfoObj::cluster_t::const_iterator
-		     b(msg.newStatus.begin()), e(msg.newStatus.end());
+	for (auto b=newStatus.begin(), e=newStatus.end();
 	     b != e; ++b)
 	{
 		if (slaves->find(b->first) == slaves->end())
@@ -452,12 +461,12 @@ void repocontrollermasterObj::dispatch(const clusterupdated_msg &msg)
 		}
 	}
 
-	for (slaves_t::iterator b(slaves->begin()), e(slaves->end()), p;
+	for (auto b=slaves->begin(), e=slaves->end(), p=b;
 	     (p=b) != e; )
 	{
 		++b;
 
-		if (msg.newStatus.find(p->first) == msg.newStatus.end())
+		if (newStatus.find(p->first) == newStatus.end())
 		{
 			LOG_INFO("Removed peer: " << p->first);
 			slaves->erase(p);
@@ -468,9 +477,17 @@ void repocontrollermasterObj::dispatch(const clusterupdated_msg &msg)
 	compute_quorum(!received_cluster_update_already);
 }
 
-void repocontrollermasterObj::dispatch(const peernewmaster_msg &msg)
+void repocontrollermasterObj::peernewmaster(const repopeerconnectionptr &peerRef,
+					    const nodeclusterstatus &peerStatus)
 {
-	repopeerconnectionptr peer(msg.peerRef.getptr());
+	do_peernewmaster(x::weakptr<repopeerconnectionptr>(peerRef),
+			 peerStatus);
+}
+
+void repocontrollermasterObj::dispatch_do_peernewmaster(const x::weakptr<repopeerconnectionptr> &peerRef,
+							const nodeclusterstatus &peerStatus)
+{
+	repopeerconnectionptr peer(peerRef.getptr());
 
 	if (peer.null())
 	{
@@ -479,11 +496,11 @@ void repocontrollermasterObj::dispatch(const peernewmaster_msg &msg)
 	}
 
 	LOG_DEBUG("Peer " << peer->peername << ", status: master "
-		  << msg.peerStatus.master << ", uuid "
-		  << x::tostring(msg.peerStatus.uuid));
+		  << peerStatus.master << ", uuid "
+		  << x::tostring(peerStatus.uuid));
 
-	if (msg.peerStatus.master != mastername ||
-	    msg.peerStatus.uuid != masteruuid)
+	if (peerStatus.master != mastername ||
+	    peerStatus.uuid != masteruuid)
 	{
 		LOG_TRACE("Ignoring");
 		return; // The peer will drop the mcguffin on its own
@@ -549,9 +566,20 @@ void repocontrollermasterObj::dispatch(const peernewmaster_msg &msg)
 	LOG_INFO(mastername << ": link request from " << peer->peername);
 }
 
-void repocontrollermasterObj::dispatch(const accept_msg &msg)
+void repocontrollermasterObj::accept(const repopeerconnectionptr &peer,
+				     const slaveConnectionptr &conn,
+				     const repopeerconnectionbaseObj::peerlinkptr &link)
 {
-	repopeerconnectionptr peer=msg.peer.getptr();
+	do_accept(x::weakptr<repopeerconnectionptr>(peer),
+		  x::weakptr<slaveConnectionptr>(conn),
+		  x::weakptr<repopeerconnectionbaseObj::peerlinkptr>(link));
+}
+
+void repocontrollermasterObj::dispatch_do_accept(const x::weakptr<repopeerconnectionptr> &peerArg,
+						 const x::weakptr<slaveConnectionptr> &connArg,
+						 const x::weakptr<repopeerconnectionbaseObj::peerlinkptr> &linkArg)
+{
+	auto peer=peerArg.getptr();
 
 	if (peer.null())
 	{
@@ -560,7 +588,7 @@ void repocontrollermasterObj::dispatch(const accept_msg &msg)
 		return;
 	}
 
-	slaveConnectionptr conn=msg.conn.getptr();
+	auto conn=connArg.getptr();
 
 	if (conn.null())
 	{
@@ -570,7 +598,7 @@ void repocontrollermasterObj::dispatch(const accept_msg &msg)
 		return;
 	}
 
-	repopeerconnectionbaseObj::peerlinkptr link=msg.link.getptr();
+	auto link=linkArg.getptr();
 
 	if (link.null())
 	{
@@ -585,7 +613,7 @@ void repocontrollermasterObj::dispatch(const accept_msg &msg)
 	conn->install(peer, link);
 }
 
-void repocontrollermasterObj::dispatch(const check_quorum_msg &dummy)
+void repocontrollermasterObj::dispatch_check_quorum()
 {
 	compute_quorum(false);
 }
@@ -723,24 +751,48 @@ bool repocontrollermasterObj
 	return curquorum.majority;
 }
 
-void repocontrollermasterObj::dispatch(const get_quorum_msg &msg)
+void  repocontrollermasterObj
+::get_quorum(const STASHER_NAMESPACE::quorumstateref &status,
+	     const boolref &processed,
+	     const x::ptr<x::obj> &mcguffin)
 {
-	static_cast<STASHER_NAMESPACE::quorumstate &>(*msg.status)=curquorum;
-	msg.processed->flag=true;
+	do_get_quorum(status, processed, mcguffin);
+}
+
+void repocontrollermasterObj
+::dispatch_do_get_quorum(const STASHER_NAMESPACE::quorumstateref &status,
+			 const boolref &processed,
+			 const x::ptr<x::obj> &mcguffin)
+{
+	static_cast<STASHER_NAMESPACE::quorumstate &>(*status)=curquorum;
+	processed->flag=true;
+}
+
+void repocontrollermasterObj::syncslave(const x::uuid &connuuid,
+					const x::weakptr<objrepocopydstinterfaceptr> &peer,
+					const std::string &name,
+					const batonptr &newmasterbaton,
+					const x::ptr<syncslave_cbObj> &cb)
+{
+	do_syncslave(connuuid, peer, name, newmasterbaton, cb);
 }
 
 // Connection from a slave who wants to be synced
 
-void repocontrollermasterObj::dispatch(const syncslave_msg &msg)
+void repocontrollermasterObj::dispatch_do_syncslave(const x::uuid &connuuid,
+						    const x::weakptr<objrepocopydstinterfaceptr> &peer,
+						    const std::string &name,
+						    const batonptr &newmasterbaton,
+						    const x::ptr<syncslave_cbObj> &cb)
 {
-	LOG_DEBUG("Slave request: " << msg.name);
+	LOG_DEBUG("Slave request: " << name);
 
-	slaves_t::iterator b=slaves->find(msg.name);
+	slaves_t::iterator b=slaves->find(name);
 
 	if (b == slaves->end())
 	{
 		LOG_WARNING(mastername << ": sync request from unknown slave: "
-			    << msg.name);
+			    << name);
 		return;
 	}
 
@@ -749,23 +801,23 @@ void repocontrollermasterObj::dispatch(const syncslave_msg &msg)
 
 		if (b->second.connection.null() ||
 		    (connptr=b->second.connection->getptr()).null() ||
-		    connptr->connuuid != msg.connuuid)
+		    connptr->connuuid != connuuid)
 		{
 			LOG_WARNING(mastername
 				    << ": sync request from unknown"
 				    " connection to: "
-				    << msg.name);
+				    << name);
 			return;
 		}
 	}
 
-	x::ptr<objrepocopydstinterfaceObj> ptr(msg.peer.getptr());
+	x::ptr<objrepocopydstinterfaceObj> ptr(peer.getptr());
 
 	if (ptr.null())
 	{
 		LOG_WARNING(mastername
 			    << ": sync request from slave that's already gone,"
-			    " apparently: " << msg.name);
+			    " apparently: " << name);
 		return;
 	}
 
@@ -774,7 +826,7 @@ void repocontrollermasterObj::dispatch(const syncslave_msg &msg)
 	{
 		LOG_FATAL(mastername
 			  << ": internal error, duplicate sync request: "
-			  << msg.name);
+			  << name);
 		return;
 	}
 
@@ -789,13 +841,13 @@ void repocontrollermasterObj::dispatch(const syncslave_msg &msg)
 		copysrc_mcguffin->ondestroy([cb]{cb->destroyed();});
 	}
 
-	LOG_DEBUG("Starting repository sync to " << msg.name);
+	LOG_DEBUG("Starting repository sync to " << name);
 
-	if (!msg.cb.null())
-		msg.cb->bind(sync->copysrc);
+	if (!cb.null())
+		cb->bind(sync->copysrc);
 
 	sync->copycomplete=sync->copysrc->start(repo, ptr,
-						msg.newmasterbaton,
+						newmasterbaton,
 						copysrc_mcguffin);
 	sync->mcguffin=copysrc_mcguffin;
 
@@ -834,8 +886,7 @@ void repocontrollermasterObj::slaveinfo::syncobjcbObj::destroyed()
 	}
 }
 
-void repocontrollermasterObj::dispatch(const check_repo_copy_completion_msg
-				       &dummy)
+void repocontrollermasterObj::dispatch_check_repo_copy_completion()
 {
 	check_copy_completed();
 }
@@ -861,7 +912,7 @@ void repocontrollermasterObj::check_copy_completed()
 			LOG_INFO(b->first
 				 << " finished syncing, acquiring a lock");
 			sync.commitlock=
-				repo->commitlock(msgqueue->getEventfd());
+				repo->commitlock(get_msgqueue()->getEventfd());
 		}
 
 		// Should execute the following path after creating a new lock,
@@ -891,18 +942,19 @@ void repocontrollermasterObj::check_copy_completed()
 }
 
 // ---------------------------------------------------------------------------
-
-void repocontrollermasterObj::dispatch(const transactions_received_msg &msg)
+void repocontrollermasterObj::dispatch_transactions_received(const trandistreceived &node,
+							     const trandistuuid &uuids)
 {
-	msg.node->received(msg.uuids);
+	node->received(uuids);
 
 	if (curquorum.majority)
-		checkcommit(msg.uuids);
+		checkcommit(uuids);
 }
 
-void repocontrollermasterObj::dispatch(const transactions_cancelled_msg &msg)
+void repocontrollermasterObj::dispatch_transactions_cancelled(const x::ptr<trancancelleduuidObj> &node,
+							      const tranuuid &uuids)
 {
-	msg.node->cancelled(msg.uuids);
+	node->cancelled(uuids);
 }
 
 void repocontrollermasterObj::checkcommit(const trandistuuid &uuids)
@@ -1067,13 +1119,12 @@ repocontrollermasterObj::debugGetPeerConnection(const std::string &peername)
 	return (rc->peer);
 }
 
-void repocontrollermasterObj::dispatch(const debugGetPeerConnectionImpl_msg
-				       &msg)
+void repocontrollermasterObj::dispatch_debugGetPeerConnectionImpl(const debug_get_peer_msg &msg)
 {
-	slaves_t::iterator p=slaves->find(msg.msg.peername);
+	slaves_t::iterator p=slaves->find(msg.peername);
 
 	if (p != slaves->end())
-		msg.msg.retvalref->peer=p->second.connection->getptr();
+		msg.retvalref->peer=p->second.connection->getptr();
 }
 
 
@@ -1284,15 +1335,15 @@ repocontrollermasterObj::handoff_request(const std::string &peername)
 
 // A helper thread that waits for the commit lock to go through
 class repocontrollermasterObj::handoff_repolockthreadObj
-	: public x::eventqueuemsgdispatcherObj {
+	: public x::threadmsgdispatcherObj {
 
 public:
-	handoff_repolockthreadObj(const x::eventfd &eventfd)
-		: x::eventqueuemsgdispatcherObj(eventfd) {}
+	handoff_repolockthreadObj()=default;
+	~handoff_repolockthreadObj() noexcept=default;
 
-	~handoff_repolockthreadObj() noexcept {}
-
-	void run(const x::ref<handoff_msgObj> &msg);
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const x::eventfd &eventfd,
+		 const x::ref<handoff_msgObj> &msg);
 };
 
 // Destructor callback used in handoff processing
@@ -1345,12 +1396,11 @@ public:
 };
 
 // Initial handoff processing, in the context of the master controller thread
-
-void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
+void repocontrollermasterObj::dispatch_handoff_request_continue(const x::ref<handoff_msgObj> &msg)
 {
-	if (msg.msg->mcguffin_destroyed == false) // Initial request came in.
+	if (msg->mcguffin_destroyed == false) // Initial request came in.
 	{
-		if (msg.msg->peername == mastername)
+		if (msg->peername == mastername)
 		{
 			LOG_INFO(mastername
 				 << ": ignoring handover request to myself");
@@ -1366,13 +1416,13 @@ void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
 			return;
 		}
 
-		LOG_WARNING("Commit handoff: " << msg.msg->peername);
+		LOG_WARNING("Commit handoff: " << msg->peername);
 
 		auto callback_lock=
 			x::ref<handoff_destroy_cb>::create
-			(repocontrollermasterptr(this), msg.msg);
+			(repocontrollermasterptr(this), msg);
 
-		msg.msg->mcguffin_destroyed=true;
+		msg->mcguffin_destroyed=true;
 
 		x::ref<x::obj> mcguffin=commit_mcguffin;
 		mcguffin->ondestroy([callback_lock]
@@ -1381,31 +1431,31 @@ void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
 		return;
 	}
 
-	if (msg.msg->commitlock.null())
+	if (msg->commitlock.null())
 	{
 		LOG_WARNING("Commit handoff, acquiring lock: "
-			    << msg.msg->peername);
+			    << msg->peername);
 
 		// Commits are no longer being processed, acquire a commit
 		// lock on the repository.
 
 		x::eventfd eventfd=x::eventfd::create();
 
-		auto thr=x::ref<handoff_repolockthreadObj>::create(eventfd);
+		auto thr=x::ref<handoff_repolockthreadObj>::create();
 
 		auto callback_lock=
 			x::ref<handoff_destroy_cb>::create
-			(repocontrollermasterptr(this), msg.msg);
-		msg.msg->commitlock=repo->commitlock(eventfd);
+			(repocontrollermasterptr(this), msg);
+		msg->commitlock=repo->commitlock(eventfd);
 		thr->ondestroy([callback_lock]{callback_lock->destroyed();});
-		tracker->start(thr, msg.msg);
+		tracker->start_thread(thr, eventfd, msg);
 		return;
 	}
 
 	// At this point we better have the commit lock. Otherwise this
 	// indicates that the commit thread has stopped
 
-	if (!msg.msg->commitlock->locked())
+	if (!msg->commitlock->locked())
 	{
 		dispatch_handoff_failed();
 		return;
@@ -1432,7 +1482,7 @@ void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
 		return;
 	}
 
-	batonptr batonp=msg.msg->batonp;
+	batonptr batonp=msg->batonp;
 
 	// Create a temporary baton that keep this node as a master, until
 	// the new master is ready
@@ -1442,7 +1492,7 @@ void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
 				 mastername, masteruuid);
 
 	batonp->set_master_ptr(repocontrollermasterptr(this));
-	batonp->set_commitlock(msg.msg->commitlock);
+	batonp->set_commitlock(msg->commitlock);
 
 	if (!(*cluster)->installbaton(batonp->temp_baton))
 		return;
@@ -1453,7 +1503,7 @@ void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
 	{
 		auto peer=peerEntry.first;
 
-		if (peerEntry.second->first == msg.msg->peername)
+		if (peerEntry.second->first == msg->peername)
 		{
 			batonp->set_master_newconn(peer);
 			continue;
@@ -1473,13 +1523,18 @@ void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
 // Helper thread that waits for the commit lock to get acquired
 
 void repocontrollermasterObj::handoff_repolockthreadObj
-::run(const x::ref<handoff_msgObj> &msg)
+::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+      const x::eventfd &eventfd,
+      const x::ref<handoff_msgObj> &msg)
 {
+	msgqueue_auto msgqueue(this, eventfd);
+	threadmsgdispatcher_mcguffin=nullptr;
+
 	while (!msg->commitlock->locked())
 	{
 		if (!msgqueue->empty())
 		{
-			msgqueue->pop()->dispatch();
+			msgqueue.event();
 			continue;
 		}
 
@@ -1488,11 +1543,6 @@ void repocontrollermasterObj::handoff_repolockthreadObj
 #ifdef DEBUG_BATON_TEST_1_HOOK_LOCK_THREAD
 	DEBUG_BATON_TEST_1_HOOK_LOCK_THREAD();
 #endif
-}
-
-void repocontrollermasterObj::dispatch(const handoff_failed_msg &msg)
-{
-	dispatch_handoff_failed();
 }
 
 void repocontrollermasterObj::dispatch_handoff_failed()
@@ -1510,7 +1560,7 @@ void repocontrollermasterObj::dispatch_handoff_failed()
 #endif
 }
 
-void repocontrollermasterObj::dispatch(const masterbaton_announced_msg &msg)
+void repocontrollermasterObj::dispatch_masterbaton_announced(const baton &batonp)
 {
 #ifdef DEBUG_BATON_TEST_2_ANNOUNCED_HOOK
 	DEBUG_BATON_TEST_2_ANNOUNCED_HOOK();
@@ -1519,10 +1569,10 @@ void repocontrollermasterObj::dispatch(const masterbaton_announced_msg &msg)
 	DEBUG_BATON_TEST_3_ANNOUNCED_HOOK();
 #endif
 
-	msg.batonp->send_transfer_request();
+	batonp->send_transfer_request();
 }
 
-void repocontrollermasterObj::dispatch(const masterbaton_handedover_msg &msg)
+void repocontrollermasterObj::dispatch_masterbaton_handedover(const baton &batonp)
 {
 #ifdef DEBUG_BATON_TEST_4_GIVEN_CB
 	DEBUG_BATON_TEST_4_GIVEN_CB();
@@ -1530,9 +1580,9 @@ void repocontrollermasterObj::dispatch(const masterbaton_handedover_msg &msg)
 
 	LOG_INFO(mastername << ": new master is up, disconnecting and holding baton until transfer is comlpete");
 
-	(*cluster)->installformermasterbaton(msg.batonp);
+	(*cluster)->installformermasterbaton(batonp);
 
-	if (!(*cluster)->installbaton(msg.batonp))
+	if (!(*cluster)->installbaton(batonp))
 		LOG_FATAL("Failed to install transferred baton, we're boned");
 
 #ifdef DEBUG_BATON_TEST_6_NEWMASTER_DISCONNECT
@@ -1564,12 +1614,14 @@ class repocontrollermasterObj::halt_continue_cbObj
 	: virtual public x::obj {
 
 public:
-	halt_msg req;
+	STASHER_NAMESPACE::haltrequestresults req;
+	x::ref<x::obj> mcguffin;
 	x::weakptr<x::ptr<repocontrollermasterObj> > master;
 
-	halt_continue_cbObj(const halt_msg &reqArg,
+	halt_continue_cbObj(const STASHER_NAMESPACE::haltrequestresults &reqArg,
+			    const x::ref<x::obj> &mcguffinArg,
 			    const x::ptr<repocontrollermasterObj> &masterArg)
-		: req(reqArg), master(masterArg)
+		: req(reqArg), mcguffin(mcguffinArg), master(masterArg)
 	{
 	}
 
@@ -1583,7 +1635,7 @@ public:
 			auto m=master.getptr();
 
 			if (!m.null())
-				m->halt_continue(req);
+				m->halt_continue(req, mcguffin);
 		} catch (const x::exception &e)
 		{
 			LOG_FATAL(e);
@@ -1594,11 +1646,20 @@ public:
 // A request to halt the entire cluster. First step is to put all commits on
 // hold, and wait for pending ones to go through.
 
-void repocontrollermasterObj::dispatch(const halt_msg &req)
+void repocontrollermasterObj
+::halt(const STASHER_NAMESPACE::haltrequestresults &req,
+       const x::ref<x::obj> &mcguffin)
+{
+	do_halt(req, mcguffin);
+}
+
+void repocontrollermasterObj
+::dispatch_do_halt(const STASHER_NAMESPACE::haltrequestresults &req,
+		   const x::ref<x::obj> &mcguffinArg)
 {
 	if (!curquorum.full)
 	{
-		req.req->message="Cluster is not in full quorum";
+		req->message="Cluster is not in full quorum";
 		return;
 	}
 
@@ -1609,14 +1670,15 @@ void repocontrollermasterObj::dispatch(const halt_msg &req)
 
 	if (mcguffin.null())
 	{
-		req.req->message="Halt request failed: commits are already blocked";
+		req->message="Halt request failed: commits are already blocked";
 		return;
 	}
 
 	LOG_INFO("Halt request received, stopping all commits");
 
 	auto cb=x::ref<halt_continue_cbObj>
-		::create(req, x::ptr<repocontrollermasterObj>(this));
+		::create(req, mcguffinArg,
+			 x::ptr<repocontrollermasterObj>(this));
 	mcguffin->ondestroy([cb]{cb->destroyed();});
 
 	commit_mcguffin=nullptr;
@@ -1624,12 +1686,13 @@ void repocontrollermasterObj::dispatch(const halt_msg &req)
 
 // All commits have been finished.
 
-void repocontrollermasterObj::dispatch(const halt_continue_msg &req_msg)
+void repocontrollermasterObj::dispatch_halt_continue(const STASHER_NAMESPACE::haltrequestresults &req,
+						     const x::ref<x::obj> &mcguffin)
 {
 	// When the result message gets destroyed, stop this node.
 
 	x::ref<halt_cbObj> cb=x::ref<halt_cbObj>::create(haltstop);
-	req_msg.req.req->ondestroy([cb]{cb->destroyed();});
+	req->ondestroy([cb]{cb->destroyed();});
 
 	// Send a halt message to all peers. Use the connecting client's
 	// supplied mcguffin as the mcguffin for all the peers. When all the
@@ -1644,11 +1707,11 @@ void repocontrollermasterObj::dispatch(const halt_continue_msg &req_msg)
 		{
 			LOG_INFO("Sending halt request to " << slave.first);
 			peer->halt_request(mastername, masteruuid,
-					   req_msg.req.mcguffin);
+					   mcguffin);
 		}
 	}
-	req_msg.req.req->message="Cluster halted";
-	req_msg.req.req->halted=true;
+	req->message="Cluster halted";
+	req->halted=true;
 }
 
 std::string repocontrollermasterObj::report(std::ostream &rep)

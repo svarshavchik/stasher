@@ -90,10 +90,12 @@ static void test3(tstnodes &t)
 	auto haltrun=x::run(haltthread, STASHER_NAMESPACE::client
 			    ::base::admin(tstnodes::getnodedir(0)));
 	tnodes[1]->wait();
+	std::cout << "Node 1 stopped" << std::endl;
 	haltrun->wait();
 	std::cout << haltthread->message << std::endl;
 
 	tnodes[0]->wait();
+	std::cout << "Node 0 stopped" << std::endl;
 }
 
 int main(int argc, char **argv)

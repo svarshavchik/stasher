@@ -6,13 +6,12 @@
 #ifndef repocontrollermaster_H
 #define repocontrollermaster_H
 
-#undef libx_autogen_suppress_inner
 #include "repocontrollermasterfwd.H"
 #include "repocontrollerbasehandoff.H"
 #include "repopeerconnectionbase.H"
 #include "batonfwd.H"
 #include "clusterinfo.H"
-#include "threadreportimpl.H"
+#include "threadreportimpl2.H"
 #include "objrepocopydstinterfacefwd.H"
 #include "objrepocopysrcinterfacefwd.H"
 #include "repopeerconnectionfwd.H"
@@ -110,7 +109,7 @@ class trancancelleduuidObj;
 //! slaves.
 
 class repocontrollermasterObj : public repocontrollerbasehandoffObj,
-				public STASHER_NAMESPACE::threadreportimplObj {
+				public STASHER_NAMESPACE::threadreportimpl2Obj {
 
 	//! The logger
 
@@ -171,7 +170,7 @@ private:
 
 	//! Transactions that have been received by this node -- on the executing thread's stack
 	thisnodereceivedObj *thisnodereceived;
-	
+
 	//! A mcguffin on the execution thread's stack
 
 	x::ptr<x::obj> *controller_mcguffin;
@@ -269,12 +268,17 @@ public:
 
 	//! Start this thread
 
-	start_controller_ret_t start_controller(const x::ref<x::obj> &mcguffin);
+	start_controller_ret_t start_controller(const msgqueue_obj &msgqueue,
+						const x::ref<x::obj> &mcguffin)
+		override;
 
 	//! The thread
 
-	void run(x::ref<x::obj> &start_arg);
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const msgqueue_obj &msgqueue,
+		 x::ref<x::obj> &start_arg);
 
+	void foo() override {}
 private:
 	//! Verify whether quorum is present.
 
@@ -333,7 +337,7 @@ public:
 	//! Request the master to hand itself off to some other peer
 
 	x::ptr<x::obj>
-	handoff_request(const std::string &peername);
+	handoff_request(const std::string &peername) override;
 
 	class handoff_msgObj;
 
@@ -343,16 +347,59 @@ private:
 
 	class handoff_repolockthreadObj;
 
-	//! Handoff failed, reestablish commits
-	void dispatch_handoff_failed();
-
 	class announce_mcguffin;
 
 	//! Report this thread's status
 
 	std::string report(std::ostream &rep);
 
-#include "repocontrollermaster.msgs.decl.H"
+#include "repocontrollermaster.msgs.H"
+
+public:
+	//! Wrapper for set_cluster().
+	void set_cluster(//! Message parameter
+			 const x::weakptr<clusterinfoptr> &cluster) ;
+	//! Wrapper for accept().
+	void accept(//! Message parameter
+		    const repopeerconnectionptr &peer,
+		    //! Message parameter
+		    const slaveConnectionptr &conn,
+		    //! Message parameter
+		    const repopeerconnectionbaseObj::peerlinkptr &link);
+
+	//! Wrapper for peernewmaster().
+	void peernewmaster(//! Message parameter
+			   const repopeerconnectionptr &peerRef,
+			   //! Message parameter
+			   const nodeclusterstatus &peerStatus) override;
+
+	//! Wrapper for syncslave();
+	void syncslave(//! Message parameter
+		       const x::uuid &connuuid,
+		       //! Message parameter
+		       const x::weakptr<objrepocopydstinterfaceptr> &peer,
+		       //! Message parameter
+		       const std::string &name,
+		       //! Message parameter
+		       const batonptr &newmasterbaton,
+		       //! Message parameter
+		       const x::ptr<syncslave_cbObj> &cb);
+
+	//! Wrapper for get_quorum()
+	void get_quorum(//! Message parameter
+			const STASHER_NAMESPACE::quorumstateref &status,
+			//! Message parameter
+			const boolref &processed,
+			//! Message parameter
+			const x::ptr<x::obj> &mcguffin) override;
+
+	//! Wrapper for halt()
+
+	void halt(//! Result of the request, to be determined
+		  const STASHER_NAMESPACE::haltrequestresults &req,
+
+		  //! Mcguffin.
+		  const x::ref<x::obj> &mcguffin) override;
 };
 
 

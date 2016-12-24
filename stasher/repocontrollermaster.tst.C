@@ -38,7 +38,7 @@ public:
 	x::uuid connuuid;
 
 	repopeerconnectionObj(const std::string &fakepeername)
- : peername(fakepeername)
+		: peername(fakepeername)
 	{
 	}
 
@@ -69,18 +69,15 @@ public:
 				   const x::uuid &batonuuid,
 				   const std::string &newmasterpeer,
 				   const x::ptr<x::obj> &mcguffin)
-
 	{
 	}
 
 	void baton_master_release(const std::string &mastername,
 				 const x::uuid &masteruuid)
-
 	{
 	}
 
 	void baton_transfer_request(const batonptr &baton_arg)
-
 	{
 	}
 
@@ -89,21 +86,20 @@ public:
 	}
 
 	void installformermasterbaton(const batonptr &batonp)
-
 	{
 	}
 
-	void master_quorum_announce(const std::string &mastername_arg, 
-				    const x::uuid &uuid_arg, 
+	void master_quorum_announce(const std::string &mastername_arg,
+				    const x::uuid &uuid_arg,
 				    const STASHER_NAMESPACE::quorumstate &state)
 	{
 	}
 
-	void halt_request(const std::string &mastername_arg, 
-			  const x::uuid &uuid_arg, 
+	void halt_request(const std::string &mastername_arg,
+			  const x::uuid &uuid_arg,
 			  const x::ptr<x::obj> &mcguffin)
 	{
-	}	    
+	}
 };
 
 LOG_CLASS_INIT(repopeerconnectionObj);
@@ -211,7 +207,7 @@ public:
 		std::mutex mutex;
 		std::condition_variable cond;
 		bool flag;
-		
+
 		quorumcbObj() : flag(false)
 		{
 		}
@@ -271,10 +267,14 @@ public:
 				 x::ptr<trandistributorObj>(),
 				 tracker->getTracker()))
 	{
+		auto start_info=repocontroller_start_info::create(master);
+
 		quorum_callback_list->install(quorumcb);
 		master->initialize(cluster);
 
-		tracker->start(master, x::ref<x::obj>::create());
+		tracker->start_thread(master,
+				      start_info->new_controller_queue,
+				      x::ref<x::obj>::create());
 
 		(void)master->debug_inquorum();
 

@@ -211,7 +211,7 @@ static bool test3_cancelled;
 		{							\
 			/* [MASTERHANDOFFANNOUNCE */			\
 			if (test3_keepbaton)				\
-				*test3_keepbaton=msg.batonp;		\
+				*test3_keepbaton=batonp;		\
 			std::cout << "Announce messages processed"	\
 				  << std::endl;				\
 			test3_baton_announced=true;			\
@@ -978,8 +978,8 @@ int main(int argc, char **argv)
 	try {
 		tstnodes nodes(3);
 
-		std::cout << "test1" << std::endl;
-		test1();
+		// std::cout << "test1" << std::endl;
+		// test1();
 
 		std::cout << "test2" << std::endl;
 		test2(nodes);

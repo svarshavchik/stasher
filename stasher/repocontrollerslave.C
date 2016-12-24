@@ -15,8 +15,6 @@
 
 LOG_CLASS_INIT(repocontrollerslaveObj);
 
-#include "repocontrollerslave.msgs.def.H"
-
 repocontrollerslaveObj
 ::repocontrollerslaveObj(const std::string &masternameArg,
 			 const repopeerconnectionbase &peerArg,
@@ -76,14 +74,20 @@ repocontrollerslaveObj::dstcopyObj::~dstcopyObj() noexcept
 //---------------------------------------------------------------------------
 
 repocontrollerslaveObj::start_controller_ret_t
-repocontrollerslaveObj::start_controller(const x::ref<x::obj> &mcguffin)
+repocontrollerslaveObj::start_controller(const msgqueue_obj &msgqueue,
+					 const x::ref<x::obj> &mcguffin)
 {
-	return tracker->start(x::ref<repocontrollerslaveObj>(this), mcguffin);
+	return tracker->start_thread(x::ref<repocontrollerslaveObj>(this),
+				     msgqueue,
+				     mcguffin);
 }
 
-void repocontrollerslaveObj::run(x::ref<x::obj> &start_arg)
-
+void repocontrollerslaveObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+				 const msgqueue_obj &msgqueue,
+				 x::ref<x::obj> &start_arg)
 {
+	threadmsgdispatcher_mcguffin=nullptr;
+
 	mcguffin= &start_arg;
 
 	x::logger::context thread("slave(" + mastername + ", "
@@ -120,7 +124,7 @@ void repocontrollerslaveObj::run(x::ref<x::obj> &start_arg)
 
 		while (1)
 		{
-			msgqueue->pop()->dispatch();
+			msgqueue->event();
 		}
 	} catch (const x::stopexception &msg)
 	{
@@ -154,14 +158,13 @@ void repocontrollerslaveObj::initialize(const repopeerconnectionbase &peerRef,
 	peerRef->connect_slave(handle);
 }
 
-void repocontrollerslaveObj::dispatch(const synccomplete_msg &msg)
-
+void repocontrollerslaveObj::dispatch_synccomplete(const boolref &flag)
 {
 	std::lock_guard<std::mutex> lock(objmutex);
 
 	*dstcopy_ptr=objrepocopydstptr(); // Must be done in thread context
 
-	if ((synccomplete_flag=msg.flag->flag) == true)
+	if ((synccomplete_flag=flag->flag) == true)
 	{
 #ifdef DEBUG_SYNCCOPY_COMPLETED
 		DEBUG_SYNCCOPY_COMPLETED();
@@ -175,40 +178,49 @@ void repocontrollerslaveObj::dispatch(const synccomplete_msg &msg)
 	}
 }
 
-void repocontrollerslaveObj::dispatch(const installreceiver_msg &msg)
-
+void repocontrollerslaveObj
+::dispatch_installreceiver(const trandistreceived &receiver)
 {
 	x::ptr<trandistributorObj> d(distributor.getptr());
 
 	if (!d.null())
 	{
 		LOG_DEBUG("Installed receiver for this node");
-		*receiver_ptr=msg.receiver;
-		d->installreceiver(msg.receiver);
+		*receiver_ptr=receiver;
+		d->installreceiver(receiver);
 	}
 }
 
-void repocontrollerslaveObj::dispatch(const get_quorum_msg &msg)
-
+void repocontrollerslaveObj::get_quorum(const STASHER_NAMESPACE::quorumstateref
+					&status,
+					const boolref &processed,
+					const x::ptr<x::obj> &mcguffin)
 {
-	static_cast<STASHER_NAMESPACE::quorumstate &>(*msg.status)=inquorum();
-	msg.processed->flag=true;
+	do_get_quorum(status, processed, mcguffin);
+}
+
+void repocontrollerslaveObj
+::dispatch_do_get_quorum(const STASHER_NAMESPACE::quorumstateref &status,
+			 const boolref &processed,
+			 const x::ptr<x::obj> &mcguffin)
+{
+	static_cast<STASHER_NAMESPACE::quorumstate &>(*status)=inquorum();
+	processed->flag=true;
 }
 
 void repocontrollerslaveObj
 ::peernewmaster(const repopeerconnectionptr &peerRef,
 		const nodeclusterstatus &peerStatus)
-
 {
 }
 
-void repocontrollerslaveObj::dispatch(const master_quorum_announce_msg &msg)
-
+void repocontrollerslaveObj
+::dispatch_master_quorum_announce(const STASHER_NAMESPACE::quorumstate &status)
 {
 	LOG_INFO("Master " << mastername << " quorum status: "
-		 << x::tostring(msg.status)
+		 << x::tostring(status)
 		 << ", sync completed: " << x::tostring(synccomplete_flag));
-	lastmasterquorumstate=msg.status;
+	lastmasterquorumstate=status;
 
 	if (synccomplete_flag)
 		quorum(lastmasterquorumstate);
@@ -224,11 +236,12 @@ repocontrollerslaveObj::handoff_request(const std::string &peername)
 	return mcguffin;
 }
 
-void repocontrollerslaveObj::dispatch(const master_handoff_request_msg &msg)
-
+void repocontrollerslaveObj
+::dispatch_master_handoff_request(const std::string &newmastername,
+				  const x::ptr<x::obj> &mcguffin)
 {
 	LOG_INFO("Request to " << mastername << " to hand off to "
-		 << msg.newmastername);
+		 << newmastername);
 
 	repopeerconnectionbase ptr=peer.getptr();
 
@@ -238,7 +251,7 @@ void repocontrollerslaveObj::dispatch(const master_handoff_request_msg &msg)
 	repopeerconnectionObj *conn=
 		dynamic_cast<repopeerconnectionObj *>(&*ptr);
 
-	conn->master_handover_request(msg.newmastername, msg.mcguffin);
+	conn->master_handover_request(newmastername, mcguffin);
 }
 
 void repocontrollerslaveObj::halt(const STASHER_NAMESPACE::haltrequestresults

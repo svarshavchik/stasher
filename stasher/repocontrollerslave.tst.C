@@ -52,7 +52,8 @@ public:
 	}
 };
 
-class handofftest : public repocontrollerbaseObj {
+class handofftest : public repocontrollerbaseObj,
+		    public x::threadmsgdispatcherObj {
 
 public:
 	handofftest()
@@ -69,7 +70,7 @@ public:
 
 	void get_quorum(const STASHER_NAMESPACE::quorumstateref &status_arg,
 			const boolref &processed_arg,
-			const x::ptr<x::obj> &mcguffin_arg)
+			const x::ptr<x::obj> &mcguffin_arg) override
 	{
 		static_cast<STASHER_NAMESPACE::quorumstate &>(*status_arg)=
 			STASHER_NAMESPACE::quorumstate();
@@ -81,8 +82,9 @@ public:
 	x::ptr<x::obj> mcguffin;
 
 	start_controller_ret_t
-	start_controller(const x::ref<x::obj> &mcguffinArg)
-
+	start_controller(const x::threadmsgdispatcherObj::msgqueue_obj
+			 &msgqueue,
+			 const x::ref<x::obj> &mcguffinArg) override
 	{
 		std::lock_guard<std::mutex> lock(mutex);
 
@@ -92,25 +94,24 @@ public:
 		return start_controller_ret_t::create();
 	}
 
-	void handoff(const x::ptr<repocontrollerbaseObj> &next)
+	void handoff(const repocontroller_start_info &next) override
 
 	{
 	}
 
 	void peernewmaster(const repopeerconnectionptr &peerRef,
-			   const nodeclusterstatus &peerStatus)
-
+			   const nodeclusterstatus &peerStatus) override
 	{
 	}
 
 	x::ptr<x::obj>
-	handoff_request(const std::string &peername)
+	handoff_request(const std::string &peername) override
 	{
 		return x::ptr<x::obj>();
 	}
 
 	void halt(const STASHER_NAMESPACE::haltrequestresults &req,
-		  const x::ref<x::obj> &mcguffin)
+		  const x::ref<x::obj> &mcguffin) override
 	{
 	}
 
@@ -175,16 +176,22 @@ static void test1()
 
 	auto slave_ret=({
 
+			auto start_info=repocontroller_start_info::create(slave);
+
 			x::ref<x::obj> mcguffin=x::ref<x::obj>::create();
 
 			weakmcguffin=mcguffin;
 
-			slave->start_controller(mcguffin);
+			slave->start_controller(start_info->new_controller_queue,
+						mcguffin);
 		});
 
 	x::ref<handofftest> handoff(x::ref<handofftest>::create());
 
-	slave->handoff(handoff); // [SLAVEHANDOFF]
+	auto start_info=repocontroller_start_info::create(handoff);
+
+
+	slave->handoff(start_info); // [SLAVEHANDOFF]
 	slave_ret->wait();
 	slave=x::ptr<repocontrollerslaveObj>();
 
@@ -286,7 +293,9 @@ public:
 			      x::ptr<trandistributorObj>(),
 			      tracker, x::ref<dummyhalt>::create()))
 	{
-		slave->start_controller(x::ptr<x::obj>::create());
+		auto start_info=repocontroller_start_info::create(slave);
+		slave->start_controller(start_info->new_controller_queue,
+					x::ptr<x::obj>::create());
 
 		std::cout << "started slave, waiting for a handle"
 			  << std::endl;
@@ -870,7 +879,9 @@ static void test3()
 			 tracker->getTracker(),
 			 x::ref<dummyhalt>::create());
 
-	auto slave_ret = slave->start_controller(x::ptr<x::obj>::create());
+	auto start_info=repocontroller_start_info::create(slave);
+	auto slave_ret = slave->start_controller(start_info->new_controller_queue,
+						 x::ptr<x::obj>::create());
 
 	std::cout << "Started slave controller" << std::endl;
 

@@ -283,10 +283,10 @@ libstasher_client_la_LDFLAGS=-version-info 1
 
 @LIBCXX_AM@
 
-$(call MSGDISPATCHER_GEN,repocontrollermaster.msgs,def decl)
+$(call THREADMSGDISPATCHER_GEN,repocontrollermaster.msgs.H,repocontrollermaster.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,trandistributor.msgs.H,trandistributor.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,repopeerconnection.msgs.H,repopeerconnection.msgs.xml)
-$(call MSGDISPATCHER_GEN,repocontrollerslave.msgs,def decl)
+$(call THREADMSGDISPATCHER_GEN,repocontrollerslave.msgs.H,repocontrollerslave.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,clusterlistenerimpl.msgs.H,clusterlistenerimpl.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,clusterlistener.msgs.H,clusterlistener.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,objrepocopydstthread.msgs.H,objrepocopydstthread.msgs.xml)
@@ -294,7 +294,7 @@ $(call THREADMSGDISPATCHER_GEN,objrepocopysrcthread.msgs.H,objrepocopysrcthread.
 $(call THREADMSGDISPATCHER_GEN,peerstatusannouncer.msgs.H,peerstatusannouncer.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,objwriterthread.msgs.H,objwriterthread.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,fdobjwriterthread.msgs.H,fdobjwriterthread.msgs.xml)
-$(call MSGDISPATCHER_GEN,repocontrollerbasehandoff.msgs,all)
+$(call THREADMSGDISPATCHER_GEN,repocontrollerbasehandoff.msgs.H,repocontrollerbasehandoff.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,batonhandoverthread.msgs.H,batonhandoverthread.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,localconnection.msgs.H,localconnection.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,localprivconnection.msgs.H,localprivconnection.msgs.xml)

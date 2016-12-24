@@ -25,9 +25,14 @@ repocontrollerbasehandoffObj::~repocontrollerbasehandoffObj() noexcept
 {
 }
 
-void repocontrollerbasehandoffObj::dispatch(const handoff_msg &msg)
-
+void repocontrollerbasehandoffObj
+::dispatch_do_handoff(const repocontroller_start_info &next)
 {
-	handoff_next(msg.next, *mcguffin);
+	handoff_next(next, *mcguffin);
 	stop();
+}
+
+void repocontrollerbasehandoffObj::handoff(const repocontroller_start_info &next)
+{
+	do_handoff(next);
 }

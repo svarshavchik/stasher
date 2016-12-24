@@ -41,7 +41,7 @@ repopeerconnectionObj::debugnotimeout("debugnotimeout", false);
 // connection thread for the current master.
 
 class repopeerconnectionObj::baton_slave_commitlock_thread
-	: public x::eventqueuemsgdispatcherObj {
+	: public x::threadmsgdispatcherObj {
 
 	LOG_CLASS_SCOPE;
 
@@ -55,23 +55,20 @@ public:
 
 	x::weakptr<clusterinfoptr > baton_clusterinfo;
 
-	baton_slave_commitlock_thread(const x::eventfd &eventfdArg,
-				      const baton &batonArg,
+	baton_slave_commitlock_thread(const baton &batonArg,
 				      const repopeerconnectionptr
 				      &slavethreadArg,
 				      const clusterinfoptr &clusterArg)
-		: x::eventqueuemsgdispatcherObj(eventfdArg),
-		  batonp(batonArg),
+		: batonp(batonArg),
 		  slavethread(slavethreadArg),
 		  baton_clusterinfo(clusterArg)
 	{
 	}
 
-	~baton_slave_commitlock_thread() noexcept
-	{
-	}
+	~baton_slave_commitlock_thread() noexcept=default;
 
-	void run();
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const x::eventfd &eventfdArg);
 };
 
 LOG_CLASS_INIT(repopeerconnectionObj::baton_slave_commitlock_thread);
@@ -1722,13 +1719,13 @@ void repopeerconnectionObj::deserialized(const baton_master_announce_msg &msg)
 	x::eventfd eventfd=x::eventfd::create();
 
 	auto commitThread=x::ref<baton_slave_commitlock_thread>
-		::create(eventfd, batonp,
+		::create(batonp,
 			 repopeerconnectionptr(this),
 			 clusterinfoptr());
 
 	batonp->set_commitlock(slavemetaptr->dstrepo->commitlock(eventfd));
 
-	tracker->start(commitThread);
+	tracker->start_thread(commitThread, eventfd);
 }
 
 class repopeerconnectionObj::baton_newmaster_installed_cb
@@ -1757,9 +1754,13 @@ public:
 
 // This thread waits for the commit lock to be acquired
 
-void repopeerconnectionObj::baton_slave_commitlock_thread::run()
-
+void repopeerconnectionObj::baton_slave_commitlock_thread
+::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+      const x::eventfd &eventfdArg)
 {
+	msgqueue_auto msgqueue(this, eventfdArg);
+	threadmsgdispatcher_mcguffin=nullptr;
+
 	LOG_INFO(
 		 ({
 			 std::string s;
@@ -1776,7 +1777,7 @@ void repopeerconnectionObj::baton_slave_commitlock_thread::run()
 	{
 		if (!msgqueue->empty())
 		{
-			msgqueue->pop()->dispatch();
+			msgqueue.event();
 			continue;
 		}
 
@@ -1993,7 +1994,6 @@ void repopeerconnectionObj::dispatch_baton_transfer_request(const baton &batonp)
 LOG_FUNC_SCOPE_DECL(repopeerconnectionObj::deserialized::batonisyours, deserialized_batonisyoursLog);
 
 void repopeerconnectionObj::deserialized(const batonisyours &msg)
-
 {
 	LOG_FUNC_SCOPE(deserialized_batonisyoursLog);
 
@@ -2016,14 +2016,13 @@ void repopeerconnectionObj::deserialized(const batonisyours &msg)
 	x::eventfd eventfd=x::eventfd::create();
 
 	auto commitThread=x::ref<baton_slave_commitlock_thread>
-		::create(eventfd, batonp,
+		::create(batonp,
 			 repopeerconnectionptr(this),
 			 getthiscluster());
 
 	batonp->set_commitlock(slavemetaptr->dstrepo->commitlock(eventfd));
 
-	tracker->start(commitThread);
-
+	tracker->start_thread(commitThread, eventfd);
 }
 
 void repopeerconnectionObj::dispatch_batonismine(const baton &batonp)

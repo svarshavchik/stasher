@@ -259,9 +259,9 @@ void repoclusterinfoObj::peernewmaster(const x::ptr<peerstatusObj> &peerRef,
 				       const nodeclusterstatus &peerStatus)
 {
 	{
-		std::lock_guard<std::mutex> lock(objmutex);
+		curmaster_t::lock lock(curmaster);
 
-		curmaster->peernewmaster(peerRef, peerStatus);
+		(*lock)->peernewmaster(peerRef, peerStatus);
 	}
 
 	clusterinfoObj::peernewmaster(peerRef, peerStatus);
@@ -290,12 +290,12 @@ repoclusterinfoObj::debug_inquorum()
 		boolref processed(boolref::create());
 
 		{
-			std::lock_guard<std::mutex> lock(objmutex);
+			curmaster_t::lock lock(curmaster);
 
-			if (curmaster.null())
+			if (lock->null())
 				return status;
 
-			curmaster->get_quorum(status, processed, mcguffin);
+			(*lock)->get_quorum(status, processed, mcguffin);
 		}
 
 		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
@@ -343,7 +343,7 @@ void repoclusterinfoObj::mcguffinDestroyCallbackObj::destroyed()
 
 void repoclusterinfoObj::startmaster(const newnodeclusterstatus &newStatus)
 {
-	repocontrollerbase controller=
+	auto controller_start_info=
 		newStatus.status.master == nodename ?
 		create_master_controller(newStatus.status.master,
 					 newStatus.status.uuid, repo,
@@ -353,25 +353,23 @@ void repoclusterinfoObj::startmaster(const newnodeclusterstatus &newStatus)
 					newStatus.status.uuid, repo,
 					quorum_callback_list);
 
-	LOG_DEBUG("Created controller on " << nodename
-		  << ": " << &*x::ptr<x::obj>(controller));
-
-
 	{
-		std::lock_guard<std::mutex> lock(objmutex);
+		curmaster_t::lock lock(curmaster);
 
-		if (!curmaster.null())
+		if (!lock->null())
 		{
-			LOG_DEBUG("Replaced controller on " << nodename
-				  << ": " << &*x::ptr<x::obj>(curmaster));
-
-			curmaster->handoff(controller);
-			curmaster=controller;
+			(*lock)->handoff(controller_start_info);
+			*lock=controller_start_info->new_controller;
 			return;
 		}
+		*lock=controller_start_info->new_controller;
 	}
 
-	// First one
+	// First controller. Construct a mcguffin that gets handed over
+	// from each controller to the next one. When the mcguffin gets
+	// destroyed it means that the last controller has stopped, and
+	// the mcguffin makes arrangements to invoke this object's stop()
+	// method.
 
 	x::ptr<mcguffinDestroyCallbackObj>  mcguffin_destroy_callback=
 		x::ptr<mcguffinDestroyCallbackObj>::create();
@@ -379,7 +377,7 @@ void repoclusterinfoObj::startmaster(const newnodeclusterstatus &newStatus)
 	mcguffin_destroy_callback->terminator=
 		x::stoppable(x::ref<repoclusterinfoObj>(this));
 
-	x::ptr<x::obj> mcguffin(x::ptr<x::obj>::create());
+	auto mcguffin=x::ref<x::obj>::create();
 
 	mcguffin->ondestroy([mcguffin_destroy_callback]
 			    {
@@ -388,16 +386,14 @@ void repoclusterinfoObj::startmaster(const newnodeclusterstatus &newStatus)
 
 	this->mcguffin=mcguffin;
 
-	this->curmaster=controller;
-
-	controller->start_controller(mcguffin);
+	controller_start_info->start(mcguffin);
 }
 
 x::ptr<repocontrollerbaseObj> repoclusterinfoObj::getCurrentController()
 {
-	std::lock_guard<std::mutex> lock(objmutex);
+	curmaster_t::lock lock(curmaster);
 
-	return curmaster;
+	return *lock;
 }
 
 x::ref<x::obj> repoclusterinfoObj::

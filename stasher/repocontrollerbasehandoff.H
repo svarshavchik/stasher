@@ -6,11 +6,9 @@
 #ifndef repocontrollerbasehandoff_H
 #define repocontrollerbasehandoff_H
 
-#undef libx_autogen_suppress_inner
-
 #include "repocontrollerbase.H"
 #include "stoppablethreadtracker.H"
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 
 //! Implement start_controller() and handoff() using message dispatching.
 
@@ -24,9 +22,9 @@
 //! handoff_next(), the stop().
 
 class repocontrollerbasehandoffObj : public repocontrollerbaseObj,
-				     virtual public x::eventqueuemsgdispatcherObj {
+				     virtual public x::threadmsgdispatcherObj {
 
-#include "repocontrollerbasehandoff.msgs.all.H"
+#include "repocontrollerbasehandoff.msgs.H"
 
 protected:
 
@@ -61,6 +59,11 @@ public:
 
 	//! Destructor
 	~repocontrollerbasehandoffObj() noexcept;
+
+	//! Wrapper for handoff()
+
+	void handoff(const repocontroller_start_info &next)
+		override;
 };
 
 

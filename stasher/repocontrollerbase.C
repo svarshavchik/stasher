@@ -10,6 +10,23 @@
 
 LOG_CLASS_INIT(repocontrollerbaseObj);
 
+repocontroller_start_infoObj
+::repocontroller_start_infoObj(const repocontrollerbase &new_controller)
+	: new_controller(new_controller),
+	  new_controller_queue(x::threadmsgdispatcherObj::msgqueue_obj
+			       ::create(new_controller))
+{
+}
+
+repocontroller_start_infoObj::~repocontroller_start_infoObj() noexcept=default;
+
+void repocontroller_start_infoObj::start(const x::ref<x::obj> &mcguffin)
+{
+	new_controller->start_controller(new_controller_queue, mcguffin);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 repocontrollerbaseObj
 ::repocontrollerbaseObj(const std::string &masternameArg,
 			const x::uuid &masteruuidArg,
@@ -46,8 +63,7 @@ repocontrollerbaseObj::~repocontrollerbaseObj() noexcept
 		if (!next_controller.null())
 		{
 			LOG_WARNING("Starting successor controller");
-			next_controller->start_controller
-				(next_controller_mcguffin);
+			next_controller->start(next_controller_mcguffin);
 		}
 	} catch (const x::exception &e)
 	{
@@ -60,8 +76,8 @@ void repocontrollerbaseObj::started()
 	quorumstatus_mcguffin=nullptr;
 }
 
-void repocontrollerbaseObj::handoff_next(const x::ptr<repocontrollerbaseObj>
-					 &next,
+void repocontrollerbaseObj::handoff_next(const
+					 repocontroller_start_info &next,
 					 const x::ref<x::obj> &mcguffin)
 
 {
