@@ -80,7 +80,7 @@ void batonhandoverthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 				 const clusterinfo &clusterref)
 {
 	msgqueue_auto msgqueue(this);
-	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	threadmsgdispatcher_mcguffin=nullptr;
 
 	baton_destroyed_flag=false;
 	quorum_flag=false;

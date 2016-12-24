@@ -48,7 +48,7 @@ static void test1()
 
 	stt->start(dt, mcguffin); // [PASSTHRU]
 
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 
 	if (wmcguffin.getptr().null()) // [START]
 	{
@@ -67,7 +67,7 @@ static void test1()
 
 	stt->start(dt, mcguffin); // [ONESHOT]
 
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 
 	if (!wmcguffin.getptr().null())
 	{
@@ -83,7 +83,7 @@ static void test1()
 		STASHER_NAMESPACE::stoppableThreadTrackerImpl
 			stti2(STASHER_NAMESPACE::stoppableThreadTrackerImpl::create());
 		stti2->start(dt, mcguffin);
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 
 		if (wmcguffin.getptr().null())
 		{
@@ -112,7 +112,7 @@ static void test2()
 	x::weakptr<x::ptr<x::obj> > wmcguffin;
 
 	stt->start(dt, mcguffin); // [PASSTHRU]
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 
 	if (!wmcguffin.getptr().null()) // [START]
 	{

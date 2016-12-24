@@ -540,7 +540,7 @@ void test4()
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		flag->wait(); // [COMMITPEER]
 	}
 
@@ -575,7 +575,7 @@ void test4()
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		flag->wait(); // [COMMITPEERRACE]
 	}
 
@@ -637,7 +637,7 @@ void test5()
 
 		mcguffin1->ondestroy([flag]{flag->destroyed();});
 
-		mcguffin1=x::ptr<x::obj>();
+		mcguffin1=nullptr;
 		flag->wait(); // [PINGPONG]
 	}
 
@@ -646,7 +646,7 @@ void test5()
 
 		mcguffin2->ondestroy([flag]{flag->destroyed();});
 
-		mcguffin2=x::ptr<x::obj>();
+		mcguffin2=nullptr;
 		flag->wait(); // [PINGPONG]
 	}
 

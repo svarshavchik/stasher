@@ -1267,7 +1267,7 @@ void repopeerconnectionObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 				tobjrepo &distreporef)
 {
 	msgqueue_auto msgqueue(this);
-	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	threadmsgdispatcher_mcguffin=nullptr;
 
 	encrypted=encryptedArg;
 
@@ -1878,7 +1878,7 @@ void repopeerconnectionObj::deserialized(const baton_slave_received_msg &msg)
 	LOG_WARNING("Received slave baton receipt acknowledgement from "
 		    << peername);
 
-	mastermetaptr->baton_announce_mcguffin=x::ptr<x::obj>();
+	mastermetaptr->baton_announce_mcguffin=nullptr;
 }
 
 // Connection thread to the slave receives the handoff release notice.
@@ -1896,7 +1896,7 @@ void repopeerconnectionObj::dispatch_baton_master_release(const std::string &mas
 
 	// Master controller's original mcguffin can be released now.
 
-	mastermetaptr->baton_announce_mcguffin=x::ptr<x::obj>();
+	mastermetaptr->baton_announce_mcguffin=nullptr;
 
 #ifdef DEBUG_BATON_TEST_2_RELEASE_HOOK
 	DEBUG_BATON_TEST_2_RELEASE_HOOK();

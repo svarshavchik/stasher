@@ -92,7 +92,7 @@ void keepitObj::run(x::ptr<x::obj> &start_mcguffin,
 		    const STASHER_NAMESPACE::client &clientInstance)
 {
 	msgqueue_auto q(this);
-	start_mcguffin=x::ptr<x::obj>();
+	start_mcguffin=nullptr;
 
 	x::destroyCallbackFlag::base::guard guard;
 

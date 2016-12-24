@@ -123,7 +123,7 @@ public:
 
 		mcguffin->ondestroy([cb]{cb->destroyed();});
 
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		cb->wait();
 	}
 
@@ -275,7 +275,7 @@ static void test1()
 	conn.sendstatus(mastera);
 
 	{
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		cb->wait();
 		mcguffin=x::ptr<x::obj>::create();
 
@@ -312,7 +312,7 @@ static void test1()
 
 			link->ondestroy([cb]{cb->destroyed();});
 
-			mcguffin=x::ptr<x::obj>(); // [CONTROLLERGONE]
+			mcguffin=nullptr; // [CONTROLLERGONE]
 		}
 		cb->wait();
 	}

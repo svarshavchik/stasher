@@ -126,7 +126,7 @@ void test1()
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		flag->wait(); // [TRANDISTDONE]
 
 		truuid[pass]=stat->uuid; // [TRANDISTNEWUUID]
@@ -172,7 +172,7 @@ void test1()
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		flag->wait();
 	}
 
@@ -429,7 +429,7 @@ void test2()
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 	flag->wait();
 
 	if (stat->status != STASHER_NAMESPACE::req_processed_stat)
@@ -472,7 +472,7 @@ void test2()
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 	flag->wait();
 
 	if (stat->status != STASHER_NAMESPACE::req_rejected_stat)
@@ -588,7 +588,7 @@ void test3()
 
 		flag=x::destroyCallbackFlag::create();
 		mcguffin->ondestroy([flag]{flag->destroyed();});
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		flag->wait();
 
 		if (stat->status != pass ?
@@ -729,7 +729,7 @@ void test4()
 
 	flag=x::destroyCallbackFlag::create();
 	mcguffin->ondestroy([flag]{flag->destroyed();});
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 	std::cout << "Waiting for a fail" << std::endl;
 	flag->wait();
 
@@ -756,7 +756,7 @@ void test4()
 
 	flag=x::destroyCallbackFlag::create();
 	mcguffin->ondestroy([flag]{flag->destroyed();});
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 	std::cout << "Waiting for a fail" << std::endl;
 	flag->wait();
 

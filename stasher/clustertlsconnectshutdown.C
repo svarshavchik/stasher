@@ -74,7 +74,7 @@ void clustertlsconnectshutdownObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguf
 				       const x::gnutls::session &session)
 {
 	msgqueue_auto msgqueue(this);
-	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	threadmsgdispatcher_mcguffin=nullptr;
 
 	struct pollfd pfd[2];
 

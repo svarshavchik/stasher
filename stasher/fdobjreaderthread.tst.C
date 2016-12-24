@@ -115,7 +115,7 @@ public:
 		 const x::fd &fd)
 	{
 		msgqueue_auto msgqueue(this);
-		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		threadmsgdispatcher_mcguffin=nullptr;
 		sync_arg->thread_started();
 
 		x::fd::base::inputiter beg_iter(fd);

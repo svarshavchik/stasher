@@ -92,7 +92,7 @@ void clusterlistenerimplObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 {
 	msgqueue_auto msgqueue(this);
 
-	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	threadmsgdispatcher_mcguffin=nullptr;
 
 	tracker= &trackerArg;
 	distributor= &distributorArg;

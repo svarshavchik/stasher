@@ -285,7 +285,7 @@ void objrepocopydstthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 				  const x::ptr<x::obj> &mcguffin)
 {
 	msgqueue_auto msgqueue(this);
-	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	threadmsgdispatcher_mcguffin=nullptr;
 	sync_arg->thread_started();
 	repo= &repocpy;
 	src=srcArg;

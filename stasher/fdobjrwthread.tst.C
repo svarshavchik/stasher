@@ -110,7 +110,7 @@ public:
 		 const x::ptr<x::obj> &mcguffin)
 	{
 		msgqueue_auto msgqueue(this);
-		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		threadmsgdispatcher_mcguffin=nullptr;
 
 		mainloop(msgqueue, transport, inputiterArg, tracker, mcguffin);
 	}
@@ -141,7 +141,7 @@ void wait_mcguffin(x::ptr<x::obj> &mcguffin) // [RWMCGUFFIN]
 
 	mcguffin->ondestroy([cb]{cb->destroyed();});
 
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 
 	std::cerr << "Waiting for all threads to stop (1 of 2)" << std::endl;
 

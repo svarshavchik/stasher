@@ -86,7 +86,7 @@ void test1()
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		flag->wait();
 		anode.wait();
 		tranuuid=stat->uuid;
@@ -280,7 +280,7 @@ void test3()
 
 		auto flag=x::destroyCallbackFlag::create();
 		mcguffin->ondestroy([flag]{flag->destroyed();});
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		flag->wait();
 	}
 
@@ -299,7 +299,7 @@ void test3()
 
 		auto flag=x::destroyCallbackFlag::create();
 		mcguffin->ondestroy([flag]{flag->destroyed();});
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		flag->wait();
 	}
 

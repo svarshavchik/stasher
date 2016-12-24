@@ -38,7 +38,7 @@ public:
 	{
 		msgqueue_auto msgqueue(this);
 
-		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		threadmsgdispatcher_mcguffin=nullptr;
 		STASHER_NAMESPACE::objwriterthreadObj::run(msgqueue, mcguffin);
 	}
 

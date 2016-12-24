@@ -194,7 +194,7 @@ static void test1()
 	    handoff->mcguffin.null())
 		throw EXCEPTION("[SLAVEHANDOFF] failed (1 of 2)");
 
-	handoff->mcguffin=x::ptr<x::obj>();
+	handoff->mcguffin=nullptr;
 
 	if (!weakmcguffin.getptr().null())
 		throw EXCEPTION("[SLAVEHANDOFF] failed (2 of 2)");
@@ -230,7 +230,7 @@ public:
 
 		x::ptr<x::obj> mcguffin=synchandleArg->dstmcguffin;
 
-		synchandleArg->dstmcguffin=x::ptr<x::obj>();
+		synchandleArg->dstmcguffin=nullptr;
 
 		synchandle=synchandleArg;
 
@@ -475,7 +475,7 @@ static void test2()
 		auto cb=x::destroyCallbackFlag::create();
 
 		mcguffin->ondestroy([cb]{cb->destroyed();});
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		cb->wait();
 	}
 
@@ -648,7 +648,7 @@ public:
 	{
 		msgqueue_auto msgqueue(this);
 
-		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		threadmsgdispatcher_mcguffin=nullptr;
 		mainloop(msgqueue, transport, inputiter, tracker, mcguffin);
 	}
 
@@ -781,7 +781,7 @@ void wait_mcguffin(ref_type &ptr)
 
 	obj->ondestroy([flag]{flag->destroyed();});
 
-	obj=x::ptr<x::obj>();
+	obj=nullptr;
 
 	flag->wait();
 }
@@ -914,7 +914,7 @@ static void test3()
 		auto cb=x::destroyCallbackFlag::create();
 
 		copysrc_mcguffin->ondestroy([cb]{cb->destroyed();});
-		copysrc_mcguffin=x::ptr<x::obj>();
+		copysrc_mcguffin=nullptr;
 		cb->wait();
 	}
 

@@ -356,7 +356,7 @@ public:
 			if (!penreq.null())
 			{
 				penreq->status=req_processed_stat;
-				penreq_mcguffin=x::ptr<x::obj>();
+				penreq_mcguffin=nullptr;
 				penreq=x::ptr<subscribeserverstatusresultsObj>();
 			}
 		}
@@ -728,7 +728,7 @@ void clientObj::implObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 			     const x::ref<x::obj> &mcguffin)
 {
 	msgqueue_auto msgqueue(this);
-        threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+        threadmsgdispatcher_mcguffin=nullptr;
 
 	bool connected=false;
 
@@ -906,7 +906,7 @@ void clientObj::implObj::deserialized(const userhelo &msg)
 		  << helo.limits.maxobjectsize
 		  << " maximum aggregate size per transaction," << std::endl
 		  << helo.limits.maxsubs << " maximum subscriptions");
-	*limits_mcguffin=x::ptr<x::obj>();
+	*limits_mcguffin=nullptr;
 
 	for (auto &subscriber: *server_status_subscribers)
 		subscriber.callback->serverinfo(helo);

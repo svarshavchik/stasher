@@ -201,7 +201,7 @@ class clientBase;
 //!     x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
 //!
 //!     res.second->addOnDestroy(cb);
-//!     res.second=x::ptr<x::obj>();
+//!     res.second=nullptr;
 //!     cb->wait();
 //! \endcode
 //!

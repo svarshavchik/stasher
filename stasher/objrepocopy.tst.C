@@ -214,7 +214,7 @@ static void test1()
 		auto cb=x::ref<x::destroyCallbackFlagObj>::create();
 
 		mcguffin->ondestroy([cb]{cb->destroyed();});
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		std::cout << "Testing [COPYSRCMCGUFFIN]" << std::endl;
 		cb->wait(); // [COPYSRCMCGUFFIN]
 	}

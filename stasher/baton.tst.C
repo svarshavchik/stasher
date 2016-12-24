@@ -512,7 +512,7 @@ void test1()
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 	flag->wait();
 
 	if (stat->status != STASHER_NAMESPACE::req_processed_stat)
@@ -539,7 +539,7 @@ static void put_object(node &a, const std::string &objname,
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 	flag->wait();
 
 	if (stat->status != STASHER_NAMESPACE::req_processed_stat)
@@ -692,7 +692,7 @@ void test3p2(tstnodes &t)
 
 			mcguffin->ondestroy([flag]{flag->destroyed();});
 
-			mcguffin=x::ptr<x::obj>();
+			mcguffin=nullptr;
 			flag->wait(); // [PINGALLPEERS]
 		}
 

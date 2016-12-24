@@ -86,7 +86,7 @@ void fdobjwriterthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 			       const x::ref<x::obj> &mcguffin)
 {
 	msgqueue_auto msgqueue(this);
-	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	threadmsgdispatcher_mcguffin=nullptr;
 
 	transport= &*fd;
 
@@ -216,7 +216,7 @@ void fdobjwriterthreadObj::dispatch_sendfd_proceed(const sendfd_ready &ack)
 
 {
 	LOG_TRACE("Peer is ready for a file descriptor");
-	*sendfd_mcguffin=x::ptr<x::obj>();
+	*sendfd_mcguffin=nullptr;
 }
 
 STASHER_NAMESPACE_END

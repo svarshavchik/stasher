@@ -52,7 +52,7 @@ x::ptr<singlethreadreportObj> threadreportimplObj::debugGetReport()
 
 	mcguffin->ondestroy([cb]{cb->destroyed();});
 
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 
 	cb->wait();
 	return rep;

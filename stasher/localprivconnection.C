@@ -84,7 +84,7 @@ void localprivconnectionObj::deserialized(const getserverstatus_req_t
 
 	x::ptr<x::obj> mcguffin=report->mcguffin;
 
-	report->mcguffin=x::ptr<x::obj>();
+	report->mcguffin=nullptr;
 
 	auto cb=x::ptr<getserverstatusdonecb>
 		::create(x::ptr<localprivconnectionObj>(this), report,
@@ -92,7 +92,7 @@ void localprivconnectionObj::deserialized(const getserverstatus_req_t
 
 	mcguffin->ondestroy([cb]{cb->destroyed();});
 
-	report->mcguffin=x::ptr<x::obj>();
+	report->mcguffin=nullptr;
 }
 
 void localprivconnectionObj

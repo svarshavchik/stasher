@@ -95,7 +95,7 @@ void trandistributorObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 			     const x::ptr<x::obj> &mcguffin)
 {
 	auto &msgqueue=*msgqueue_arg;
-	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	threadmsgdispatcher_mcguffin=nullptr;
 
 	cluster=&*clusterArg;
 	repo=&*repoArg;

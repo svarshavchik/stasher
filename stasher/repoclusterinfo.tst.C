@@ -65,7 +65,7 @@ public:
 	{
 		x::ptr<x::obj> obj(mcguffin);
 
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		--mcguffin_counter;
 
 		next->start_controller(obj);
@@ -250,7 +250,7 @@ static void test1()
 	if (clust->stop_received)
 		throw EXCEPTION("[ABORT] test 1 failed");
 
-	*mycontroller::objrefptr=x::ptr<x::obj>();
+	*mycontroller::objrefptr=nullptr;
 	clust->stop_threads(false);
 
 	if (!clust->stop_received)

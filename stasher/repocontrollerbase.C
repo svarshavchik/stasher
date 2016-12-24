@@ -57,7 +57,7 @@ repocontrollerbaseObj::~repocontrollerbaseObj() noexcept
 
 void repocontrollerbaseObj::started()
 {
-	quorumstatus_mcguffin=x::ptr<x::obj>();
+	quorumstatus_mcguffin=nullptr;
 }
 
 void repocontrollerbaseObj::handoff_next(const x::ptr<repocontrollerbaseObj>
@@ -117,7 +117,7 @@ repocontrollerbaseObj::debug_inquorum()
 	x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
 
 	mcguffin->ondestroy([cb]{cb->destroyed();});
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 
 	cb->wait();
 

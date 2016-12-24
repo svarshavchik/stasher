@@ -114,7 +114,7 @@ public:
 	{
 		msgqueue_auto msgqueue(this);
 
-		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		threadmsgdispatcher_mcguffin=nullptr;
 		clusterlistenerObj::run(msgqueue);
 	}
 
@@ -143,7 +143,7 @@ void testpeerstatusannouncerObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffi
 {
 	msgqueue_auto msgqueue(this);
 
-	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	threadmsgdispatcher_mcguffin=nullptr;
 
 	mainloop(msgqueue, transport, inputiter, tracker, mcguffin);
 }

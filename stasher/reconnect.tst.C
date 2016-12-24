@@ -34,7 +34,7 @@ static void dummytran(std::vector<tstnodes::noderef> &tnodes,
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 		flag->wait();
 	}
 }

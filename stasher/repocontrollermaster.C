@@ -1061,7 +1061,7 @@ repocontrollermasterObj::debugGetPeerConnection(const std::string &peername)
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 
-	mcguffin=x::ptr<x::obj>();
+	mcguffin=nullptr;
 	flag->wait();
 
 	return (rc->peer);
@@ -1219,7 +1219,7 @@ void repocontrollermasterObj::commitJobObj
 					    both_mcguffins+2);
 		}
 
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 
 #ifdef DEBUG_MASTER_TEST_2_HOOK2
 		DEBUG_MASTER_TEST_2_HOOK2();
@@ -1377,7 +1377,7 @@ void repocontrollermasterObj::dispatch(const handoff_request_continue_msg &msg)
 		x::ref<x::obj> mcguffin=commit_mcguffin;
 		mcguffin->ondestroy([callback_lock]
 				    { callback_lock->destroyed();});
-		commit_mcguffin=x::ptr<x::obj>();
+		commit_mcguffin=nullptr;
 		return;
 	}
 
@@ -1619,7 +1619,7 @@ void repocontrollermasterObj::dispatch(const halt_msg &req)
 		::create(req, x::ptr<repocontrollermasterObj>(this));
 	mcguffin->ondestroy([cb]{cb->destroyed();});
 
-	commit_mcguffin=x::ptr<x::obj>();
+	commit_mcguffin=nullptr;
 }
 
 // All commits have been finished.

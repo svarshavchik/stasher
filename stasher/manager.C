@@ -415,7 +415,7 @@ void managerObj::implObj::objectsubscribeRequestObj<info>::destroyed()
 			}
 			break;
 		default:
-			sub.current_mcguffin=x::ptr<x::obj>();
+			sub.current_mcguffin=nullptr;
 			break;
 		}
 

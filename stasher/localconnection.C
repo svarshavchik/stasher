@@ -497,7 +497,7 @@ void localconnectionObj::run(//! threadmsgdispatcher mcguffin,
 			     const x::ptr<x::obj> &mcguffin)
 {
 	msgqueue_auto msgqueue(this);
-	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	threadmsgdispatcher_mcguffin=nullptr;
 
 	try {
 		socket= &transport;

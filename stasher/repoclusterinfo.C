@@ -301,7 +301,7 @@ repoclusterinfoObj::debug_inquorum()
 		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
 
 		mcguffin->ondestroy([cb]{cb->destroyed();});
-		mcguffin=x::ptr<x::obj>();
+		mcguffin=nullptr;
 
 		cb->wait();
 		flag=processed->flag;

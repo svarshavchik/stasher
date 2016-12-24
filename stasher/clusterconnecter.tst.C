@@ -310,7 +310,7 @@ public:
 	{
 		msgqueue_auto msgqueue(this);
 
-		threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+		threadmsgdispatcher_mcguffin=nullptr;
 		sync_arg->thread_started();
 		clusterlistenerObj::run(msgqueue);
 	}

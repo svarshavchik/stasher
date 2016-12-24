@@ -503,7 +503,7 @@ void objrepocopysrcthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 	debug_this=DEBUG_COPYSRCTHREAD();
 #endif
 	msgqueue_auto msgqueue(this);
-	threadmsgdispatcher_mcguffin=x::ptr<x::obj>();
+	threadmsgdispatcher_mcguffin=nullptr;
 	sync_arg->thread_started();
 
 #ifdef DEBUG_THIS
