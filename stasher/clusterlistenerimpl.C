@@ -24,8 +24,6 @@
 #include <x/pwd.H>
 #include <x/grp.H>
 
-#include <x/eventqueuemsgdispatcher.H>
-
 LOG_CLASS_INIT(clusterlistenerimplObj);
 
 x::property::value<size_t>
@@ -218,7 +216,7 @@ void clusterlistenerimplObj::dispatch_connectpeers()
 // --------------------------------------------------------------------------
 
 class clusterlistenerimplObj::retr_credentialsObj
-	: public x::eventqueuemsgdispatcherObj {
+	: public x::threadmsgdispatcherObj {
 
 	LOG_CLASS_SCOPE;
 
@@ -236,7 +234,7 @@ public:
 			    (const x::fd &, const nsmap::clientcred &));
 	~retr_credentialsObj() noexcept;
 
-	void run();
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin);
 };
 
 LOG_CLASS_INIT(clusterlistenerimplObj::retr_credentialsObj);
@@ -262,9 +260,9 @@ start_credentials(const x::fd &sock,
 		  void (clusterlistenerimplObj::*start_connArg)
 		  (const x::fd &, const nsmap::clientcred &))
 {
-	(*tracker)->start(x::ref<retr_credentialsObj>
-			  ::create(sock, clusterlistenerimplptr(this),
-				   start_connArg));
+	(*tracker)->start_thread(x::ref<retr_credentialsObj>
+				 ::create(sock, clusterlistenerimplptr(this),
+					  start_connArg));
 }
 
 void clusterlistenerimplObj::dispatch_start_localconn(const x::fd &sock,
@@ -431,8 +429,12 @@ clusterlistenerimplObj::retr_credentialsObj::~retr_credentialsObj() noexcept
 {
 }
 
-void clusterlistenerimplObj::retr_credentialsObj::run()
+void clusterlistenerimplObj::retr_credentialsObj
+::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 {
+	msgqueue_auto msgqueue(this);
+	threadmsgdispatcher_mcguffin=nullptr;
+
 	try {
 		sock->nonblock(true);
 		sock->recv_credentials(true);
@@ -452,7 +454,7 @@ void clusterlistenerimplObj::retr_credentialsObj::run()
 		while (now < timeout)
 		{
 			while (!msgqueue->empty())
-				msgqueue->pop()->dispatch();
+				msgqueue.event();
 
 			int rc=::poll(pfd, 2, (timeout-now).tv_sec * 1000);
 

@@ -159,15 +159,19 @@ clusterinfoObj::installpeer(const std::string &nodename,
 	return p;
 }
 
-class flusher : public x::eventqueuemsgdispatcherObj {
+class flusher : public x::threadmsgdispatcherObj {
 
 public:
 
-	flusher() {}
-	~flusher() noexcept {}
+	flusher()=default;
+	~flusher() noexcept=default;
 
-	void run(const x::fd &fd)
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const x::fd &fd)
 	{
+		msgqueue_auto msgqueue(this);
+		threadmsgdispatcher_mcguffin=nullptr;
+
 		struct pollfd pfd[2];
 
 		pfd[0].fd=fd->getFd();
@@ -196,7 +200,7 @@ public:
 				poll(pfd, 2, -1);
 				continue;
 			}
-			msgqueue->pop()->dispatch();
+			msgqueue.event();
 		}
 	}
 };
@@ -250,7 +254,7 @@ public:
 		socks.first->nonblock(true);
 		socks.second->nonblock(true);
 
-		tracker->start(flushthr, socks.second);
+		tracker->start_thread(flushthr, socks.second);
 
 		cluster->curpeer.first=false;
 	}

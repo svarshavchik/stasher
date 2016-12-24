@@ -5,12 +5,12 @@
 
 #include "objrepo_config.h"
 #include "stoppablethreadtracker.H"
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 #include <x/options.H>
 
 class dummyThreadObj;
 
-class dummyThreadObj : public x::eventqueuemsgdispatcherObj {
+class dummyThreadObj : public x::threadmsgdispatcherObj {
 	// [STOPPABLE]
 
 public:
@@ -23,11 +23,15 @@ public:
 	{
 	}
 
-	void run(const x::ptr<x::obj> &mcguffin)
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 const x::ptr<x::obj> &mcguffin)
 	{
+		msgqueue_auto msgqueue(this);
+		threadmsgdispatcher_mcguffin=nullptr;
+
 		while (1)
 		{
-			msgqueue->pop()->dispatch();
+			msgqueue.event();
 		}
 	}
 };
@@ -46,7 +50,7 @@ static void test1()
 
 	wmcguffin=mcguffin;
 
-	stt->start(dt, mcguffin); // [PASSTHRU]
+	stt->start_thread(dt, mcguffin); // [PASSTHRU]
 
 	mcguffin=nullptr;
 
@@ -65,7 +69,7 @@ static void test1()
 	mcguffin=x::ptr<x::obj>::create();
 	wmcguffin=mcguffin;
 
-	stt->start(dt, mcguffin); // [ONESHOT]
+	stt->start_thread(dt, mcguffin); // [ONESHOT]
 
 	mcguffin=nullptr;
 
@@ -82,7 +86,7 @@ static void test1()
 	{
 		STASHER_NAMESPACE::stoppableThreadTrackerImpl
 			stti2(STASHER_NAMESPACE::stoppableThreadTrackerImpl::create());
-		stti2->start(dt, mcguffin);
+		stti2->start_thread(dt, mcguffin);
 		mcguffin=nullptr;
 
 		if (wmcguffin.getptr().null())
@@ -111,7 +115,7 @@ static void test2()
 	x::ptr<x::obj> mcguffin=x::ptr<x::obj>::create();
 	x::weakptr<x::ptr<x::obj> > wmcguffin;
 
-	stt->start(dt, mcguffin); // [PASSTHRU]
+	stt->start_thread(dt, mcguffin); // [PASSTHRU]
 	mcguffin=nullptr;
 
 	if (!wmcguffin.getptr().null()) // [START]

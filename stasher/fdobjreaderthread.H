@@ -18,7 +18,7 @@ STASHER_NAMESPACE_START
 //! This template class combines message dispatching with object deserialization
 //! from a file descriptor.
 //!
-//! event(), inherited from x::eventqueuemsgdispatcherObj, sends messages to the
+//! sendevent(), inherited from x::threadmsgdispatcherObj, sends messages to the
 //! thread [MESSAGE].
 //!
 //! The subclass implements dispatch() methods to receive messages that were
