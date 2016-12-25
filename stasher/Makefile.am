@@ -250,7 +250,7 @@ libstasher_la_SOURCES=\
 	repoclusterinfo.C repoclusterinfo.H repoclusterinfofwd.H \
 	repoclusterinfoimpl.C repoclusterinfoimpl.H repoclusterinfoimplfwd.H \
 	repoclusterquorum.C repoclusterquorum.H \
-	repocontrollerbase.C repocontrollerbase.H \
+	repocontrollerbase.C repocontrollerbase.H repocontrollerbasefwd.H \
 	repocontrollerbasehandoff.C repocontrollerbasehandoff.H \
 	repocontrollermaster.C repocontrollermaster.H repocontrollermasterfwd.H \
 	repocontrollermasterslaveconnection.H \
