@@ -87,25 +87,6 @@ public:
 
 	//! Start a thread.
 
-	//! Invoke the thread's run() method using x::run(). If the thread is
-	//! still running by the time this object gets destroyed, it gets
-	//! stopped.
-
-	template<typename ...Args>
-	void run(const x::ref<typename ref_type::obj_type,
-			      typename ref_type::base> &thrArg,
-		 Args && ...args)
-	{
-		std::lock_guard<std::mutex> lock(objmutex);
-
-		x::runthreadbase ret=x::run(thrArg,
-					    std::forward<Args>(args)...);
-
-		threadret=ret;
-
-		thr->install(thrArg, ret);
-	}
-
 	//! Start a thread.
 
 	//! Invoke the thread's run() method using x::start_thread().

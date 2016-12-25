@@ -66,7 +66,8 @@ public:
 	}
 };
 
-class myserver : public clusterconnecterObj {
+class myserver : public clusterconnecterObj,
+		 public x::threadmsgdispatcherObj {
 
 	LOG_CLASS_SCOPE;
 public:
@@ -81,6 +82,23 @@ public:
 		       time_t timestamp,
 		       const x::uuid &connuuid,
 		       const clusterlistener &listener);
+
+	template<typename ...Args>
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 start_thread_sync &sync_arg,
+		 Args && ...args)
+	{
+		msgqueue_auto msgqueue(this);
+		threadmsgdispatcher_mcguffin=nullptr;
+		sync_arg->thread_started();
+
+		clusterconnecterObj::run(std::forward<Args>(args)...);
+	}
+
+	void stop() override
+	{
+		clusterconnecterObj::stop();
+	}
 };
 
 LOG_CLASS_INIT(myserver);
@@ -157,7 +175,7 @@ void myserver::connected(const std::string &peername,
 	}
 }
 
-class myclient : public clusterconnecterObj {
+class myclient : public clusterconnecterObj, public x::threadmsgdispatcherObj {
 
 	LOG_CLASS_SCOPE;
 public:
@@ -177,6 +195,23 @@ public:
 		       time_t timestamp,
 		       const x::uuid &connuuid,
 		       const clusterlistener &listener);
+
+	template<typename ...Args>
+	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
+		 start_thread_sync &sync_arg,
+		 Args && ...args)
+	{
+		msgqueue_auto msgqueue(this);
+		threadmsgdispatcher_mcguffin=nullptr;
+		sync_arg->thread_started();
+
+		clusterconnecterObj::run(std::forward<Args>(args)...);
+	}
+
+	void stop() override
+	{
+		clusterconnecterObj::stop();
+	}
 };
 
 LOG_CLASS_INIT(myclient);
@@ -276,8 +311,8 @@ public:
 		   const tobjrepo &repo,
 		   const x::ptr<trandistributorObj> &distributor)
 	{
-		thread->run(instance,
-			    cluster, listener, fd, repo, distributor);
+		thread->start_thread(instance,
+				     cluster, listener, fd, repo, distributor);
 	}
 
 };
@@ -411,12 +446,12 @@ static void test1(const std::string &nodeadir,
 		l.push_back(std::string(100000, 'B'));
 	}
 
-	client_owner->run(client,
-			  infob,
-			  listenerb.listener,
-			  tstnodes::getnodefullname(0),
-			  tobjrepo::create(nodebdir),
-			  x::ptr<mydistributorObj>::create());
+	client_owner->start_thread(client,
+				   infob,
+				   listenerb.listener,
+				   tstnodes::getnodefullname(0),
+				   tobjrepo::create(nodebdir),
+				   x::ptr<mydistributorObj>::create());
 	client_owner->wait();
 
 	listenera.listener->server.thread->wait();

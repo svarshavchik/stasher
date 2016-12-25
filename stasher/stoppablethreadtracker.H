@@ -96,7 +96,7 @@ class stoppableThreadTrackerImplObj : virtual public x::obj {
 				  //! but allow ongoing thread instantiation.
 				  bool permanently=true);
 
-		//! Start a thread.
+		//! Start a raw thread.
 
 		template<typename objClass, typename baseClass,
 			 typename ...Args>
@@ -127,7 +127,7 @@ class stoppableThreadTrackerImplObj : virtual public x::obj {
 			return ret;
 		}
 
-		//! Start a thread.
+		//! Start a threadmsgdispatcher-derived thread.
 
 		template<typename objClass, typename baseClass,
 			 typename ...Args>
@@ -204,6 +204,8 @@ public:
 		return implref->start(thread, std::forward<Args>(args)...);
 	}
 
+	//! Invoke implObj::start()
+
 	template<typename objClass, typename baseClass,
 		 typename ...Args>
 	auto start_thread(const x::ref<objClass, baseClass> &thread,
@@ -249,13 +251,12 @@ public:
 
 	//! Start a thread, unless we're stopping all the threads.
 
+	//! This is for plain threads.
+
 	template<typename objClass, typename baseClass,
 		 typename ...Args>
 	auto start(const x::ref<objClass, baseClass> &thread,
 		   Args && ...args)
-		-> typename x::runthreadptr<
-			decltype(thread->run(x::invoke_run_param_helper<Args>()
-					     ...))>
 	{
 		stoppableThreadTrackerImplObj::implptr s(implref.getptr());
 
@@ -269,6 +270,8 @@ public:
 	}
 
 	//! Start a thread, unless we're stopping all the threads.
+
+	//! This is for threadmsddispatcher-derived threads.
 
 	template<typename objClass, typename baseClass,
 		 typename ...Args>

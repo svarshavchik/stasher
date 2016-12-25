@@ -46,7 +46,7 @@ STASHER_NAMESPACE_END
 //!
 //! \par Starting the thread
 //!
-//! Trun() takes five parameters: a clusterinfo object, a clusterlistener
+//! run() takes five parameters: a clusterinfo object, a clusterlistener
 //! object, then either a socket or a peer name, the repository object,
 //! and the distributor object.
 //!
