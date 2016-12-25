@@ -196,7 +196,6 @@ libstasher_client_la_SOURCES=\
         stoppablethreadtrackerfwd.H                        \
 	threadmgr.C threadmgr.H                            \
 	threadreportimpl.C threadreportimpl.H              \
-	threadreportimpl2.C threadreportimpl2.H            \
 	userchanged.C userchanged.H                        \
 	usergetuuids.C usergetuuids.H                      \
 	usergetuuidsreply.C usergetuuidsreply.H            \
@@ -300,8 +299,7 @@ $(call THREADMSGDISPATCHER_GEN,localconnection.msgs.H,localconnection.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,localprivconnection.msgs.H,localprivconnection.msgs.xml)
 
 $(call THREADMSGDISPATCHER_GEN,client.msgs.H,client.msgs.xml)
-$(call MSGDISPATCHER_GEN,threadreportimpl.msgs,def decl)
-$(call THREADMSGDISPATCHER_GEN,threadreportimpl2.msgs.H, threadreportimpl2.msgs.xml)
+$(call THREADMSGDISPATCHER_GEN,threadreportimpl.msgs.H, threadreportimpl.msgs.xml)
 
 libstasher_la_LIBADD=libstasher-client.la -lcxxtls -lpthread
 

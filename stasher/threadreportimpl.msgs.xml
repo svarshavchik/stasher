@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2012 Double Precision, Inc.
+Copyright 2012-2016 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -12,14 +12,14 @@ See COPYING for distribution information.
       //! Ask the thread for a report on its status
     </comment>
 
-    <param type="class">
+    <param>
       <comment>
 	//! Thread's status
 
 	//! The thread fills in the report field in this object
 	//!
       </comment>
-      <decl>x::ptr&lt;singlethreadreportObj&gt; <name>rep</name></decl>
+      <decl>const x::ref&lt;singlethreadreportObj&gt; &amp;rep</decl>
     </param>
 
     <param type="class">
@@ -29,7 +29,7 @@ See COPYING for distribution information.
 	//! Once the report field is complete, the thread releases its
 	//! reference on this mcguffin
       </comment>
-      <decl>x::ptr&lt;x::obj&gt; <name>mcguffin</name></decl>
+      <decl>const x::ptr&lt;x::obj&gt; &amp;mcguffin</decl>
     </param>
   </method>
 </class>

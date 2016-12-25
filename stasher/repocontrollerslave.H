@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -12,7 +12,7 @@
 #include "repocontrollerbasehandoff.H"
 #include "repopeerconnectionbase.H"
 #include "boolref.H"
-#include "threadreportimpl2.H"
+#include "threadreportimpl.H"
 #include "trandistreceivedfwd.H"
 #include "objrepocopydstfwd.H"
 #include "tranreceivedfwd.H"
@@ -40,7 +40,7 @@ class trandistributorObj;
 //! return true, and a quorum is announced(). [SLAVEQUORUM]
 
 class repocontrollerslaveObj : public repocontrollerbasehandoffObj,
-			       public STASHER_NAMESPACE::threadreportimpl2Obj {
+			       public STASHER_NAMESPACE::threadreportimplObj {
 
 #include "repocontrollerslave.msgs.H"
 

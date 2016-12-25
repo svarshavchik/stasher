@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -12,8 +12,6 @@
 
 STASHER_NAMESPACE_START
 
-#include "threadreportimpl.msgs.def.H"
-
 threadreportimplObj::threadreportimplObj()
 {
 }
@@ -22,20 +20,21 @@ threadreportimplObj::~threadreportimplObj() noexcept
 {
 }
 
-void threadreportimplObj::dispatch(const report_msg &msg)
+void threadreportimplObj::dispatch_report(const x::ref<singlethreadreportObj> &rep,
+					  const x::ptr<x::obj> &mcguffin)
 {
 	std::ostringstream o;
 
-	msg.rep->name=objname();
+	rep->name=objname();
 
 	try {
-		msg.rep->name=report(o);
+		rep->name=report(o);
 	} catch (const x::exception &e)
 	{
 		o << std::endl << "Exception: " << e << std::endl;
 	}
 
-	msg.rep->report=o.str();
+	rep->report=o.str();
 }
 
 x::ptr<singlethreadreportObj> threadreportimplObj::debugGetReport()

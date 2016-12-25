@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -8,14 +8,14 @@
 
 #include "singlethreadreport.H"
 #include <iostream>
-#include <x/eventqueuemsgdispatcher.H>
+#include <x/threadmsgdispatcher.H>
 #include <x/obj.H>
 
 STASHER_NAMESPACE_START
 //! A superclass for threads that implement a report() on its status
 
 class threadreportimplObj : virtual public x::obj,
-			    virtual public x::eventqueuemsgdispatcherObj {
+			    virtual public x::threadmsgdispatcherObj {
 
 
 public:
@@ -33,7 +33,9 @@ public:
 
 	virtual std::string report(std::ostream &rep)=0;
 
-#include "threadreportimpl.msgs.decl.H"
+	virtual void foo()=0;
+
+#include "threadreportimpl.msgs.H"
 
 };
 

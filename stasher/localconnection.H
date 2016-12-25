@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -20,7 +20,7 @@
 #include "usergetuuids.H"
 #include "usergetuuidsreply.H"
 #include "trandistributor.H"
-#include "threadreportimpl2.H"
+#include "threadreportimpl.H"
 #include "nsview.H"
 #include "sendupdatesreq.H"
 #include <x/semaphore.H>
@@ -35,7 +35,7 @@ class spacemonitorObj;
 //! A local client connection
 
 class localconnectionObj : public STASHER_NAMESPACE::fdobjrwthreadObj,
-			   public STASHER_NAMESPACE::threadreportimpl2Obj,
+			   public STASHER_NAMESPACE::threadreportimplObj,
 			   public clusterstatusnotifierObj,
 			   public clusternotifierObj {
 

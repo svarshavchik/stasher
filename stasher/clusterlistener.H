@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -17,7 +17,7 @@
 #include <x/ymd.H>
 #include <x/property_properties.H>
 
-#include "threadreportimpl2.H"
+#include "threadreportimpl.H"
 #include "clusterlistenerfwd.H"
 
 //! A thread that listens and accept cluster connections
@@ -68,7 +68,7 @@
 
 class clusterlistenerObj : virtual public x::threadmsgdispatcherObj,
 			   public x::runthreadname,
-			   public STASHER_NAMESPACE::threadreportimpl2Obj {
+			   public STASHER_NAMESPACE::threadreportimplObj {
 
 #include "clusterlistener.msgs.H"
 

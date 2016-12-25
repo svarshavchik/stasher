@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -18,7 +18,7 @@
 #include "trandistuuid.H"
 #include "newtran.H"
 #include "transerializer.H"
-#include "threadreportimpl2.H"
+#include "threadreportimpl.H"
 #include "repoclusterinfofwd.H"
 #include "trandistreceivedfwd.H"
 #include "repopeerconnectionfwd.H"
@@ -155,7 +155,7 @@ STASHER_NAMESPACE_END
 class trandistributorObj : virtual public x::threadmsgdispatcherObj,
 			   public x::runthreadname,
 			   public clusternotifierObj,
-			   public STASHER_NAMESPACE::threadreportimpl2Obj {
+			   public STASHER_NAMESPACE::threadreportimplObj {
 
 	//! The logger object
 	LOG_CLASS_SCOPE;

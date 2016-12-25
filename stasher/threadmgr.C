@@ -1,3 +1,8 @@
+/*
+** Copyright 2016 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+
 #include "threadmgr.H"
 
 start_thread_syncObj::start_thread_syncObj()

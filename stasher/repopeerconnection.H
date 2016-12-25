@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -335,7 +335,7 @@ STASHER_NAMESPACE_END
 
 class repopeerconnectionObj: public peerstatusannouncerObj,
 			     public repopeerconnectionbaseObj,
-			     public STASHER_NAMESPACE::threadreportimpl2Obj {
+			     public STASHER_NAMESPACE::threadreportimplObj {
 
 	//! Debugging property
 	static x::property::value<bool> debugnotimeout;

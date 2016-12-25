@@ -2,7 +2,7 @@
 
 <!--
 
-Copyright 2012 Double Precision, Inc.
+Copyright 2012-2016 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->

@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -11,7 +11,7 @@
 #include "repopeerconnectionbase.H"
 #include "batonfwd.H"
 #include "clusterinfo.H"
-#include "threadreportimpl2.H"
+#include "threadreportimpl.H"
 #include "objrepocopydstinterfacefwd.H"
 #include "objrepocopysrcinterfacefwd.H"
 #include "repopeerconnectionfwd.H"
@@ -109,7 +109,7 @@ class trancancelleduuidObj;
 //! slaves.
 
 class repocontrollermasterObj : public repocontrollerbasehandoffObj,
-				public STASHER_NAMESPACE::threadreportimpl2Obj {
+				public STASHER_NAMESPACE::threadreportimplObj {
 
 	//! The logger
 

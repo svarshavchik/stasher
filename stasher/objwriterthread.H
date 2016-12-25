@@ -1,5 +1,5 @@
 /*
-** Copyright 2012 Double Precision, Inc.
+** Copyright 2012-2016 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -18,7 +18,7 @@
 #include <list>
 #include <queue>
 
-#include "threadreportimpl2.H"
+#include "threadreportimpl.H"
 
 STASHER_NAMESPACE_START
 
@@ -63,7 +63,7 @@ STASHER_NAMESPACE_START
 
 class objwriterthreadObj : protected objwriterObj,
 			   public objsinkObj,
-			   public threadreportimpl2Obj,
+			   public threadreportimplObj,
 			   virtual public x::threadmsgdispatcherObj
 {
 public:

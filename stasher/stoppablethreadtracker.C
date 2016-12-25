@@ -7,7 +7,6 @@
 #include "stoppablethreadtracker.H"
 #include "threadreport.H"
 #include "threadreportimpl.H"
-#include "threadreportimpl2.H"
 
 LOG_CLASS_INIT(STASHER_NAMESPACE::stoppableThreadTrackerImplObj);
 
@@ -123,15 +122,6 @@ x::ptr<threadreportObj> stoppableThreadTrackerImplObj::implObj::getReport()
 		if (trio)
 		{
 			trio->report(r, rep->mcguffin);
-			continue;
-		}
-
-		threadreportimpl2Obj *trio2=
-			dynamic_cast<threadreportimpl2Obj *>(&*s);
-
-		if (trio2)
-		{
-			trio2->report(r, rep->mcguffin);
 			continue;
 		}
 
