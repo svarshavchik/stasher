@@ -9,7 +9,7 @@
 #include "repocontrollermaster.H"
 #include "stasher/client.H"
 #include <x/options.H>
-#include <x/destroycallbackflagobj.H>
+#include <x/destroy_callback.H>
 
 #include <mutex>
 #include <condition_variable>

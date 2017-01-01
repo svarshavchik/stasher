@@ -9,7 +9,7 @@
 #include "peerstatus.H"
 #include "repomg.H"
 #include "trancommit.H"
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/threads/timertask.H>
 #include <x/mpobj.H>
 
@@ -341,7 +341,7 @@ void node::wait()
 	// Now, make the destructor callback itself a mcguffin, so when it
 	// goes out of scope, we know that all of these three did.
 
-	x::destroyCallbackFlag dcf=x::destroyCallbackFlag::create();
+	x::destroy_callback dcf=x::destroy_callback::create();
 
 	cb->ondestroy([dcf]{dcf->destroyed();});
 	cb=x::ptr<stop_cb>();

@@ -13,7 +13,7 @@
 #include "stasher/manager.H"
 #include <x/options.H>
 #include <x/fditer.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 class dummyObj : virtual public x::obj {
 
@@ -96,7 +96,7 @@ typedef x::ref<completedObj> completed;
 
 static void test1(tstnodes &t)
 {
-	x::destroyCallbackFlag::base::guard guard;
+	x::destroy_callback::base::guard guard;
 
 	std::vector<tstnodes::noderef> tnodes;
 
@@ -218,7 +218,7 @@ public:
 
 static void test2(tstnodes &t)
 {
-	x::destroyCallbackFlag::base::guard guard;
+	x::destroy_callback::base::guard guard;
 
 	std::vector<tstnodes::noderef> tnodes;
 
@@ -313,7 +313,7 @@ void test_versioned_put_request_fromiter(const STASHER_NAMESPACE::client &cl,
 
 static void test3(tstnodes &t)
 {
-	x::destroyCallbackFlag::base::guard guard;
+	x::destroy_callback::base::guard guard;
 
 	std::vector<tstnodes::noderef> tnodes;
 

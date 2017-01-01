@@ -6,7 +6,7 @@
 #include "objrepo_config.h"
 #include "stasher/versionedput.H"
 #include <x/mpobj.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 STASHER_NAMESPACE_START
 
@@ -19,7 +19,7 @@ putresults versioned_put(const client &cl,
 	retval_t retval(putresults::create());
 
 	{
-		x::destroyCallbackFlag::base::guard guard;
+		x::destroy_callback::base::guard guard;
 
 		x::ref<x::obj> mcguffin=x::ref<x::obj>::create();
 

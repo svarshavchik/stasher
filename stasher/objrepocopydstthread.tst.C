@@ -12,7 +12,7 @@
 #include "objrepocopysrcinterface.H"
 #include "objrepocopydstinterface.H"
 #include <x/threads/run.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/options.H>
 
 static void (*wait_lock_hook)()=0;
@@ -143,7 +143,7 @@ static void test1()
 
 	boolref flag(boolref::create());
 
-	x::destroyCallbackFlag monitor(x::destroyCallbackFlag::create());
+	x::destroy_callback monitor(x::destroy_callback::create());
 
 	auto runthread=({
 			auto mcguffin=x::ref<x::obj>::create();
@@ -323,7 +323,7 @@ static void test3()
 
 	boolref flag(boolref::create());
 
-	x::destroyCallbackFlag monitor(x::destroyCallbackFlag::create());
+	x::destroy_callback monitor(x::destroy_callback::create());
 
 	auto runthread=({
 			auto mcguffin=x::ref<x::obj>::create();
@@ -608,8 +608,8 @@ void test7()
 			// [BATONDSTCOPYRELEASECOMPLETE]
 			test_thread->event(objrepocopy::copycomplete());
 
-			x::destroyCallbackFlag
-				monitor(x::destroyCallbackFlag::create());
+			x::destroy_callback
+				monitor(x::destroy_callback::create());
 
 			batonp->ondestroy([monitor]{monitor->destroyed();});
 
@@ -660,8 +660,8 @@ void test7()
 			// [BATONDSTCOPYRELEASESLAVELIST]
 			test_thread->event(msg);
 
-			x::destroyCallbackFlag
-				monitor(x::destroyCallbackFlag::create());
+			x::destroy_callback
+				monitor(x::destroy_callback::create());
 
 			batonp->ondestroy([monitor]{monitor->destroyed();});
 

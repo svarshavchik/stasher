@@ -10,7 +10,7 @@
 #include "stasher/client.H"
 #include "nslist.H"
 #include "trancommit.H"
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/serialize.H>
 #include <sstream>
 #include <iostream>
@@ -299,7 +299,7 @@ void tstnodes::thesecantbemaster(std::vector<noderef> &nodes,
 
 	stat=nodes[0]->distributor->newtransaction(tr, mcguffin);
 
-	x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
+	x::destroy_callback flag(x::destroy_callback::create());
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 

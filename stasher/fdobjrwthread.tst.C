@@ -8,7 +8,7 @@
 #include "fdobjrwthread.H"
 #include "writtenobj.H"
 #include <x/threads/run.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/options.H>
 
 class testrwthreadObj;
@@ -137,7 +137,7 @@ const char testrwthreadObj::name[]="testthread";
 
 void wait_mcguffin(x::ptr<x::obj> &mcguffin) // [RWMCGUFFIN]
 {
-	x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+	x::destroy_callback cb=x::destroy_callback::create();
 
 	mcguffin->ondestroy([cb]{cb->destroyed();});
 

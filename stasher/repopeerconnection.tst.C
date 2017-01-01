@@ -13,7 +13,7 @@
 #include "baton.H"
 #include <x/serialize.H>
 #include <x/options.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 class testconnection : public repopeerconnectionObj {
 
@@ -119,7 +119,7 @@ public:
 
 		conn->noop(mcguffin);
 
-		x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
+		x::destroy_callback cb=x::destroy_callback::create();
 
 		mcguffin->ondestroy([cb]{cb->destroyed();});
 
@@ -211,7 +211,7 @@ static void test1()
 	// the execution thread discards it, the peerlink object gets destroyed.
 
 	{
-		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+		x::destroy_callback cb(x::destroy_callback::create());
 
 		auto req=repopeerconnectionbaseObj::peerlinkptr
 			::create(dummy, mcguffin,
@@ -242,7 +242,7 @@ static void test1()
 		// the execution thread to discard it, after it takes ownership
 		// of the previous peerlink.
 
-		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+		x::destroy_callback cb(x::destroy_callback::create());
 
 		req=repopeerconnectionbaseObj::peerlinkptr
 			::create(dummy, mcguffin, "nodeb", x::uuid());
@@ -258,7 +258,7 @@ static void test1()
 	// The execution thread should still have a reference to the first
 	// peerlink.
 
-	x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+	x::destroy_callback cb(x::destroy_callback::create());
 
 	{
 		repopeerconnectionbaseObj::peerlinkptr
@@ -288,7 +288,7 @@ static void test1()
 
 		weakreq=req;
 
-		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+		x::destroy_callback cb(x::destroy_callback::create());
 
 		req=repopeerconnectionbaseObj::peerlinkptr
 			::create(dummy, mcguffin, "nodeb", x::uuid());
@@ -302,7 +302,7 @@ static void test1()
 	}
 
 	{
-		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+		x::destroy_callback cb(x::destroy_callback::create());
 
 
 		{
@@ -320,7 +320,7 @@ static void test1()
 	}
 
 	{
-		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+		x::destroy_callback cb(x::destroy_callback::create());
 
 		dummy->ondestroy([cb]{cb->destroyed();});
 
@@ -346,7 +346,7 @@ static void test2()
 	conn.conn->installformermasterbaton(batonp);
 
 	{
-		auto cb=x::destroyCallbackFlag::create();
+		auto cb=x::destroy_callback::create();
 
 		batonp->ondestroy([cb]{cb->destroyed();});
 		batonp=batonptr();
@@ -537,7 +537,7 @@ static void test3()
 
 	x::weakptr<repopeerconnectionbaseObj::peerlinkptr> wreq;
 	{
-		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+		x::destroy_callback cb(x::destroy_callback::create());
 
 		auto req=repopeerconnectionbaseObj::peerlinkptr
 			::create(controller, controller_mcguffin,

@@ -19,7 +19,7 @@
 #include <x/serialize.H>
 #include <x/deserialize.H>
 #include <x/httportmap.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 LOG_CLASS_INIT(clusterconnecterObj);
 
@@ -283,7 +283,7 @@ void clusterconnecterObj::connect(connect_common &common,
 
 			distributor->internal_transaction(install_peers);
 
-			auto destroy_cb(x::destroyCallbackFlag::create());
+			auto destroy_cb(x::destroy_callback::create());
 
 			install_peers->ondestroy([destroy_cb]
 						 {

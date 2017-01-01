@@ -18,7 +18,7 @@
 #include <x/serialize.H>
 #include <x/deserialize.H>
 #include <x/fditer.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 #include <algorithm>
 
@@ -298,7 +298,7 @@ repoclusterinfoObj::debug_inquorum()
 			(*lock)->get_quorum(status, processed, mcguffin);
 		}
 
-		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+		x::destroy_callback cb=x::destroy_callback::create();
 
 		mcguffin->ondestroy([cb]{cb->destroyed();});
 		mcguffin=nullptr;

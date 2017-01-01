@@ -10,7 +10,7 @@
 #include "stasher/puttransaction.H"
 #include <x/options.H>
 #include <x/fditer.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 class dummyObj : virtual public x::obj {
 
@@ -43,7 +43,7 @@ static void test1(tstnodes &t)
 	t.startmastercontrolleron0_int(tnodes);
 	t.startreconnecter(tnodes);
 
-	x::destroyCallbackFlag::base::guard guard;
+	x::destroy_callback::base::guard guard;
 
 	auto client=STASHER_NAMESPACE::client::base::connect(tstnodes::getnodedir(1));
 

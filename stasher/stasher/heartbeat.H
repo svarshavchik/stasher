@@ -12,7 +12,7 @@
 #include <x/ref.H>
 #include <x/ptr.H>
 #include <x/fditer.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/property_properties.H>
 #include <x/threads/timertask.H>
 
@@ -528,7 +528,7 @@ class heartbeatObj : virtual public x::obj {
 	//! \internal
 	//! The destructor makes sure that all pending updates have been fully
 	//! flushed out.
-	x::destroyCallbackFlag::base::guard guard;
+	x::destroy_callback::base::guard guard;
 
 	//! The application update request handler callback.
 

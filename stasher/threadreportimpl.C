@@ -4,7 +4,7 @@
 */
 
 #include "objrepo_config.h"
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 #include "threadreportimpl.H"
 
@@ -46,7 +46,7 @@ x::ptr<singlethreadreportObj> threadreportimplObj::debugGetReport()
 
 	report(rep, mcguffin);
 
-	x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
+	x::destroy_callback cb=x::destroy_callback::create();
 
 	mcguffin->ondestroy([cb]{cb->destroyed();});
 

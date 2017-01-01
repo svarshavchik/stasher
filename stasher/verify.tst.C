@@ -18,7 +18,7 @@
 #include <x/threadmsgdispatcher.H>
 #include <x/uuid.H>
 #include <x/fd.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/mpobj.H>
 
 class dummyObj : virtual public x::obj {
@@ -94,7 +94,7 @@ void keepitObj::run(x::ptr<x::obj> &start_mcguffin,
 	msgqueue_auto q(this);
 	start_mcguffin=nullptr;
 
-	x::destroyCallbackFlag::base::guard guard;
+	x::destroy_callback::base::guard guard;
 
 	auto managerInstance=STASHER_NAMESPACE::manager::create();
 

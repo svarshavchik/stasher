@@ -8,7 +8,7 @@
 #include "node.H"
 #include "stasher/client.H"
 #include <x/options.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <map>
 #include <set>
 #include <chrono>
@@ -281,15 +281,15 @@ static void do_test1(const STASHER_NAMESPACE::client &cl0,
 	if (obj1hiersub->received() != "obj1/2\n") // [USERSUBSCRIBESUFFIX]
 		throw EXCEPTION("Did not received expected update for obj1/2");
 
-	x::destroyCallbackFlag cbroot=x::destroyCallbackFlag::create();
+	x::destroy_callback cbroot=x::destroy_callback::create();
 	rootsub->ondestroy([cbroot]{cbroot->destroyed();});
 	rootsub=x::ptr<test1subscriber>();
 
-	x::destroyCallbackFlag cbobj1=x::destroyCallbackFlag::create();
+	x::destroy_callback cbobj1=x::destroy_callback::create();
 	obj1sub->ondestroy([cbobj1]{cbobj1->destroyed();});
 	obj1sub=x::ptr<test1subscriber>();
 
-	x::destroyCallbackFlag cbobj1hier=x::destroyCallbackFlag::create();
+	x::destroy_callback cbobj1hier=x::destroy_callback::create();
 	obj1hiersub->ondestroy([cbobj1hier]{cbobj1hier->destroyed();});
 	obj1hiersub=x::ptr<test1subscriber>();
 

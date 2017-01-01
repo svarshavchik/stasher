@@ -38,7 +38,7 @@ static void (*debug_distributor_received_hook)(const trandistuuid &,
 #include <algorithm>
 #include <iterator>
 #include <x/options.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 
 class instance : public node {
@@ -122,7 +122,7 @@ void test1()
 			stat=a.distributor->newtransaction(tr, mcguffin);
 		}
 
-		auto flag=x::destroyCallbackFlag::create();
+		auto flag=x::destroy_callback::create();
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -168,7 +168,7 @@ void test1()
 	}
 
 	{
-		auto flag=x::destroyCallbackFlag::create();
+		auto flag=x::destroy_callback::create();
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -425,7 +425,7 @@ void test2()
 		stat=b.distributor->newtransaction(tr, mcguffin);
 	}
 
-	auto flag=x::destroyCallbackFlag::create();
+	auto flag=x::destroy_callback::create();
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -468,7 +468,7 @@ void test2()
 		stat=b.distributor->newtransaction(tr, mcguffin);
 	}
 
-	flag=x::destroyCallbackFlag::create();
+	flag=x::destroy_callback::create();
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -547,13 +547,13 @@ void test3()
 
 	trandistributorObj::transtatus stat;
 	x::ptr<x::obj> mcguffin;
-	x::destroyCallbackFlagptr flag;
+	x::destroy_callbackptr flag;
 
 	for (size_t pass=0; pass<2; ++pass)
 	{
 		std::cerr << "Pass " << pass << ":" << std::endl;
 
-		flag=x::destroyCallbackFlag::create();
+		flag=x::destroy_callback::create();
 
 		repocontrollermasterptr(a.repocluster->getCurrentController())
 			->debugGetPeerConnection(bname)
@@ -586,7 +586,7 @@ void test3()
 
 		std::cerr << "Waiting for transaction to complete" << std::endl;
 
-		flag=x::destroyCallbackFlag::create();
+		flag=x::destroy_callback::create();
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 		mcguffin=nullptr;
 		flag->wait();
@@ -715,7 +715,7 @@ void test4()
 
 	x::ptr<x::obj> mcguffin;
 	trandistributorObj::transtatus stat;
-	x::destroyCallbackFlagptr flag;
+	x::destroy_callbackptr flag;
 
 	mcguffin=x::ptr<x::obj>::create();
 	{
@@ -727,7 +727,7 @@ void test4()
 		stat=b.distributor->newtransaction(tr, mcguffin);
 	}
 
-	flag=x::destroyCallbackFlag::create();
+	flag=x::destroy_callback::create();
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 	mcguffin=nullptr;
 	std::cout << "Waiting for a fail" << std::endl;
@@ -754,7 +754,7 @@ void test4()
 		stat=b.distributor->newtransaction(tr, mcguffin);
 	}
 
-	flag=x::destroyCallbackFlag::create();
+	flag=x::destroy_callback::create();
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 	mcguffin=nullptr;
 	std::cout << "Waiting for a fail" << std::endl;

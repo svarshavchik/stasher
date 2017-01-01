@@ -10,7 +10,7 @@
 #include "clusterstatusnotifier.H"
 #include "boolref.H"
 #include "baton.H"
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/options.H>
 
 class keeptrackofmasterObj : public clusterstatusnotifierObj {
@@ -38,7 +38,7 @@ public:
 	}
 };
 
-static void wait4quorum(const x::destroyCallbackFlag &cb,
+static void wait4quorum(const x::destroy_callback &cb,
 			const boolref &status,
 			std::vector<tstnodes::noderef> &tnodes)
 {
@@ -70,8 +70,8 @@ static void verifymaster(size_t whichone,
 			std::cerr << "Baton exists on node " << i
 				  << ", waiting for it to go away" << std::endl;
 
-			x::destroyCallbackFlag cb=
-				x::destroyCallbackFlag::create();
+			x::destroy_callback cb=
+				x::destroy_callback::create();
 			batonp->ondestroy([cb]{cb->destroyed();});
 			batonp=batonptr();
 			cb->wait();
@@ -103,7 +103,7 @@ static void test1(tstnodes &t, size_t n)
 
 	boolref status=boolref::create();
 
-	x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
+	x::destroy_callback cb=x::destroy_callback::create();
 
 	tnodes[n]->repocluster->
 		master_handover_request(tstnodes::getnodefullname(1), status)
@@ -145,7 +145,7 @@ static void test2(tstnodes &t)
 
 		boolref status=boolref::create();
 
-		x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
+		x::destroy_callback cb=x::destroy_callback::create();
 
 		// [RESIGN]
 		tnodes[0]->repocluster->resign(status)
@@ -161,7 +161,7 @@ static void test2(tstnodes &t)
 
 		boolref status=boolref::create();
 
-		x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
+		x::destroy_callback cb=x::destroy_callback::create();
 
 		tnodes.back()->repocluster->resign(status)
 			->ondestroy([cb]{cb->destroyed();});

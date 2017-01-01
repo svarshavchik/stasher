@@ -536,7 +536,7 @@ void test4()
 			   mcguffin);
 
 	{
-		auto flag=x::destroyCallbackFlag::create();
+		auto flag=x::destroy_callback::create();
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -571,7 +571,7 @@ void test4()
 			   mcguffin);
 
 	{
-		auto flag=x::destroyCallbackFlag::create();
+		auto flag=x::destroy_callback::create();
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -633,7 +633,7 @@ void test5()
 	p->ping(mcguffin2);
 
 	{
-		auto flag=x::destroyCallbackFlag::create();
+		auto flag=x::destroy_callback::create();
 
 		mcguffin1->ondestroy([flag]{flag->destroyed();});
 
@@ -642,7 +642,7 @@ void test5()
 	}
 
 	{
-		auto flag=x::destroyCallbackFlag::create();
+		auto flag=x::destroy_callback::create();
 
 		mcguffin2->ondestroy([flag]{flag->destroyed();});
 

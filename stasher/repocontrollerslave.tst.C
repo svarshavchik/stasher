@@ -38,7 +38,7 @@ static bool test3_flag;
 #include <x/dir.H>
 #include <x/serialize.H>
 #include <x/deserialize.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 #include <algorithm>
 
@@ -481,7 +481,7 @@ static void test2()
 	std::cout << "waiting for source thread" << std::endl;
 
 	{
-		auto cb=x::destroyCallbackFlag::create();
+		auto cb=x::destroy_callback::create();
 
 		mcguffin->ondestroy([cb]{cb->destroyed();});
 		mcguffin=nullptr;
@@ -786,7 +786,7 @@ void wait_mcguffin(ref_type &ptr)
 
 	ptr=ref_type();
 
-	auto flag=x::destroyCallbackFlag::create();
+	auto flag=x::destroy_callback::create();
 
 	obj->ondestroy([flag]{flag->destroyed();});
 
@@ -922,7 +922,7 @@ static void test3()
 		  << std::endl;
 
 	{
-		auto cb=x::destroyCallbackFlag::create();
+		auto cb=x::destroy_callback::create();
 
 		copysrc_mcguffin->ondestroy([cb]{cb->destroyed();});
 		copysrc_mcguffin=nullptr;

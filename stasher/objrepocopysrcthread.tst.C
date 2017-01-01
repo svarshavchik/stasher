@@ -17,10 +17,9 @@ static bool threadmgr_debug_flag_caught=false;
 #include "objuuidenumerator.H"
 #include <sstream>
 #include <iostream>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/serialize.H>
 #include <x/deserialize.H>
-#include <x/destroycallbackflagobj.H>
 #include <x/options.H>
 
 static x::uuid mkobj(const tobjrepo &repo,
@@ -327,7 +326,7 @@ static void test1()
 		}
 
 		{
-			auto cb=x::destroyCallbackFlag::create();
+			auto cb=x::destroy_callback::create();
 
 			mcguffin->ondestroy([cb]{cb->destroyed();});
 			mcguffin=nullptr;
@@ -396,7 +395,7 @@ static void test2()
 					  mcguffin);
 
 		{
-			auto cb=x::destroyCallbackFlag::create();
+			auto cb=x::destroy_callback::create();
 
 			mcguffin->ondestroy([cb]{cb->destroyed();});
 			mcguffin=nullptr;
@@ -578,7 +577,7 @@ void test4()
 
 	complete=src->start(repo, dst, batonp, x::ptr<x::obj>());
 
-	auto cb=x::destroyCallbackFlag::create();
+	auto cb=x::destroy_callback::create();
 
 	batonp->ondestroy([cb]{cb->destroyed();});
 	batonp=batonptr();

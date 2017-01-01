@@ -9,7 +9,7 @@
 
 #include <x/property_value.H>
 #include <x/weakptr.H>
-#include <x/destroycallbackflagwait4.H>
+#include <x/destroy_callback_wait4.H>
 #include <x/threads/timer.H>
 #include <x/mpobj.H>
 
@@ -25,7 +25,7 @@ STASHER_NAMESPACE_START
 //
 // There is a race condition that a timer callback is currently poking its
 // nose in it. Therefore, we'll need to make sure that it's gone, using
-// x::destroyCallbackFlagWait4
+// x::destroy_callback_wait4.
 
 class LIBCXX_HIDDEN managerObj::retmcguffinObj : virtual public obj {
 
@@ -58,7 +58,7 @@ class LIBCXX_HIDDEN managerObj::retmcguffinBaseObj {
 			ptrType p=x::ptrrefBase::objfactory<ptrType>
 				::create(implArg);
 
-			auto cb=x::destroyCallbackFlagWait4::create(implArg);
+			auto cb=x::destroy_callback_wait4::create(implArg);
 
 			p->ondestroy([cb]{cb->destroyed();});
 			return p;

@@ -8,7 +8,7 @@
 #include "node.H"
 #include "repocontrollermaster.H"
 #include <x/options.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 static void dummytran(std::vector<tstnodes::noderef> &tnodes,
 		      const std::string &name)
@@ -30,7 +30,7 @@ static void dummytran(std::vector<tstnodes::noderef> &tnodes,
 
 		stat=tnodes[i]->distributor->newtransaction(tr, mcguffin);
 
-		auto flag=x::destroyCallbackFlag::create();
+		auto flag=x::destroy_callback::create();
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 

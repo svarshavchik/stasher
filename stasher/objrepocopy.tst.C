@@ -16,7 +16,7 @@
 #include <iostream>
 #include <x/serialize.H>
 #include <x/deserialize.H>
-#include <x/destroycallbackflagobj.H>
+#include <x/destroy_callback.H>
 #include <x/options.H>
 
 static x::uuid mkobj(const tobjrepo &repo,
@@ -211,7 +211,7 @@ static void test1()
 		realsrc->start(repo, dst, batonptr(), mcguffin);
 
 	{
-		auto cb=x::ref<x::destroyCallbackFlagObj>::create();
+		auto cb=x::destroy_callback::create();
 
 		mcguffin->ondestroy([cb]{cb->destroyed();});
 		mcguffin=nullptr;

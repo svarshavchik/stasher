@@ -7,7 +7,7 @@
 #include "trancommit.H"
 #include "newtran.H"
 #include <x/options.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 static bool cancel_throw_exception=false;
 
@@ -82,7 +82,7 @@ void test1()
 			stat=anode.distributor->newtransaction(tr, mcguffin);
 		}
 
-		auto flag=x::destroyCallbackFlag::create();
+		auto flag=x::destroy_callback::create();
 
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -278,7 +278,7 @@ void test3()
 
 		stat=anode.distributor->newtransaction(tr, mcguffin);
 
-		auto flag=x::destroyCallbackFlag::create();
+		auto flag=x::destroy_callback::create();
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 		mcguffin=nullptr;
 		flag->wait();
@@ -297,7 +297,7 @@ void test3()
 
 		stat=bnode.distributor->newtransaction(tr, mcguffin);
 
-		auto flag=x::destroyCallbackFlag::create();
+		auto flag=x::destroy_callback::create();
 		mcguffin->ondestroy([flag]{flag->destroyed();});
 		mcguffin=nullptr;
 		flag->wait();

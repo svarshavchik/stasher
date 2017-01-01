@@ -6,7 +6,7 @@
 #include "objrepo_config.h"
 #include "repocontrollerbase.H"
 #include "tobjrepo.H"
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 LOG_CLASS_INIT(repocontrollerbaseObj);
 
@@ -130,7 +130,7 @@ repocontrollerbaseObj::debug_inquorum()
 
 	get_quorum(status, processed, mcguffin);
 
-	x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+	x::destroy_callback cb=x::destroy_callback::create();
 
 	mcguffin->ondestroy([cb]{cb->destroyed();});
 	mcguffin=nullptr;

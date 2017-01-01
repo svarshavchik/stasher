@@ -18,7 +18,7 @@
 #include "trandistreceived.H"
 #include "trandistuuid.H"
 #include "baton.H"
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/threads/run.H>
 #include <x/threadmsgdispatcher.H>
 
@@ -1109,7 +1109,7 @@ repocontrollermasterObj::debugGetPeerConnection(const std::string &peername)
 
 	// Wait for the mcguffin to go away
 
-	auto flag=x::ref<x::destroyCallbackFlagObj>::create();
+	auto flag=x::destroy_callback::create();
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -1247,7 +1247,7 @@ void repocontrollermasterObj::commitJobObj
 	}
 
 	{
-		x::destroyCallbackFlag cb(x::destroyCallbackFlag::create());
+		x::destroy_callback cb(x::destroy_callback::create());
 
 		{
 			x::ptr<x::obj> both_mcguffins[2]=

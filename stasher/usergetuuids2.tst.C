@@ -12,7 +12,7 @@
 #include <x/options.H>
 #include <x/fditer.H>
 #include <x/deserialize.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 
 static std::mutex test1_mutex;
 static std::condition_variable test1_cond;
@@ -256,7 +256,7 @@ static void test3(tstnodes &t)
 			if (ptr.null())
 				continue;
 			keepgoing=true;
-			x::destroyCallbackFlag::base::guard guard;
+			x::destroy_callback::base::guard guard;
 
 			guard(x::ref<x::obj>(ptr));
 

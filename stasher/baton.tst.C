@@ -7,7 +7,7 @@
 #include "tst.nodes.H"
 #include "node.H"
 #include <x/options.H>
-#include <x/destroycallbackflagobj.H>
+#include <x/destroy_callback.H>
 
 static std::mutex debug_ping_mutex;
 static int debug_ping_cnt=0;
@@ -508,7 +508,7 @@ void test1()
 			baton_test1_cond.wait(lock);
 	}
 
-	x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
+	x::destroy_callback flag=x::destroy_callback::create();
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -535,7 +535,7 @@ static void put_object(node &a, const std::string &objname,
 		stat=a.distributor->newtransaction(tr, mcguffin);
 	}
 
-	x::destroyCallbackFlag flag(x::destroyCallbackFlag::create());
+	x::destroy_callback flag=x::destroy_callback::create();
 
 	mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -688,7 +688,7 @@ void test3p2(tstnodes &t)
 		c.repocluster->pingallpeers(mcguffin);
 
 		{
-			auto flag=x::destroyCallbackFlag::create();
+			auto flag=x::destroy_callback::create();
 
 			mcguffin->ondestroy([flag]{flag->destroyed();});
 
@@ -916,7 +916,7 @@ static void test7(tstnodes &t, int n)
 
 	std::string newmaster=tstnodes::getnodefullname(1);
 
-	auto cb=x::destroyCallbackFlag::create();
+	auto cb=x::destroy_callback::create();
 
 	tnodes[n]->repocluster->
 		master_handover_request(newmaster, status)
@@ -953,7 +953,7 @@ static void test8(tstnodes &t, size_t n)
 
 	std::string newmaster="xxxx";
 
-	auto cb=x::destroyCallbackFlag::create();
+	auto cb=x::destroy_callback::create();
 
 	tnodes[0]->repocluster->
 		master_handover_request(newmaster, status)

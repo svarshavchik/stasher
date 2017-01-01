@@ -32,7 +32,7 @@
 #include <x/timerfd.H>
 #include <x/fdtimeoutconfig.H>
 #include <x/netaddr.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/weaklist.H>
 
 STASHER_NAMESPACE_START
@@ -527,7 +527,7 @@ bool clientObj::requestObj::done()
 
 void clientObj::requestObj::wait()
 {
-	x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
+	x::destroy_callback cb=x::destroy_callback::create();
 
 	mcguffin()->ondestroy([cb]{cb->destroyed();});
 
@@ -536,7 +536,7 @@ void clientObj::requestObj::wait()
 
 void clientObj::shutdown()
 {
-	x::destroyCallbackFlag flag=x::destroyCallbackFlag::create();
+	x::destroy_callback flag=x::destroy_callback::create();
 
 	{
 		implptr c=conn();
@@ -561,8 +561,8 @@ void clientObj::disconnect()
 
 	if (!ptr.null())
 	{
-		x::destroyCallbackFlag flag=
-			x::destroyCallbackFlag::create();
+		x::destroy_callback flag=
+			x::destroy_callback::create();
 
 		ptr->stop();
 		ptr->ondestroy([flag]{flag->destroyed();});
@@ -666,7 +666,7 @@ client clientBase::create_handle(const std::string &sockname)
 
 void clientBase::connect_socket(const client &cl)
 {
-	x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
+	x::destroy_callback cb=x::destroy_callback::create();
 
 	connstatus status=({
 			do_connect_t conn=do_connect(cl);
@@ -927,7 +927,7 @@ void clientObj::debugWaitDisconnection()
 
 	if (!p.null())
 	{
-		x::destroyCallbackFlag flag=x::destroyCallbackFlag::create();
+		x::destroy_callback flag=x::destroy_callback::create();
 
 		p->ondestroy([flag]{flag->destroyed();});
 		p=x::ptr<implObj>();
@@ -1093,7 +1093,7 @@ userhelo clientObj::gethelo()
 	x::ptr<implObj::getheloObj> resp=
 		x::ptr<implObj::getheloObj>::create();
 
-	x::destroyCallbackFlag cb=x::destroyCallbackFlag::create();
+	x::destroy_callback cb=x::destroy_callback::create();
 
 	{
 		x::ptr<x::obj> mcguffin=x::ptr<x::obj>::create();

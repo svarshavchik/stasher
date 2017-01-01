@@ -348,7 +348,7 @@ static void test5()
 
 	auto second=two.makeconn(0, "node1");
 
-	auto destroycb=x::destroyCallbackFlag::create();
+	auto destroycb=x::destroy_callback::create();
 
 	first.first->ondestroy([destroycb]{destroycb->destroyed();});
 	second.first->ondestroy([destroycb]{destroycb->destroyed();});
