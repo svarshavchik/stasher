@@ -28,7 +28,7 @@ public:
 	objsinkObj();
 
 	//! Destructor
-	~objsinkObj() noexcept;
+	~objsinkObj();
 
 	//! The object sink
 	virtual void write(const x::ref<writtenobjbaseObj> &object)=0;

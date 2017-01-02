@@ -13,7 +13,7 @@ objsinkredirectObj::objsinkredirectObj(const objsink &sinkArg)
 {
 }
 
-objsinkredirectObj::~objsinkredirectObj() noexcept
+objsinkredirectObj::~objsinkredirectObj()
 {
 }
 

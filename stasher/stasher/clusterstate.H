@@ -32,7 +32,7 @@ public:
 	clusterstate();
 
 	//! Destructor
-	~clusterstate() noexcept;
+	~clusterstate();
 
 	//! Serialization function
 

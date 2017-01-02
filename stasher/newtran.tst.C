@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	~tobjrepoObj() noexcept
+	~tobjrepoObj()
 	{
 	}
 

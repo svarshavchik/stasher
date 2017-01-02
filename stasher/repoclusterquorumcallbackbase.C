@@ -13,7 +13,7 @@ repoclusterquorumcallbackbaseObj
 {
 }
 
-repoclusterquorumcallbackbaseObj::~repoclusterquorumcallbackbaseObj() noexcept
+repoclusterquorumcallbackbaseObj::~repoclusterquorumcallbackbaseObj()
 {
 }
 

@@ -23,7 +23,7 @@ public:
 	std::condition_variable cond;
 
 	test1object() : stat_received(false) {}
-	~test1object() noexcept {}
+	~test1object() {}
 
 	void connection_update(STASHER_NAMESPACE::req_stat_t statArg)
 	{

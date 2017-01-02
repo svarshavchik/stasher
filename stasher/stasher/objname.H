@@ -76,7 +76,7 @@ public:
 	object_name_length_iter() noexcept : n(0) {}
 
 	//! Destructor
-	~object_name_length_iter() noexcept {}
+	~object_name_length_iter() {}
 
 	//! Retrieve count
 	operator size_t() const noexcept { return n; }

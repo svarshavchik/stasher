@@ -93,7 +93,7 @@ public:
 #endif
 	}
 
-	~simdst() noexcept
+	~simdst()
 	{
 	}
 
@@ -305,8 +305,8 @@ static void test1()
 		auto complete=objrepocopysrcthreadObj::copycomplete
 			::create(dst);
 
-		threadrun=x::start_thread(src,
-					  start_thread_sync::create(),
+		threadrun=x::start_threadmsgdispatcher(src,
+					  start_threadmsgdispatcher_sync::create(),
 					  repo, batonptr(), complete, mcguffin);
 
 		// [OBJSERIALIZER]
@@ -389,8 +389,8 @@ static void test2()
 		auto complete=objrepocopysrcthreadObj::copycomplete
 			::create(dst);
 
-		threadrun=x::start_thread(src,
-					  start_thread_sync::create(),
+		threadrun=x::start_threadmsgdispatcher(src,
+					  start_threadmsgdispatcher_sync::create(),
 					  repo, batonptr(), complete,
 					  mcguffin);
 
@@ -476,7 +476,7 @@ public:
 #endif
 	}
 
-	~test4_dst() noexcept
+	~test4_dst()
 	{
 	}
 

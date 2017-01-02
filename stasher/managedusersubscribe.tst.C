@@ -22,7 +22,7 @@ public:
 	std::condition_variable cond;
 
 	test1subscriber() : stat_received(false) {}
-	~test1subscriber() noexcept {}
+	~test1subscriber() {}
 
 	void updated(const std::string &objname, const std::string &suffix)
 	{

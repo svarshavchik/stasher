@@ -95,7 +95,7 @@ public:
 		sendfd_ready() {}
 
 		//! Destructor
-		~sendfd_ready() noexcept {}
+		~sendfd_ready() {}
 
 		//! Convenience constructor for deserialization
 
@@ -128,7 +128,7 @@ public:
 		sendfd_coming(impl_type &dummy) {}
 
 		//! Destructor
-		~sendfd_coming() noexcept {}
+		~sendfd_coming() {}
 
 		//! Serialization function
 
@@ -149,7 +149,7 @@ public:
 			     //! Output buffer size
 			     size_t bufsize=default_bufsize.getValue());
 
-	~fdobjwriterthreadObj() noexcept;
+	~fdobjwriterthreadObj();
 
 	//! The execution thread
 
@@ -175,7 +175,7 @@ public:
 
 	public:
 		getsendfd();
-		~getsendfd() noexcept;
+		~getsendfd();
 
 		//! Return file descriptors to send, or else
 

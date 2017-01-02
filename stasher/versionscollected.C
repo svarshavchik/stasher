@@ -17,7 +17,7 @@ versionscollectedObj::versionscollectedObj()
 {
 }
 
-versionscollectedObj::~versionscollectedObj() noexcept
+versionscollectedObj::~versionscollectedObj()
 {
 }
 

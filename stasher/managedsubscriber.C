@@ -12,7 +12,7 @@ managedsubscriberObj::managedsubscriberObj()
 {
 }
 
-managedsubscriberObj::~managedsubscriberObj() noexcept
+managedsubscriberObj::~managedsubscriberObj()
 {
 }
 

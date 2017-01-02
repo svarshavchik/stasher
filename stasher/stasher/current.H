@@ -86,7 +86,7 @@ public:
 	currentObj() {}
 
 	//! Destructor.
-	~currentObj() noexcept {}
+	~currentObj() {}
 
 	//! New value of the object received from the object repository.
 

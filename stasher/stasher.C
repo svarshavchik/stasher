@@ -53,7 +53,7 @@ class cli {
 
 	public:
 		subscriberHandlerObj() {}
-		~subscriberHandlerObj() noexcept {}
+		~subscriberHandlerObj() {}
 
 		void updated(const std::string &objname,
 			     const std::string &suffix)
@@ -97,7 +97,7 @@ class cli {
 			: nsmapuuid(nsmapuuidArg)
 		{
 		}
-		~currentns() noexcept {}
+		~currentns() {}
 
 		class adddelinfo {
 		public:
@@ -152,7 +152,7 @@ class cli {
 		STASHER_NAMESPACE::nodeinfomap info;
 
 		editclusterObj() {}
-		~editclusterObj() noexcept {}
+		~editclusterObj() {}
 
 		virtual void save(const STASHER_NAMESPACE::client::base::transaction &tran)
 =0;
@@ -381,7 +381,7 @@ class cli::editclusterObj::newcluster : public cli::editclusterObj {
 
 public:
 	newcluster() {}
-	~newcluster() noexcept {}
+	~newcluster() {}
 
 	void save(const STASHER_NAMESPACE::client::base::transaction &tran)
 
@@ -398,7 +398,7 @@ public:
 	updcluster(const x::uuid &olduuidArg)
 		: olduuid(olduuidArg) {}
 
-	~updcluster() noexcept {}
+	~updcluster() {}
 
 	void save(const STASHER_NAMESPACE::client::base::transaction &tran)
 

@@ -46,7 +46,7 @@ public:
 			: status(statusArg) {}
 
 		//! Destructor
-		~newnodeclusterstatus() noexcept {}
+		~newnodeclusterstatus() {}
 	};
 
 	x::ptr<peerstatusObj> getnodepeer(const std::string &nodename)
@@ -59,7 +59,7 @@ public:
 		       const STASHER_NAMESPACE::nodeinfomap &clusterinfo)
 		: nodename(nodenameArg), flag(false) {}
 
-	~clusterinfoObj() noexcept {}
+	~clusterinfoObj() {}
 
 	std::mutex mutex;
 	std::condition_variable cond;
@@ -164,7 +164,7 @@ class flusher : public x::threadmsgdispatcherObj {
 public:
 
 	flusher()=default;
-	~flusher() noexcept=default;
+	~flusher()=default;
 
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 		 const x::fd &fd)
@@ -224,7 +224,7 @@ public:
 		conn->timestamp=timestamp;
 
 		auto runthread=
-			tracker->start_thread(repopeerconnection(conn),
+			tracker->start_threadmsgdispatcher(repopeerconnection(conn),
 					      x::fdbase(socks.second),
 					      x::fd::base::inputiter(socks.second),
 					      tracker->getTracker(),
@@ -254,7 +254,7 @@ public:
 		socks.first->nonblock(true);
 		socks.second->nonblock(true);
 
-		tracker->start_thread(flushthr, socks.second);
+		tracker->start_threadmsgdispatcher(flushthr, socks.second);
 
 		cluster->curpeer.first=false;
 	}

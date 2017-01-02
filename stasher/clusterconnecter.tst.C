@@ -72,7 +72,7 @@ class myserver : public clusterconnecterObj,
 	LOG_CLASS_SCOPE;
 public:
 	myserver();
-	~myserver() noexcept;
+	~myserver();
 
 	void connected(const std::string &peername,
 		       const x::fd &socket,
@@ -85,7 +85,7 @@ public:
 
 	template<typename ...Args>
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
-		 start_thread_sync &sync_arg,
+		 start_threadmsgdispatcher_sync &sync_arg,
 		 Args && ...args)
 	{
 		msgqueue_auto msgqueue(this);
@@ -118,7 +118,7 @@ myserver::myserver()
 {
 }
 
-myserver::~myserver() noexcept
+myserver::~myserver()
 {
 }
 
@@ -180,7 +180,7 @@ class myclient : public clusterconnecterObj, public x::threadmsgdispatcherObj {
 	LOG_CLASS_SCOPE;
 public:
 	myclient();
-	~myclient() noexcept;
+	~myclient();
 
 	std::list<std::string> strings;
 
@@ -198,7 +198,7 @@ public:
 
 	template<typename ...Args>
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
-		 start_thread_sync &sync_arg,
+		 start_threadmsgdispatcher_sync &sync_arg,
 		 Args && ...args)
 	{
 		msgqueue_auto msgqueue(this);
@@ -221,7 +221,7 @@ myclient::myclient()
 {
 }
 
-myclient::~myclient() noexcept
+myclient::~myclient()
 {
 }
 
@@ -311,7 +311,7 @@ public:
 		   const tobjrepo &repo,
 		   const x::ptr<trandistributorObj> &distributor)
 	{
-		thread->start_thread(instance,
+		thread->start_threadmsgdispatcher(instance,
 				     cluster, listener, fd, repo, distributor);
 	}
 
@@ -327,7 +327,7 @@ public:
 
 	mylistener(const std::string &directoryArg,
 		   const clusterinfo &infoArg);
-	~mylistener() noexcept;
+	~mylistener();
 
 	void start_network(const x::fd &sock,
 			   const x::sockaddr &addr);
@@ -341,7 +341,7 @@ public:
 			   const x::sockaddr &addr);
 
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
-		 start_thread_sync &sync_arg)
+		 start_threadmsgdispatcher_sync &sync_arg)
 	{
 		msgqueue_auto msgqueue(this);
 
@@ -365,7 +365,7 @@ public:
 						      infoArg)),
 		  thread(x::ref<threadmgrObj<x::ref<mylistener> > >::create())
 	{
-		thread->start_thread(listener);
+		thread->start_threadmsgdispatcher(listener);
 	}
 };
 
@@ -377,7 +377,7 @@ mylistener::mylistener(const std::string &directoryArg,
 {
 }
 
-mylistener::~mylistener() noexcept
+mylistener::~mylistener()
 {
 }
 
@@ -446,7 +446,7 @@ static void test1(const std::string &nodeadir,
 		l.push_back(std::string(100000, 'B'));
 	}
 
-	client_owner->start_thread(client,
+	client_owner->start_threadmsgdispatcher(client,
 				   infob,
 				   listenerb.listener,
 				   tstnodes::getnodefullname(0),

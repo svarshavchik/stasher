@@ -35,7 +35,7 @@ public:
 		stop_received(false),
 		initial_status_received(false),
 		status_update_received(false) {}
-	~mypeerObj() noexcept {}
+	~mypeerObj() {}
 
 	void stop()
 	{
@@ -77,7 +77,7 @@ public:
 	{
 	}
 
-	~mynotifierObj() noexcept {}
+	~mynotifierObj() {}
 
 	void statusupdated(const nodeclusterstatus &newStatus)
 
@@ -95,7 +95,7 @@ public:
 	int invoked;
 
 	currentclusterObj() : invoked(0) {}
-	~currentclusterObj() noexcept {}
+	~currentclusterObj() {}
 
 	clusterinfoObj::cluster_t curstatus;
 

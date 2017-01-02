@@ -231,7 +231,7 @@ public:
 
 
 	//! Destructor
-	~repocontrollermasterObj() noexcept;
+	~repocontrollermasterObj();
 
 	//! Callback helper for binding source interface when syncinc a slave
 
@@ -245,7 +245,7 @@ public:
 		//! Constructor
 		syncslave_cbObj();
 		//! Destructor
-		~syncslave_cbObj() noexcept;
+		~syncslave_cbObj();
 
 		//! Bind to this source interface
 		virtual void bind(const objrepocopysrcinterfaceptr &src)=0;

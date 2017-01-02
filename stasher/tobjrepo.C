@@ -49,7 +49,7 @@ tobjrepoObj::uuidlock::uuidlock(tobjrepoObj *pArg,
 	}
 }
 
-tobjrepoObj::uuidlock::~uuidlock() noexcept
+tobjrepoObj::uuidlock::~uuidlock()
 {
 	if (p == NULL)
 		return;
@@ -161,7 +161,7 @@ tobjrepoObj::tobjrepoObj(const std::string &directoryArg)
 	}
 }
 
-tobjrepoObj::~tobjrepoObj() noexcept
+tobjrepoObj::~tobjrepoObj()
 {
 }
 

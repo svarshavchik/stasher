@@ -146,7 +146,7 @@ public:
 
 
 	//! Destructor
-	~repoclusterinfoObj() noexcept;
+	~repoclusterinfoObj();
 
 	//! Install an internal updater for cluster configuration
 	void initialize();

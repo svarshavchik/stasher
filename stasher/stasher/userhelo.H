@@ -38,7 +38,7 @@ public:
 
 	//! Destructor
 
-	~userhelo() noexcept;
+	~userhelo();
 
 	//! Serialization function
 

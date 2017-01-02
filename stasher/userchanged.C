@@ -12,7 +12,7 @@ userchanged::userchanged()
 {
 }
 
-userchanged::~userchanged() noexcept
+userchanged::~userchanged()
 {
 }
 

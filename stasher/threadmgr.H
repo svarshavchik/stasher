@@ -16,15 +16,15 @@
 
 //! Additional parameter to threadmgr-managed threads.
 
-//! A \c start_thread_sync parameter gets passed to all threadmgr-managed
+//! A \c start_threadmsgdispatcher_sync parameter gets passed to all threadmgr-managed
 //! threads. After instantiating a msgqueue_auto, and clearing the
 //! x::threadmsgdispatcher's mcguffin, the thread must invoke
 //! thread_started().
 //!
-//! This blocks the execution thread until threadmgr's start_thread() finishes
+//! This blocks the execution thread until threadmgr's start_threadmsgdispatcher() finishes
 //! initializing itself.
 
-class start_thread_syncObj : virtual public x::obj {
+class start_threadmsgdispatcher_syncObj : virtual public x::obj {
 
 public:
 
@@ -32,16 +32,16 @@ public:
 	std::mutex mutex;
 
 	//! Constructor
-	start_thread_syncObj();
+	start_threadmsgdispatcher_syncObj();
 
 	//! Destructor
-	~start_thread_syncObj() noexcept;
+	~start_threadmsgdispatcher_syncObj();
 
 	//! Invoked in the threadmgr-managed execution thread.
 	void thread_started();
 };
 
-typedef x::ref<start_thread_syncObj> start_thread_sync;
+typedef x::ref<start_threadmsgdispatcher_syncObj> start_threadmsgdispatcher_sync;
 
 //! Manage a object run()ing a stoppable thread.
 
@@ -76,7 +76,7 @@ public:
 	threadmgrObj() : thr(thr_t::create()) {}
 
 	//! If the thread is still running stop()it, then wait() for it to stop.
-	~threadmgrObj() noexcept
+	~threadmgrObj()
 	{
 		try {
 			stop();
@@ -89,25 +89,25 @@ public:
 
 	//! Start a thread.
 
-	//! Invoke the thread's run() method using x::start_thread().
+	//! Invoke the thread's run() method using x::start_threadmsgdispatcher().
 	//! If the thread is still running by the time this object gets
 	//! destroyed, it gets stopped.
 
 	template<typename ...Args>
-	void start_thread(const x::ref<typename ref_type::obj_type,
+	void start_threadmsgdispatcher(const x::ref<typename ref_type::obj_type,
 			  typename ref_type::base> &thrArg,
 			  Args && ...args)
 	{
-		// Create an additional start_thread_sync parameter that the
+		// Create an additional start_threadmsgdispatcher_sync parameter that the
 		// thread gets. The thread calls its thread_started() method
 		// that attempts to acquires its mutex. We acquires the
 		// mutex first, here. This blocks the execution thread until
 		// we finish initializing threadret.
 
-		auto sync_arg=start_thread_sync::create();
+		auto sync_arg=start_threadmsgdispatcher_sync::create();
 		std::unique_lock<std::mutex> sync_lock{sync_arg->mutex};
 
-		x::runthreadbase ret=x::start_thread(thrArg,
+		x::runthreadbase ret=x::start_threadmsgdispatcher(thrArg,
 						     sync_arg,
 						     std::forward<Args>(args)...);
 #ifdef THREADMGR_DEBUG_HOOK

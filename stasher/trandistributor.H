@@ -198,7 +198,7 @@ public:
 		transtatusObj();
 
 		//! Destructor
-		~transtatusObj() noexcept;
+		~transtatusObj();
 
 		//! Transaction status
 		STASHER_NAMESPACE::req_stat_t status;
@@ -251,13 +251,13 @@ public:
 	trandistributorObj();
 
 	//! Destructor
-	~trandistributorObj() noexcept;
+	~trandistributorObj();
 
 	void foo() override {}
 
 	//! The execution thread
 
-	void run(//! start_thread()'s mcguffin
+	void run(//! start_threadmsgdispatcher()'s mcguffin
 		 x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 
 		 //! My message queue, constructed in advance.
@@ -308,7 +308,7 @@ public:
 
 	public:
 		internalTransactionObj() {}
-		~internalTransactionObj() noexcept {}
+		~internalTransactionObj() {}
 
 		virtual void doit()=0;
 	};

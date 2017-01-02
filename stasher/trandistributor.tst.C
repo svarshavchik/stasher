@@ -24,7 +24,7 @@ class dummyhalt : public x::stoppableObj {
 
 public:
 	dummyhalt()=default;
-	~dummyhalt() noexcept=default;
+	~dummyhalt()=default;
 
 	void stop() override
 	{
@@ -45,7 +45,7 @@ public:
 	{
 	}
 
-	~myclusterinfo() noexcept {}
+	~myclusterinfo() {}
 
 	repocontroller_start_info
 	create_master_controller(const std::string &mastername,
@@ -91,7 +91,7 @@ class mydistributor : public trandistributorObj {
 
 public:
 	mydistributor() : flag(false) {}
-	~mydistributor() noexcept {}
+	~mydistributor() {}
 
 	bool flag;
 	std::mutex mutex;
@@ -124,7 +124,7 @@ public:
 	std::set<x::uuid> uuids;
 
 	enumeratecb() {}
-	~enumeratecb() noexcept {}
+	~enumeratecb() {}
 
 	void operator()(const x::uuid &uuid,
 			const dist_received_status_t &status)
@@ -139,7 +139,7 @@ class mytranreceivedObj : public trandistreceivedObj {
 
 public:
 	mytranreceivedObj() {}
-	~mytranreceivedObj() noexcept {}
+	~mytranreceivedObj() {}
 
 	std::mutex mutex;
 	std::condition_variable cond;
@@ -223,7 +223,7 @@ static void test1() // [PURGETRANSOURCEUNKNOWN].
 		node3tran=tr->finalize();
 	}
 
-	tracker->start_thread(distributor,
+	tracker->start_threadmsgdispatcher(distributor,
 			      msgqueue,
 			      cluster, repo, x::ptr<x::obj>());
 	distributor->wait();

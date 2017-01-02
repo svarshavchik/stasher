@@ -96,7 +96,7 @@ public:
 
 
 	nodeinfo() noexcept;
-	~nodeinfo() noexcept;
+	~nodeinfo();
 
 	//! Comparison function
 

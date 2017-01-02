@@ -10,7 +10,7 @@ tranuuidObj::tranuuidObj()
 {
 }
 
-tranuuidObj::~tranuuidObj() noexcept
+tranuuidObj::~tranuuidObj()
 {
 }
 

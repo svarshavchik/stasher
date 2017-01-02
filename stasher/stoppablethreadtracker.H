@@ -25,7 +25,7 @@ class threadreportObj;
 
 //! Stop stoppable threads upon request.
 
-//! start_thread() saves a weak reference to the given thread, and invokes
+//! start_threadmsgdispatcher() saves a weak reference to the given thread, and invokes
 //! the thread object's start() method, to get it going. [START]
 //!
 //! The thread object must also be derived from x::stoppableObj. [STOPPABLE]
@@ -33,7 +33,7 @@ class threadreportObj;
 //! stop_threads() invokes stop() on all saved thread objects, then
 //! waits for each thread to stop, before returning. [STOPPING]
 //!
-//! Invoking start_thread() after stop_threads() was already invoked does
+//! Invoking start_threadmsgdispatcher() after stop_threads() was already invoked does
 //! nothing, the thread object's start() method does not get invoked.
 //! [ONESHOT]
 //!
@@ -84,7 +84,7 @@ class stoppableThreadTrackerImplObj : virtual public x::obj {
 		implObj();
 
 		//! Destructor
-		~implObj() noexcept;
+		~implObj();
 
 		//! Stop active threads.
 
@@ -131,11 +131,11 @@ class stoppableThreadTrackerImplObj : virtual public x::obj {
 
 		template<typename objClass, typename baseClass,
 			 typename ...Args>
-		auto start_thread(const x::ref<objClass, baseClass> &thread,
+		auto start_threadmsgdispatcher(const x::ref<objClass, baseClass> &thread,
 				  Args && ...args)
 		{
 			typedef typename x::refptr_traits<
-				decltype(x::start_thread(thread,
+				decltype(x::start_threadmsgdispatcher(thread,
 							 std::forward<Args>
 							 (args)...))>
 				::ptr_t returnedptr_t;
@@ -149,7 +149,7 @@ class stoppableThreadTrackerImplObj : virtual public x::obj {
 			if (stopping)
 				return returnedptr_t();
 
-			auto ret=x::start_thread(thread,
+			auto ret=x::start_threadmsgdispatcher(thread,
 						 std::forward<Args>(args)...);
 
 			thread_list->insert(std::make_pair(ret->get_id(),
@@ -181,7 +181,7 @@ public:
 	stoppableThreadTrackerImplObj();
 
 	//! Destructor
-	~stoppableThreadTrackerImplObj() noexcept;
+	~stoppableThreadTrackerImplObj();
 
 	//! Invoke implObj::stop_threads()
 
@@ -208,10 +208,10 @@ public:
 
 	template<typename objClass, typename baseClass,
 		 typename ...Args>
-	auto start_thread(const x::ref<objClass, baseClass> &thread,
+	auto start_threadmsgdispatcher(const x::ref<objClass, baseClass> &thread,
 			  Args && ...args)
 	{
-		return implref->start_thread(thread, std::forward<Args>(args)...);
+		return implref->start_threadmsgdispatcher(thread, std::forward<Args>(args)...);
 	}
 
 	//! Return a reference to a tracker object that uses implObj
@@ -221,18 +221,18 @@ public:
 
 //! A facade for a stoppableThreadTrackerImplObj that uses a weak reference
 
-//! This facade implements just start_thread() through a weak reference to
+//! This facade implements just start_threadmsgdispatcher() through a weak reference to
 //! the stoppableThreadTrackerImplObj. A reference
 //! to this object gets returned by stoppableThreadTrackerImplObj::getTracker().
 //! This reference may be freely passed around wherever threads
 //! need to be started, without impacting the reference count of the
 //! actual thread tracker, the stoppableThreadTrackerImpl instance.
 //!
-//! start_thread() passes through to the underlying stoppableThreadTrackerImpl
+//! start_threadmsgdispatcher() passes through to the underlying stoppableThreadTrackerImpl
 //! object through a weak pointer [PASSTHRU].
 //!
 //! When that object goes out of scope, and the weak pointer nulls out,
-//! calls to start_thread() become no-ops. [NOOP]
+//! calls to start_threadmsgdispatcher() become no-ops. [NOOP]
 
 class stoppableThreadTrackerObj : virtual public x::obj {
 
@@ -247,7 +247,7 @@ public:
 
 
 	//! Destructor
-	~stoppableThreadTrackerObj() noexcept;
+	~stoppableThreadTrackerObj();
 
 	//! Start a thread, unless we're stopping all the threads.
 
@@ -275,16 +275,16 @@ public:
 
 	template<typename objClass, typename baseClass,
 		 typename ...Args>
-	auto start_thread(const x::ref<objClass, baseClass> &thread,
+	auto start_threadmsgdispatcher(const x::ref<objClass, baseClass> &thread,
 			  Args && ...args)
 	{
 		stoppableThreadTrackerImplObj::implptr s(implref.getptr());
 
 		if (!s.null())
-			return s->start_thread(thread,
+			return s->start_threadmsgdispatcher(thread,
 					       std::forward<Args>(args)...);
 
-		return decltype(s->start_thread(thread,
+		return decltype(s->start_threadmsgdispatcher(thread,
 						std::forward<Args>(args)...))();
 	}
 

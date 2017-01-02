@@ -23,7 +23,7 @@ public:
 	STASHER_NAMESPACE::clusterstate status;
 
 	test1_cb(const std::string &dirArg) : dir(dirArg), received(false) {}
-	~test1_cb() noexcept {}
+	~test1_cb() {}
 
 	void state(const STASHER_NAMESPACE::clusterstate &inquorum)
 	{

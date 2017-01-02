@@ -101,7 +101,7 @@ public:
 		}
 
 		//! Destructor
-		~ser() noexcept
+		~ser()
 		{
 		}
 	};
@@ -116,7 +116,7 @@ public:
 	}
 
 	//! Destructor
-	~transerializer() noexcept
+	~transerializer()
 	{
 	}
 

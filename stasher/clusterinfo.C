@@ -20,7 +20,7 @@ clusterinfoObj::newnodeclusterstatus
 }
 
 clusterinfoObj::newnodeclusterstatus
-::~newnodeclusterstatus() noexcept
+::~newnodeclusterstatus()
 {
 }
 
@@ -44,7 +44,7 @@ clusterinfoObj::clusterinfoObj(const std::string &nodenameArg,
 	*thisnodestatus_t::writelock(thisnodestatus)=s;
 }
 
-clusterinfoObj::~clusterinfoObj() noexcept
+clusterinfoObj::~clusterinfoObj()
 {
 }
 
@@ -186,7 +186,7 @@ public:
 
 	destroycb(const clusterinfo &clusterArg,
 		  const std::string &nameArg) noexcept;
-	~destroycb() noexcept;
+	~destroycb();
 
 	void destroyed() noexcept;
 };
@@ -254,7 +254,7 @@ public:
 	{
 	}
 
-	~updateThread() noexcept {}
+	~updateThread() {}
 
 	void stop() {}
 
@@ -296,7 +296,7 @@ clusterinfoObj::destroycb::destroycb(const clusterinfo &clusterArg,
 {
 }
 
-clusterinfoObj::destroycb::~destroycb() noexcept
+clusterinfoObj::destroycb::~destroycb()
 {
 }
 
@@ -369,7 +369,7 @@ class LIBCXX_HIDDEN initial_flagObj : virtual public x::obj {
 	x::mpobj<bool> flag;
 
 	initial_flagObj() : flag(true) {}
-	~initial_flagObj() noexcept {}
+	~initial_flagObj() {}
 };
 
 void clusterinfoObj::installnotifyclusterstatus(const clusterstatusnotifier

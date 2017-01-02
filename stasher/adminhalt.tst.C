@@ -59,7 +59,7 @@ public:
 	std::string message;
 
 	haltnodeThread() {}
-	~haltnodeThread() noexcept {}
+	~haltnodeThread() {}
 
 	void run(const STASHER_NAMESPACE::client &start_arg)
 	{

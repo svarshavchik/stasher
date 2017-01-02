@@ -71,7 +71,7 @@ public:
 	fdobjreaderthreadObj();
 
 	//! Destructor
-	~fdobjreaderthreadObj() noexcept;
+	~fdobjreaderthreadObj();
 
 private:
 

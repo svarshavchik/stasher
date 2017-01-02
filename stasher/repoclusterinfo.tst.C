@@ -36,7 +36,7 @@ public:
 		++total_instance_counter;
 	}
 
-	~mycontroller() noexcept
+	~mycontroller()
 	{
 		--instance_counter;
 	}
@@ -115,7 +115,7 @@ public:
 	{
 	}
 
-	~myrepoclusterinfoObj() noexcept
+	~myrepoclusterinfoObj()
 	{
 	}
 
@@ -175,7 +175,7 @@ public:
 					spacemonitor::create(x::df::create(".")
 							     )) {}
 
-	~dummypeerstatusObj() noexcept {}
+	~dummypeerstatusObj() {}
 };
 
 typedef x::ptr<dummypeerstatusObj> dummypeerstatus;
@@ -270,7 +270,7 @@ public:
 	std::condition_variable cond;
 
 	test2cb() : flag(false) {}
-	~test2cb() noexcept {}
+	~test2cb() {}
 
 	void quorum(const STASHER_NAMESPACE::quorumstate &state)
 
@@ -311,7 +311,7 @@ class test3statusObj : public peerstatusObj::adapterObj {
 public:
 	test3statusObj(const std::string &peername)
 		: peerstatusObj::adapterObj(peername) {}
-	~test3statusObj() noexcept {}
+	~test3statusObj() {}
 
 	using peerstatusObj::peerstatusupdate;
 	using peerstatusObj::install;

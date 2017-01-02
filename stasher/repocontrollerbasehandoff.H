@@ -58,7 +58,7 @@ public:
 
 
 	//! Destructor
-	~repocontrollerbasehandoffObj() noexcept;
+	~repocontrollerbasehandoffObj();
 
 	//! Wrapper for handoff()
 

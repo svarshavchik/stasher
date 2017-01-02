@@ -42,6 +42,6 @@ trancancellerObj::trancancellerObj(const x::ptr<trandistributorObj>
 {
 }
 
-trancancellerObj::~trancancellerObj() noexcept
+trancancellerObj::~trancancellerObj()
 {
 }

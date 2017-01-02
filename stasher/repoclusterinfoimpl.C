@@ -18,7 +18,7 @@ repoclusterinfoimplObj::haltstopObj::haltstopObj(const x::stoppableptr &me)
 {
 }
 
-repoclusterinfoimplObj::haltstopObj::~haltstopObj() noexcept
+repoclusterinfoimplObj::haltstopObj::~haltstopObj()
 {
 }
 
@@ -47,7 +47,7 @@ repoclusterinfoimplObj::repoclusterinfoimplObj(const std::string &nodename,
 {
 }
 
-repoclusterinfoimplObj::~repoclusterinfoimplObj() noexcept
+repoclusterinfoimplObj::~repoclusterinfoimplObj()
 {
 }
 

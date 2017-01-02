@@ -19,7 +19,7 @@ quorumstate::quorumstate(bool fullArg,
 {
 }
 
-quorumstate::~quorumstate() noexcept
+quorumstate::~quorumstate()
 {
 }
 

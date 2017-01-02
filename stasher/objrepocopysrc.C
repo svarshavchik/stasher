@@ -14,7 +14,7 @@ objrepocopysrcObj::objrepocopysrcObj()
 {
 }
 
-objrepocopysrcObj::~objrepocopysrcObj() noexcept
+objrepocopysrcObj::~objrepocopysrcObj()
 {
 	stop();
 	wait();
@@ -32,7 +32,7 @@ objrepocopysrcObj::start(const tobjrepo &repoArg,
 
 	auto thr=x::ref<objrepocopysrcthreadObj>::create("objrepocopydst");
 
-	this->start_thread(thr, repoArg, batonArg, cc, mcguffin);
+	this->start_threadmsgdispatcher(thr, repoArg, batonArg, cc, mcguffin);
 
 	return cc;
 }

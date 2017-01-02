@@ -35,7 +35,7 @@ public:
 	repocontroller_start_infoObj(const repocontrollerbase &new_controller);
 
 	//! Destructor
-	~repocontroller_start_infoObj() noexcept;
+	~repocontroller_start_infoObj();
 
 	//! Start the new controllers
 	void start(const x::ref<x::obj> &mcguffin);

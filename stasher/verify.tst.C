@@ -36,7 +36,7 @@ public:
 		std::getline(*fdArg->getistream(), name);
 	}
 
-	~dummyObj() noexcept
+	~dummyObj()
 	{
 	}
 };
@@ -52,7 +52,7 @@ public:
 	x::mpcobj<int> counter;
 
 	counterObj() : counter(0) {}
-	~counterObj() noexcept {}
+	~counterObj() {}
 };
 
 class keepitObj : public x::threadmsgdispatcherObj {
@@ -77,7 +77,7 @@ public:
 	{
 	}
 
-	~keepitObj() noexcept
+	~keepitObj()
 	{
 	}
 
@@ -212,9 +212,9 @@ void test1(tstnodes &t)
 		secondone=x::ref<keepitObj>::create("object", "name2", counter),
 		thirdone=x::ref<keepitObj>::create("object", "name3", counter);
 
-	auto thread1=x::start_thread(firstone, cl0);
-	auto thread2=x::start_thread(secondone, cl1);
-	auto thread3=x::start_thread(thirdone, cl2);
+	auto thread1=x::start_threadmsgdispatcher(firstone, cl0);
+	auto thread2=x::start_threadmsgdispatcher(secondone, cl1);
+	auto thread3=x::start_threadmsgdispatcher(thirdone, cl2);
 
 	std::cout << "Waiting for 100 completed updates..." << std::endl;
 

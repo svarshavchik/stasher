@@ -35,7 +35,7 @@ public:
 	versionscollectedObj();
 
 	//! Destructor
-	~versionscollectedObj() noexcept;
+	~versionscollectedObj();
 
 	//! Collect a version mcguffin from a versioned object.
 

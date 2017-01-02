@@ -102,7 +102,7 @@ public:
 
 	//! Constructor
 	peerstatusObj(const std::string &peernameArg);
-	~peerstatusObj() noexcept;
+	~peerstatusObj();
 
 	class status;
 
@@ -146,7 +146,7 @@ public:
 	}
 
 	//! Destructor
-	~status() noexcept
+	~status()
 	{
 	}
 
@@ -177,7 +177,7 @@ public:
 	adapterObj(const std::string &peernameArg);
 
 	//! Destructor
-	~adapterObj() noexcept;
+	~adapterObj();
 
 	void statusupdated(const nodeclusterstatus &newStatus) override;
 

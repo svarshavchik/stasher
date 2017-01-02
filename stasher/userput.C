@@ -81,7 +81,7 @@ userput::deserializedObj::deserializedObj(const x::ptr<puttransactionObj>
 	next_object();
 }
 
-userput::deserializedObj::~deserializedObj() noexcept
+userput::deserializedObj::~deserializedObj()
 {
 }
 

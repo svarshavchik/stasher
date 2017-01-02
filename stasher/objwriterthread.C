@@ -15,7 +15,7 @@ class objwriterthreadObj::requestObj : virtual public x::obj {
 
 public:
 	requestObj();
-	~requestObj() noexcept;
+	~requestObj();
 
 	virtual void serialize(objwriterObj &writer)
 =0;
@@ -25,7 +25,7 @@ objwriterthreadObj::requestObj::requestObj()
 {
 }
 
-objwriterthreadObj::requestObj::~requestObj() noexcept
+objwriterthreadObj::requestObj::~requestObj()
 {
 }
 
@@ -36,7 +36,7 @@ class objwriterthreadObj::writeRequestObj : public requestObj {
 public:
 	writeRequestObj(const x::ptr<writtenobjbaseObj> &objectArg)
 ;
-	~writeRequestObj() noexcept;
+	~writeRequestObj();
 
 	void serialize(objwriterObj &writer);
 };
@@ -47,7 +47,7 @@ objwriterthreadObj::writeRequestObj
 {
 }
 
-objwriterthreadObj::writeRequestObj::~writeRequestObj() noexcept
+objwriterthreadObj::writeRequestObj::~writeRequestObj()
 {
 }
 
@@ -61,7 +61,7 @@ class objwriterthreadObj::stopRequestObj : public requestObj {
 
 public:
 	stopRequestObj();
-	~stopRequestObj() noexcept;
+	~stopRequestObj();
 
 	void serialize(objwriterObj &writer);
 };
@@ -70,7 +70,7 @@ objwriterthreadObj::stopRequestObj::stopRequestObj()
 {
 }
 
-objwriterthreadObj::stopRequestObj::~stopRequestObj() noexcept
+objwriterthreadObj::stopRequestObj::~stopRequestObj()
 {
 }
 
@@ -78,14 +78,14 @@ class objwriterthreadObj::closeexception : public x::exception {
 
 public:
 	closeexception() noexcept;
-	~closeexception() noexcept;
+	~closeexception();
 };
 
 objwriterthreadObj::closeexception::closeexception() noexcept
 {
 }
 
-objwriterthreadObj::closeexception::~closeexception() noexcept
+objwriterthreadObj::closeexception::~closeexception()
 {
 }
 
@@ -108,7 +108,7 @@ std::string objwriterthreadObj::getName() const noexcept
 	return name;
 }
 
-objwriterthreadObj::~objwriterthreadObj() noexcept
+objwriterthreadObj::~objwriterthreadObj()
 {
 }
 

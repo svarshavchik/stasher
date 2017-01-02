@@ -14,6 +14,6 @@ tranObj::tranObj(const x::uuid &uuidArg) : uuid(uuidArg)
 {
 }
 
-tranObj::~tranObj() noexcept
+tranObj::~tranObj()
 {
 }

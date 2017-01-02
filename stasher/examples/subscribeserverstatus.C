@@ -9,7 +9,7 @@ class mycallbackObj : public stasher::serverstatuscallbackObj {
 
 public:
 	mycallbackObj() {}
-	~mycallbackObj() noexcept {}
+	~mycallbackObj() {}
 
 	void serverinfo(const stasher::userhelo &serverinfo) override
 	{

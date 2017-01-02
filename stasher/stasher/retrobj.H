@@ -36,7 +36,7 @@ public:
  : uuid(uuidArg) {}
 
 	//! Destructor
-	~retrobj() noexcept
+	~retrobj()
 	{
 	}
 

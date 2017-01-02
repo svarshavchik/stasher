@@ -33,7 +33,7 @@ public:
 	{
 	}
 
-	~reloadNotifyObj() noexcept {}
+	~reloadNotifyObj() {}
 
 
 	void installed(const std::string &objname,
@@ -97,7 +97,7 @@ node::node()
 {
 }
 
-node::~node() noexcept
+node::~node()
 {
 }
 
@@ -201,7 +201,7 @@ public:
 	{
 	}
 
-	~distributorMonitorObj() noexcept
+	~distributorMonitorObj()
 	{
 		repoclusterinfoimplptr ptr(cluster.getptr());
 
@@ -218,7 +218,7 @@ class node::reconnecter::job : public x::timertaskObj {
 public:
 	job(const clusterlistenerimpl &listenerArg,
 	    const clusterinfo &clusterArg);
-	~job() noexcept;
+	~job();
 	void run();
 };
 
@@ -228,7 +228,7 @@ node::reconnecter::job::job(const clusterlistenerimpl &listenerArg,
 {
 }
 
-node::reconnecter::job::~job() noexcept
+node::reconnecter::job::~job()
 {
 }
 
@@ -245,7 +245,7 @@ class node::certcheck_job : public x::timertaskObj {
 
 public:
 	certcheck_job(const clusterlistenerimpl &listenerArg);
-	~certcheck_job() noexcept;
+	~certcheck_job();
 	void run();
 };
 
@@ -254,7 +254,7 @@ node::certcheck_job::certcheck_job(const clusterlistenerimpl &listenerArg)
 {
 }
 
-node::certcheck_job::~certcheck_job() noexcept
+node::certcheck_job::~certcheck_job()
 {
 }
 
@@ -272,11 +272,11 @@ void node::start(bool noreconnecter)
 
 	repocluster->initialize();
 
-	tracker->start_thread(x::ref<trandistributorObj>(distributor),
+	tracker->start_threadmsgdispatcher(x::ref<trandistributorObj>(distributor),
 			      msgqueue,
 			      repocluster, repo,
 			      x::ptr<distributorMonitorObj>::create(repocluster));
-	tracker->start_thread(clusterlistenerimpl(listener),
+	tracker->start_threadmsgdispatcher(clusterlistenerimpl(listener),
 			      tracker,
 			      distributor,
 			      repo,
@@ -313,7 +313,7 @@ class node::stop_cb : virtual public x::obj {
 
 public:
 	stop_cb() {}
-	~stop_cb() noexcept {}
+	~stop_cb() {}
 
 	void destroyed()
 	{
@@ -360,7 +360,7 @@ public:
 	{
 	}
 
-	~quorumcbObj() noexcept
+	~quorumcbObj()
 	{
 	}
 
@@ -416,7 +416,7 @@ public:
 	x::mpcobj<bool> allpresent;
 
 	wait4allconnections() : allpresent(false) {}
-	~wait4allconnections() noexcept {}
+	~wait4allconnections() {}
 
         void clusterupdated(const clusterinfoObj::cluster_t &newStatus)
 

@@ -32,7 +32,7 @@ public:
 	}
 
 	//! Destructor
-	~sendupdatesreq() noexcept {}
+	~sendupdatesreq() {}
 
 	//! The serialization function
 	template<typename iter_type>

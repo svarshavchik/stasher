@@ -138,7 +138,7 @@ public:
 
 
 	//! Destructor
-	~objwriterthreadObj() noexcept;
+	~objwriterthreadObj();
 
 	friend class flushrequestObj;
 

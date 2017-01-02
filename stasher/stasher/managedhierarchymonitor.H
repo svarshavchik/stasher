@@ -28,7 +28,7 @@ public:
 	class LIBCXX_HIDDEN implObj;
 
 	managedhierarchymonitorObj();
-	~managedhierarchymonitorObj() noexcept;
+	~managedhierarchymonitorObj();
 
 	//! Wipe the slate clean, the current contents of the directory follow
 	virtual void begin()=0;

@@ -91,7 +91,7 @@ public:
 	{
 	}
 
-	~xferinfoObj() noexcept
+	~xferinfoObj()
 	{
 	}
 

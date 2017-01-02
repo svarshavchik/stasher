@@ -43,7 +43,7 @@ clusterlistenerimplObj
 {
 }
 
-clusterlistenerimplObj::~clusterlistenerimplObj() noexcept
+clusterlistenerimplObj::~clusterlistenerimplObj()
 {
 }
 
@@ -57,7 +57,7 @@ public:
 	{
 	}
 
-	~margin_callback() noexcept
+	~margin_callback()
 	{
 	}
 
@@ -158,7 +158,7 @@ public:
 			const spacemonitor &spacemonitorArg
 			);
 
-	~connectpeers_cb() noexcept;
+	~connectpeers_cb();
 
 	x::ptr<x::obj> operator()(const std::string &peername) const;
 };
@@ -179,7 +179,7 @@ clusterlistenerimplObj::connectpeers_cb
 {
 }
 
-clusterlistenerimplObj::connectpeers_cb::~connectpeers_cb() noexcept
+clusterlistenerimplObj::connectpeers_cb::~connectpeers_cb()
 {
 }
 
@@ -232,7 +232,7 @@ public:
 			    const clusterlistenerimplptr &listenerArg,
 			    void (clusterlistenerimplObj::*start_connArg)
 			    (const x::fd &, const nsmap::clientcred &));
-	~retr_credentialsObj() noexcept;
+	~retr_credentialsObj();
 
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin);
 };
@@ -260,7 +260,7 @@ start_credentials(const x::fd &sock,
 		  void (clusterlistenerimplObj::*start_connArg)
 		  (const x::fd &, const nsmap::clientcred &))
 {
-	(*tracker)->start_thread(x::ref<retr_credentialsObj>
+	(*tracker)->start_threadmsgdispatcher(x::ref<retr_credentialsObj>
 				 ::create(sock, clusterlistenerimplptr(this),
 					  start_connArg));
 }
@@ -398,14 +398,14 @@ void clusterlistenerimplObj::start_conn(const x::ref<localconnectionObj> &conn,
 					const x::fd::base::inputiter &inputiter,
 					const x::ptr<x::obj> &mcguffin)
 {
-	// We must start the new thread first. start_thread() does not return
+	// We must start the new thread first. start_threadmsgdispatcher() does not return
 	// until the thread starts and creates its message queue.
 	//
 	// installnotifycluster() and installnotifyclusterstatus() send
 	// the current status immediately, so the thread's message queue
 	// must exist by that time.
 
-	(*tracker)->start_thread(conn, transport, inputiter, *tracker,
+	(*tracker)->start_threadmsgdispatcher(conn, transport, inputiter, *tracker,
 				 mcguffin);
 	(*cluster)->installnotifyclusterstatus(conn);
 	(*cluster)->installnotifycluster(conn);
@@ -425,7 +425,7 @@ retr_credentialsObj(const x::fd &sockArg,
 {
 }
 
-clusterlistenerimplObj::retr_credentialsObj::~retr_credentialsObj() noexcept
+clusterlistenerimplObj::retr_credentialsObj::~retr_credentialsObj()
 {
 }
 

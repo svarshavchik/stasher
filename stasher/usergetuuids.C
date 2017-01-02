@@ -18,7 +18,7 @@ usergetuuids::usergetuuids(size_t limitArg)
 {
 }
 
-usergetuuids::~usergetuuids() noexcept
+usergetuuids::~usergetuuids()
 {
 }
 
@@ -27,7 +27,7 @@ usergetuuids::reqinfoObj::reqinfoObj()
 {
 }
 
-usergetuuids::reqinfoObj::~reqinfoObj() noexcept
+usergetuuids::reqinfoObj::~reqinfoObj()
 {
 }
 

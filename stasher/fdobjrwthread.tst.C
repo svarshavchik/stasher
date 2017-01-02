@@ -46,7 +46,7 @@ public:
 
 	public:
 		makewriteabortObj() {}
-		~makewriteabortObj() noexcept {}
+		~makewriteabortObj() {}
 
 		void serialize(STASHER_NAMESPACE::objwriterObj &writer)
 		{
@@ -99,7 +99,7 @@ public:
 	{
 	}
 
-	~testrwthreadObj() noexcept
+	~testrwthreadObj()
 	{
 	}
 
@@ -177,7 +177,7 @@ public:
 
 		mcguffin=x::ptr<x::obj>::create();
 
-		tracker->start_thread(p, socks.second,
+		tracker->start_threadmsgdispatcher(p, socks.second,
 				      x::fd::base::inputiter(socks.second),
 				      tracker->getTracker(), mcguffin);
 	}

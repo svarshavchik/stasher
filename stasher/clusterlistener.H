@@ -113,7 +113,7 @@ private:
 
 	public:
 		networksocks_t(clusterlistenerObj *p);
-		~networksocks_t() noexcept;
+		~networksocks_t();
 	};
 
 	//! Network socket listeners
@@ -164,7 +164,7 @@ public:
 
 
 	//! Destructor
-	~clusterlistenerObj() noexcept;
+	~clusterlistenerObj();
 
 	//! Return this thread's name
 

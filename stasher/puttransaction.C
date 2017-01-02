@@ -24,7 +24,7 @@ puttransactionObj::objcontentsObj::objcontentsObj(const std::string
 {
 }
 		
-puttransactionObj::objcontentsObj::~objcontentsObj() noexcept
+puttransactionObj::objcontentsObj::~objcontentsObj()
 {
 }
 
@@ -32,7 +32,7 @@ puttransactionObj::objcontents::objcontents()
 {
 }
 
-puttransactionObj::objcontents::~objcontents() noexcept {}
+puttransactionObj::objcontents::~objcontents() {}
 
 puttransactionObj::objcontents::objcontents(const x::fd &filedesc)
 	: x::ptr<objcontentsObj>(x::ptr<objcontentsObj>::create(filedesc))
@@ -88,7 +88,7 @@ void puttransactionObj::updinfo::setsize()
 	contents_size=stat_buf.st_size;
 }
 
-puttransactionObj::updinfo::~updinfo() noexcept
+puttransactionObj::updinfo::~updinfo()
 {
 }
 
@@ -97,7 +97,7 @@ puttransactionObj::puttransactionObj() : admin(false),
 {
 }
 
-puttransactionObj::~puttransactionObj() noexcept
+puttransactionObj::~puttransactionObj()
 {
 }
 

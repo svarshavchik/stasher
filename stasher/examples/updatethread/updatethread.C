@@ -57,7 +57,7 @@ public:
 	{
 	}
 
-	~updateRequestObj() noexcept
+	~updateRequestObj()
 	{
 	}
 
@@ -106,7 +106,7 @@ class updateThreadObj : public x::dequemsgdispatcherObj,
 		{
 		}
 
-		~updateRequestImplObj() noexcept
+		~updateRequestImplObj()
 		{
 		}
 
@@ -119,7 +119,7 @@ class updateThreadObj : public x::dequemsgdispatcherObj,
 
 public:
 	updateThreadObj() {}
-	~updateThreadObj() noexcept {}
+	~updateThreadObj() {}
 
 	// A very basic thread run() method. Message-dispatching based threads
 	// don't need much else.
@@ -228,7 +228,7 @@ public:
 	{
 	}
 
-	~getRequestReceivedObj() noexcept
+	~getRequestReceivedObj()
 	{
 	}
 
@@ -306,7 +306,7 @@ public:
 	{
 	}
 
-	~updateRequestReceivedObj() noexcept
+	~updateRequestReceivedObj()
 	{
 	}
 

@@ -27,7 +27,7 @@ class test1_notifier : public tobjrepoObj::notifierObj {
 public:
 
 	test1_notifier() {}
-	~test1_notifier() noexcept {}
+	~test1_notifier() {}
 
 	std::mutex mutex;
 	std::condition_variable cond;

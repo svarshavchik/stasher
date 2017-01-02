@@ -24,7 +24,7 @@ fdobjrwthreadObj::fdobjrwthreadObj(const std::string &writeThreadNameArg)
 {
 }
 
-fdobjrwthreadObj::~fdobjrwthreadObj() noexcept
+fdobjrwthreadObj::~fdobjrwthreadObj()
 {
 }
 
@@ -56,7 +56,7 @@ void fdobjrwthreadObj::mainloop(msgqueue_auto &msgqueue,
 		stoppable_group->mcguffin(my_mcguffin);
 		stoppable_group->mcguffin(writer_mcguffin);
 
-		tracker->start_thread(w, transport, writer_mcguffin);
+		tracker->start_threadmsgdispatcher(w, transport, writer_mcguffin);
 	}
 
 

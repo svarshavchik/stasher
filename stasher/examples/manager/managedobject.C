@@ -17,7 +17,7 @@ public:
 	{
 	}
 
-	~mymanagedobjectObj() noexcept
+	~mymanagedobjectObj()
 	{
 	}
 

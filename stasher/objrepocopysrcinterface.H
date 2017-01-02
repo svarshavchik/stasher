@@ -17,7 +17,7 @@ public:
 
 	objrepocopysrcinterfaceObj();
 
-	~objrepocopysrcinterfaceObj() noexcept;
+	~objrepocopysrcinterfaceObj();
 
 	//! Process a batonresponse message
 	virtual void event(const objrepocopy::batonresponse &msg)=0;

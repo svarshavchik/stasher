@@ -10,7 +10,7 @@ class mycallbackObj : public stasher::managedserverstatuscallbackObj {
 
 public:
 	mycallbackObj() {}
-	~mycallbackObj() noexcept {}
+	~mycallbackObj() {}
 
 	void connection_update(stasher::req_stat_t status) override
 	{

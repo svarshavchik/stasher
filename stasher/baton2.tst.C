@@ -20,7 +20,7 @@ public:
 
 	keeptrackofmasterObj() {}
 
-	~keeptrackofmasterObj() noexcept {}
+	~keeptrackofmasterObj() {}
 
         void initialstatus(const nodeclusterstatus &newStatus)
 

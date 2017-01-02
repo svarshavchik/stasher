@@ -14,7 +14,7 @@ public:
 	{
 	}
 
-	~getCallbackObj() noexcept {
+	~getCallbackObj() {
 	}
 
 	void destroyed() noexcept override
@@ -54,7 +54,7 @@ public:
 	{
 	}
 
-	~mySubscriberObj() noexcept
+	~mySubscriberObj()
 	{
 	}
 

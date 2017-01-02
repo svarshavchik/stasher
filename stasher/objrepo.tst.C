@@ -312,7 +312,7 @@ public:
 	{
 	}
 
-	~notifierObj() noexcept
+	~notifierObj()
 	{
 	}
 

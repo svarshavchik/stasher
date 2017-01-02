@@ -80,7 +80,7 @@ public:
 
 
 		//! Destructor
-		~mcguffin_destructor_cb() noexcept;
+		~mcguffin_destructor_cb();
 
 		//! Destructor callback
 		void destroyed();
@@ -92,7 +92,7 @@ public:
 	clustertlsconnectshutdownObj();
 
 	//! Destructor
-	~clustertlsconnectshutdownObj() noexcept;
+	~clustertlsconnectshutdownObj();
 
 	//! Create a destructor callback that starts a TLS shutdown thread
 

@@ -25,7 +25,7 @@ public:
 
 	//! Destructor
 
-	~quorumstateObj() noexcept;
+	~quorumstateObj();
 };
 
 //! A reference to a quorum state object

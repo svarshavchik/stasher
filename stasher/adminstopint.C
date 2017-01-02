@@ -10,7 +10,7 @@ adminstopintObj::adminstopintObj()
 {
 }
 
-adminstopintObj::~adminstopintObj() noexcept
+adminstopintObj::~adminstopintObj()
 {
 }
 

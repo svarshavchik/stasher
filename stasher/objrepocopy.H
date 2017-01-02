@@ -60,7 +60,7 @@ public:
 
 	public:
 		batonrequest() noexcept;
-		~batonrequest() noexcept;
+		~batonrequest();
 
 		//! Serialization function
 		template<typename iter_type> void serialize(iter_type &iter)
@@ -75,7 +75,7 @@ public:
 
 	public:
 		batonresponse() noexcept;
-		~batonresponse() noexcept;
+		~batonresponse();
 
 		//! Baton uuid, if not empty
 		std::string uuid;
@@ -94,7 +94,7 @@ public:
 
 	public:
 		masterlist() noexcept;
-		~masterlist() noexcept;
+		~masterlist();
 
 		//! master repository uuids
 
@@ -115,7 +115,7 @@ public:
 
 	public:
 		masterlistdone() noexcept;
-		~masterlistdone() noexcept;
+		~masterlistdone();
 
 		//! Serialization function
 
@@ -131,7 +131,7 @@ public:
 
 	public:
 		slavelist() noexcept;
-		~slavelist() noexcept;
+		~slavelist();
 
 		//! Slave repository uuids
 
@@ -152,7 +152,7 @@ public:
 
 	public:
 		slavelistdone() noexcept;
-		~slavelistdone() noexcept;
+		~slavelistdone();
 
 		//! Serialization function
 
@@ -168,7 +168,7 @@ public:
 
 	public:
 		slavelistready() noexcept;
-		~slavelistready() noexcept;
+		~slavelistready();
 
 		//! Serialization function
 
@@ -184,7 +184,7 @@ public:
 
 	public:
 		slaveliststart() noexcept;
-		~slaveliststart() noexcept;
+		~slaveliststart();
 
 		//! Serialization function
 
@@ -200,7 +200,7 @@ public:
 
 	public:
 		masterack() noexcept;
-		~masterack() noexcept;
+		~masterack();
 
 		//! Serialization function
 
@@ -216,7 +216,7 @@ public:
 
 	public:
 		copycomplete() noexcept;
-		~copycomplete() noexcept;
+		~copycomplete();
 
 		//! Serialization function
 

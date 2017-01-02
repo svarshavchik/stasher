@@ -12,7 +12,7 @@ managedconnectionupdateObj::managedconnectionupdateObj()
 {
 }
 
-managedconnectionupdateObj::~managedconnectionupdateObj() noexcept
+managedconnectionupdateObj::~managedconnectionupdateObj()
 {
 }
 

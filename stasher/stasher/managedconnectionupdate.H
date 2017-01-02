@@ -18,7 +18,7 @@ class managedconnectionupdateObj : virtual public x::obj {
 public:
 	managedconnectionupdateObj();
 
-	~managedconnectionupdateObj() noexcept;
+	~managedconnectionupdateObj();
 
 	//! Update the connection status
 

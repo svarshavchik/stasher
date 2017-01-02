@@ -10,7 +10,7 @@ objrepocopysrcinterfaceObj::objrepocopysrcinterfaceObj()
 {
 }
 
-objrepocopysrcinterfaceObj::~objrepocopysrcinterfaceObj() noexcept
+objrepocopysrcinterfaceObj::~objrepocopysrcinterfaceObj()
 {
 }
 

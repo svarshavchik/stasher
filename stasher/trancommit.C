@@ -12,7 +12,7 @@ trancommitObj::trancommitObj(const x::uuid &uuidArg,
 {
 }
 
-trancommitObj::~trancommitObj() noexcept
+trancommitObj::~trancommitObj()
 {
 }
 

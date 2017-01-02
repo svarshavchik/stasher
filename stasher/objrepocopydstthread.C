@@ -18,7 +18,7 @@ class objrepocopydstthreadObj::dispatch_lock : public std::lock_guard<std::mutex
 public:
 	dispatch_lock(std::mutex &mutex,
 		      const char *functionArg);
-	~dispatch_lock() noexcept;
+	~dispatch_lock();
 };
 
 objrepocopydstthreadObj::dispatch_lock::dispatch_lock(std::mutex &mutex,
@@ -28,7 +28,7 @@ objrepocopydstthreadObj::dispatch_lock::dispatch_lock(std::mutex &mutex,
 	LOG_DEBUG("Begin dispatch " << function);
 }
 
-objrepocopydstthreadObj::dispatch_lock::~dispatch_lock() noexcept
+objrepocopydstthreadObj::dispatch_lock::~dispatch_lock()
 {
 	LOG_DEBUG("End dispatch " << function);
 }
@@ -42,7 +42,7 @@ class objrepocopydstthreadObj::uuidenumObj : public objuuidenumeratorObj {
 public:
 	uuidenumObj(const tobjrepo &repoArg,
 		    objrepocopydstthreadObj *parentArg);
-	~uuidenumObj() noexcept;
+	~uuidenumObj();
 
 	objuuidlist nextbatch(const std::set<std::string> &objectnames)
 ;
@@ -56,7 +56,7 @@ objrepocopydstthreadObj::uuidenumObj::uuidenumObj(const tobjrepo &repoArg,
 {
 }
 
-objrepocopydstthreadObj::uuidenumObj::~uuidenumObj() noexcept
+objrepocopydstthreadObj::uuidenumObj::~uuidenumObj()
 {
 }
 
@@ -87,7 +87,7 @@ objrepocopydstthreadObj::objrepocopydstthreadObj(const std::string &nameArg)
 {
 }
 
-objrepocopydstthreadObj::~objrepocopydstthreadObj() noexcept
+objrepocopydstthreadObj::~objrepocopydstthreadObj()
 {
 }
 
@@ -277,7 +277,7 @@ void objrepocopydstthreadObj::event(const objserializer &msg)
 }
 
 void objrepocopydstthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
-				  start_thread_sync &sync_arg,
+				  start_threadmsgdispatcher_sync &sync_arg,
 				  tobjrepo &repocpy,
 				  x::weakptr<objrepocopysrcinterfaceptr> &srcArg,
 				  boolref &flagref,

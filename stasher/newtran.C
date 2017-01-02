@@ -15,7 +15,7 @@ newtranObj::newtranObj(const tobjrepo &repoArg,
 {
 }
 
-newtranObj::~newtranObj() noexcept
+newtranObj::~newtranObj()
 {
 	if (!finalized)
 	{

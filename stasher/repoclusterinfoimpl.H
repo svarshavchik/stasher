@@ -52,7 +52,7 @@ class repoclusterinfoimplObj : public repoclusterinfoObj,
 		haltstopObj(const x::stoppableptr &me);
 
 		//! Destructor
-		~haltstopObj() noexcept;
+		~haltstopObj();
 
 		//! Invoke stop() on repoclusterinfoimplObj
 
@@ -97,7 +97,7 @@ public:
 
 
 	//! Destructor
-	~repoclusterinfoimplObj() noexcept;
+	~repoclusterinfoimplObj();
 
 private:
 

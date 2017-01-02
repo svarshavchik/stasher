@@ -159,7 +159,7 @@ public:
 
 
 	//! Destructor
-	~repocontrollerbaseObj() noexcept;
+	~repocontrollerbaseObj();
 
 	//! start_controller() starts a thread. This is what it returns.
 

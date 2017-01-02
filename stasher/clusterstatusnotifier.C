@@ -10,7 +10,7 @@ clusterstatusnotifierObj::clusterstatusnotifierObj()
 {
 }
 
-clusterstatusnotifierObj::~clusterstatusnotifierObj() noexcept
+clusterstatusnotifierObj::~clusterstatusnotifierObj()
 {
 }
 

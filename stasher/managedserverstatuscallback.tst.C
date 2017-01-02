@@ -23,7 +23,7 @@ public:
 	std::condition_variable cond;
 
 	test1subscriber() : state_received(false), status_received(false) {}
-	~test1subscriber() noexcept {}
+	~test1subscriber() {}
 
 	void serverinfo(const STASHER_NAMESPACE::userhelo &serverinfo)
 	{

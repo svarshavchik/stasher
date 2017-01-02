@@ -58,7 +58,7 @@ public:
 	{
 	}
 
-	~dummyhandlerObj() noexcept {}
+	~dummyhandlerObj() {}
 };
 
 static void test1()

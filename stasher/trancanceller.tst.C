@@ -14,7 +14,7 @@ class trandistributorObj: virtual public x::obj {
 
 public:
 	trandistributorObj() {}
-	~trandistributorObj() noexcept {}
+	~trandistributorObj() {}
 
 	std::set<x::uuid> completeset;
 

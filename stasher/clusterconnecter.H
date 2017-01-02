@@ -105,7 +105,7 @@ public:
 			    const std::string &name);
 
 	//! Destructor
-	~clusterconnecterObj() noexcept;
+	~clusterconnecterObj();
 
 	//! Return this thread's name.
 	std::string getName() const;
@@ -177,7 +177,7 @@ private:
 		x::ref<dummyCallbackObj> epollcb;
 
 		connect_common(const x::eventfd &eventfd);
-		~connect_common() noexcept;
+		~connect_common();
 	};
 
 	//! We will connect to another peer

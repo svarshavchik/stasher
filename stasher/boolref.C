@@ -10,7 +10,7 @@ boolrefObj::boolrefObj() : flag(false)
 {
 }
 
-boolrefObj::~boolrefObj() noexcept
+boolrefObj::~boolrefObj()
 {
 }
 

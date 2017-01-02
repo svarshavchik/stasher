@@ -12,7 +12,7 @@ writtenobjbaseObj::writtenobjbaseObj() noexcept
 {
 }
 
-writtenobjbaseObj::~writtenobjbaseObj() noexcept
+writtenobjbaseObj::~writtenobjbaseObj()
 {
 }
 

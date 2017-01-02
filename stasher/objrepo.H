@@ -145,7 +145,7 @@ public:
 	objrepoObj(const std::string &directoryArg);
 
 	//! Destructor
-	~objrepoObj() noexcept;
+	~objrepoObj();
 
 	//! Open a temporary file.
 
@@ -433,7 +433,7 @@ public:
 		notifierObj();
 
 		//! Destructor
-		~notifierObj() noexcept;
+		~notifierObj();
 
 		//! An object was just installed
 		virtual void installed(const std::string &objname,

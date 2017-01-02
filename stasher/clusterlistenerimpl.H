@@ -122,7 +122,7 @@ public:
 	clusterlistenerimplObj(//! Object repository directory
 			       const std::string &directoryArg);
 	//! Destructor
-	~clusterlistenerimplObj() noexcept;
+	~clusterlistenerimplObj();
 
 private:
 	class connectpeers_cb;

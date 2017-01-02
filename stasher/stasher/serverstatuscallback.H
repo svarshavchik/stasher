@@ -29,7 +29,7 @@ public:
 	serverstatuscallbackObj();
 
 	//! Destructor
-	~serverstatuscallbackObj() noexcept;
+	~serverstatuscallbackObj();
 
 	//! Callback upon registration, reports server connection details
 	virtual void serverinfo(const userhelo &serverinfo)=0;

@@ -19,7 +19,7 @@ public:
 	{
 	}
 
-	~dummyThreadObj() noexcept
+	~dummyThreadObj()
 	{
 	}
 
@@ -50,7 +50,7 @@ static void test1()
 
 	wmcguffin=mcguffin;
 
-	stt->start_thread(dt, mcguffin); // [PASSTHRU]
+	stt->start_threadmsgdispatcher(dt, mcguffin); // [PASSTHRU]
 
 	mcguffin=nullptr;
 
@@ -69,7 +69,7 @@ static void test1()
 	mcguffin=x::ptr<x::obj>::create();
 	wmcguffin=mcguffin;
 
-	stt->start_thread(dt, mcguffin); // [ONESHOT]
+	stt->start_threadmsgdispatcher(dt, mcguffin); // [ONESHOT]
 
 	mcguffin=nullptr;
 
@@ -86,7 +86,7 @@ static void test1()
 	{
 		STASHER_NAMESPACE::stoppableThreadTrackerImpl
 			stti2(STASHER_NAMESPACE::stoppableThreadTrackerImpl::create());
-		stti2->start_thread(dt, mcguffin);
+		stti2->start_threadmsgdispatcher(dt, mcguffin);
 		mcguffin=nullptr;
 
 		if (wmcguffin.getptr().null())
@@ -115,7 +115,7 @@ static void test2()
 	x::ptr<x::obj> mcguffin=x::ptr<x::obj>::create();
 	x::weakptr<x::ptr<x::obj> > wmcguffin;
 
-	stt->start_thread(dt, mcguffin); // [PASSTHRU]
+	stt->start_threadmsgdispatcher(dt, mcguffin); // [PASSTHRU]
 	mcguffin=nullptr;
 
 	if (!wmcguffin.getptr().null()) // [START]

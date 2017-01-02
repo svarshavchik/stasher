@@ -18,7 +18,7 @@ public:
 			hierarchy="[root]";
 	}
 
-	~mymonitorObj() noexcept
+	~mymonitorObj()
 	{
 	}
 

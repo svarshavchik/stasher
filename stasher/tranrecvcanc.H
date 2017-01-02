@@ -55,7 +55,7 @@ public:
 		     const x::uuid &masteruuidArg);
 
 	//! Destructor
-	~tranrecvcanc() noexcept;
+	~tranrecvcanc();
 
 };
 #endif

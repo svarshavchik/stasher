@@ -116,7 +116,7 @@ public:
 	{
 	}
 
-	~testthread() noexcept
+	~testthread()
 	{
 	}
 

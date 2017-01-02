@@ -34,7 +34,7 @@ public:
 	currentBaseObj() {}
 
 	//! Destructor
-	~currentBaseObj() noexcept {}
+	~currentBaseObj() {}
 
 	//! Implemented in the subclass
 

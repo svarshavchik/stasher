@@ -8,7 +8,7 @@ class mySubscriberObj : public stasher::client::base::subscriberObj {
 
 public:
 	mySubscriberObj() {}
-	~mySubscriberObj() noexcept
+	~mySubscriberObj()
 	{
 	}
 

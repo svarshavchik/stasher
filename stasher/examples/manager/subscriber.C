@@ -10,7 +10,7 @@ class mySubscriberObj : public stasher::managedsubscriberObj {
 
 public:
 	mySubscriberObj() {}
-	~mySubscriberObj() noexcept
+	~mySubscriberObj()
 	{
 	}
 

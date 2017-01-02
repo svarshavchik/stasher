@@ -87,7 +87,7 @@ class test1subscriber
 
 public:
 	test1subscriber(const std::string &nameArg) : name(nameArg) {}
-	~test1subscriber() noexcept {}
+	~test1subscriber() {}
 
 	void updated(const std::string &objname,
 		     const std::string &suffix)

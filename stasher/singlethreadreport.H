@@ -19,7 +19,7 @@ class singlethreadreportObj : virtual public x::obj {
 
 public:
 	singlethreadreportObj() {}
-	~singlethreadreportObj() noexcept {}
+	~singlethreadreportObj() {}
 
 	//! Thread id
 	std::thread::id thread_id;

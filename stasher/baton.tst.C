@@ -247,7 +247,7 @@ class test3_dcb : virtual public x::obj {
 
 public:
 	test3_dcb() {}
-	~test3_dcb() noexcept {}
+	~test3_dcb() {}
 
 	void destroyed()
 	{
@@ -400,7 +400,7 @@ public:
 	std::mutex mutex;
 
 	nodechangetrack() {}
-	~nodechangetrack() noexcept {}
+	~nodechangetrack() {}
 };
 
 class keeptrackofmasterObj : public clusterstatusnotifierObj {
@@ -416,7 +416,7 @@ public:
 
 		: whichnode(whichnodeArg), track(trackArg) {}
 
-	~keeptrackofmasterObj() noexcept {}
+	~keeptrackofmasterObj() {}
 
         void initialstatus(const nodeclusterstatus &newStatus)
 

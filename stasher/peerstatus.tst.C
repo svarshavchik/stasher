@@ -30,7 +30,7 @@ public:
 	clusterinfoObj() : install_called(false), recalculate_called(false),
 			   newmaster_called(false) {}
 
-	~clusterinfoObj() noexcept {}
+	~clusterinfoObj() {}
 
 	std::string nodename;
 
@@ -79,7 +79,7 @@ public:
 	teststatusObj(const std::string &peername)
 		: peerstatusObj::adapterObj(peername) {}
 
-	~teststatusObj() noexcept {}
+	~teststatusObj() {}
 
 	void stop()
 	{

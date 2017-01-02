@@ -13,7 +13,7 @@ peerstatusObj::peerstatusObj(const std::string &peernameArg)
 {
 }
 
-peerstatusObj::~peerstatusObj() noexcept
+peerstatusObj::~peerstatusObj()
 {
 }
 
@@ -94,7 +94,7 @@ peerstatusObj::adapterObj::adapterObj(const std::string &peernameArg)
 {
 }
 
-peerstatusObj::adapterObj::~adapterObj() noexcept
+peerstatusObj::adapterObj::~adapterObj()
 {
 }
 

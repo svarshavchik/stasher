@@ -116,7 +116,7 @@ repoclusterinfoObj::repoclusterinfoObj(const std::string &nodename,
 	repo->cancel_done(nodename);
 }
 
-repoclusterinfoObj::~repoclusterinfoObj() noexcept
+repoclusterinfoObj::~repoclusterinfoObj()
 {
 }
 
@@ -167,7 +167,7 @@ class repoclusterinfoObj::configNotifierObj : public objrepoObj::notifierObj {
 public:
 	configNotifierObj( const repoclusterinfo &myrepoArg);
 
-	~configNotifierObj() noexcept;
+	~configNotifierObj();
 
 	void installed(const std::string &objname,
 		       const x::ptr<x::obj> &lock)
@@ -184,7 +184,7 @@ repoclusterinfoObj::configNotifierObj
 {
 }
 
-repoclusterinfoObj::configNotifierObj::~configNotifierObj() noexcept
+repoclusterinfoObj::configNotifierObj::~configNotifierObj()
 {
 }
 
@@ -318,7 +318,7 @@ public:
 	bool stopping;
 
 	mcguffinDestroyCallbackObj() noexcept;
-	~mcguffinDestroyCallbackObj() noexcept;
+	~mcguffinDestroyCallbackObj();
 
 	void destroyed();
 };
@@ -414,7 +414,7 @@ start_handover_thread(const std::string &newmaster,
 	x::ref<batonhandoverthreadObj>
 		thr(x::ref<batonhandoverthreadObj>::create());
 
-	thread_tracker->start_thread(thr,
+	thread_tracker->start_threadmsgdispatcher(thr,
 				     newmaster, succeeded,
 				     x::weakptr<x::ptr<x::obj> > (mcguffin),
 				     quorum_callback_list,

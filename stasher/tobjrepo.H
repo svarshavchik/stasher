@@ -161,7 +161,7 @@ public:
 	tobjrepoObj(const std::string &directoryArg);
 
 	//! Destructor
-	~tobjrepoObj() noexcept;
+	~tobjrepoObj();
 
 	//! "NODE"
 
@@ -218,7 +218,7 @@ public:
 
 	public:
 		finalized_cb() noexcept {}
-		~finalized_cb() noexcept {}
+		~finalized_cb() {}
 
 		//! Callback invoked for each enumerated uncommited transaction
 		virtual void operator()(//! Transaction ID
@@ -376,7 +376,7 @@ public:
 			 const x::uuid &uuidArg);
 
 		//! The destructor releases the lock
-		~uuidlock() noexcept;
+		~uuidlock();
 	};
 
 	friend class uuidlock;

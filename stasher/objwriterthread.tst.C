@@ -29,7 +29,7 @@ public:
 	{
 	}
 
-	~test() noexcept
+	~test()
 	{
 	}
 
@@ -74,7 +74,7 @@ public:
 			vec.push_back(i);
 	}
 
-	~dummy() noexcept
+	~dummy()
 	{
 	}
 
@@ -89,7 +89,7 @@ static void test1()
 	auto t=x::ref<test>::create();
 	auto d=x::ref<dummy>::create();
 
-	auto retval=x::start_thread(t, x::ref<x::obj>::create());
+	auto retval=x::start_threadmsgdispatcher(t, x::ref<x::obj>::create());
 
 	t->write(d); // [WRITE]
 	t->request_close(); // [CLOSE]

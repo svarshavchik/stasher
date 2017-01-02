@@ -97,7 +97,7 @@ tstnodes::nodeObj::nodeObj(const std::string &dir)
 {
 }
 
-tstnodes::nodeObj::~nodeObj() noexcept
+tstnodes::nodeObj::~nodeObj()
 {
 }
 

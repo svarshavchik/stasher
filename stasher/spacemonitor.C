@@ -15,7 +15,7 @@ spacemonitorObj::spacemonitorObj(const x::df &freespacerefArg)
 	reset_refresh_counter();
 }
 
-spacemonitorObj::~spacemonitorObj() noexcept
+spacemonitorObj::~spacemonitorObj()
 {
 }
 

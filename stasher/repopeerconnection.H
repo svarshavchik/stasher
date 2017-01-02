@@ -368,7 +368,7 @@ class repopeerconnectionObj: public peerstatusannouncerObj,
 		commitreq()=default;
 
 		//! Destructor
-		~commitreq() noexcept=default;
+		~commitreq()=default;
 
 		//! Serialization function
 		template<typename iter_type> void serialize(iter_type &iter)
@@ -421,7 +421,7 @@ class repopeerconnectionObj: public peerstatusannouncerObj,
 		}
 
 		//! Destructor
-		~batonisyours() noexcept
+		~batonisyours()
 		{
 		}
 
@@ -459,7 +459,7 @@ class repopeerconnectionObj: public peerstatusannouncerObj,
 			  uuid(uuidArg) {}
 
 		//! Destructor
-		~handover_request() noexcept=default;
+		~handover_request()=default;
 
 		//! Serialization function
 
@@ -493,7 +493,7 @@ public:
 		{
 		}
 
-		~setnewcertObj() noexcept
+		~setnewcertObj()
 		{
 		}
 
@@ -516,7 +516,7 @@ public:
 
 
 		//! Destructor
-		~commitreqObj() noexcept;
+		~commitreqObj();
 
 		//! Serialization function
 		void serialize(STASHER_NAMESPACE::objwriterObj &writer);
@@ -541,7 +541,7 @@ private:
 		commitack()=default;
 
 		//! Destructor
-		~commitack() noexcept=default;
+		~commitack()=default;
 
 		//! Serialization function
 		template<typename iter_type> void serialize(iter_type &iter)
@@ -570,7 +570,7 @@ private:
 		}
 
 		//! Destructor
-		~pingm() noexcept=default;
+		~pingm()=default;
 
 		//! Serialization function
 		template<typename iter_type> void serialize(iter_type &iter)
@@ -593,7 +593,7 @@ private:
 		pongm()=default;
 
 		//! Destructor
-		~pongm() noexcept=default;
+		~pongm()=default;
 
 		//! Serialization function
 		template<typename iter_type> void serialize(iter_type &iter)
@@ -637,7 +637,7 @@ private:
 		master_quorum()=default;
 
 		//! Destructor
-		~master_quorum() noexcept=default;
+		~master_quorum()=default;
 
 		//! Serialization function
 
@@ -672,7 +672,7 @@ private:
 		{
 		}
 
-		~setnewcert() noexcept=default;
+		~setnewcert()=default;
 
 		//! Serialization function
 
@@ -709,7 +709,7 @@ private:
 		{
 		}
 
-		~setnewcert_resp() noexcept=default;
+		~setnewcert_resp()=default;
 
 		//! Serialization function
 
@@ -744,7 +744,7 @@ private:
 		halt()=default;
 
 		//! Destructor
-		~halt() noexcept
+		~halt()
 		{
 		}
 
@@ -778,7 +778,7 @@ private:
 
 		baton_master_announce_msg() = default;
 
-		~baton_master_announce_msg() noexcept=default;
+		~baton_master_announce_msg()=default;
 
 		template<typename iter_type> void serialize(iter_type &iter)
 		{
@@ -802,7 +802,7 @@ private:
 		}
 
 		baton_master_release_msg() = default;
-		~baton_master_release_msg() noexcept = default;
+		~baton_master_release_msg() = default;
 
 		template<typename iter_type> void serialize(iter_type &iter)
 		{
@@ -922,7 +922,7 @@ private:
 		objdeserializer(repopeerconnectionObj &conn);
 
 
-		~objdeserializer() noexcept;
+		~objdeserializer();
 	};
 
 	//! Deserializing a transaction from a distributor peer
@@ -939,7 +939,7 @@ private:
 		trandeserializer(repopeerconnectionObj &conn);
 
 
-		~trandeserializer() noexcept;
+		~trandeserializer();
 	};
 protected:
 	//! Message: slave wants to be synced by its master
@@ -952,7 +952,7 @@ protected:
 		slavesyncrequest()=default;
 
 		//! Destructor
-		~slavesyncrequest() noexcept=default;
+		~slavesyncrequest()=default;
 
 		//! Serialization function
 
@@ -1208,7 +1208,7 @@ public:
 
 	//! Destructor
 
-	~repopeerconnectionObj() noexcept;
+	~repopeerconnectionObj();
 
 	// --- Externally invoked methods ---
 

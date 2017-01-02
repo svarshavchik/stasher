@@ -16,7 +16,7 @@ objuuidenumeratorObj::objuuidenumeratorObj(const tobjrepo &repoArg)
 {
 }
 
-objuuidenumeratorObj::~objuuidenumeratorObj() noexcept
+objuuidenumeratorObj::~objuuidenumeratorObj()
 {
 }
 

@@ -46,7 +46,7 @@ class LIBCXX_HIDDEN my_portmapperObj : virtual public x::obj {
 	{
 	}
 
-	~my_portmapperObj() noexcept {
+	~my_portmapperObj() {
 	}
 };
 
@@ -62,7 +62,7 @@ clientBase::connstatusObj::connstatusObj()
 {
 }
 
-clientBase::connstatusObj::~connstatusObj() noexcept
+clientBase::connstatusObj::~connstatusObj()
 {
 }
 
@@ -100,7 +100,7 @@ public:
 
 	public:
 		getheloObj() {}
-		~getheloObj() noexcept {}
+		~getheloObj() {}
 	};
 
 	//! Convenience wrapper
@@ -115,7 +115,7 @@ public:
 		deser(obj_type &dummy) {}
 
 		//! Destructor
-		~deser() noexcept {}
+		~deser() {}
 	};
 
 	template<typename iter_type>
@@ -147,7 +147,7 @@ public:
 		{
 			readTimeout_value=0;
 		}
-	~implObj() noexcept {}
+	~implObj() {}
 
 	// Connect to a server socket, send credentials
 
@@ -178,7 +178,7 @@ public:
 		{
 		}
 
-		~reqinfo() noexcept
+		~reqinfo()
 		{
 		}
 	};
@@ -195,7 +195,7 @@ public:
 
 		uuidgetinfoObj(const getrequest &reqArg): req(reqArg) {}
 
-		~uuidgetinfoObj() noexcept {}
+		~uuidgetinfoObj() {}
 	};
 
 	// Requests and responses get associated with a uuid.
@@ -276,7 +276,7 @@ public:
 		subscriber_map_t::iterator iterator;
 
 		subscriptionMcguffinObj() {}
-		~subscriptionMcguffinObj() noexcept
+		~subscriptionMcguffinObj()
 		{
 			x::ptr<implObj> ptr=client.getptr();
 
@@ -301,7 +301,7 @@ public:
 		x::weakptr<x::ptr<implObj> > conn;
 		server_status_subscribers_t::iterator subscriber;
 
-		~serverstatusSubscriptionMcguffinObj() noexcept
+		~serverstatusSubscriptionMcguffinObj()
 		{
 
 			auto p=conn.getptr();
@@ -467,7 +467,7 @@ clientObj::clientObj(const std::string &socknameArg)
 {
 }
 
-clientObj::~clientObj() noexcept
+clientObj::~clientObj()
 {
 	disconnect();
 }
@@ -502,7 +502,7 @@ clientObj::requestObj::requestObj(const x::ptr<x::obj> &mcguffinArg)
 {
 }
 
-clientObj::requestObj::~requestObj() noexcept
+clientObj::requestObj::~requestObj()
 {
 }
 
@@ -714,7 +714,7 @@ clientBase::do_connect_t clientBase::do_connect(const client &cl)
 
 	x::ref<x::obj> thread_mcguffin(x::ref<x::obj>::create());
 
-	x::start_thread(impl, x::ptr<x::obj>(mcguffin),
+	x::start_threadmsgdispatcher(impl, x::ptr<x::obj>(mcguffin),
 			connstatusptr(std::get<2>(ret)), thread_mcguffin);
 
 	cl->impl->install(impl, thread_mcguffin);
@@ -814,7 +814,7 @@ clientObj::transactionObj::transactionObj()
 {
 }
 
-clientObj::transactionObj::~transactionObj() noexcept
+clientObj::transactionObj::~transactionObj()
 {
 }
 
@@ -943,7 +943,7 @@ contentsObj::contentsObj() : succeeded(false),
 {
 }
 
-contentsObj::~contentsObj() noexcept
+contentsObj::~contentsObj()
 {
 }
 
@@ -951,7 +951,7 @@ clientObj::getreqObj::getreqObj(): openobjects(false), admin(false)
 {
 }
 
-clientObj::getreqObj::~getreqObj() noexcept
+clientObj::getreqObj::~getreqObj()
 {
 }
 
@@ -1123,7 +1123,7 @@ clientObj::subscriberObj::subscriberObj()
 {
 }
 
-clientObj::subscriberObj::~subscriberObj() noexcept
+clientObj::subscriberObj::~subscriberObj()
 {
 }
 
@@ -1388,7 +1388,7 @@ dirmsgreply::dirmsgreply(const x::uuid &requuidArg)
 {
 }
 
-dirmsgreply::~dirmsgreply() noexcept
+dirmsgreply::~dirmsgreply()
 {
 }
 

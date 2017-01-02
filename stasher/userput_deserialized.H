@@ -65,7 +65,7 @@ public:
 
 	//! Destructor
 
-	~deserializedObj() noexcept;
+	~deserializedObj();
 
 	//! Received a content str
 

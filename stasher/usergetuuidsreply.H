@@ -26,7 +26,7 @@ public:
 			  public std::vector<std::pair<std::string, retrobj> > {
 	public:
 		objvecObj() {}
-		~objvecObj() noexcept {}
+		~objvecObj() {}
 	};
 
 
@@ -52,7 +52,7 @@ public:
 		}
 
 		//! Destructor
-		~openobjects() noexcept
+		~openobjects()
 		{
 		}
 
@@ -92,7 +92,7 @@ public:
 	usergetuuidsreply(const x::uuid &requuidArg);
 
 	//! Destructor
-	~usergetuuidsreply() noexcept;
+	~usergetuuidsreply();
 
 	//! Serialization function
 	template<typename iter_type>

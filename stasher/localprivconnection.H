@@ -52,7 +52,7 @@ public:
 
 
 	//! Destructor
-	~localprivconnectionObj() noexcept;
+	~localprivconnectionObj();
 
 	//! The actual main loop
 

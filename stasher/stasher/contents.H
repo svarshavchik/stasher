@@ -33,7 +33,7 @@ public:
 	std::string errmsg;
 
 	contentsObj();
-	~contentsObj() noexcept;
+	~contentsObj();
 };
 
 //! A reference to the results of \ref clientObj::get "objclient->get"()->objects

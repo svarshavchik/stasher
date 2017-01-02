@@ -50,7 +50,7 @@ public:
 	//! Constructor
 
 	objuuidenumeratorObj(const tobjrepo &repoArg);
-	~objuuidenumeratorObj() noexcept;
+	~objuuidenumeratorObj();
 
 	//! Enumerate the next set of objects.
 	x::ptr<objuuidlistObj> next();

@@ -11,6 +11,6 @@ clusternotifierObj::clusternotifierObj()
 {
 }
 
-clusternotifierObj::~clusternotifierObj() noexcept
+clusternotifierObj::~clusternotifierObj()
 {
 }

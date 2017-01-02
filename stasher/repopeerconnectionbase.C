@@ -20,7 +20,7 @@ repopeerconnectionbaseObj::peerlinkObj
 {
 }
 
-repopeerconnectionbaseObj::peerlinkObj::~peerlinkObj() noexcept
+repopeerconnectionbaseObj::peerlinkObj::~peerlinkObj()
 {
 }
 
@@ -28,7 +28,7 @@ repopeerconnectionbaseObj::repopeerconnectionbaseObj()
 {
 }
 
-repopeerconnectionbaseObj::~repopeerconnectionbaseObj() noexcept
+repopeerconnectionbaseObj::~repopeerconnectionbaseObj()
 {
 }
 
@@ -39,7 +39,7 @@ repopeerconnectionbaseObj::peerdisconnect_msgObj
 }
 
 repopeerconnectionbaseObj::peerdisconnect_msgObj
-::~peerdisconnect_msgObj() noexcept
+::~peerdisconnect_msgObj()
 {
 }
 

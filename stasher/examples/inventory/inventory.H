@@ -33,7 +33,7 @@ public:
 	inventoryObj() {}
 
 	// Destructor
-	~inventoryObj() noexcept {}
+	~inventoryObj() {}
 
 	// Copy constructor
 	inventoryObj(const inventoryObj &o) : stock(o.stock), uuid(o.uuid)

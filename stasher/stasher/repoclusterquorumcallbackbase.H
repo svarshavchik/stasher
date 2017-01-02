@@ -23,7 +23,7 @@ public:
 	repoclusterquorumcallbackbaseObj();
 
 	//! Destructor
-	~repoclusterquorumcallbackbaseObj() noexcept;
+	~repoclusterquorumcallbackbaseObj();
 
 	//! Callback
 	virtual void quorum(const quorumstate &quorum)=0;

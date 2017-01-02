@@ -45,7 +45,7 @@ public:
 	{
 	}
 
-	~simdst() noexcept
+	~simdst()
 	{
 	}
 
@@ -139,7 +139,7 @@ public:
 	{
 	}
 
-	~simsrc() noexcept
+	~simsrc()
 	{
 	}
 

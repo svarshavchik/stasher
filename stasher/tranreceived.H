@@ -20,7 +20,7 @@ public:
 	tranreceivedObj();
 
 	//! Destructor
-	~tranreceivedObj() noexcept;
+	~tranreceivedObj();
 
 	//! Add a bunch of uuids.
 	virtual void received(const tranuuid &uuids)=0;

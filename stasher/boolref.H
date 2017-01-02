@@ -18,7 +18,7 @@ public:
 	boolrefObj();
 
 	//! Destructor
-	~boolrefObj() noexcept;
+	~boolrefObj();
 
 	//! Status
 	bool flag;

@@ -34,7 +34,7 @@ clusterconnecterObj::clusterconnecterObj(const std::string &nameArg)
 {
 }
 
-clusterconnecterObj::~clusterconnecterObj() noexcept
+clusterconnecterObj::~clusterconnecterObj()
 {
 }
 
@@ -62,7 +62,7 @@ class clusterconnecterObj::dummyCallbackObj : public x::epoll::base::callbackObj
 
 public:
 	dummyCallbackObj();
-	~dummyCallbackObj() noexcept;
+	~dummyCallbackObj();
 
 	bool timedout;
 
@@ -74,7 +74,7 @@ clusterconnecterObj::dummyCallbackObj::dummyCallbackObj()
 {
 }
 
-clusterconnecterObj::dummyCallbackObj::~dummyCallbackObj() noexcept
+clusterconnecterObj::dummyCallbackObj::~dummyCallbackObj()
 {
 }
 
@@ -96,7 +96,7 @@ public:
 	{
 	}
 
-	~installPeers() noexcept
+	~installPeers()
 	{
 	}
 
@@ -160,7 +160,7 @@ clusterconnecterObj::connect_common::connect_common(const x::eventfd &eventfd)
 	eventfd->epoll_add(EPOLLIN, epollfd, epollcb);
 }
 
-clusterconnecterObj::connect_common::~connect_common() noexcept
+clusterconnecterObj::connect_common::~connect_common()
 {
 }
 

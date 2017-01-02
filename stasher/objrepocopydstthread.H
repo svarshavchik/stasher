@@ -118,7 +118,7 @@ public:
 	objrepocopydstthreadObj(const std::string &name);
 
 	//! Destructor
-	~objrepocopydstthreadObj() noexcept;
+	~objrepocopydstthreadObj();
 
 	//! Return this thread's name
 	std::string getName() const noexcept;
@@ -163,7 +163,7 @@ public:
 	//! The execution thread
 
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
-		 start_thread_sync &sync_arg,
+		 start_threadmsgdispatcher_sync &sync_arg,
 		 tobjrepo &repocpy,
 		 x::weakptr<objrepocopysrcinterfaceptr> &srcArg,
 		 boolref &flagref,

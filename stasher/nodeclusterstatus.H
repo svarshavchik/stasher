@@ -77,7 +77,7 @@ public:
 	{
 	}
 
-	~nodeclusterstatus() noexcept {}
+	~nodeclusterstatus() {}
 
 	//! If this node is a master, check if another node is this node's slave
 

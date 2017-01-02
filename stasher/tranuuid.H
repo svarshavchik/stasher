@@ -24,7 +24,7 @@ public:
 	tranuuidObj();
 
 	//! Destructor
-	~tranuuidObj() noexcept;
+	~tranuuidObj();
 
 	//! The set
 	std::set<x::uuid> uuids;

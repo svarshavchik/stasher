@@ -53,7 +53,7 @@ public:
 
 
 		//! Destructor
-		~peerlinkObj() noexcept;
+		~peerlinkObj();
 
 		//! The controller
 
@@ -92,7 +92,7 @@ public:
 	repopeerconnectionbaseObj();
 
 	//! Destructor
-	~repopeerconnectionbaseObj() noexcept;
+	~repopeerconnectionbaseObj();
 
 	//! Invoked by slave controller, to establish linkage with a connection object to its master
 
@@ -136,7 +136,7 @@ public:
 				      &objArg);
 
 		//! Destructor
-		~peerdisconnect_msgObj() noexcept;
+		~peerdisconnect_msgObj();
 
 		//! Slave controller has been disconnected
 		void destroyed(const x::ptr<repocontrollerbaseObj> &dummy);
@@ -166,7 +166,7 @@ public:
 		}
 
 		//! Destructor
-		~deser() noexcept
+		~deser()
 		{
 		}
 	};

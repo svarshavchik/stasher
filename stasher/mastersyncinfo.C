@@ -23,6 +23,6 @@ mastersyncinfoObj
 {
 }
 
-mastersyncinfoObj::~mastersyncinfoObj() noexcept
+mastersyncinfoObj::~mastersyncinfoObj()
 {
 }

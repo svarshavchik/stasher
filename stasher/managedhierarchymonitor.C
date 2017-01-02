@@ -65,7 +65,7 @@ public:
 		const managedhierarchymonitor &callbackArg);
 
 	//! Destructor
-	~implObj() noexcept;
+	~implObj();
 
 	// Mcguffin callback that handles the response to the
 	// connection_update()'s request for the hierarchy's current contents.
@@ -82,7 +82,7 @@ public:
 		{
 		}
 
-		~getdirCompleteMcguffinObj() noexcept {}
+		~getdirCompleteMcguffinObj() {}
 
 		// Directory request complete. Instantiate the first
 		// processDirResultsObj, and kick it off to process the first
@@ -119,7 +119,7 @@ public:
 		{
 		}
 
-		~processDirResultsObj() noexcept
+		~processDirResultsObj()
 		{
 		}
 
@@ -169,7 +169,7 @@ public:
 		{
 		}
 
-		~updateCallbackObj() noexcept
+		~updateCallbackObj()
 		{
 		}
 
@@ -193,7 +193,7 @@ managedhierarchymonitorObj::managedhierarchymonitorObj()
 {
 }
 
-managedhierarchymonitorObj::~managedhierarchymonitorObj() noexcept
+managedhierarchymonitorObj::~managedhierarchymonitorObj()
 {
 }
 
@@ -206,7 +206,7 @@ managedhierarchymonitorObj::implObj::implObj(const clientptr &clientArg,
 {
 }
 
-managedhierarchymonitorObj::implObj::~implObj() noexcept
+managedhierarchymonitorObj::implObj::~implObj()
 {
 }
 

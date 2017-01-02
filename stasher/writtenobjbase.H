@@ -21,7 +21,7 @@ class writtenobjbaseObj : virtual public x::obj {
 
 public:
 	writtenobjbaseObj() noexcept;
-	~writtenobjbaseObj() noexcept;
+	~writtenobjbaseObj();
 
 	//! The serialization function must be implemented in a subclass
 

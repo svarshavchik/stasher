@@ -5,15 +5,15 @@
 
 #include "threadmgr.H"
 
-start_thread_syncObj::start_thread_syncObj()
+start_threadmsgdispatcher_syncObj::start_threadmsgdispatcher_syncObj()
 {
 }
 
-start_thread_syncObj::~start_thread_syncObj() noexcept
+start_threadmsgdispatcher_syncObj::~start_threadmsgdispatcher_syncObj()
 {
 }
 
-void start_thread_syncObj::thread_started()
+void start_threadmsgdispatcher_syncObj::thread_started()
 {
 	std::unique_lock<std::mutex> lock{mutex};
 }

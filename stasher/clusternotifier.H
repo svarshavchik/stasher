@@ -24,7 +24,7 @@ public:
         clusternotifierObj();
 
 	//! Destructor
-        ~clusternotifierObj() noexcept;
+        ~clusternotifierObj();
 
         //! Status notification update.
 

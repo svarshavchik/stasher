@@ -27,7 +27,7 @@ public:
 			vec.push_back(i);
 	}
 
-	~dummy() noexcept
+	~dummy()
 	{
 	}
 
@@ -44,7 +44,7 @@ runw(const x::ref<STASHER_NAMESPACE::fdobjwriterthreadObj> &thr,
 {
 	auto tracker=STASHER_NAMESPACE::stoppableThreadTrackerImpl::create();
 
-	return std::make_pair(tracker, tracker->start_thread(thr, fd, mcguffin));
+	return std::make_pair(tracker, tracker->start_threadmsgdispatcher(thr, fd, mcguffin));
 }
 
 static void test1()
@@ -185,7 +185,7 @@ public:
 			vec.push_back(i);
 	}
 
-	~bigdummy() noexcept
+	~bigdummy()
 	{
 	}
 

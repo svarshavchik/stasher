@@ -17,7 +17,7 @@ stoppableThreadTrackerImplObj::stoppableThreadTrackerImplObj()
 {
 }
 
-stoppableThreadTrackerImplObj::~stoppableThreadTrackerImplObj() noexcept
+stoppableThreadTrackerImplObj::~stoppableThreadTrackerImplObj()
 {
 	try {
 		stop_threads();
@@ -47,7 +47,7 @@ stoppableThreadTrackerImplObj::implObj::implObj()
 {
 }
 
-stoppableThreadTrackerImplObj::implObj::~implObj() noexcept
+stoppableThreadTrackerImplObj::implObj::~implObj()
 {
 }
 
@@ -147,7 +147,7 @@ stoppableThreadTrackerObj
 {
 }
 
-stoppableThreadTrackerObj::~stoppableThreadTrackerObj() noexcept
+stoppableThreadTrackerObj::~stoppableThreadTrackerObj()
 {
 }
 

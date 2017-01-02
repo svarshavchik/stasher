@@ -35,7 +35,7 @@ localprivconnectionObj
 {
 }
 
-localprivconnectionObj::~localprivconnectionObj() noexcept
+localprivconnectionObj::~localprivconnectionObj()
 {
 }
 
@@ -64,7 +64,7 @@ class LIBCXX_INTERNAL localprivconnectionObj::getserverstatusdonecb
 	{
 	}
 
-	~getserverstatusdonecb() noexcept
+	~getserverstatusdonecb()
 	{
 	}
 
@@ -143,7 +143,7 @@ class LIBCXX_INTERNAL localprivconnectionObj::propsetresetaction {
 
  public:
 	propsetresetaction() {}
-	~propsetresetaction() noexcept {}
+	~propsetresetaction() {}
 
 	virtual void operator()(std::map<std::string,
 					 std::string> &propmap)=0;
@@ -162,7 +162,7 @@ class LIBCXX_INTERNAL localprivconnectionObj::propsetresetaction::setpropvalue :
 		     const std::string &valueArg)
 		: name(nameArg), value(valueArg) {}
 
-	~setpropvalue() noexcept {}
+	~setpropvalue() {}
 
 	void operator()(std::map<std::string,
 				 std::string> &propmap)
@@ -187,7 +187,7 @@ class LIBCXX_INTERNAL localprivconnectionObj::propsetresetaction::resetpropvalue
 	resetpropvalue(const std::string &nameArg)
 		: name(nameArg) {}
 
-	~resetpropvalue() noexcept {}
+	~resetpropvalue() {}
 
 	void operator()(std::map<std::string,
 				 std::string> &propmap)
@@ -321,7 +321,7 @@ class LIBCXX_INTERNAL localprivconnectionObj::resigndonecb
 	{
 	}
 
-	~resigndonecb() noexcept
+	~resigndonecb()
 	{
 	}
 
@@ -443,7 +443,7 @@ public:
 	{
 	}
 
-	~halted_cbObj() noexcept
+	~halted_cbObj()
 	{
 	}
 

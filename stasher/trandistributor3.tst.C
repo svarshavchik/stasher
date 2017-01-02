@@ -205,7 +205,7 @@ class test2loggerobj : virtual public x::obj {
 
 public:
 	test2loggerobj() {}
-	~test2loggerobj() noexcept {}
+	~test2loggerobj() {}
 
 	std::map<std::string, std::list<std::string> > commitlog;
 	std::mutex mutex;
@@ -252,7 +252,7 @@ public:
 
 		: repo(repoArg), name(nameArg), logger(loggerArg) {}
 
-	~test2enumobj() noexcept {}
+	~test2enumobj() {}
 
 	std::set<std::string> names;
 	std::mutex mutex;

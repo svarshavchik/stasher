@@ -10,7 +10,7 @@ tranreceivedObj::tranreceivedObj()
 {
 }
 
-tranreceivedObj::~tranreceivedObj() noexcept
+tranreceivedObj::~tranreceivedObj()
 {
 }
 

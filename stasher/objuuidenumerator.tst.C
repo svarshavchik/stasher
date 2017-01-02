@@ -31,7 +31,7 @@ public:
 	{
 	}
 
-	~uenum() noexcept
+	~uenum()
 	{
 	}
 

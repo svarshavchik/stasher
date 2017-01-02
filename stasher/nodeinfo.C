@@ -22,7 +22,7 @@ nodeinfo::nodeinfo() noexcept
 {
 }
 
-nodeinfo::~nodeinfo() noexcept
+nodeinfo::~nodeinfo()
 {
 }
 

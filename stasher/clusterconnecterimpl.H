@@ -65,7 +65,7 @@ public:
 
 
 	//! Destructor
-	~clusterconnecterimplObj() noexcept;
+	~clusterconnecterimplObj();
 
 	//! Start a repopeerconnectionobj
 

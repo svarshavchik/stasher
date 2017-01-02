@@ -55,6 +55,6 @@ peerstatusannouncerObj::peerstatusannouncerObj(const std::string &peernameArg)
 {
 }
 
-peerstatusannouncerObj::~peerstatusannouncerObj() noexcept
+peerstatusannouncerObj::~peerstatusannouncerObj()
 {
 }

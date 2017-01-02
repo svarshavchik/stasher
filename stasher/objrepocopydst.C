@@ -14,7 +14,7 @@ objrepocopydstObj::objrepocopydstObj()
 {
 }
 
-objrepocopydstObj::~objrepocopydstObj() noexcept
+objrepocopydstObj::~objrepocopydstObj()
 {
 	stop();
 	wait();
@@ -29,7 +29,7 @@ void objrepocopydstObj::start(const tobjrepo &repoArg,
 {
 	auto thr=x::ref<objrepocopydstthreadObj>::create("objrepocopydst");
 
-	this->start_thread(thr, repoArg,
+	this->start_threadmsgdispatcher(thr, repoArg,
 			   x::weakptr<objrepocopysrcinterfaceptr>(srcArg),
 			   flagArg, batonArg, mcguffinArg);
 }

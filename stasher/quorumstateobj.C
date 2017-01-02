@@ -12,7 +12,7 @@ quorumstateObj::quorumstateObj()
 {
 }
 
-quorumstateObj::~quorumstateObj() noexcept
+quorumstateObj::~quorumstateObj()
 {
 }
 

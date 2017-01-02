@@ -36,7 +36,7 @@ public:
 		    bool majorityArg);
 
 	//! Destructor
-	~quorumstate() noexcept;
+	~quorumstate();
 
 	//! Serialization function
 

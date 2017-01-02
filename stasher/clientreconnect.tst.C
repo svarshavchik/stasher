@@ -14,7 +14,7 @@ class sendstop : virtual public x::obj {
 
 public:
 	sendstop() {}
-	~sendstop() noexcept {}
+	~sendstop() {}
 
 	void run(const STASHER_NAMESPACE::client &arg)
 	{

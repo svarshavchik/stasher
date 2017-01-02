@@ -594,7 +594,7 @@ class test8_cb : public tobjrepoObj::finalized_cb {
 
 public:
 	test8_cb() noexcept {}
-	~test8_cb() noexcept {}
+	~test8_cb() {}
 
 	std::map<x::uuid, dist_received_status_t> m;
 

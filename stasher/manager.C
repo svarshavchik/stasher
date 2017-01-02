@@ -36,7 +36,7 @@ public:
 	{
 	}
 
-	~retmcguffinObj() noexcept
+	~retmcguffinObj()
 	{
 	}
 };
@@ -87,7 +87,7 @@ class LIBCXX_HIDDEN managerObj::implObj : virtual public x::obj {
 			timer->setTimerName("stashermanager");
 		}
 
-		~meta_t() noexcept
+		~meta_t()
 		{
 			timer->cancel();
 		}
@@ -101,7 +101,7 @@ class LIBCXX_HIDDEN managerObj::implObj : virtual public x::obj {
 	{
 	}
 
-	~implObj() noexcept
+	~implObj()
 	{
 	}
 
@@ -200,7 +200,7 @@ managerObj::managerObj(const std::string &property_name,
 {
 }
 
-managerObj::~managerObj() noexcept
+managerObj::~managerObj()
 {
 	x::mpobj<implObj::meta_t>::lock lock(impl->meta);
 
@@ -246,7 +246,7 @@ public:
 		LOG_TRACE("Constructed " << impl.describe());
 	}
 
-	~managedObjectObj() noexcept
+	~managedObjectObj()
 	{
 		LOG_TRACE("Destroyed " << impl.describe());
 	}
@@ -279,7 +279,7 @@ public:
 	}
 
 
-	~objectsubscribeRequestObj() noexcept {
+	~objectsubscribeRequestObj() {
 	}
 
 	void destroyed();
@@ -303,7 +303,7 @@ public:
 	{
 	}
 
-	~objectsubscribeCancelledObj() noexcept
+	~objectsubscribeCancelledObj()
 	{
 	}
 
@@ -560,7 +560,7 @@ public:
 		LOG_TRACE("Constructed managed subscriber for " << objname);
 	}
 
-	~managedObjectSubscriberObj() noexcept {
+	~managedObjectSubscriberObj() {
 		LOG_TRACE("Destroyed managed subscriber for " << objname);
 	}
 
@@ -610,7 +610,7 @@ public:
 		{
 		}
 
-		~mcguffinObj() noexcept {
+		~mcguffinObj() {
 		}
 
 		void destroyed()

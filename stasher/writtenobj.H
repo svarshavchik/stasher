@@ -22,7 +22,7 @@ STASHER_NAMESPACE_START
 template<typename msg_type> class writtenObj : public writtenobjbaseObj {
 public:
 	//! Destructor
-	~writtenObj() noexcept {}
+	~writtenObj() {}
 
 	//! The instance of the class
 	msg_type msg;

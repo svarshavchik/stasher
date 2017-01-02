@@ -10,6 +10,6 @@ trancancelleduuidObj::trancancelleduuidObj()
 {
 }
 
-trancancelleduuidObj::~trancancelleduuidObj() noexcept
+trancancelleduuidObj::~trancancelleduuidObj()
 {
 }

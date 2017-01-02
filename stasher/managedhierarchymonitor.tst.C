@@ -37,7 +37,7 @@ public:
 	meta_t meta;
 
 	test1subscriber() {}
-	~test1subscriber() noexcept {}
+	~test1subscriber() {}
 
 	void connection_update(STASHER_NAMESPACE::req_stat_t status)
 	{

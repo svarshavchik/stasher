@@ -58,7 +58,7 @@ public:
 	quorumstatus_impl();
 
 	//! Destructor
-	~quorumstatus_impl() noexcept;
+	~quorumstatus_impl();
 
 	//! Report the quorum's current value
 
@@ -91,7 +91,7 @@ public:
 	repoclusterquorumObj();
 
 	//! Destructor
-	~repoclusterquorumObj() noexcept;
+	~repoclusterquorumObj();
 
 	//! Convenience method to install a very important object handler
 

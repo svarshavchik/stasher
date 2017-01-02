@@ -53,7 +53,7 @@ public:
 	{
 	}
 
-	~quorumcbObj() noexcept
+	~quorumcbObj()
 	{
 	}
 
@@ -80,7 +80,7 @@ class mydistributor : public trandistributorObj {
 
 public:
 	mydistributor() {}
-	~mydistributor() noexcept {}
+	~mydistributor() {}
 
 	std::mutex mutex;
 	std::condition_variable cond;
@@ -154,12 +154,12 @@ public:
 		auto msgqueue=mydistributor::msgqueue_obj::create(distributor);
 
 		repocluster->initialize();
-		tracker->start_thread(x::ref<mydistributor>(distributor),
+		tracker->start_threadmsgdispatcher(x::ref<mydistributor>(distributor),
 				      msgqueue,
 				      repocluster, repo,
 				      x::ptr<x::obj>::create());
 
-		tracker->start_thread(listener,
+		tracker->start_threadmsgdispatcher(listener,
 				      tracker,
 				      distributor,
 				      repo,
@@ -170,7 +170,7 @@ public:
 		(void)repocluster->debug_inquorum();
 	}
 
-	~instance() noexcept
+	~instance()
 	{
 	}
 

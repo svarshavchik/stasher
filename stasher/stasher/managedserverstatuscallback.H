@@ -25,7 +25,7 @@ class managedserverstatuscallbackObj
 public:
 	managedserverstatuscallbackObj();
 
-	~managedserverstatuscallbackObj() noexcept;
+	~managedserverstatuscallbackObj();
 };
 
 //! A reference to a managed server status callback

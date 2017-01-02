@@ -29,7 +29,7 @@ public:
 	static x::property::value<size_t> default_chunksize;
 
 	objuuidlistObj() noexcept;
-	~objuuidlistObj() noexcept;
+	~objuuidlistObj();
 
 	//! The UUIDs of objects in the repository
 

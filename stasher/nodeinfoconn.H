@@ -21,7 +21,7 @@ class nodeinfoconn : public STASHER_NAMESPACE::nodeinfo {
 
 public:
 	nodeinfoconn() noexcept {}
-	~nodeinfoconn() noexcept {}
+	~nodeinfoconn() {}
 
 	//! Constructor
 	nodeinfoconn(const nodeinfo &n) : nodeinfo(n) {}

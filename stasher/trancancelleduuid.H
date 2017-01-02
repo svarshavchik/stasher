@@ -19,7 +19,7 @@ public:
 	trancancelleduuidObj();
 
 	//! Destructor
-	~trancancelleduuidObj() noexcept;
+	~trancancelleduuidObj();
 
 	//! Remove a bunch of uuids.
 	virtual void cancelled(const tranuuid &uuids)=0;

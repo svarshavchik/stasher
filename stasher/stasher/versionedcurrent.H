@@ -52,7 +52,7 @@ public:
 	}
 
 	//! Destructor
-	~versionedCurrentObj() noexcept
+	~versionedCurrentObj()
 	{
 	}
 

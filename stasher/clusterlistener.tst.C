@@ -20,7 +20,7 @@ public:
 	{
 	}
 
-	~testclusterlistenerObj() noexcept
+	~testclusterlistenerObj()
 	{
 	}
 
@@ -86,7 +86,7 @@ static void test1(const char *clusterdir,
 	STASHER_NAMESPACE::stoppableThreadTrackerImpl
 		threads(STASHER_NAMESPACE::stoppableThreadTrackerImpl::create());
 
-	threads->start_thread(x::ref<testclusterlistenerObj>::create(nodedir));
+	threads->start_threadmsgdispatcher(x::ref<testclusterlistenerObj>::create(nodedir));
 
 	{
 		bool caught=false;

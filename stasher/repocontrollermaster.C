@@ -48,7 +48,7 @@ public:
 	{
 	}
 
-	~handoff_msgObj() noexcept
+	~handoff_msgObj()
 	{
 	}
 };
@@ -66,7 +66,7 @@ public:
 		repopeerconnectionptr peer;
 
 		retval() {}
-		~retval() noexcept {}
+		~retval() {}
 	};
 
 	x::ptr<retval> retvalref;
@@ -80,7 +80,7 @@ public:
 	x::eventfd eventfd;
 
 	commitThreadObj();
-	~commitThreadObj() noexcept;
+	~commitThreadObj();
 
 	void run(const x::ref<commitJobObj> &job,
 		 const x::ref<repocontrollermasterObj> &masterArg);
@@ -91,7 +91,7 @@ repocontrollermasterObj::commitThreadObj
 {
 }
 
-repocontrollermasterObj::commitThreadObj::~commitThreadObj() noexcept
+repocontrollermasterObj::commitThreadObj::~commitThreadObj()
 {
 }
 
@@ -111,7 +111,7 @@ public:
 
 	thisnodereceivedObj(const repocontrollermasterptr
 			    &controllerArg);
-	~thisnodereceivedObj() noexcept;
+	~thisnodereceivedObj();
 
 private:
 	x::weakptr< repocontrollermasterptr > controller;
@@ -126,7 +126,7 @@ repocontrollermasterObj::thisnodereceivedObj
 }
 
 repocontrollermasterObj::thisnodereceivedObj
-::~thisnodereceivedObj() noexcept
+::~thisnodereceivedObj()
 {
 }
 
@@ -169,7 +169,7 @@ public:
 
 	public:
 		syncObj() : copysrc(objrepocopysrc::create()) {}
-		~syncObj() noexcept {}
+		~syncObj() {}
 
 		// Syncing this slave
 		objrepocopysrcObj::copycompleteptr copycomplete;
@@ -202,7 +202,7 @@ public:
 		syncobjcbObj(const repocontrollermasterptr
 			     &controllerArg)
 			noexcept;
-		~syncobjcbObj() noexcept;
+		~syncobjcbObj();
 
 		void destroyed();
 	};
@@ -210,7 +210,7 @@ public:
 	bool synced;
 
 	slaveinfo();
-	~slaveinfo() noexcept;
+	~slaveinfo();
 };
 
 repocontrollermasterObj::slaveinfo::slaveinfo()
@@ -218,7 +218,7 @@ repocontrollermasterObj::slaveinfo::slaveinfo()
 {
 }
 
-repocontrollermasterObj::slaveinfo::~slaveinfo() noexcept
+repocontrollermasterObj::slaveinfo::~slaveinfo()
 {
 }
 
@@ -228,7 +228,7 @@ repocontrollermasterObj::slaveConnectionObj
 {
 }
 
-repocontrollermasterObj::slaveConnectionObj::~slaveConnectionObj() noexcept
+repocontrollermasterObj::slaveConnectionObj::~slaveConnectionObj()
 {
 }
 
@@ -259,7 +259,7 @@ class repocontrollermasterObj::clusterNotifierCallbackObj
 public:
 	clusterNotifierCallbackObj(const repocontrollermasterptr
 				   &controllerArg);
-	~clusterNotifierCallbackObj() noexcept;
+	~clusterNotifierCallbackObj();
 
         void clusterupdated(const clusterinfoObj::cluster_t &newStatus)
 ;
@@ -273,7 +273,7 @@ repocontrollermasterObj::clusterNotifierCallbackObj
 }
 
 repocontrollermasterObj::clusterNotifierCallbackObj
-::~clusterNotifierCallbackObj() noexcept
+::~clusterNotifierCallbackObj()
 {
 }
 
@@ -308,7 +308,7 @@ repocontrollermasterObj
 {
 }
 
-repocontrollermasterObj::~repocontrollermasterObj() noexcept
+repocontrollermasterObj::~repocontrollermasterObj()
 {
 }
 
@@ -321,7 +321,7 @@ public:
 			<< " created");
 	}
 
-	~master_mcguffin() noexcept
+	~master_mcguffin()
 	{
 		LOG_TRACE("mcguffin " << dynamic_cast<x::obj *>(this) << " destroyed");
 	}
@@ -331,7 +331,7 @@ repocontrollermasterObj::start_controller_ret_t
 repocontrollermasterObj::start_controller(const msgqueue_obj &msgqueue,
 					  const x::ref<x::obj> &mcguffin)
 {
-	return tracker->start_thread(x::ref<repocontrollermasterObj>(this),
+	return tracker->start_threadmsgdispatcher(x::ref<repocontrollermasterObj>(this),
 				     msgqueue,
 				     mcguffin);
 }
@@ -625,14 +625,14 @@ class repocontrollermasterObj::quorumPeerListObj
 
 public:
 	quorumPeerListObj();
-	~quorumPeerListObj() noexcept;
+	~quorumPeerListObj();
 };
 
 repocontrollermasterObj::quorumPeerListObj::quorumPeerListObj()
 {
 }
 
-repocontrollermasterObj::quorumPeerListObj::~quorumPeerListObj() noexcept
+repocontrollermasterObj::quorumPeerListObj::~quorumPeerListObj()
 {
 }
 
@@ -858,7 +858,7 @@ repocontrollermasterObj::syncslave_cbObj::syncslave_cbObj()
 {
 }
 
-repocontrollermasterObj::syncslave_cbObj::~syncslave_cbObj() noexcept
+repocontrollermasterObj::syncslave_cbObj::~syncslave_cbObj()
 {
 }
 
@@ -871,7 +871,7 @@ repocontrollermasterObj::slaveinfo::syncobjcbObj
 {
 }
 
-repocontrollermasterObj::slaveinfo::syncobjcbObj::~syncobjcbObj() noexcept
+repocontrollermasterObj::slaveinfo::syncobjcbObj::~syncobjcbObj()
 {
 }
 
@@ -988,7 +988,7 @@ public:
 		     const x::ptr<x::obj> &commit_mcguffinArg,
 		     x::weakptr<x::ptr<x::obj> > &stop_mcguffinArg);
 
-	~commitJobObj() noexcept;
+	~commitJobObj();
 
 	void run(const x::eventfd &eventfd,
 		 const x::ref<repocontrollermasterObj> &master);
@@ -1140,7 +1140,7 @@ repocontrollermasterObj::commitJobObj
 {
 }
 
-repocontrollermasterObj::commitJobObj::~commitJobObj() noexcept
+repocontrollermasterObj::commitJobObj::~commitJobObj()
 {
 }
 
@@ -1339,7 +1339,7 @@ class repocontrollermasterObj::handoff_repolockthreadObj
 
 public:
 	handoff_repolockthreadObj()=default;
-	~handoff_repolockthreadObj() noexcept=default;
+	~handoff_repolockthreadObj()=default;
 
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 		 const x::eventfd &eventfd,
@@ -1366,7 +1366,7 @@ public:
 	{
 	}
 
-	~handoff_destroy_cb() noexcept
+	~handoff_destroy_cb()
 	{
 	}
 
@@ -1389,7 +1389,7 @@ public:
 	{
 	}
 
-	~announce_mcguffin() noexcept
+	~announce_mcguffin()
 	{
 		batonp->announced();
 	}
@@ -1448,7 +1448,7 @@ void repocontrollermasterObj::dispatch_handoff_request_continue(const x::ref<han
 			(repocontrollermasterptr(this), msg);
 		msg->commitlock=repo->commitlock(eventfd);
 		thr->ondestroy([callback_lock]{callback_lock->destroyed();});
-		tracker->start_thread(thr, eventfd, msg);
+		tracker->start_threadmsgdispatcher(thr, eventfd, msg);
 		return;
 	}
 
@@ -1600,7 +1600,7 @@ public:
 	x::stoppable stop;
 
 	halt_cbObj(const x::stoppable &stopArg) : stop(stopArg) {}
-	~halt_cbObj() noexcept {}
+	~halt_cbObj() {}
 
 	void destroyed()
 	{
@@ -1625,7 +1625,7 @@ public:
 	{
 	}
 
-	~halt_continue_cbObj() noexcept
+	~halt_continue_cbObj()
 	{
 	}
 

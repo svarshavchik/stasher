@@ -81,7 +81,7 @@ public:
 	userput(const userinit &limits);
 
 	//! Destructor
-	~userput() noexcept
+	~userput()
 	{
 	}
 

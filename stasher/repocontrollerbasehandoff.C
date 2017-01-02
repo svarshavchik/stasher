@@ -21,7 +21,7 @@ repocontrollerbasehandoffObj
 {
 }
 
-repocontrollerbasehandoffObj::~repocontrollerbasehandoffObj() noexcept
+repocontrollerbasehandoffObj::~repocontrollerbasehandoffObj()
 {
 }
 

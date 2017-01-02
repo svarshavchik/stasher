@@ -154,7 +154,7 @@ public:
 		 //! The unique identifier used to pass the baton.
 		 const x::uuid &batonuuidArg);
 
-	~batonObj() noexcept;
+	~batonObj();
 
 private:
 
@@ -164,7 +164,7 @@ private:
 
 	public:
 		privatemetainfo() {}
-		~privatemetainfo() noexcept {}
+		~privatemetainfo() {}
 
 		//! The commit lock on the repository
 		tobjrepoObj::commitlockptr_t commitlock;

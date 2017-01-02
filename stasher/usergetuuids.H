@@ -42,7 +42,7 @@ public:
 		bool admin;
 
 		reqinfoObj();
-		~reqinfoObj() noexcept;
+		~reqinfoObj();
 	};
 
 	//! Request parameters
@@ -58,7 +58,7 @@ public:
 	usergetuuids(size_t limitArg);
 
 	//! Destructor
-	~usergetuuids() noexcept;
+	~usergetuuids();
 
 	//! Serialization function
 	template<typename iter_type>

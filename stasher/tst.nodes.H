@@ -42,7 +42,7 @@ public:
 
 	public:
 		nodeObj(const std::string &dir);
-		~nodeObj() noexcept;
+		~nodeObj();
 	};
 
 	typedef x::ptr<nodeObj> noderef;

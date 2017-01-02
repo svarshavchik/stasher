@@ -40,7 +40,7 @@ class objrepocopydstObj
 
 public:
 	objrepocopydstObj();
-	~objrepocopydstObj() noexcept;
+	~objrepocopydstObj();
 
 	//! Start the execution thread
 

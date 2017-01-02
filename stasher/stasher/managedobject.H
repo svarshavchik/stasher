@@ -24,7 +24,7 @@ public:
 	managedobjectObj();
 
 	//! Destructor
-	~managedobjectObj() noexcept;
+	~managedobjectObj();
 
 	//! The object's new or updated contents.
 

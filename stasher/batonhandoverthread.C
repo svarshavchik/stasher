@@ -13,7 +13,7 @@ batonhandoverthreadObj::batonhandoverthreadObj()
 {
 }
 
-batonhandoverthreadObj::~batonhandoverthreadObj() noexcept
+batonhandoverthreadObj::~batonhandoverthreadObj()
 {
 }
 
@@ -32,7 +32,7 @@ public:
 	{
 	}
 
-	~baton_destroyed_callback() noexcept
+	~baton_destroyed_callback()
 	{
 	}
 
@@ -57,7 +57,7 @@ public:
 	{
 	}
 
-	~quorum_status_callback() noexcept
+	~quorum_status_callback()
 	{
 	}
 

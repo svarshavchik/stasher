@@ -25,7 +25,7 @@ public:
 
 
 	//! Destructor
-	~mastersyncinfoObj() noexcept;
+	~mastersyncinfoObj();
 
 	//! Master's name
 	std::string mastername;

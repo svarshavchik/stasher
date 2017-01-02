@@ -34,7 +34,7 @@ public:
 	spacemonitorObj(const x::df &freespacerefArg);
 
 	//! Destructor
-	~spacemonitorObj() noexcept;
+	~spacemonitorObj();
 
 	//! Reference handle for reserved space
 

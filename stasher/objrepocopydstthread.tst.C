@@ -49,7 +49,7 @@ class srcemu : public objrepocopysrcinterfaceObj {
 public:
 
 	srcemu() : catchmsg(false), caughtmsg(false) {}
-	~srcemu() noexcept {}
+	~srcemu() {}
 
 	std::mutex mutex;
 	std::condition_variable cond;
@@ -150,8 +150,8 @@ static void test1()
 
 			mcguffin->ondestroy([monitor]{monitor->destroyed();});
 
-			x::start_thread(test_thread,
-					start_thread_sync::create(),
+			x::start_threadmsgdispatcher(test_thread,
+					start_threadmsgdispatcher_sync::create(),
 					repo,
 					x::weakptr<objrepocopysrcinterfaceptr>
 					(src), flag, batonptr(),
@@ -282,8 +282,8 @@ static void test2()
 	objrepocopydstthreadptr
 		test_thread(objrepocopydstthreadptr::create("dstcopy"));
 
-	auto runthread=x::start_thread(test_thread,
-				       start_thread_sync::create(),
+	auto runthread=x::start_threadmsgdispatcher(test_thread,
+				       start_threadmsgdispatcher_sync::create(),
 				       repo,
 				       x::weakptr<objrepocopysrcinterfaceptr>(src),
 				       boolref::create(),
@@ -330,8 +330,8 @@ static void test3()
 
 			mcguffin->ondestroy([monitor]{monitor->destroyed();});
 
-			x::start_thread(test_thread,
-					start_thread_sync::create(),
+			x::start_threadmsgdispatcher(test_thread,
+					start_threadmsgdispatcher_sync::create(),
 					repo,
 					x::weakptr<objrepocopysrcinterfaceptr>(src),
 					flag, batonptr(),
@@ -404,8 +404,8 @@ static void test4()
 	objrepocopydstthreadptr
 		test_thread(objrepocopydstthreadptr::create("objrepocopydstthread"));
 
-	auto runthread=x::start_thread(test_thread,
-				       start_thread_sync::create(),
+	auto runthread=x::start_threadmsgdispatcher(test_thread,
+				       start_threadmsgdispatcher_sync::create(),
 				       repo,
 				       x::weakptr<objrepocopysrcinterfaceptr>(src),
 				       boolref::create(),
@@ -473,8 +473,8 @@ static void test5()
 	objrepocopydstthreadptr
 		test_thread(objrepocopydstthreadptr::create("dst"));
 
-	auto runthread=x::start_thread(test_thread,
-				       start_thread_sync::create(),
+	auto runthread=x::start_threadmsgdispatcher(test_thread,
+				       start_threadmsgdispatcher_sync::create(),
 				       repo,
 				       x::weakptr<objrepocopysrcinterfaceptr>(src),
 				       boolref::create(),
@@ -543,7 +543,7 @@ public:
 
 	test7_fakesrc() {}
 
-	~test7_fakesrc() noexcept{}
+	~test7_fakesrc(){}
 
 	std::string batonp;
 	std::mutex mutex;

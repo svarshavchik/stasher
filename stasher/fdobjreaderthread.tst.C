@@ -54,7 +54,7 @@ public:
 		++counter;
 	}
 
-	~dummyhandlerObj() noexcept {--counter; }
+	~dummyhandlerObj() {--counter; }
 
 	template<typename ...Args>
 	void event(Args && ...args)
@@ -111,7 +111,7 @@ public:
 	}
 
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
-		 start_thread_sync &sync_arg,
+		 start_threadmsgdispatcher_sync &sync_arg,
 		 const x::fd &fd)
 	{
 		msgqueue_auto msgqueue(this);
@@ -142,7 +142,7 @@ static void test1()
 
 	auto howner=x::ref<threadmgrObj<dummyhandler> >::create();
 
-	howner->start_thread(h, socks.second);
+	howner->start_threadmsgdispatcher(h, socks.second);
 
 	{
 		dummymsg msg;
@@ -171,7 +171,7 @@ static void test2()
 
 	auto howner=x::ref<threadmgrObj<dummyhandler> >::create();
 
-	howner->start_thread(h, socks.second);
+	howner->start_threadmsgdispatcher(h, socks.second);
 
 	{
 		dummymsg msg;
@@ -200,10 +200,10 @@ static void test3()
 
 	auto howner=x::ref<threadmgrObj<dummyhandler> >::create();
 
-	howner->start_thread(h, socks.second);
+	howner->start_threadmsgdispatcher(h, socks.second);
 
 	try {
-		howner->start_thread(h, socks.second);
+		howner->start_threadmsgdispatcher(h, socks.second);
 	} catch (const x::exception &e)
 	{
 		std::cerr << "Expected error: " << e << std::endl;

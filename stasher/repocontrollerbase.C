@@ -18,7 +18,7 @@ repocontroller_start_infoObj
 {
 }
 
-repocontroller_start_infoObj::~repocontroller_start_infoObj() noexcept=default;
+repocontroller_start_infoObj::~repocontroller_start_infoObj()=default;
 
 void repocontroller_start_infoObj::start(const x::ref<x::obj> &mcguffin)
 {
@@ -56,7 +56,7 @@ repocontrollerbaseObj
 		ulock.notify(newstatus);
 }
 
-repocontrollerbaseObj::~repocontrollerbaseObj() noexcept
+repocontrollerbaseObj::~repocontrollerbaseObj()
 {
 	try {
 		started(); // Clear the mcguffin, just in case

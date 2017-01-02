@@ -96,7 +96,7 @@ private:
 		deser_nodeclusterstatus(obj_type &dummy) {}
 
 		//! Destructor
-		~deser_nodeclusterstatus() noexcept {}
+		~deser_nodeclusterstatus() {}
 	};
 
 public:
@@ -119,7 +119,7 @@ public:
 
 
 	//! Destructor
-	~peerstatusannouncerObj() noexcept;
+	~peerstatusannouncerObj();
 
 private:
 	//! This node's status has been updated

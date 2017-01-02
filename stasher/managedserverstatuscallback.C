@@ -12,7 +12,7 @@ managedserverstatuscallbackObj::managedserverstatuscallbackObj()
 {
 }
 
-managedserverstatuscallbackObj::~managedserverstatuscallbackObj() noexcept
+managedserverstatuscallbackObj::~managedserverstatuscallbackObj()
 {
 }
 

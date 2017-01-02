@@ -26,7 +26,7 @@ trandistributorObj::transtatusObj::transtatusObj()
 {
 }
 
-trandistributorObj::transtatusObj::~transtatusObj() noexcept
+trandistributorObj::transtatusObj::~transtatusObj()
 {
 }
 
@@ -35,7 +35,7 @@ trandistributorObj::trandistributorObj()
 {
 }
 
-trandistributorObj::~trandistributorObj() noexcept
+trandistributorObj::~trandistributorObj()
 {
 }
 
@@ -50,7 +50,7 @@ public:
 		 const tobjrepo &repoArg,
 		 const x::ptr<x::obj> &mcguffinArg)
 		: cluster(clusterArg), repo(repoArg), mcguffin(mcguffinArg) {}
-	~startarg() noexcept {}
+	~startarg() {}
 };
 
 
@@ -164,7 +164,7 @@ public:
 	std::set<std::string> *known_nodes;
 
 	purge_cb() noexcept {}
-	~purge_cb() noexcept {}
+	~purge_cb() {}
 
 	void operator()(const x::uuid &uuid,
 			const dist_received_status_t &status)
@@ -250,7 +250,7 @@ public:
 	trandistihave *ihave;
 
 	enumerate_ihave() noexcept {}
-	~enumerate_ihave() noexcept {}
+	~enumerate_ihave() {}
 
 	void operator()(const x::uuid &uuid,
 			const dist_received_status_t &status)
@@ -501,7 +501,7 @@ public:
 	{
 	}
 
-	~received_transactions_cb() noexcept {}
+	~received_transactions_cb() {}
 
 	void operator()(const x::uuid &uuid,
 			const dist_received_status_t &status)

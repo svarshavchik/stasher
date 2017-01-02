@@ -22,7 +22,7 @@ class mytlsshutdown : public clustertlsconnectshutdownObj {
 
 public:
 	mytlsshutdown() {}
-	~mytlsshutdown() noexcept {}
+	~mytlsshutdown() {}
 
 	static std::mutex mutex;
 	static std::condition_variable cond;
@@ -56,7 +56,7 @@ public:
 	{
 	}
 
-	~quorumcbObj() noexcept
+	~quorumcbObj()
 	{
 	}
 
@@ -121,7 +121,7 @@ public:
 		  quorumstatus(x::ptr<quorumcbObj>::create())
 	{
 		repocluster->initialize();
-		tracker->start_thread(listener,
+		tracker->start_threadmsgdispatcher(listener,
 				      tracker,
 				      x::ptr<trandistributorObj>(),
 				      repo,
@@ -134,7 +134,7 @@ public:
 		quorumstatus->wait4(true);
 	}
 
-	~instance() noexcept
+	~instance()
 	{
 	}
 };

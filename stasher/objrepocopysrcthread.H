@@ -119,7 +119,7 @@ public:
 	objrepocopysrcthreadObj(const std::string &name);
 
 	//! Destructor
-	~objrepocopysrcthreadObj() noexcept;
+	~objrepocopysrcthreadObj();
 
 	//! Retrieve this thread's name
 
@@ -189,7 +189,7 @@ public:
 		copycompleteObj(const objrepocopydstinterfaceptr
 				&dstArg);
 
-		~copycompleteObj() noexcept;
+		~copycompleteObj();
 
 		//! Indication that the copy operation was succesfull
 		bool success();
@@ -231,7 +231,7 @@ public:
 		 x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 
 		 //! Start synchronization
-		 start_thread_sync &sync_arg,
+		 start_threadmsgdispatcher_sync &sync_arg,
 
 		 //! Source repository
 		 tobjrepo &repocopy,

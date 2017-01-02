@@ -11,7 +11,7 @@ quorumstatus_impl::quorumstatus_impl()
 {
 }
 
-quorumstatus_impl::~quorumstatus_impl() noexcept
+quorumstatus_impl::~quorumstatus_impl()
 {
 }
 
@@ -29,7 +29,7 @@ repoclusterquorumObj::repoclusterquorumObj()
 {
 }
 
-repoclusterquorumObj::~repoclusterquorumObj() noexcept
+repoclusterquorumObj::~repoclusterquorumObj()
 {
 }
 

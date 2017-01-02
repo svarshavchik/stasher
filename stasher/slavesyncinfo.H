@@ -78,7 +78,7 @@ public:
 		  dstmcguffin(dstmcguffinArg) {}
 
 	//! Destructor
-	~slavesyncinfoObj() noexcept {}
+	~slavesyncinfoObj() {}
 
 	//! Master's name
 	std::string mastername;

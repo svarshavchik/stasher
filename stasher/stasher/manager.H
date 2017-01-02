@@ -94,7 +94,7 @@ public:
 		   const x::hms &default_value=x::hms(0, 1, 0));
 
 	//! Destructor
-	~managerObj() noexcept;
+	~managerObj();
 
 	//! Create a managed subscription
 	x::ref<x::obj> manage_subscription(const client &clientArg,
@@ -187,7 +187,7 @@ public:
 	}
 
 	//! Destructor
-	~simpleManagedObjectObj() noexcept
+	~simpleManagedObjectObj()
 	{
 	}
 

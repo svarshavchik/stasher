@@ -29,7 +29,7 @@ clusterconnecterimplObj
 {
 }
 
-clusterconnecterimplObj::~clusterconnecterimplObj() noexcept
+clusterconnecterimplObj::~clusterconnecterimplObj()
 {
 }
 
@@ -55,7 +55,7 @@ void clusterconnecterimplObj::connected(const std::string &peername,
 	connection->timestamp=connectTimestamp;
 	connection->connuuid=connuuid;
 
-	tracker->start_thread(connection,
+	tracker->start_threadmsgdispatcher(connection,
 			      (session.null() ?
 			       x::fdbase(socket):x::fdbase(session)),
 			      inputiter,

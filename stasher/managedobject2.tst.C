@@ -27,7 +27,7 @@ public:
 	}
 
 	dummyObj(const x::uuid &uuidArg) : uuid(uuidArg) {}
-	~dummyObj() noexcept {
+	~dummyObj() {
 	}
 };
 

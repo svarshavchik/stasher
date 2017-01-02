@@ -23,7 +23,7 @@ class clusterstatusnotifierObj : virtual public x::obj {
 
 public:
         clusterstatusnotifierObj();
-        ~clusterstatusnotifierObj() noexcept;
+        ~clusterstatusnotifierObj();
 
 	//! Callback argument type
 

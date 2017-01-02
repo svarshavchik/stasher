@@ -26,7 +26,7 @@ batonObj::batonObj(const std::string &resigningnodeArg,
 {
 }
 
-batonObj::~batonObj() noexcept
+batonObj::~batonObj()
 {
 	privatemeta_t::lock lock(privatemeta); // Useless
 

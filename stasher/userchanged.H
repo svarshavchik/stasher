@@ -40,7 +40,7 @@ public:
 		    const std::string &suffixArg);
 
 	//! Destructor
-	~userchanged() noexcept;
+	~userchanged();
 
 	//! Serialization function
 	template<typename iter_type>

@@ -20,7 +20,7 @@ class threadreportimplObj : virtual public x::obj,
 
 public:
 	threadreportimplObj();
-	~threadreportimplObj() noexcept;
+	~threadreportimplObj();
 
 	//! Obtain a report from the thread for debugging purposes
 	x::ptr<STASHER_NAMESPACE::singlethreadreportObj>

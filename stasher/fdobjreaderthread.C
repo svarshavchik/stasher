@@ -20,7 +20,7 @@ public:
 	fdadapterObj(const x::fdbase &baseArg,
 		     fdobjreaderthreadObj &meArg);
 
-	~fdadapterObj() noexcept;
+	~fdadapterObj();
 
 	//! Intercept reads.
 
@@ -33,7 +33,7 @@ fdobjreaderthreadObj::fdadapterObj::fdadapterObj(const x::fdbase &baseArg,
 {
 }
 
-fdobjreaderthreadObj::fdadapterObj::~fdadapterObj() noexcept
+fdobjreaderthreadObj::fdadapterObj::~fdadapterObj()
 {
 }
 
@@ -57,7 +57,7 @@ fdobjreaderthreadObj::fdobjreaderthreadObj()
 {
 }
 
-fdobjreaderthreadObj::~fdobjreaderthreadObj() noexcept
+fdobjreaderthreadObj::~fdobjreaderthreadObj()
 {
 }
 

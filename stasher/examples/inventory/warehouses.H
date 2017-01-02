@@ -19,7 +19,7 @@ typedef stasher::current<inventoryptr, stasher::versionedptr<inventoryptr>
 class warehousesObj : virtual public x::obj {
 public:
 	warehousesObj() {}
-	~warehousesObj() noexcept {}
+	~warehousesObj() {}
 
 	// Warehouse, by name.
 

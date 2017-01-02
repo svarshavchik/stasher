@@ -22,7 +22,7 @@ public:
 	STASHER_NAMESPACE::userhelo curserverinfo;
 
 	test1_cb() : received(false), info_received(false) {}
-	~test1_cb() noexcept {}
+	~test1_cb() {}
 
 	void state(const STASHER_NAMESPACE::clusterstate &inquorum)
 	{

@@ -30,7 +30,7 @@ public:
 	{
 	}
 
-	~repopeerconnectionObj() noexcept
+	~repopeerconnectionObj()
 	{
 	}
 
@@ -136,7 +136,7 @@ public:
 	repoclusterinfoObj(const std::string &peername,
 			   const cluster_t &cluster);
 
-	~repoclusterinfoObj() noexcept;
+	~repoclusterinfoObj();
 
 	void renotify(const cluster_t &clusterArg);
 };
@@ -152,7 +152,7 @@ repoclusterinfoObj::repoclusterinfoObj(const std::string &peernameArg,
 {
 }
 
-repoclusterinfoObj::~repoclusterinfoObj() noexcept
+repoclusterinfoObj::~repoclusterinfoObj()
 {
 }
 
@@ -220,7 +220,7 @@ static void test1()
 				tr->finalize();
 			}));
 
-	tracker->start_thread(distributor,
+	tracker->start_threadmsgdispatcher(distributor,
 			      trandistributorObj::msgqueue_obj::create(distributor),
 			      cluster, repo,
 			      x::ptr<x::obj>::create());
@@ -298,7 +298,7 @@ public:
 
 	test2_receiverObj()
 		: uuids(trandistuuid::create()) {}
-	~test2_receiverObj() noexcept {}
+	~test2_receiverObj() {}
 
 	void received(const trandistuuid &recvuuids)
 
@@ -340,7 +340,7 @@ static void test2()
 	x::ref<trandistributorObj>
 		distributor(x::ref<trandistributorObj>::create());
 
-	tracker->start_thread(distributor,
+	tracker->start_threadmsgdispatcher(distributor,
 			      trandistributorObj::msgqueue_obj::create(distributor),
 			      cluster, repo, x::ptr<x::obj>());
 

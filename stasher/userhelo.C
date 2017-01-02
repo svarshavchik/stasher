@@ -17,7 +17,7 @@ userhelo::userhelo(const userinit &limitsArg)
 {
 }
 
-userhelo::~userhelo() noexcept
+userhelo::~userhelo()
 {
 }
 
@@ -43,7 +43,7 @@ userinit::userinit(size_t maxgetsArg,
 {
 }
 
-userinit::~userinit() noexcept
+userinit::~userinit()
 {
 }
 

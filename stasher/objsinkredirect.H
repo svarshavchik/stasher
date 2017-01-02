@@ -27,7 +27,7 @@ public:
 	//! Constructor
 
 	objsinkredirectObj(const objsink &sinkArg);
-	~objsinkredirectObj() noexcept;
+	~objsinkredirectObj();
 
 	//! Sink a message
 	void write(const x::ref<writtenobjbaseObj> &object);

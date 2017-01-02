@@ -63,7 +63,7 @@ public:
 	{
 	}
 
-	~adjinfoObj() noexcept
+	~adjinfoObj()
 	{
 	}
 
@@ -152,7 +152,7 @@ public:
 	{
 	}
 
-	~invokeProcessedFunctorObj() noexcept
+	~invokeProcessedFunctorObj()
 	{
 	}
 

@@ -78,7 +78,7 @@ public:
 		}
 
 		//! Destructor
-		~reconnecter() noexcept
+		~reconnecter()
 		{
 			timer->cancel();
 		}
@@ -110,7 +110,7 @@ public:
 	node &operator=(const node &);
 
 	//! Destructor
-	~node() noexcept;
+	~node();
 
 	class distributorMonitorObj;
 

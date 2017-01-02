@@ -124,7 +124,7 @@ public:
 
 
 	//! Destructor
-	~fdobjrwthreadObj() noexcept;
+	~fdobjrwthreadObj();
 
 	//! Deserialization classlist enumerator
 

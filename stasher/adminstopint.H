@@ -18,7 +18,7 @@ class adminstopintObj : virtual public x::obj {
 
 public:
 	adminstopintObj();
-	~adminstopintObj() noexcept;
+	~adminstopintObj();
 
 	//! An admin connection thread is requesting to stop this instance
 

@@ -24,7 +24,7 @@ public:
 
 	//! Constructor
 	tranObj(const x::uuid &uuidArg);
-	~tranObj() noexcept;
+	~tranObj();
 };
 
 #endif

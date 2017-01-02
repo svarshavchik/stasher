@@ -67,7 +67,7 @@ public:
 
 	//! Default constructor for admin connections, global r/w root
 	nsviewObj();
-	~nsviewObj() noexcept {}
+	~nsviewObj() {}
 
 	//! Map an object name from client view, for reading.
 

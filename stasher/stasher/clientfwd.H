@@ -441,7 +441,7 @@ class clientBase;
 //!
 //! public:
 //!     callbackObj();
-//!     ~callbackObj() noexcept;
+//!     ~callbackObj();
 //!
 //!    void state(const clusterstate &state);
 //!    void serverinfo(const userhelo &serverinfo);
@@ -538,7 +538,7 @@ class clientBase;
 //!
 //! public:
 //!     handlerObj();
-//!     ~handlerObj() noexcept;
+//!     ~handlerObj();
 //!     void updated(const std::string &objname, const std::string &suffix);
 //! };
 //!

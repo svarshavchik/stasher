@@ -19,7 +19,7 @@ public:
 
 	objrepocopydstinterfaceObj();
 
-	~objrepocopydstinterfaceObj() noexcept;
+	~objrepocopydstinterfaceObj();
 
 	//! Process a batonrequest message
 	virtual void event(const objrepocopy::batonrequest &msg)=0;

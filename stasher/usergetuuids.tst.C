@@ -290,7 +290,7 @@ public:
 		  const STASHER_NAMESPACE::client &clArg)
 		: node0(node0Arg), cl(clArg) {}
 
-	~test3_thr() noexcept {}
+	~test3_thr() {}
 
 	void run()
 	{

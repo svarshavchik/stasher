@@ -263,7 +263,7 @@ public:
 
 
 	//! Destructor
-	~clusterinfoObj() noexcept;
+	~clusterinfoObj();
 
 	//! Update list of nodes in the cluster
 
@@ -443,7 +443,7 @@ protected:
 
 
 		//! Destructor
-		~newnodeclusterstatus() noexcept;
+		~newnodeclusterstatus();
 	};
 
 	//! Recalculate the status, with this object being locked.
@@ -544,7 +544,7 @@ public:
 		: info(infoArg), ptr(&*info), lock(ptr->thisnodestatus) {}
 
 	//! Destructor
-	~status() noexcept {}
+	~status() {}
 
 	//! Dereference operator
 	const nodeclusterstatus *operator->() const

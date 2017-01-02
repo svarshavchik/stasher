@@ -46,7 +46,7 @@ class objrepocopysrcthreadObj::dispatch_lock : public std::lock_guard<std::mutex
 public:
 	dispatch_lock(std::mutex &mutex,
 		      const char *functionArg);
-	~dispatch_lock() noexcept;
+	~dispatch_lock();
 };
 
 objrepocopysrcthreadObj::dispatch_lock::dispatch_lock(std::mutex &mutex,
@@ -56,7 +56,7 @@ objrepocopysrcthreadObj::dispatch_lock::dispatch_lock(std::mutex &mutex,
 	LOG_DEBUG("Begin dispatch " << function);
 }
 
-objrepocopysrcthreadObj::dispatch_lock::~dispatch_lock() noexcept
+objrepocopysrcthreadObj::dispatch_lock::~dispatch_lock()
 {
 	LOG_DEBUG("End dispatch " << function);
 }
@@ -70,7 +70,7 @@ class objrepocopysrcthreadObj::uuidenumObj : public objuuidenumeratorObj {
 public:
 	uuidenumObj(const tobjrepo &repoArg,
 		    objrepocopysrcthreadObj *parentArg);
-	~uuidenumObj() noexcept;
+	~uuidenumObj();
 
 	objuuidlist nextbatch(const std::set<std::string> &objectnames)
 ;
@@ -84,7 +84,7 @@ objrepocopysrcthreadObj::uuidenumObj::uuidenumObj(const tobjrepo &repoArg,
 {
 }
 
-objrepocopysrcthreadObj::uuidenumObj::~uuidenumObj() noexcept
+objrepocopysrcthreadObj::uuidenumObj::~uuidenumObj()
 {
 }
 
@@ -120,7 +120,7 @@ public:
 	notifierObj(const x::weakptr<objrepocopydstinterfaceptr >
 		    &dstArg,
 		    const tobjrepo &repoArg);
-	~notifierObj() noexcept;
+	~notifierObj();
 
 	void installed(const std::string &objname,
 		       const x::ptr<x::obj> &lock);
@@ -136,7 +136,7 @@ objrepocopysrcthreadObj::notifierObj
 {
 }
 
-objrepocopysrcthreadObj::notifierObj::~notifierObj() noexcept
+objrepocopysrcthreadObj::notifierObj::~notifierObj()
 {
 }
 
@@ -169,7 +169,7 @@ objrepocopysrcthreadObj::copycompleteObj
 {
 }
 
-objrepocopysrcthreadObj::copycompleteObj::~copycompleteObj() noexcept
+objrepocopysrcthreadObj::copycompleteObj::~copycompleteObj()
 {
 	LOG_DEBUG("copycomplete destructor invoked, status: "
 		  << succeededflag);
@@ -230,7 +230,7 @@ objrepocopysrcthreadObj::objrepocopysrcthreadObj(const std::string &nameArg)
 {
 }
 
-objrepocopysrcthreadObj::~objrepocopysrcthreadObj() noexcept
+objrepocopysrcthreadObj::~objrepocopysrcthreadObj()
 {
 }
 
@@ -493,7 +493,7 @@ tobjrepoObj::commitlock_t objrepocopysrcthreadObj::getcommitlock()
 }
 
 void objrepocopysrcthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
-				  start_thread_sync &sync_arg,
+				  start_threadmsgdispatcher_sync &sync_arg,
 				  tobjrepo &repocopy,
 				  batonptr &batonref,
 				  copycomplete &ret,

@@ -90,7 +90,7 @@ public:
 		{
 		}
 
-		~objinfo() noexcept
+		~objinfo()
 		{
 		}
 
@@ -146,7 +146,7 @@ public:
 	{
 	}
 
-	~tranmeta() noexcept
+	~tranmeta()
 	{
 	}
 

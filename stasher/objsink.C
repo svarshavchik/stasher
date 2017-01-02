@@ -12,7 +12,7 @@ objsinkObj::objsinkObj()
 {
 }
 
-objsinkObj::~objsinkObj() noexcept
+objsinkObj::~objsinkObj()
 {
 }
 

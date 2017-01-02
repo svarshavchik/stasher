@@ -52,7 +52,7 @@ public:
 
 
 	//! Destructor
-	~slaveConnectionObj() noexcept;
+	~slaveConnectionObj();
 
 	//! The peer linkage object that was sent to the thread. It's also the mcguffin.
 

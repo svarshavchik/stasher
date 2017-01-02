@@ -73,7 +73,7 @@ protected:
 		deser(obj_type &dummy) {}
 
 		//! Destructor
-		~deser() noexcept {}
+		~deser() {}
 	};
 
 	//! This thread's name
@@ -169,7 +169,7 @@ public:
 
 
 	//! Destructor
-	~localconnectionObj() noexcept;
+	~localconnectionObj();
 
 	//! The thread
 	void run(//! threadmsgdispatcher mcguffin,
@@ -337,7 +337,7 @@ public:
 		: usergetuuids(conn.limits.maxobjects) {}
 
 	//! Destructor
-	~deser() noexcept {}
+	~deser() {}
 };
 
 #endif

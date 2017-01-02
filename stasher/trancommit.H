@@ -60,7 +60,7 @@ public:
 	//! Constructor
 	trancommitObj(const x::uuid &uuidArg,
 		      const tobjrepo &repoArg);
-	~trancommitObj() noexcept;
+	~trancommitObj();
 
 	//! Read-only access to options
 

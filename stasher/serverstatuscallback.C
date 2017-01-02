@@ -12,7 +12,7 @@ serverstatuscallbackObj::serverstatuscallbackObj()
 {
 }
 
-serverstatuscallbackObj::~serverstatuscallbackObj() noexcept
+serverstatuscallbackObj::~serverstatuscallbackObj()
 {
 }
 

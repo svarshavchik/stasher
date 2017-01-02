@@ -20,7 +20,7 @@ template<typename obj_type> class msgthreadbaseObj : virtual public x::obj {
 
 public:
 	msgthreadbaseObj() {}
-	~msgthreadbaseObj() noexcept {}
+	~msgthreadbaseObj() {}
 
 	//! Invoke the message
 	virtual void go(obj_type &cl)=0;

@@ -65,7 +65,7 @@ public:
 	{
 	}
 
-	~baton_slave_commitlock_thread() noexcept=default;
+	~baton_slave_commitlock_thread()=default;
 
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 		 const x::eventfd &eventfdArg);
@@ -91,7 +91,7 @@ public:
 ;
 
 	//! Destructor
-	~srcmasterObj() noexcept;
+	~srcmasterObj();
 
 	//! Process a batonresponse message
 	void event(const objrepocopy::batonresponse &msg);
@@ -143,7 +143,7 @@ public:
 				      &writerArg);
 
 		//! Destructor
-		~tranreceivednotifyObj() noexcept;
+		~tranreceivednotifyObj();
 
 		//! This node received transaction(s)
 		void received(const trandistuuid &uuids);
@@ -171,7 +171,7 @@ public:
 	slavemeta()=default;
 
 	//! Destructor
-	~slavemeta() noexcept=default;
+	~slavemeta()=default;
 
 	//! Baton received from master, for handing off to another
 
@@ -184,7 +184,7 @@ repopeerconnectionObj::srcmasterObj
 {
 }
 
-repopeerconnectionObj::srcmasterObj::~srcmasterObj() noexcept
+repopeerconnectionObj::srcmasterObj::~srcmasterObj()
 {
 }
 
@@ -250,7 +250,7 @@ public:
 		     const repopeerconnectionptr &peerthreadArg);
 
 	//! Destructor
-	~dstmasterObj() noexcept;
+	~dstmasterObj();
 
 	//! Process a batonrequest message
 	void event(const objrepocopy::batonrequest &msg);
@@ -290,7 +290,7 @@ repopeerconnectionObj::dstmasterObj
 {
 }
 
-repopeerconnectionObj::dstmasterObj::~dstmasterObj() noexcept
+repopeerconnectionObj::dstmasterObj::~dstmasterObj()
 {
 }
 
@@ -400,7 +400,7 @@ public:
 			const std::string &peernameArg);
 
 	//! Destructor
-	~syncslave_cbObj() noexcept;
+	~syncslave_cbObj();
 
 	//! Bind to this source interface
 	void bind(const objrepocopysrcinterfaceptr &src)
@@ -414,7 +414,7 @@ repopeerconnectionObj::syncslave_cbObj
 {
 }
 
-repopeerconnectionObj::syncslave_cbObj::~syncslave_cbObj() noexcept
+repopeerconnectionObj::syncslave_cbObj::~syncslave_cbObj()
 {
 }
 
@@ -441,7 +441,7 @@ repopeerconnectionObj::objdeserializer
 {
 }
 
-repopeerconnectionObj::objdeserializer::~objdeserializer() noexcept
+repopeerconnectionObj::objdeserializer::~objdeserializer()
 {
 }
 
@@ -471,7 +471,7 @@ repopeerconnectionObj::slavemeta::tranreceivednotifyObj
 }
 
 repopeerconnectionObj::slavemeta::tranreceivednotifyObj
-::~tranreceivednotifyObj() noexcept
+::~tranreceivednotifyObj()
 {
 }
 
@@ -499,7 +499,7 @@ class repopeerconnectionObj::mastermeta {
 
 public:
 	mastermeta();
-	~mastermeta() noexcept;
+	~mastermeta();
 
 	repocontrollermasterptr master;
 	x::ptr<dstmasterObj> dstcopy;
@@ -525,7 +525,7 @@ repopeerconnectionObj::mastermeta::mastermeta()
 {
 }
 
-repopeerconnectionObj::mastermeta::~mastermeta() noexcept
+repopeerconnectionObj::mastermeta::~mastermeta()
 {
 }
 
@@ -558,7 +558,7 @@ repopeerconnectionObj::trandeserializer
 {
 }
 
-repopeerconnectionObj::trandeserializer::~trandeserializer() noexcept
+repopeerconnectionObj::trandeserializer::~trandeserializer()
 {
 }
 
@@ -573,7 +573,7 @@ repopeerconnectionObj::repopeerconnectionObj(const std::string &connectionName,
 {
 }
 
-repopeerconnectionObj::~repopeerconnectionObj() noexcept
+repopeerconnectionObj::~repopeerconnectionObj()
 {
 }
 
@@ -1361,7 +1361,7 @@ public:
 	installattempt_cb(const repopeerconnectionptr &connArg,
 			  const clusterinfoptr &clusterArg)
 ;
-	~installattempt_cb() noexcept;
+	~installattempt_cb();
 
 	void destroyed();
 };
@@ -1451,7 +1451,7 @@ repopeerconnectionObj::installattempt_cb
 {
 }
 
-repopeerconnectionObj::installattempt_cb::~installattempt_cb() noexcept
+repopeerconnectionObj::installattempt_cb::~installattempt_cb()
 {
 }
 
@@ -1558,7 +1558,7 @@ repopeerconnectionObj::commitreqObj::commitreqObj(const x::uuid &uuidArg,
 {
 }
 
-repopeerconnectionObj::commitreqObj::~commitreqObj() noexcept
+repopeerconnectionObj::commitreqObj::~commitreqObj()
 {
 }
 
@@ -1725,7 +1725,7 @@ void repopeerconnectionObj::deserialized(const baton_master_announce_msg &msg)
 
 	batonp->set_commitlock(slavemetaptr->dstrepo->commitlock(eventfd));
 
-	tracker->start_thread(commitThread, eventfd);
+	tracker->start_threadmsgdispatcher(commitThread, eventfd);
 }
 
 class repopeerconnectionObj::baton_newmaster_installed_cb
@@ -1743,7 +1743,7 @@ public:
 	{
 	}
 
-	~baton_newmaster_installed_cb() noexcept
+	~baton_newmaster_installed_cb()
 	{
 		repopeerconnectionptr ptr=master.getptr();
 
@@ -1947,7 +1947,7 @@ public:
 		       const repocontrollermasterptr &masterArg)
 ;
 
-	~baton_given_cb() noexcept;
+	~baton_given_cb();
 };
 
 LOG_FUNC_SCOPE_DECL(repopeerconnectionObj::dispatch::baton_transfer_request, baton_transfer_requestLog);
@@ -2022,7 +2022,7 @@ void repopeerconnectionObj::deserialized(const batonisyours &msg)
 
 	batonp->set_commitlock(slavemetaptr->dstrepo->commitlock(eventfd));
 
-	tracker->start_thread(commitThread, eventfd);
+	tracker->start_threadmsgdispatcher(commitThread, eventfd);
 }
 
 void repopeerconnectionObj::dispatch_batonismine(const baton &batonp)
@@ -2053,7 +2053,7 @@ repopeerconnectionObj::baton_given_cb
 {
 }
 
-repopeerconnectionObj::baton_given_cb::~baton_given_cb() noexcept
+repopeerconnectionObj::baton_given_cb::~baton_given_cb()
 {
 	repocontrollermasterptr masterptr=master.getptr();
 
@@ -2171,7 +2171,7 @@ public:
 	{
 	}
 
-	~handover_request_cb() noexcept
+	~handover_request_cb()
 	{
 		repopeerconnectionptr ptr(conn.getptr());
 
@@ -2253,7 +2253,7 @@ public:
 	{
 	}
 
-	~pendingObj() noexcept
+	~pendingObj()
 	{
 	}
 };

@@ -41,7 +41,7 @@ public:
 	}
 
 	//! Destructor
-	~versionedDestroyCallbackObj() noexcept {
+	~versionedDestroyCallbackObj() {
 	}
 
 	//! Invoke the original functor

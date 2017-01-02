@@ -36,7 +36,7 @@ public:
 		req_stat_t status;
 
 		getchunk() {}
-		~getchunk() noexcept {}
+		~getchunk() {}
 
 		//! Get the next chunk of object names
 
@@ -59,7 +59,7 @@ public:
 
 	//! Destructor
 
-	~dirmsgreply() noexcept;
+	~dirmsgreply();
 
 	template<bool> class serialize_impl;
 

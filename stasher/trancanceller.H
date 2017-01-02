@@ -40,7 +40,7 @@ public:
 
 
 	//! Destructor
-	~trancancellerObj() noexcept;
+	~trancancellerObj();
 
 	//! An object was just installed
 

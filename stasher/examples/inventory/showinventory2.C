@@ -8,7 +8,7 @@ class subscriptionObj : public stasher::currentBaseObj<inventoryptr> {
 
 public:
 	subscriptionObj() {}
-	~subscriptionObj() noexcept {}
+	~subscriptionObj() {}
 
 	void update(const inventoryptr &newvalue, bool isinitial) override;
 

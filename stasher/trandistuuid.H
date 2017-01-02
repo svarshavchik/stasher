@@ -61,7 +61,7 @@ public:
 	trandistuuidObj();
 
 	//! Destructor
-	~trandistuuidObj() noexcept;
+	~trandistuuidObj();
 
 	//! The set
 	std::map<x::uuid, dist_received_status_t> uuids;

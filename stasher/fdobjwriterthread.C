@@ -24,7 +24,7 @@ fdobjwriterthreadObj::fdobjwriterthreadObj(const std::string &threadName,
 {
 }
 
-fdobjwriterthreadObj::~fdobjwriterthreadObj() noexcept
+fdobjwriterthreadObj::~fdobjwriterthreadObj()
 {
 }
 
@@ -116,7 +116,7 @@ public:
 	{
 	}
 
-	~sendfdreqObj() noexcept
+	~sendfdreqObj()
 	{
 	}
 
@@ -130,7 +130,7 @@ fdobjwriterthreadObj::getsendfd::getsendfd()
 {
 }
 
-fdobjwriterthreadObj::getsendfd::~getsendfd() noexcept
+fdobjwriterthreadObj::getsendfd::~getsendfd()
 {
 }
 
@@ -144,7 +144,7 @@ class LIBCXX_INTERNAL fdobjwriterthreadObj::getsendfd::default_impl
 
 	default_impl(const std::vector<x::fd> &fdArg)
  : fd(fdArg) {}
-	~default_impl() noexcept {}
+	~default_impl() {}
 
 	const std::vector<x::fd> &getFd() { return fd; }
 };

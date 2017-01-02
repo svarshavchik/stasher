@@ -118,7 +118,7 @@ public:
 
 
 	//! Destructor
-	~repocontrollerslaveObj() noexcept;
+	~repocontrollerslaveObj();
 
 	/* Externally-invoked methods */
 

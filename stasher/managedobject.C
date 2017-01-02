@@ -12,7 +12,7 @@ managedobjectObj::managedobjectObj()
 {
 }
 
-managedobjectObj::~managedobjectObj() noexcept
+managedobjectObj::~managedobjectObj()
 {
 }
 

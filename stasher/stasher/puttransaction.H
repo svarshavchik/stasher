@@ -43,7 +43,7 @@ public:
 		objcontentsObj(const std::string &contentsArg);
 		
 		//! Destructor
-		~objcontentsObj() noexcept;
+		~objcontentsObj();
 	};
 
 	//! The contents of a new or an updated objects
@@ -57,7 +57,7 @@ public:
 		objcontents();
 
 		//! Destructor
-		~objcontents() noexcept;
+		~objcontents();
 
 		//! Constructor - contents in a file descriptor
 		objcontents(const x::fd &filedesc);
@@ -123,7 +123,7 @@ public:
 		updinfo();
 
 		//! Destructor
-		~updinfo() noexcept;
+		~updinfo();
 
 		//! The serialization function
 
@@ -160,7 +160,7 @@ public:
 
 
 	puttransactionObj();
-	~puttransactionObj() noexcept;
+	~puttransactionObj();
 
 	//! Maximum number of objects that can be deserialized
 
@@ -200,7 +200,7 @@ public:
 		}
 
 		//! Destructor
-		~content_str() noexcept
+		~content_str()
 		{
 		}
 

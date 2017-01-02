@@ -10,7 +10,7 @@ trandistuuidObj::trandistuuidObj()
 {
 }
 
-trandistuuidObj::~trandistuuidObj() noexcept
+trandistuuidObj::~trandistuuidObj()
 {
 }
 

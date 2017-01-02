@@ -24,7 +24,7 @@ class managedsubscriberObj : public clientObj::subscriberObj,
 public:
 	managedsubscriberObj();
 
-	~managedsubscriberObj() noexcept;
+	~managedsubscriberObj();
 };
 
 //! A reference to a managed subscription

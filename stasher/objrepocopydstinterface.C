@@ -10,6 +10,6 @@ objrepocopydstinterfaceObj::objrepocopydstinterfaceObj()
 {
 }
 
-objrepocopydstinterfaceObj::~objrepocopydstinterfaceObj() noexcept
+objrepocopydstinterfaceObj::~objrepocopydstinterfaceObj()
 {
 }

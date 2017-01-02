@@ -101,7 +101,7 @@ public:
 
 
 	//! Destructor
-	~objwriterObj() noexcept;
+	~objwriterObj();
 
 	//! Serialization function
 

@@ -53,7 +53,7 @@ public:
 	objrepocopysrcObj();
 
 	//! Destructor
-	~objrepocopysrcObj() noexcept;
+	~objrepocopysrcObj();
 
 	//! Begin copy operation
 	copycomplete start(const tobjrepo &repoArg,

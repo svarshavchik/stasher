@@ -52,7 +52,7 @@ public:
 		   const x::uuid &uuidArg=x::uuid());
 
 	//! Destructor
-	~newtranObj() noexcept;
+	~newtranObj();
 
 	//! Return transaction options
 

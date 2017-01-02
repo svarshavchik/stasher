@@ -28,7 +28,7 @@ public:
 	threadreportObj() {}
 
 	//! Destructor
-	~threadreportObj() noexcept {};
+	~threadreportObj() {};
 
 	//! Reports being prepared
 	std::vector<x::ref<singlethreadreportObj> > reports;

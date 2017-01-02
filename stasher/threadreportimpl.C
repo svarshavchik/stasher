@@ -16,7 +16,7 @@ threadreportimplObj::threadreportimplObj()
 {
 }
 
-threadreportimplObj::~threadreportimplObj() noexcept
+threadreportimplObj::~threadreportimplObj()
 {
 }
 

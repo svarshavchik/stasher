@@ -62,7 +62,7 @@ public:
 	}
 
 	//! Destructor
-	~heartbeat_meta_t() noexcept
+	~heartbeat_meta_t()
 	{
 	}
 
@@ -149,7 +149,7 @@ public:
 
 	//! Destructor
 
-	~heartbeat_meta_t() noexcept
+	~heartbeat_meta_t()
 	{
 	}
 
@@ -367,7 +367,7 @@ public:
 	}
 
 	//! Destructor
-	~current_heartbeatObj() noexcept {}
+	~current_heartbeatObj() {}
 
 	//! Update a node's heartbeat
 
@@ -433,7 +433,7 @@ public:
 	}
 
 	//! Destructor
-	~heartbeatUpdateRequestBaseObj() noexcept
+	~heartbeatUpdateRequestBaseObj()
 	{
 	}
 
@@ -463,7 +463,7 @@ public:
 	}
 
 	//! Destructor
-	~heartbeatUpdateRequestObj() noexcept
+	~heartbeatUpdateRequestObj()
 	{
 	}
 
@@ -680,7 +680,7 @@ public:
 	}
 
 	//! Destructor
-	~heartbeatObj() noexcept
+	~heartbeatObj()
 	{
 	}
 

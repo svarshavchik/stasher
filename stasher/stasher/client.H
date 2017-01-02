@@ -90,7 +90,7 @@ public:
 	clientObj(const std::string &socknameArg);
 
 	//! Destructor
-	~clientObj() noexcept;
+	~clientObj();
 
 	//! Return client limitations
 	userinit getlimits();
@@ -121,7 +121,7 @@ public:
 			   const x::ptr<x::obj> &mcguffinArg);
 
 		//! Destructor
-		~requestObj() noexcept;
+		~requestObj();
 
 		//! Return the request's mcguffin
 
@@ -148,7 +148,7 @@ public:
 		transactionObj();
 
 		//! Destructor
-		~transactionObj() noexcept;
+		~transactionObj();
 
 		using puttransactionObj::newobj;
 		using puttransactionObj::updobj;
@@ -185,7 +185,7 @@ public:
 		bool admin;
 
 		getreqObj();
-		~getreqObj() noexcept;
+		~getreqObj();
 	};
 
 	//! A subscriber for object updates
@@ -199,7 +199,7 @@ public:
 		subscriberObj();
 
 		//! Destructor
-		~subscriberObj() noexcept;
+		~subscriberObj();
 
 		//! The object has been updated
 		virtual void updated(//! Name of the object
@@ -351,7 +351,7 @@ public:
 
 	public:
 		connstatusObj();
-		~connstatusObj() noexcept;
+		~connstatusObj();
 
 		//! The connection request's status
 		req_stat_t result;

@@ -24,7 +24,7 @@ clustertlsconnectshutdownObj::clustertlsconnectshutdownObj()
 {
 }
 
-clustertlsconnectshutdownObj::~clustertlsconnectshutdownObj() noexcept
+clustertlsconnectshutdownObj::~clustertlsconnectshutdownObj()
 {
 }
 
@@ -46,13 +46,13 @@ clustertlsconnectshutdownObj::mcguffin_destructor_cb
 }
 
 clustertlsconnectshutdownObj::mcguffin_destructor_cb
-::~mcguffin_destructor_cb() noexcept
+::~mcguffin_destructor_cb()
 {
 }
 
 void clustertlsconnectshutdownObj::mcguffin_destructor_cb::destroyed()
 {
-	tracker->start_thread(shutdown, socket, session);
+	tracker->start_threadmsgdispatcher(shutdown, socket, session);
 }
 
 void clustertlsconnectshutdownObj

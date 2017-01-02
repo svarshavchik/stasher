@@ -54,7 +54,7 @@ public:
 
 	//! Destructor
 
-	~userinit() noexcept;
+	~userinit();
 
 	//! Serialization function
 	template<typename iter_type>

@@ -98,7 +98,7 @@ objrepoObj::objrepoObj(const std::string &directoryArg)
 	LOG_INFO("Validated repository");
 }
 
-objrepoObj::~objrepoObj() noexcept
+objrepoObj::~objrepoObj()
 {
 }
 
@@ -629,7 +629,7 @@ objrepoObj::notifierObj::notifierObj()
 {
 }
 
-objrepoObj::notifierObj::~notifierObj() noexcept
+objrepoObj::notifierObj::~notifierObj()
 {
 }
 

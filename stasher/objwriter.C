@@ -19,7 +19,7 @@ objwriterObj::objwriterObj(size_t bufsize)
 	buffer.resize(bufsize);
 }
 
-objwriterObj::~objwriterObj() noexcept
+objwriterObj::~objwriterObj()
 {
 }
 

@@ -34,7 +34,7 @@ repocontrollerslaveObj
 {
 }
 
-repocontrollerslaveObj::~repocontrollerslaveObj() noexcept
+repocontrollerslaveObj::~repocontrollerslaveObj()
 {
 }
 
@@ -47,7 +47,7 @@ class repocontrollerslaveObj::dstcopyObj : virtual public x::obj {
 
 public:
 	dstcopyObj();
-	~dstcopyObj() noexcept;
+	~dstcopyObj();
 
 	boolref flag;
 
@@ -59,7 +59,7 @@ repocontrollerslaveObj::dstcopyObj::dstcopyObj()
 {
 }
 
-repocontrollerslaveObj::dstcopyObj::~dstcopyObj() noexcept
+repocontrollerslaveObj::dstcopyObj::~dstcopyObj()
 {
 	x::ptr<repocontrollerslaveObj> p(me.getptr());
 
@@ -77,7 +77,7 @@ repocontrollerslaveObj::start_controller_ret_t
 repocontrollerslaveObj::start_controller(const msgqueue_obj &msgqueue,
 					 const x::ref<x::obj> &mcguffin)
 {
-	return tracker->start_thread(x::ref<repocontrollerslaveObj>(this),
+	return tracker->start_threadmsgdispatcher(x::ref<repocontrollerslaveObj>(this),
 				     msgqueue,
 				     mcguffin);
 }

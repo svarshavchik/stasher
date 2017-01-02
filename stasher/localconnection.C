@@ -48,7 +48,7 @@ public:
 	{
 	}
 
-	~quorumstatusObj() noexcept
+	~quorumstatusObj()
 	{
 	}
 
@@ -88,7 +88,7 @@ localconnectionObj::localconnectionObj(const std::string &threadnameArg,
 	readTimeout_value=0;
 }
 
-localconnectionObj::~localconnectionObj() noexcept
+localconnectionObj::~localconnectionObj()
 {
 }
 
@@ -124,7 +124,7 @@ public:
 		{
 		}
 
-		~getsemaphoreObj() noexcept
+		~getsemaphoreObj()
 		{
 		}
 
@@ -204,7 +204,7 @@ public:
 	{
 	}
 
-	~userchangedmsgObj() noexcept
+	~userchangedmsgObj()
 	{
 	}
 
@@ -274,7 +274,7 @@ class localconnectionObj::subscriptionsObj : public objrepoObj::notifierObj {
 		{
 		}
 
-		~hiersubObj() noexcept
+		~hiersubObj()
 		{
 		}
 	};
@@ -294,7 +294,7 @@ public:
 	{
 	}
 
-	~subscriptionsObj() noexcept
+	~subscriptionsObj()
 	{
 	}
 
@@ -577,7 +577,7 @@ public:
 	{
 	}
 
-	~put_cb() noexcept
+	~put_cb()
 	{
 	}
 
@@ -897,7 +897,7 @@ public:
 	{
 	}
 
-	~senddir() noexcept
+	~senddir()
 	{
 	}
 

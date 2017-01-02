@@ -70,7 +70,7 @@ public:
 	batonhandoverthreadObj();
 
 	//! Destructor
-	~batonhandoverthreadObj() noexcept;
+	~batonhandoverthreadObj();
 
 	//! The thread
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,

@@ -14,6 +14,6 @@ objuuidlistObj::objuuidlistObj() noexcept
 {
 }
 
-objuuidlistObj::~objuuidlistObj() noexcept
+objuuidlistObj::~objuuidlistObj()
 {
 }

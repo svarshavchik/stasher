@@ -12,7 +12,7 @@ clusterstate::clusterstate()
 {
 }
 
-clusterstate::~clusterstate() noexcept
+clusterstate::~clusterstate()
 {
 }
 

@@ -19,7 +19,7 @@ public:
 	{
 	}
 
-	~test() noexcept
+	~test()
 	{
 	}
 

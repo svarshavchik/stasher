@@ -20,7 +20,7 @@ public:
 	trandistreceivedObj();
 
 	//! Destructor
-	~trandistreceivedObj() noexcept;
+	~trandistreceivedObj();
 
 	//! Distributed a bunch of UUIDs
 	virtual void received(const trandistuuid &uuids)=0;

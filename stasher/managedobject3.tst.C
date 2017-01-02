@@ -30,7 +30,7 @@ public:
 	}
 	dummyObj(const x::uuid &uuidArg) : uuid(uuidArg) {}
 
-	~dummyObj() noexcept {
+	~dummyObj() {
 	}
 };
 
@@ -57,7 +57,7 @@ public:
 	{
 	}
 
-	~completedObj() noexcept
+	~completedObj()
 	{
 	}
 
@@ -213,7 +213,7 @@ public:
 	status_t status;
 
 	test2Obj() {}
-	~test2Obj() noexcept {}
+	~test2Obj() {}
 };
 
 static void test2(tstnodes &t)

@@ -21,7 +21,7 @@ tranrecvcanc::tranrecvcanc(const std::string &masternameArg,
 {
 }
 
-tranrecvcanc::~tranrecvcanc() noexcept
+tranrecvcanc::~tranrecvcanc()
 {
 }
 

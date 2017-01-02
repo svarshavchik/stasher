@@ -25,7 +25,7 @@ public:
 	{
 	}
 
-	~testconnection() noexcept
+	~testconnection()
 	{
 	}
 
@@ -75,7 +75,7 @@ public:
 	{
 		socks.second->nonblock(true);
 
-		tracker->start_thread(conn,
+		tracker->start_threadmsgdispatcher(conn,
 				      socks.second,
 				      x::fd::base::inputiter(socks.second),
 				      tracker->getTracker(),
@@ -155,7 +155,7 @@ public:
 	{
 	}
 
-	~dummyController() noexcept {}
+	~dummyController() {}
 
 	void get_quorum(const STASHER_NAMESPACE::quorumstateref &status_arg,
 			const boolref &processed_arg,

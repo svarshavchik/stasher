@@ -42,7 +42,7 @@ public:
 	{
 	}
 
-	~repopeerconnectionObj() noexcept {}
+	~repopeerconnectionObj() {}
 
 	virtual void connect_peer(const repopeerconnectionbaseObj::peerlinkptr
 				  &)=0;
@@ -129,7 +129,7 @@ public:
 	{
 	}
 
-	~test1connectionObj() noexcept {}
+	~test1connectionObj() {}
 
         std::mutex mutex;
         std::condition_variable cond;
@@ -167,7 +167,7 @@ class dummyhalt : public x::stoppableObj {
 
 public:
 	dummyhalt() {}
-	~dummyhalt() noexcept {}
+	~dummyhalt() {}
 
 	void stop() {
 	}
@@ -190,7 +190,7 @@ public:
 	{
 	}
 
-	~mymastercontrollerObj() noexcept {}
+	~mymastercontrollerObj() {}
 
 	using repocontrollermasterObj::started;
 	using repocontrollermasterObj::quorum;
@@ -212,7 +212,7 @@ public:
 		{
 		}
 
-		~quorumcbObj() noexcept
+		~quorumcbObj()
 		{
 		}
 
@@ -272,7 +272,7 @@ public:
 		quorum_callback_list->install(quorumcb);
 		master->initialize(cluster);
 
-		tracker->start_thread(master,
+		tracker->start_threadmsgdispatcher(master,
 				      start_info->new_controller_queue,
 				      x::ref<x::obj>::create());
 
@@ -365,7 +365,7 @@ public:
 			{
 			}
 
-			~resultObj() noexcept
+			~resultObj()
 			{
 
 			}
@@ -398,7 +398,7 @@ public:
 		{
 		}
 
-		~copydstObj() noexcept
+		~copydstObj()
 		{
 		}
 
@@ -511,7 +511,7 @@ public:
 		{
 		}
 
-		~connectCbObj() noexcept
+		~connectCbObj()
 		{
 		}
 
@@ -537,7 +537,7 @@ public:
 	{
 	}
 
-	~test2connectionObj() noexcept {}
+	~test2connectionObj() {}
 
 	repopeerconnectionbaseObj::peerlinkptr masterlink;
 	mastersyncinfo synchandle;

@@ -21,7 +21,7 @@ usergetuuidsreply::usergetuuidsreply(const x::uuid &requuidArg)
 {
 }
 
-usergetuuidsreply::~usergetuuidsreply() noexcept
+usergetuuidsreply::~usergetuuidsreply()
 {
 }
 

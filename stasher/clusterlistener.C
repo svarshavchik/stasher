@@ -92,7 +92,7 @@ clusterlistenerObj::networksocks_t::networksocks_t(clusterlistenerObj *listener)
 		 << " with the portmapper");
 }
 
-clusterlistenerObj::networksocks_t::~networksocks_t() noexcept
+clusterlistenerObj::networksocks_t::~networksocks_t()
 {
 }
 
@@ -123,7 +123,7 @@ std::string clusterlistenerObj::clusterName() const noexcept
 	}
 }
 
-clusterlistenerObj::~clusterlistenerObj() noexcept
+clusterlistenerObj::~clusterlistenerObj()
 {
 }
 
@@ -258,7 +258,7 @@ public:
 	{
 	}
 
-	~epollcb() noexcept
+	~epollcb()
 	{
 	}
 

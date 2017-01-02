@@ -46,7 +46,7 @@ class dummyhalt : public x::stoppableObj {
 
 public:
 	dummyhalt() {}
-	~dummyhalt() noexcept {}
+	~dummyhalt() {}
 
 	void stop() {
 	}
@@ -64,7 +64,7 @@ public:
 	{
 	}
 
-	~handofftest() noexcept
+	~handofftest()
 	{
 	}
 
@@ -124,7 +124,7 @@ public:
 	{
 	}
 
-	~test1peer() noexcept
+	~test1peer()
 	{
 	}
 
@@ -216,7 +216,7 @@ public:
 	{
 	}
 
-	~test2peer() noexcept {}
+	~test2peer() {}
 
 	std::mutex mutex;
 	std::condition_variable cond;
@@ -319,7 +319,7 @@ public:
 	{
 	}
 
-	~test2dstinterface() noexcept
+	~test2dstinterface()
 	{
 	}
 
@@ -426,7 +426,7 @@ class quorumcallback : public STASHER_NAMESPACE::repoclusterquorumcallbackbaseOb
 public:
 	quorumcallback() : flag(false) {}
 
-	~quorumcallback() noexcept {}
+	~quorumcallback() {}
 
 	std::mutex mutex;
 	std::condition_variable cond;
@@ -557,7 +557,7 @@ public:
 	{
 	}
 
-	~test3peer() noexcept {}
+	~test3peer() {}
 };
 
 class test3deser : public STASHER_NAMESPACE::fdobjrwthreadObj {
@@ -581,14 +581,14 @@ public:
 	{
 	}
 
-	~test3deser() noexcept {}
+	~test3deser() {}
 
 	template<typename obj>
 	class deser : public obj {
 
 	public:
 		deser(test3deser &dummy) {}
-		~deser() noexcept {}
+		~deser() {}
 	};
 
 	template<typename iter_type>
@@ -689,7 +689,7 @@ public:
 	{
 	}
 
-	~test3serObj() noexcept
+	~test3serObj()
 	{
 	}
 
@@ -752,7 +752,7 @@ class test3quorumcb :
 
 public:
 	test3quorumcb() : flag(false) {}
-	~test3quorumcb() noexcept {}
+	~test3quorumcb() {}
 
 	std::mutex mutex;
 	std::condition_variable cond;
@@ -849,7 +849,7 @@ static void test3()
 
 		sock=socks.first;
 
-		tracker->start_thread(peer, socks.second,
+		tracker->start_threadmsgdispatcher(peer, socks.second,
 				      x::fd::base::inputiter(socks.second),
 				      tracker->getTracker(),
 				      peer_mcguffin,
@@ -892,7 +892,7 @@ static void test3()
 
 	x::ptr<x::obj> masterdeser_mcguffin(x::ptr<x::obj>::create());
 
-	tracker->start_thread(masterdeser,
+	tracker->start_threadmsgdispatcher(masterdeser,
 			      sock, x::fdinputiter(sock),
 			      tracker->getTracker(),
 			      masterdeser_mcguffin);
