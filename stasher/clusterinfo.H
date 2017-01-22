@@ -14,9 +14,7 @@
 #include "stoppablethreadtrackerfwd.H"
 #include "batonfwd.H"
 #include <x/weakmap.H>
-#include <x/rwlock.H>
 #include <x/vipobj.H>
-#include <x/vipobjdebug.H>
 #include <map>
 
 #include "stasher/namespace.H"
@@ -560,5 +558,3 @@ public:
 };
 
 #endif
-
-

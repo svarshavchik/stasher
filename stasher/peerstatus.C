@@ -50,7 +50,7 @@ void peerstatusObj::peerstatusupdate(const nodeclusterstatus &newstatus)
 	bool newmaster;
 
 	{
-		std::lock_guard<x::rwmutex::wmutex> wlock(lock.w);
+		std::unique_lock<std::shared_mutex> wlock{lock};
 
 		newmaster= curpeerstatus.master != newstatus.master;
 

@@ -12,7 +12,7 @@
 #include "objrepocopysrcinterface.H"
 #include "time.h"
 #include <x/stoppable.H>
-#include <x/rwmutex.H>
+#include <shared_mutex>
 
 //! The status of a connection that's registered with clusterinfo
 
@@ -43,7 +43,7 @@ class peerstatusObj : public clusterstatusnotifierObj {
 
 	//! A lock on the status object
 
-	x::rwmutex lock;
+	std::shared_mutex lock;
 
 	//! Registered cluster
 	clusterinfoptr cluster;
@@ -129,19 +129,18 @@ class peerstatusObj::status {
 	peerstatus node;
 
 	//! A read lock on the status
-
-	std::lock_guard<x::rwmutex::rmutex> lock;
+	std::shared_lock<std::shared_mutex> lock;
 
 public:
 	//! Constructor
 	status(const peerstatus &nodeArg)
-		: node(nodeArg), lock(node->lock.r)
+		: node(nodeArg), lock(node->lock)
 	{
 	}
 
 	//! Constructor
 	status(peerstatusObj *thisptr)
-		: node(peerstatus(thisptr)), lock(node->lock.r)
+		: node(peerstatus(thisptr)), lock(node->lock)
 	{
 	}
 

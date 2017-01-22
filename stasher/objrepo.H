@@ -13,10 +13,10 @@
 #include <x/fileattr.H>
 #include <x/weaklist.H>
 #include <x/uuid.H>
-#include <x/rwmutex.H>
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <shared_mutex>
 
 #include "stasher/namespace.H"
 #include "objrepofwd.H"
@@ -502,7 +502,7 @@ protected:
 	//! Acquire a write lock to be able to enumerate tmp files while
 	//! blocking their removal.
 
-	x::rwmutex tmp_writelock;
+	std::shared_mutex tmp_writelock;
 };
 
 #endif

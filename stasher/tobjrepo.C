@@ -269,7 +269,7 @@ void tobjrepoObj::enumerate(finalized_cb &cbArg)
 	std::list<std::pair<x::uuid, std::string> > flist;
 
 	{
-		std::lock_guard<x::rwmutex::wmutex> w(tmp_writelock.w);
+		std::unique_lock<std::shared_mutex> w{tmp_writelock};
 
 		for (std::pair<tmp_iter_t, tmp_iter_t> iter(tmp_iter());
 		     iter.first != iter.second; ++iter.first)
@@ -474,7 +474,7 @@ void tobjrepoObj::commit(const x::uuid &uuidArg, const tranmeta &tranArg,
 
 {
 	uuidlock ulock(this, uuidArg);
-	
+
 	commit_uuid_locked(uuidArg, tranArg, lock);
 }
 

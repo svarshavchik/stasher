@@ -134,7 +134,7 @@ bool objrepoObj::tmp_exists(const std::string &tmpfilename)
 void objrepoObj::tmp_rename(const std::string &oldname,
 			    const std::string &newname)
 {
-	std::lock_guard<x::rwmutex::rmutex> r(tmp_writelock.r);
+	std::shared_lock<std::shared_mutex> r{tmp_writelock};
 
 	std::string o(valid_tmp_name(oldname)),
 		n(valid_tmp_name(newname));
@@ -157,7 +157,7 @@ void objrepoObj::tmp_link(const std::string &oldname,
 
 void objrepoObj::tmp_remove(const std::string &tmpfilename)
 {
-	std::lock_guard<x::rwmutex::rmutex> r(tmp_writelock.r);
+	std::shared_lock<std::shared_mutex> r{tmp_writelock};
 
 	unlink(valid_tmp_name(tmpfilename).c_str());
 }
@@ -511,7 +511,7 @@ std::string objrepoObj::fullpath_to_objname(const std::string &s) noexcept
 	size_t startPos=directory.size() + sizeof("/" DATA);
 
 	n.reserve(s.size()-startPos);
-		
+
 	for (std::string::const_iterator sb(s.begin()+startPos),
 		     se(s.end()); sb != se; )
 	{

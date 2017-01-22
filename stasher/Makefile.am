@@ -362,7 +362,7 @@ nodeclusterstatus_tst_LDADD=-lcxx
 nodeclusterstatus_tst_LDFLAGS=-static
 
 peerstatus_tst_SOURCES=peerstatus.tst.C
-peerstatus_tst_LDADD=-lcxx
+peerstatus_tst_LDADD=-lcxx -lpthread
 peerstatus_tst_LDFLAGS=-static
 
 clusterinfo_tst_SOURCES=clusterinfo.tst.C
