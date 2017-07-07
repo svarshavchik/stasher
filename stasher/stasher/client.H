@@ -53,7 +53,7 @@ private:
 
 	//! An internal portmapper handle
 	x::httportmap portmap;
-	
+
 	//! Acquire an internal portmapper handle
 	static x::httportmap get_portmapper() LIBCXX_INTERNAL;
 
@@ -142,7 +142,7 @@ public:
 
 	//! A wrapper for puttransactionObj
 
-	class transactionObj : private puttransactionObj, virtual public obj {
+	class transactionObj : public puttransactionObj, virtual public obj {
 	public:
 		//! Constructor
 		transactionObj();
@@ -298,7 +298,7 @@ public:
 	//! Return all node directories installed in the default location.
 
 	//! The default location for node directories gets set up at
-	//! installation time. 
+	//! installation time.
 	static void defaultnodes(std::set<std::string> &paths);
 
 	//! Client connection to an object repository

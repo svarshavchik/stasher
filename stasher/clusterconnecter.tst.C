@@ -106,8 +106,8 @@ LOG_CLASS_INIT(myserver);
 class mydistributorObj : public trandistributorObj {
 
 public:
-	mydistributorObj() throw(x::exception) {}
-	~mydistributorObj() throw() {}
+	mydistributorObj()=default;
+	~mydistributorObj()=default;
 
 	void internal_transaction(const x::ref<internalTransactionObj>
 				  &tran) {}

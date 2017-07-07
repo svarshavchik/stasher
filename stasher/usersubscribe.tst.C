@@ -72,7 +72,7 @@ static bool hier_exception_flag=false;
 
 #define TEST_SUBSCRIBED_HIER_CREATED() (cd.created())
 #define TEST_SUBSCRIBED_HIER_DESTROYED() (cd.destroyed())
-#define TEST_SUBSCRIBED_HIER_EXCEPTION() (++hier_exception_flag=true)
+#define TEST_SUBSCRIBED_HIER_EXCEPTION() (hier_exception_flag=true)
 
 #include "localconnection.C"
 
