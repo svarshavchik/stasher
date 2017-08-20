@@ -290,7 +290,7 @@ private:
 //! This is the base class for \ref client "client" and
 //! \ref clientptr "clientptr".
 
-class clientBase : public x::ptrrefBase {
+class clientBase : public x::ptrref_base {
 
 public:
 	friend class clientObj;

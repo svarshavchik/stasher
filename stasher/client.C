@@ -661,7 +661,7 @@ client clientBase::admin_client(const std::string &dir)
 
 client clientBase::create_handle(const std::string &sockname)
 {
-	return x::ptrrefBase::objfactory<client>::create(sockname);
+	return x::ptrref_base::objfactory<client>::create(sockname);
 }
 
 void clientBase::connect_socket(const client &cl)

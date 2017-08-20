@@ -48,7 +48,7 @@ typedef x::ptr<contentsObj, contentsBase> contentsptr;
 
 //! \see contents
 
-class contentsBase : public x::ptrrefBase {
+class contentsBase : public x::ptrref_base {
 
 public:
 	//! A typedef for map_t

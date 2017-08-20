@@ -105,7 +105,7 @@ public:
 
 //! The base class import very important object lock types, for convenience.
 //!
-class repoclusterquorumrefbase : public x::ptrrefBase {
+class repoclusterquorumrefbase : public x::ptrref_base {
 
 public:
 	//! A read lock on the very important object that represents the quorum status

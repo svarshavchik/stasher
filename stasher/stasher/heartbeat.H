@@ -241,7 +241,7 @@ class heartbeatUpdateRequestBaseObj;
 //! \ref heartbeatBase "INSERT_LIBX_NAMESPACE::heartbeatBase"
 //! that defines members that do not depend on the heartbeat metadata type.
 
-class heartbeatCommonBase : public x::ptrrefBase {
+class heartbeatCommonBase : public x::ptrref_base {
 
 	//! The logger class
 	LOG_CLASS_SCOPE;
@@ -307,7 +307,7 @@ public:
 //! or \c INSERT_STASHER_NAMESPACE::current_heartbeat<T>::base.
 
 template<typename I, typename T>
-class current_heartbeatBaseObj : public x::ptrrefBase {
+class current_heartbeatBaseObj : public x::ptrref_base {
 
 public:
 

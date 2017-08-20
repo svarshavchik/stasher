@@ -116,7 +116,7 @@ public:
 //! currentBaseObj is taken, so we must use this.
 
 template<typename ptr_type, typename obj_type=ptr_type>
-class currentptrrefBase : public x::ptrrefBase {
+class currentptrrefBase : public x::ptrref_base {
 
 public:
 

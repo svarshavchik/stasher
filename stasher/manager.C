@@ -55,7 +55,7 @@ class LIBCXX_HIDDEN managerObj::retmcguffinBaseObj {
 		{
 			// Use the default create(), first.
 
-			ptrType p=x::ptrrefBase::objfactory<ptrType>
+			ptrType p=x::ptrref_base::objfactory<ptrType>
 				::create(implArg);
 
 			auto cb=x::destroy_callback_wait4::create(implArg);

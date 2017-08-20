@@ -82,7 +82,7 @@ typedef x::ptr<versionscollectedObj,
 //! Refer to this class as \c versionscollected::base or
 //! \c versionscollected::base::base.
 
-class versionscollectedBase : public x::ptrrefBase {
+class versionscollectedBase : public x::ptrref_base {
 
 public:
 
