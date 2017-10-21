@@ -143,8 +143,8 @@ node::node(const std::string &dir)
 	}
 	else
 	{
-		struct stat st1=*iter->second.second->stat(),
-			st2=*x::fileattr::create(rootcerts_filename)->stat();
+		auto st1=iter->second.second->stat(),
+			st2=x::fileattr::create(rootcerts_filename)->stat();
 
 		if (st1.st_dev != st2.st_dev ||
 		    st1.st_ino != st2.st_ino)

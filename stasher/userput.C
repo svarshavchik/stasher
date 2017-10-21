@@ -122,7 +122,7 @@ void userput::deserializedObj::received(const x::fd &socket)
 
 	if (errcode == req_processed_stat)
 	{
-		struct stat stat_buf= *socket->stat();
+		auto stat_buf=socket->stat();
 
 		if (!S_ISREG(stat_buf.st_mode) ||
 		    stat_buf.st_size != obj.contents_size)

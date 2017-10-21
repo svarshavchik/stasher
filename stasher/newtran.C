@@ -66,6 +66,6 @@ void newtranObj::objsizes(objsizes_t &objsizeret) const
 			objsizeret.insert
 				(std::make_pair
 				 (meta.objects[n].name,
-				  repo->tmp_reopen(uuid, n)->stat()->st_size));
+				  repo->tmp_reopen(uuid, n)->stat().st_size));
 	}
 }

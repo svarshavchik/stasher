@@ -845,7 +845,7 @@ void clientObj::implObj::dispatch_put(const x::ref<puttransactionObj> &transacti
 		if (!putobj.contents.null() &&
 		    !putobj.contents->contents_filedesc.null() &&
 		    !S_ISREG(putobj.contents->contents_filedesc->stat()
-			     ->st_mode))
+			     .st_mode))
 		{
 			set_putresults(results, req_2large_stat);
 			return;

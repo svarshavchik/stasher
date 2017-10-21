@@ -163,7 +163,7 @@ public:
 					continue;
 
 				meta.objects[i].size=me.repo->tmp_reopen(me.uuid, i)
-					->stat()->st_size;
+					->stat().st_size;
 			}
 		}
 

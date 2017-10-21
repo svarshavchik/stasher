@@ -23,6 +23,7 @@
 #include <x/timespec.H>
 #include <x/pwd.H>
 #include <x/grp.H>
+#include <errno.h>
 
 LOG_CLASS_INIT(clusterlistenerimplObj);
 
@@ -296,15 +297,17 @@ void clusterlistenerimplObj::dispatch_start_localconn(const x::fd &sock,
 		nsmap::local_map_t::iterator localmap_end_iter=localmap.end(),
 			localmap_iter=localmap_end_iter;
 
-		try {
-			auto s=x::fileattr::create(fromwho.path)->stat();
+		auto s=x::fileattr::create(fromwho.path)->try_stat();
 
+		if (s)
+		{
 			localmap_iter=localmap.find(std::make_pair(s->st_dev,
 								   s->st_ino));
-		} catch (const x::exception &e)
+		}
+		else
 		{
 			// Ignore if client's path is inaccessible, too bad.
-			LOG_WARNING(e);
+			LOG_WARNING(fromwho.path << ": " << strerror(errno));
 		}
 
 		if (localmap_iter != localmap_end_iter)

@@ -23,7 +23,7 @@ puttransactionObj::objcontentsObj::objcontentsObj(const std::string
 	: contents(contentsArg)
 {
 }
-		
+
 puttransactionObj::objcontentsObj::~objcontentsObj()
 {
 }
@@ -83,7 +83,7 @@ void puttransactionObj::updinfo::setsize()
 		return;
 	}
 
-	struct stat stat_buf= *contents->contents_filedesc->stat();
+	auto stat_buf= contents->contents_filedesc->stat();
 
 	contents_size=stat_buf.st_size;
 }

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include <x/exception.H>
-#include <x/filestat.H>
 #include <x/logger.H>
 
 #include "objrepo_config.h"

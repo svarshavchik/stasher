@@ -143,7 +143,7 @@ void nsmap::parse_local_map(const std::string &configfile,
 
 			auto s=x::fileattr::create(pi.path)->stat();
 
-			pi.devino=std::make_pair(s->st_dev, s->st_ino);
+			pi.devino=std::make_pair(s.st_dev, s.st_ino);
 			continue;
 		}
 

@@ -116,9 +116,13 @@ repomg::key_generate(const std::string &dirname,
 
 	bool isdir;
 
-	try {
-		isdir=S_ISDIR(x::fileattr::create(dirname)->stat()->st_mode);
-	} catch (const x::exception &e)
+	auto st=x::fileattr::create(dirname)->try_stat();
+
+	if (st)
+	{
+		isdir=S_ISDIR(st->st_mode);
+	}
+	else
 	{
 		isdir=true;
 		need_create=true;
@@ -226,13 +230,13 @@ repomg::key_generate(const std::string &dirname,
 	}
 
 	{
-		x::filestat st(x::fileattr::create(dirname)->stat());
+		auto st=x::fileattr::create(dirname)->stat();
 
-		if (setgid(st->st_gid) < 0 ||
-		    setuid(st->st_uid) < 0)
+		if (setgid(st.st_gid) < 0 ||
+		    setuid(st.st_uid) < 0)
 			throw SYSEXCEPTION(dirname);
 	}
-			
+
 	std::cout << "Generating new key..." << std::endl;
 
 	auto retval=std::make_pair(x::gnutls::x509::crt::create(),

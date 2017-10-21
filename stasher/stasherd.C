@@ -65,10 +65,10 @@ int main(int argc, char **argv)
 			if (chdir(opts.directory.c_str()) < 0)
 				throw SYSEXCEPTION(opts.directory);
 
-			x::filestat st(x::fileattr::create(".")->stat());
+			auto st=x::fileattr::create(".")->stat();
 
-			if (setgid(st->st_gid) < 0 ||
-			    setuid(st->st_uid) < 0)
+			if (setgid(st.st_gid) < 0 ||
+			    setuid(st.st_uid) < 0)
 				throw SYSEXCEPTION(opts.directory);
 
 			node n(".");
