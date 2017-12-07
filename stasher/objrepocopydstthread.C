@@ -67,7 +67,7 @@ objrepocopydstthreadObj::uuidenumObj::nextbatch(const std::set<std::string>
 {
 	auto msgqueue=parent->get_msgqueue();
 
-	x::eventfd eventfd(msgqueue->getEventfd());
+	x::eventfd eventfd(msgqueue->get_eventfd());
 
 	tobjrepoObj::lockentry_t lock(repo->lock(objectnames, eventfd));
 
@@ -183,7 +183,7 @@ void objrepocopydstthreadObj
 			names.insert(b->first);
 		}
 
-		x::eventfd eventfd(msgqueue->getEventfd());
+		x::eventfd eventfd(msgqueue->get_eventfd());
 
 		tobjrepoObj::lockentry_t lock((*repo)->lock(names, eventfd));
 

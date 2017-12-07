@@ -195,7 +195,7 @@ void objwriterthreadObj::run(msgqueue_auto &msgqueue,
 
 				// Nothing to flush, no messages, wait for
 				// an event on this blocking descriptor.
-				msgqueue->getEventfd()->event();
+				msgqueue->get_eventfd()->event();
 			}
 		} catch (const closeexception &e)
 		{

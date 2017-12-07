@@ -92,7 +92,7 @@ public:
 			struct pollfd pfd[2];
 
 			pfd[0].fd=transport->getFd();
-			pfd[1].fd=get_msgqueue()->getEventfd()->getFd();
+			pfd[1].fd=get_msgqueue()->get_eventfd()->getFd();
 
 			pfd[0].events=POLLIN;
 			pfd[1].events=POLLIN;

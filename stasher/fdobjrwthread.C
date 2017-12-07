@@ -65,7 +65,7 @@ void fdobjrwthreadObj::mainloop(msgqueue_auto &msgqueue,
 	pfd[0].fd=transport->getFd();
 	pfd[0].events=POLLIN;
 
-	pfd[1].fd=msgqueue->getEventfd()->getFd();
+	pfd[1].fd=msgqueue->get_eventfd()->getFd();
 	pfd[1].events=POLLIN;
 
 	started();

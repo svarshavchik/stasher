@@ -176,7 +176,7 @@ public:
 
 		pfd[0].fd=fd->getFd();
 		pfd[0].events=POLLIN;
-		pfd[1].fd=msgqueue->getEventfd()->getFd();
+		pfd[1].fd=msgqueue->get_eventfd()->getFd();
 		pfd[1].events=POLLIN;
 
 		while (1)

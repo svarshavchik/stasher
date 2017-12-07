@@ -1781,7 +1781,7 @@ void repopeerconnectionObj::baton_slave_commitlock_thread
 			continue;
 		}
 
-		msgqueue->getEventfd()->event();
+		msgqueue->get_eventfd()->event();
 	}
 
 #ifdef DEBUG_BATON_TEST_2_COMMITLOCK_HOOK

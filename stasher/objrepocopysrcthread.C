@@ -95,7 +95,7 @@ objrepocopysrcthreadObj::uuidenumObj::nextbatch(const std::set<std::string>
 {
 	auto msgqueue=parent->get_msgqueue();
 
-	x::eventfd eventfd(msgqueue->getEventfd());
+	x::eventfd eventfd(msgqueue->get_eventfd());
 
 	tobjrepoObj::lockentry_t lock(repo->lock(objectnames, eventfd));
 
@@ -395,7 +395,7 @@ void objrepocopysrcthreadObj
 
 	if (!object_names.empty())
 	{
-		x::eventfd eventfd(msgqueue->getEventfd());
+		x::eventfd eventfd(msgqueue->get_eventfd());
 
 		LOG_DEBUG("Locking repository for: "
 			  << x::join(object_names.begin(),
@@ -476,7 +476,7 @@ tobjrepoObj::commitlock_t objrepocopysrcthreadObj::getcommitlock()
 
 	LOG_DEBUG("Acquiring commit lock");
 
-	x::eventfd eventfd(msgqueue->getEventfd());
+	x::eventfd eventfd(msgqueue->get_eventfd());
 
 	tobjrepoObj::commitlock_t commitLock=(*repo)->commitlock(eventfd);
 

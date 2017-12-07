@@ -79,7 +79,7 @@ void clustertlsconnectshutdownObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguf
 	struct pollfd pfd[2];
 
 	{
-		x::fd fd(msgqueue->getEventfd());
+		x::fd fd(msgqueue->get_eventfd());
 
 		fd->nonblock(true);
 

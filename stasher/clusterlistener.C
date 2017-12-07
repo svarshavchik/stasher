@@ -292,7 +292,7 @@ void clusterlistenerObj::run(msgqueue_auto &msgqueue)
 
 	epollfd->nonblock(true);
 
-	msgqueue->getEventfd()
+	msgqueue->get_eventfd()
 		->epoll_add(EPOLLIN, epollfd,
 			    epollcb::create(this,
 					    &clusterlistenerObj::tickle_eventfd));
@@ -391,7 +391,7 @@ void clusterlistenerObj::tickle_eventfd(const x::fd &sock)
 	auto p=get_msgqueue();
 
 	if (!p.null())
-		p->getEventfd()->event();
+		p->get_eventfd()->event();
 }
 
 

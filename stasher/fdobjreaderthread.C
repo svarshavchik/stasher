@@ -66,7 +66,7 @@ void fdobjreaderthreadObj::drain()
 	msgqueue_t msgqueue=get_msgqueue();
 
 	try {
-		msgqueue->getEventfd()->event();
+		msgqueue->get_eventfd()->event();
 		//! Consume anything
 	} catch (const x::sysexception &e)
 	{
@@ -85,7 +85,7 @@ void fdobjreaderthreadObj::mainloop(msgqueue_auto &msgqueue,
 				    x::fd::base::inputiter &beg_iter)
 
 {
-	msgqueue->getEventfd()->nonblock(true);
+	msgqueue->get_eventfd()->nonblock(true);
 	x::fd::base::inputiter b(beg_iter), e;
 
 	beg_iter=x::fd::base::inputiter();

@@ -410,7 +410,7 @@ void repocontrollermasterObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 				msgqueue->event();
 			check_copy_completed();
 
-			(*msgqueue)->getEventfd()->event();
+			(*msgqueue)->get_eventfd()->event();
 		}
 	} catch (const x::stopexception &msg)
 	{
@@ -912,7 +912,7 @@ void repocontrollermasterObj::check_copy_completed()
 			LOG_INFO(b->first
 				 << " finished syncing, acquiring a lock");
 			sync.commitlock=
-				repo->commitlock(get_msgqueue()->getEventfd());
+				repo->commitlock(get_msgqueue()->get_eventfd());
 		}
 
 		// Should execute the following path after creating a new lock,
@@ -1538,7 +1538,7 @@ void repocontrollermasterObj::handoff_repolockthreadObj
 			continue;
 		}
 
-		msgqueue->getEventfd()->event();
+		msgqueue->get_eventfd()->event();
 	}
 #ifdef DEBUG_BATON_TEST_1_HOOK_LOCK_THREAD
 	DEBUG_BATON_TEST_1_HOOK_LOCK_THREAD();

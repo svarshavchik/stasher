@@ -652,7 +652,7 @@ void localconnectionObj::check_deserialized_transaction()
 
 		trancommit commit=
 			deser->repo->begin_commit(uuid,
-						  get_msgqueue()->getEventfd());
+						  get_msgqueue()->get_eventfd());
 
 		while (!commit->ready())
 			wait_eventqueue(-1);
@@ -747,7 +747,7 @@ void localconnectionObj::deserialized(const STASHER_NAMESPACE::usergetuuids
 	if (gi.openobjects)
 	{
 		gi.semaphore=x::ptr<getinfo::getsemaphoreObj>
-			::create(get_msgqueue()->getEventfd());
+			::create(get_msgqueue()->get_eventfd());
 		getsemaphore->request(gi.semaphore, gi.objects.size());
 	}
 
@@ -766,7 +766,7 @@ void localconnectionObj::check_get_lock(getinfo &gi)
 	{
 		if (gi.lock.null())
 			gi.lock=repo->lock(gi.objects,
-					   get_msgqueue()->getEventfd());
+					   get_msgqueue()->get_eventfd());
 	}
 	else
 	{

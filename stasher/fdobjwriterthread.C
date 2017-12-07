@@ -93,7 +93,7 @@ void fdobjwriterthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 	pfd[0].fd=transport->getFd();
 	pfd[0].events=POLLOUT;
 
-	pfd[1].fd=msgqueue->getEventfd()->getFd();
+	pfd[1].fd=msgqueue->get_eventfd()->getFd();
 	pfd[1].events=POLLIN;
 
 	x::ptr<x::obj> sendfd_mcguffinref;
@@ -175,7 +175,7 @@ void fdobjwriterthreadObj::dosendfd(const std::vector<x::fd> &filedesc)
 
 		serialize(comingmsg);
 
-		x::eventdestroynotify::create(get_msgqueue()->getEventfd(),
+		x::eventdestroynotify::create(get_msgqueue()->get_eventfd(),
 					      *sendfd_mcguffin);
 	}
 

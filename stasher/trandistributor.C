@@ -123,10 +123,10 @@ void trandistributorObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 		{
 			tobjrepoObj::commitlock_t
 				commitlock=repo->
-				commitlock(msgqueue->getEventfd());
+				commitlock(msgqueue->get_eventfd());
 
 			while (!commitlock->locked())
-				msgqueue->getEventfd()->event();
+				msgqueue->get_eventfd()->event();
 
 			for (tobjrepoObj::obj_iter_t
 				     b=repo->obj_begin(tobjrepoObj::done_hier),
