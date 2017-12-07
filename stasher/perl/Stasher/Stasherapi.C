@@ -145,7 +145,7 @@ void api_get_objects(void *handleptr, std::string &error,
 
 	if (names.empty())
 		return;
-	
+
 	try {
 		auto getreq=stasher::client::base::getreq::create();
 
@@ -194,7 +194,7 @@ void api_get_results(void *handle, std::vector<std::string> &buffer)
 			buffer.push_back(obj.first);
 			buffer.push_back(x::tostring(obj.second.uuid));
 			buffer.push_back(obj.second.fd.null() ? "":
-					 x::tostring(obj.second.fd->getFd()));
+					 x::tostring(obj.second.fd->get_fd()));
 		}
 	} catch (const x::exception &e)
 	{
@@ -392,4 +392,3 @@ void api_getdir_results(void *handle, std::vector<std::string> &buffer)
 		set_error(errmsg, e);
 	}
 }
-

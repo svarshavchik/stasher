@@ -444,8 +444,8 @@ void clusterlistenerimplObj::retr_credentialsObj
 
 		struct pollfd pfd[2];
 
-		pfd[0].fd=sock->getFd();
-		pfd[1].fd=msgqueue->get_eventfd()->getFd();
+		pfd[0].fd=sock->get_fd();
+		pfd[1].fd=msgqueue->get_eventfd()->get_fd();
 		pfd[0].events=POLLIN;
 		pfd[1].events=POLLIN;
 

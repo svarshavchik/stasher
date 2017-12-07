@@ -90,10 +90,10 @@ void fdobjwriterthreadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 
 	transport= &*fd;
 
-	pfd[0].fd=transport->getFd();
+	pfd[0].fd=transport->get_fd();
 	pfd[0].events=POLLOUT;
 
-	pfd[1].fd=msgqueue->get_eventfd()->getFd();
+	pfd[1].fd=msgqueue->get_eventfd()->get_fd();
 	pfd[1].events=POLLIN;
 
 	x::ptr<x::obj> sendfd_mcguffinref;
@@ -122,7 +122,7 @@ public:
 
 	void serialize(class objwriterObj &writer)
 	{
-		fdwriter.dosendfd(gethandler->getFd());
+		fdwriter.dosendfd(gethandler->get_fd());
 	}
 };
 
@@ -146,7 +146,7 @@ class LIBCXX_INTERNAL fdobjwriterthreadObj::getsendfd::default_impl
  : fd(fdArg) {}
 	~default_impl() {}
 
-	const std::vector<x::fd> &getFd() { return fd; }
+	const std::vector<x::fd> &get_fd() { return fd; }
 };
 
 

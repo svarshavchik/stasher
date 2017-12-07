@@ -174,9 +174,9 @@ public:
 
 		struct pollfd pfd[2];
 
-		pfd[0].fd=fd->getFd();
+		pfd[0].fd=fd->get_fd();
 		pfd[0].events=POLLIN;
-		pfd[1].fd=msgqueue->get_eventfd()->getFd();
+		pfd[1].fd=msgqueue->get_eventfd()->get_fd();
 		pfd[1].events=POLLIN;
 
 		while (1)

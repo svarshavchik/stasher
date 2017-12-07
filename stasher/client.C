@@ -587,7 +587,7 @@ x::fd clientObj::implObj::connect_socket(const std::string &filename)
 	{
 		struct pollfd pfd;
 
-		pfd.fd=sock->getFd();
+		pfd.fd=sock->get_fd();
 		pfd.events=POLLOUT;
 
 		if (::poll(&pfd, 1, -1) < 0)

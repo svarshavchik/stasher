@@ -83,10 +83,10 @@ void clustertlsconnectshutdownObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguf
 
 		fd->nonblock(true);
 
-		pfd[0].fd=fd->getFd();
+		pfd[0].fd=fd->get_fd();
 	}
 	pfd[0].events=POLLIN;
-	pfd[1].fd=socket->getFd();
+	pfd[1].fd=socket->get_fd();
 
 	LOG_INFO("Shutting down TLS connection");
 

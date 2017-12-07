@@ -181,7 +181,7 @@ public:
 
 		//! A thrown exception kills the writer thread. A failure to
 		//! return an open file descriptor throws an exception.
-		virtual const std::vector<x::fd> &getFd()=0;
+		virtual const std::vector<x::fd> &get_fd()=0;
 
 		class default_impl;
 	};

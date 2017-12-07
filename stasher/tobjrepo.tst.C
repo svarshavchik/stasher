@@ -167,7 +167,7 @@ static void test2()
 	if (!notfound.empty() ||
 	    valuesMap.find("obj1") == valuesMap.end() ||
 	    valuesMap.find("obj2") == valuesMap.end()) // [CLEANUP]
-		throw EXCEPTION("Transaction recommit failed"); 
+		throw EXCEPTION("Transaction recommit failed");
 
 	{
 		newtran tran(repo->newtransaction());
@@ -263,7 +263,7 @@ static void test2()
 	    valuesMap.find("obj1") != valuesMap.end() ||
 	    valuesMap.find("obj2") == valuesMap.end() ||
 	    valuesMap.find("obj3") == valuesMap.end()) // [COMMIT]
-		throw EXCEPTION("Transaction commit failed"); 
+		throw EXCEPTION("Transaction commit failed");
 
 	{
 		std::set<std::string> s;
@@ -325,7 +325,7 @@ static void test4() // [GLOBALLOCK]
 
 	struct pollfd pfd=pollfd();
 
-	pfd.fd=fd->getFd();
+	pfd.fd=fd->get_fd();
 	pfd.events=POLLIN;
 
 	x::dir::base::rmrf("conftestdir.tst");
@@ -405,7 +405,7 @@ static void test5()
 
 	struct pollfd pfd=pollfd();
 
-	pfd.fd=fd->getFd();
+	pfd.fd=fd->get_fd();
 	pfd.events=POLLIN;
 
 	x::dir::base::rmrf("conftestdir.tst");
