@@ -22,7 +22,7 @@ class spacemonitorObj : virtual public x::obj {
 
 	//! Initialized by reset_refresh_counter
 
-	x::refcnt refresh_counter;
+	std::atomic_int32_t refresh_counter;
 
 	//! Set refresh_counter from reserved_refresh()
 

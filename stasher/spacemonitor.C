@@ -27,10 +27,10 @@ void spacemonitorObj::reset_refresh_counter()
 	if (n < 1)
 		n=1;
 
-	if (refresh_counter.refget() > 0)
+	if (refresh_counter.load() > 0)
 		return; // Another thread beat me to it
 
-	while (refresh_counter.refadd(n) <= 0)
+	while (refresh_counter.fetch_add(n)+n <= 0)
 		;
 
 	freespaceref->refresh();
@@ -40,7 +40,7 @@ spacemonitorObj::reservation
 spacemonitorObj::reservespace_alloc(long alloc, long inodes)
 
 {
-	if (refresh_counter.refadd(-1) == 0)
+	if (--refresh_counter == 0)
 		reset_refresh_counter();
 
 	return freespaceref->reserve(alloc, inodes);
