@@ -174,7 +174,7 @@ class LIBCXX_INTERNAL localprivconnectionObj::propsetresetaction::setpropvalue :
 					   x::locale::create(""));
 
 		propmap[name]=value=x::property::value<std::string>
-			(name, std::string()).getValue();
+			(name, std::string()).get();
 	}
 };
 

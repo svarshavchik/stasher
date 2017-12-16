@@ -79,11 +79,11 @@ localconnectionObj::localconnectionObj(const std::string &threadnameArg,
 	  tracker(trackerArg), distributor(distributorArg),
 	  cluster(clusterArg), spacedf(spacemonitorArg),
 	  getsemaphore(getsemaphoreArg),
-	  limits(maxgets_prop.getValue(),
+	  limits(maxgets_prop.get(),
 		 clusterArg->getmaxobjects(),
 		 clusterArg->getmaxobjectsize(),
 		 x::fdbaseObj::get_buffer_size(),
-		 maxsubs_prop.getValue())
+		 maxsubs_prop.get())
 {
 	readTimeout_value=0;
 }
@@ -535,7 +535,7 @@ void localconnectionObj::run(//! threadmsgdispatcher mcguffin,
 
 void localconnectionObj::started()
 {
-	writer->setmaxqueuesize(writequeuesize_prop.getValue());
+	writer->setmaxqueuesize(writequeuesize_prop.get());
 
 	typedef x::ref<STASHER_NAMESPACE::writtenObj
 		       <STASHER_NAMESPACE::userhelo> > hello_msg_t;
@@ -989,7 +989,7 @@ void localconnectionObj::deserialized(const getdir_req_t &req)
 		hier=hier.substr(0, hier.size()-1);
 
 	msgres.serialize_chunk=
-		x::ptr<senddir>::create(diritersize_prop.getValue(),
+		x::ptr<senddir>::create(diritersize_prop.get(),
 					repo, req.hier,
 					namespaceview);
 	resp.write(writer);

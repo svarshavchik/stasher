@@ -16,7 +16,7 @@ clustertlsconnectshutdownObj::bye_timeout("byetimeout", 15);
 
 unsigned clustertlsconnectshutdownObj::getTimeout()
 {
-	return bye_timeout.getValue();
+	return bye_timeout.get();
 }
 
 clustertlsconnectshutdownObj::clustertlsconnectshutdownObj()

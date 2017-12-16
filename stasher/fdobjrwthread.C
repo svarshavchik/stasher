@@ -20,7 +20,7 @@ x::property::value<unsigned> fdobjrwthreadBase::readTimeout("objrepo::timeoutrea
 
 fdobjrwthreadObj::fdobjrwthreadObj(const std::string &writeThreadNameArg)
 	: writeThreadName(writeThreadNameArg),
-	  readTimeout_value(readTimeout.getValue())
+	  readTimeout_value(readTimeout.get())
 {
 }
 
@@ -40,7 +40,7 @@ void fdobjrwthreadObj::mainloop(msgqueue_auto &msgqueue,
 						    &writeTimeout,
 						    fdobjwriterthreadObj
 						    ::default_bufsize
-						    .getValue());
+						    .get());
 
 	x::ref<x::obj> my_mcguffin=x::ref<x::obj>::create();
 

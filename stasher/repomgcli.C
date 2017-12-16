@@ -211,7 +211,7 @@ static int clustmg(int argc, char **argv)
 
 			if (args.empty())
 			{
-				dirname = default_clusterdir.getValue() + "/"
+				dirname = default_clusterdir.get() + "/"
 					+ opts.clustkey_name->value;
 			}
 			else
@@ -296,7 +296,7 @@ static int clustmg(int argc, char **argv)
 				}
 
 				clustkeydir=nodekeydir;
-				nodekeydir=default_newnodedir.getValue()
+				nodekeydir=default_newnodedir.get()
 					+ "/" + opts.nodekey_name->value;
 			}
 			else
@@ -307,7 +307,7 @@ static int clustmg(int argc, char **argv)
 
 			{
 				std::string stdclustkeydir =
-					default_clusterdir.getValue() + "/"
+					default_clusterdir.get() + "/"
 					+ clustkeydir;
 
 				if (clustkeydir.find('/') ==

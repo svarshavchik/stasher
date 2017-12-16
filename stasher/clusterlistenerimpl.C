@@ -79,7 +79,7 @@ public:
 
 void clusterlistenerimplObj::connectnewpeers()
 {
-	if (!debugnonewconnect.getValue())
+	if (!debugnonewconnect.get())
 		connectpeers();
 }
 
@@ -287,7 +287,7 @@ void clusterlistenerimplObj::dispatch_start_localconn(const x::fd &sock,
 		nsmap::local_map_t localmap;
 
 		try {
-			nsmap::get_local_map(appsdir.getValue(), localmap);
+			nsmap::get_local_map(appsdir.get(), localmap);
 		} catch (const x::exception &e)
 		{
 			// Ignore errors during regression tests
@@ -452,7 +452,7 @@ void clusterlistenerimplObj::retr_credentialsObj
 		x::timespec now=x::timespec::getclock(CLOCK_MONOTONIC),
 			timeout=now;
 
-		timeout.tv_sec += timeout_interval.getValue();
+		timeout.tv_sec += timeout_interval.get();
 
 		while (now < timeout)
 		{
@@ -523,8 +523,8 @@ void clusterlistenerimplObj::dispatch_update_reserved_space(const margin_message
 
 	*reservation_margin=spacedf->
 		reservespace_alloc(spacedf->calculate_alloc
-				   (reserved_space.getValue().bytes)
+				   (reserved_space.get().bytes)
 				   + npeers,
-				   reserved_inodes.getValue()
+				   reserved_inodes.get()
 				   + npeers * 5);
 }

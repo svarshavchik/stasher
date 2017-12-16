@@ -134,7 +134,7 @@ public:
 	//! Constructor
 
 	objwriterthreadObj(const std::string &nameArg,
-			   size_t bufsize=default_bufsize.getValue());
+			   size_t bufsize=default_bufsize.get());
 
 
 	//! Destructor

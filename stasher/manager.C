@@ -474,7 +474,7 @@ void managerObj::implObj::objectsubscribeCancelledObj<info>
 		const x::ref<implObj> &manager)
 {
 	{
-		auto interval=manager->resubscribe_interval.getValue();
+		auto interval=manager->resubscribe_interval.get();
 
 		x::mpobj<implObj::meta_t>::lock lock(manager->meta);
 

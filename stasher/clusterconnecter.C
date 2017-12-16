@@ -153,7 +153,7 @@ clusterconnecterObj::connect_common::connect_common(const x::eventfd &eventfd)
 	  epollfd(x::epoll::create()),
 	  epollcb(x::ref<dummyCallbackObj>::create())
 {
-	timer->set(0, connect_timeout.getValue());
+	timer->set(0, connect_timeout.get());
 	epollfd->nonblock(true);
 	timer->epoll_add(EPOLLIN, epollfd, epollcb);
 
@@ -190,7 +190,7 @@ void clusterconnecterObj::connect(connect_common &common,
 	x::gnutls::sessionptr sess;
 	std::string peername;
 
-	if (debugnotls.getValue())
+	if (debugnotls.get())
 	{
 		{
 			x::fd::base::inputiter in_iter(timeout), end_iter;
@@ -419,7 +419,7 @@ void clusterconnecterObj::connect(connect_common &common,
 
 	std::string connected_peername;
 
-	if (debugnotls.getValue())
+	if (debugnotls.get())
 	{
 		connected_peername=peername;
 

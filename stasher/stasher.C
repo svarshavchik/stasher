@@ -670,7 +670,7 @@ void cli::start(const std::string &path)
 		if (access(properties.c_str(), R_OK) == 0)
 			setenv("PROPERTIES", properties.c_str(), 1);
 
-		std::string prog=stasherd.getValue();
+		std::string prog=stasherd.get();
 
 		execl(prog.c_str(), prog.c_str(), "--daemon", path.c_str(),
 		      NULL);

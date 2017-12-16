@@ -34,7 +34,7 @@ objuuidlist objuuidenumeratorObj::next()
 
 	std::set<std::string> objectnames;
 
-	for (size_t n=objuuidlistObj::default_chunksize.getValue(); n > 0; --n)
+	for (size_t n=objuuidlistObj::default_chunksize.get(); n > 0; --n)
 	{
 		if (b == e)
 			break;

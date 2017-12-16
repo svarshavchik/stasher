@@ -149,9 +149,9 @@ int main(int argc, char **argv)
 	try {
 		// [PARTIAL]
 
-		test1(objuuidlistObj::default_chunksize.getValue()-1);
-		test1(objuuidlistObj::default_chunksize.getValue());
-		test1(objuuidlistObj::default_chunksize.getValue()+1);
+		test1(objuuidlistObj::default_chunksize.get()-1);
+		test1(objuuidlistObj::default_chunksize.get());
+		test1(objuuidlistObj::default_chunksize.get()+1);
 		test1(0);
 		x::dir::base::rmrf("conftest.dir");
 	} catch (const x::exception &e)

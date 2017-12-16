@@ -167,7 +167,7 @@ void clusterlistenerObj::dispatch_checkcert()
 				x::ymdhms t=now;
 
 				static_cast<x::ymd &>(t)
-					+= certwarntime.getValue();
+					+= certwarntime.get();
 
 				t;
 			});
@@ -194,7 +194,7 @@ void clusterlistenerObj::dispatch_checkcert()
 					x::ymdhms t=now;
 
 					static_cast<x::ymd &>(t)
-						+= certerrtime.getValue();
+						+= certerrtime.get();
 
 					t;
 				}) )

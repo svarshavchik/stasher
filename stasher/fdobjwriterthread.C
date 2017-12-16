@@ -36,7 +36,7 @@ size_t fdobjwriterthreadObj::flush(const char *ptr, size_t cnt)
 
 	if (timeout)
 	{
-		expired += timeout->getValue();
+		expired += timeout->get();
 		warning += (expired-now)/2;
 	}
 

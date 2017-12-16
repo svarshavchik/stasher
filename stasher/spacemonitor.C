@@ -22,7 +22,7 @@ spacemonitorObj::~spacemonitorObj()
 void spacemonitorObj::reset_refresh_counter()
 {
 	std::lock_guard<std::mutex> lock(objmutex);
-	long n=reserved_refresh.getValue();
+	long n=reserved_refresh.get();
 
 	if (n < 1)
 		n=1;

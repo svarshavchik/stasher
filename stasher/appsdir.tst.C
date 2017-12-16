@@ -18,9 +18,9 @@ static void test1(tstnodes &t, const char *argv0)
 	t.init(tnodes);
 	t.startmastercontrolleron0_int(tnodes);
 
-	clusterlistenerimplObj::appsdir.setValue("appsdir.tmp");
+	clusterlistenerimplObj::appsdir.set("appsdir.tmp");
 	mkdir("appsdir.tmp", 0777);
-	
+
 	{
 		std::ofstream o("appsdir.tmp/appsdir.tmp");
 

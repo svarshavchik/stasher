@@ -1332,7 +1332,7 @@ void repopeerconnectionObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 
 	LOG_INFO("Initialized connection with " << peername);
 
-	if (debugnotimeout.getValue())
+	if (debugnotimeout.get())
 	{
 		readTimeout_value=0;
 	}

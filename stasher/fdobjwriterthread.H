@@ -147,7 +147,7 @@ public:
 			     x::property::value<unsigned> *timeout=NULL,
 
 			     //! Output buffer size
-			     size_t bufsize=default_bufsize.getValue());
+			     size_t bufsize=default_bufsize.get());
 
 	~fdobjwriterthreadObj();
 

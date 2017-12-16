@@ -35,7 +35,7 @@ static x::property::value<bool> noalarm("noalarm", false);
 	}
 
 #define ALARM(n) do {				\
-		if (!noalarm.getValue())	\
+		if (!noalarm.get())	\
 			alarm(n);		\
 	} while(0)
 

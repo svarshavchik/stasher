@@ -97,7 +97,7 @@ public:
 
 	//! Constructor
 
-	objwriterObj(size_t bufsize=default_bufsize.getValue());
+	objwriterObj(size_t bufsize=default_bufsize.get());
 
 
 	//! Destructor

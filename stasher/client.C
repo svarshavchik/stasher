@@ -576,7 +576,7 @@ x::fd clientObj::implObj::connect_socket(const std::string &filename)
 {
 	x::timerfd tfd=x::timerfd::create();
 
-	tfd->set(0, clientObj::implObj::connect_timeout.getValue());
+	tfd->set(0, clientObj::implObj::connect_timeout.get());
 
 	x::fd sock=x::netaddr::create(SOCK_STREAM, "file:" + filename)
 		->connect(x::fdtimeoutconfig::terminate_fd(tfd));
@@ -606,7 +606,7 @@ x::fd clientObj::implObj::connect_socket(const std::string &filename)
 
 void clientBase::defaultnodes(std::set<std::string> &paths)
 {
-	x::dir d=x::dir::create(clientObj::implObj::default_nodedir.getValue());
+	x::dir d=x::dir::create(clientObj::implObj::default_nodedir.get());
 
 	for (auto &iter:*d)
 		paths.insert(iter.fullpath());
@@ -620,11 +620,11 @@ client clientBase::connect()
 
 	if (s.empty())
 		throw EXCEPTION("No object repositories found in " +
-				clientObj::implObj::default_nodedir.getValue());
+				clientObj::implObj::default_nodedir.get());
 
 	if (s.size() > 1)
 		throw EXCEPTION("There are more than one repository in " +
-				clientObj::implObj::default_nodedir.getValue());
+				clientObj::implObj::default_nodedir.get());
 
 	return connect(*s.begin());
 }

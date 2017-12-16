@@ -275,7 +275,7 @@ static void test1()
 
 	std::map<std::string, x::uuid> uuidmap, uuidmap2;
 
-	for (size_t i=objuuidlistObj::default_chunksize.getValue()*2; i; --i)
+	for (size_t i=objuuidlistObj::default_chunksize.get()*2; i; --i)
 	{
 		std::stringstream ss;
 
