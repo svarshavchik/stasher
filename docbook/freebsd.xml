@@ -9,8 +9,11 @@ See COPYING for distribution information.
   <title>Porting and compatibility notes</title>
 
   <para>
-    At this time, there's a <filename>Makefile</filename> in the
-    &app; tarball that you can use to try to build &app; on &freebsdver;.
+    An earlier version of &app; was also ported to
+    &freebsdver;, but has not been maintained to-date.
+    Any patches required for porting to the current version are welcome,
+    This appendix
+    contains the last build instructions and notes as of &freebsdver;:
   </para>
 
   <itemizedlist>

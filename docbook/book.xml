@@ -4,9 +4,9 @@
 <!ENTITY % entity-list SYSTEM "entities">
 
 <!ENTITY app "<application>stasher</application>">
-<!ENTITY distrebootapp "<ulink url='http://www.libcxx.org/stasher/distreboot/'><application>stasher-distreboot</application></ulink>">
+<!ENTITY distrebootapp "<ulink url='/stasher/distreboot/'><application>stasher-distreboot</application></ulink>">
 <!ENTITY distreboot "<link linkend='distrebootex'><command>distreboot</command></link>">
-<!ENTITY libx "<ulink url='http://www.libcxx.org/'><application><emphasis>LIBCXX</emphasis></application></ulink>">
+<!ENTITY libx "<ulink url='/'><application><emphasis>LIBCXX</emphasis></application></ulink>">
 <!ENTITY quorum "quorum (the majority of nodes in the cluster are up, connected and synchronized with each other)">
 <!ENTITY fullquorum "full quorum (all nodes in the cluster are up, connected and synchronized with each other)">
 <!ENTITY stashermgcmd "<link linkend='stashermg'><command>stashermg</command></link>">
@@ -57,7 +57,7 @@
 <!ENTITY heartbeatoter SYSTEM "heartbeatother.xml">
 
 <!ENTITY freebsd SYSTEM "freebsd.xml">
-<!ENTITY freebsdver "FreeBSD 9.1">
+<!ENTITY freebsdver "FreeBSD 10">
 <!ENTITY freebsdverdir "<filename>packaging/freebsd9/databases/stasher</filename>">
 <!ENTITY freebsdprefix "/usr/local">
 <!ENTITY freebsdvarstasher "/usr/local/var/stasher">

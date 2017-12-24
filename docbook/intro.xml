@@ -49,8 +49,9 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      &app; is based on &libx; which currently works on Linux only, and is
-      partially stable on FreeBSD 9.
+      &app; is based on &libx; which currently works on Linux only; an earlier
+      version of &libx; could also be build on &freebsdver;, but the port is not
+      maintained at present.
       &app; is free software, distributed under the terms of the
       <link linkend="COPYING">GPL, version 3</link>.
     </para>
@@ -330,7 +331,7 @@ See COPYING for distribution information.
   <section id="INSTALL">
     <title>Installation, and requirements</title>
 
-    <informaltable id="externallinks">
+    <informaltable class="externallinks">
       <thead cols="1">
 	<tr>
 	  <th>
@@ -347,7 +348,7 @@ See COPYING for distribution information.
 	    </simpara>
 
 	    <simpara>
-	      <ulink url="https://lists.fedorahosted.org/mailman/listinfo/libcxx-stasher-users">Mailing list</ulink>
+	      <ulink url="https://lists.libcxx.org/mailman/listinfo/stasher-users_lists.libcxx.org">Mailing list</ulink>
 	    </simpara>
 
 	    <simpara>
@@ -378,16 +379,11 @@ See COPYING for distribution information.
 
     <para>
       &libx; must be installed first. &app; uses &libx;, which currently
-      builds only on Linux, with an exception that it also builds on
-      &freebsdver;. Before building &app;
-      install &libx; first and follow its installation instructions.
-      Once &libx; is fully installed on each node, and
-      &libx;'s httportmapper service
-      is running on each node, proceed to install &app;.
-
-      The following instructions are for Linux, see
-      <xref linkend="freebsdport" /> for &freebsdver;-specific build
-      instructions.
+      builds only on Linux. An earlier version of &app; could
+      also be be built on &freebsdver;, but the port is not maintained at
+      present, see <xref linkend="freebsdport" />
+      for more information.
+      The following instructions are for Linux.
     </para>
 
     <para>

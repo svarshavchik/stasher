@@ -666,6 +666,8 @@ check-am:
 	./repocontrollermaster2.tst
 
 docs: html/index.html html/book.css html/logo.png html/.htaccess html/frame.js html/icon.gif $(patsubst %,html/%,$(notdir $(wildcard $(srcdir)/docbook/*.png)))
+	chcon -R -t httpd_sys_content_t html 2>/dev/null || true
+	rsync -a -X html/* ~/www/www.courier-mta.org/stasher
 
 html/%.png: html/index.html docbook/%.png
 	$(INSTALL) -m 0644 $(srcdir)/docbook/$(notdir $@) html
@@ -690,17 +692,14 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.
 		--param local.l10n.xml 'document("'`pwd`/docbook/l10.xml'")' \
 		$(srcdir)/docbook/docbook.xsl \
 		$(srcdir)/docbook/book.xml
-	-rm -f html/* 2>/dev/null >/dev/null || :
-	mkdir -p html
-	mv html.tmp/* html
-	rm -rf html.tmp
-	rm -rf html/examples
-	find examples -depth \( -type d -o -name '*.[CH]' -o -name '*.xml' -o -name Makefile.am -o -name configure.ac \) -print | cpio -o --quiet | (cd html; cpio -i --quiet --make-directories)
-	echo 'ForceType text/plain' >html/examples/.htaccess
-	rm -f html/distreboot
-	ln -s ../stasher-distreboot html/distreboot
-	links --dump html/INSTALL.html >INSTALL.tmp
+	find examples -depth \( -type d -o -name '*.[CH]' -o -name '*.xml' -o -name Makefile.am -o -name configure.ac \) -print | cpio -o --quiet | (cd html.tmp; cpio -i --quiet --make-directories)
+	echo 'ForceType text/plain' >html.tmp/examples/.htaccess
+	echo 'Options +Indexes' >>html.tmp/examples/.htaccess
+	links --dump html.tmp/INSTALL.html >INSTALL.tmp
 	mv -f INSTALL.tmp INSTALL
+	ln -s ../stasher-distreboot html.tmp/distreboot
+	rm -rf html
+	mv html.tmp html
 
 docbook/stasherpm.xml: perl/Stasher/lib/Stasher.pm
 	pod2docbook --doctype=refentry --fix-double-quotes --no-header perl/Stasher/lib/Stasher.pm >docbook/stasherpm.xml.new
