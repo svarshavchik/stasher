@@ -344,7 +344,7 @@ See COPYING for distribution information.
 	<tr>
 	  <td>
 	    <simpara>
-	      <ulink url="https://fedorahosted.org/released/libcxx/">Download</ulink>
+	      <ulink url="https://releases.pagure.org/stasher/">Download</ulink>
 	    </simpara>
 
 	    <simpara>
@@ -352,12 +352,9 @@ See COPYING for distribution information.
 	    </simpara>
 
 	    <simpara>
-	      <ulink url="http://git.fedorahosted.org/git/libcxx.git">fedorahosted</ulink> or
-	      <ulink url="https://github.com/svarshavchik/libcxx.git">GitHUB</ulink>
+	      <ulink url="https://pagure.io/stasher.git">Pagure</ulink> or
+	      <ulink url="https://github.com/svarshavchik/stasher.git">GitHUB</ulink>
 	      <acronym>GIT</acronym>
-	    </simpara>
-	    <simpara>
-	      (<quote>libcxx/stasher</quote> branch).
 	    </simpara>
 
 	    <simpara>
