@@ -21,6 +21,8 @@
 #include <stasher/managedhierarchymonitor.H>
 #include <stasher/managedobject.H>
 
+#include <string_view>
+
 STASHER_NAMESPACE_START
 
 class managerObj;
@@ -87,6 +89,14 @@ public:
 
 	//! Constructor
 	managerObj();
+
+	//! Constructor, non-default retry property.
+
+	managerObj(const std::string &property_name,
+		   const std::string_view &default_value)
+		: managerObj(property_name, x::hms{default_value})
+	{
+	}
 
 	//! Constructor, non-default retry property.
 
