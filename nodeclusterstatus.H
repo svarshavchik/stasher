@@ -181,7 +181,7 @@ public:
 
 		x::ymdhms localtimestamp(timestamp, x::tzfile::base::local());
 
-		x::locale l(x::locale::base::global());
+		auto l=x::locale::base::global();
 
 		o << x::tostring(localtimestamp.format("%Y-%m-%d %H:%M:%S %z"),
 				 l);
