@@ -279,7 +279,6 @@ libstasher_la_SOURCES=\
 
 libstasher_client_la_LIBADD=$(XLIBS)
 libstasher_client_la_LDFLAGS=-version-info 1
-libstasher_client_la_CXXFLAGS=@STDTHREAD_CXXFLAGS@
 
 @LIBCXX_AM@
 
@@ -303,7 +302,6 @@ $(call THREADMSGDISPATCHER_GEN,client.msgs.H,client.msgs.xml)
 $(call THREADMSGDISPATCHER_GEN,threadreportimpl.msgs.H, threadreportimpl.msgs.xml)
 
 libstasher_la_LIBADD=libstasher-client.la -lcxxtls
-libstasher_la_CXXFLAGS=@STDTHREAD_CXXFLAGS@
 
 $(call OPTIONS_GEN,repomgcliopts.h,repomgcli.xml)
 
@@ -366,7 +364,6 @@ nodeclusterstatus_tst_LDFLAGS=-static
 peerstatus_tst_SOURCES=peerstatus.tst.C
 peerstatus_tst_LDADD=-lcxx
 peerstatus_tst_LDFLAGS=-static
-peerstatus_tst_CXXFLAGS=@STDTHREAD_CXXFLAGS@
 
 clusterinfo_tst_SOURCES=clusterinfo.tst.C
 clusterinfo_tst_LDADD=libstasher.la

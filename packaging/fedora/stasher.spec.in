@@ -31,6 +31,7 @@ the object repository server.
 %package perl
 Summary: Perl bindings for the Stasher object repository server API
 Group: Development/Libraries
+Requires:  %{name} = 0:%{version}-%{release}
 
 %description perl
 This package installs a basic Perl module for accessing objects in the
