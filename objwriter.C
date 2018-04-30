@@ -30,7 +30,8 @@ void objwriterObj::pubflush()
 
 	size_t n=flush(&buffer[0], buf_ptr);
 
-	std::copy(&buffer[n], &buffer[buf_ptr], &buffer[0]);
+	if (n < buf_ptr)
+		std::copy(&buffer[n], &buffer[0]+buf_ptr, &buffer[0]);
 
 	buf_ptr -= n;
 }

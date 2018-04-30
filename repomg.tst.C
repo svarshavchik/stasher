@@ -13,7 +13,7 @@
 #include <list>
 
 #define BITSIZE "medium"
-#define ALGO	"sha1"
+#define ALGO	"sha256"
 #define CERTTYPE "rsa"
 
 class get_keys : public repomg::key_list_callback {

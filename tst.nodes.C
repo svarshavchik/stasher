@@ -49,7 +49,7 @@ void tstnodes::clustkey_generate(time_t now)
 				  now + 365 * 24 * 60 * 60,
 				  "rsa",
 				  "medium",
-				  "sha1");
+				  "sha256");
 }
 
 tstnodes::tstnodes(size_t nArg) : n(nArg), useencryption(false)
@@ -81,7 +81,8 @@ void tstnodes::update_node_key(time_t now, size_t i)
 {
 	repomg::nodekey_generate(getnodedir(i), clusterdir, "",
 				 getnodename(i),
-				 now, now + 7 * 24 * 60 * 60, "medium", "sha1");
+				 now, now + 7 * 24 * 60 * 60,
+				 "medium", "sha256");
 }
 
 tstnodes::~tstnodes()

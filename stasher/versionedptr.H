@@ -142,7 +142,10 @@ public:
 	}
 
 	//! Make it easier to assign a \c ptr_type from this object.
-	operator const ptr_type &() const
+
+	//! Once https://bugzilla.redhat.com/show_bug.cgi?id=1573038 is
+	//! fixed, this can be conversion operator to const ptr_type &
+	operator ptr_type() const
 	{
 		return ptr;
 	}

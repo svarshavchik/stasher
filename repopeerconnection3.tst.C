@@ -671,19 +671,19 @@ int main(int argc, char **argv)
 						  now + 365 * 24 * 60 * 60,
 						  "rsa",
 						  "medium",
-						  "sha1");
+						  "sha256");
 
 			repomg::nodekey_generate(nodeadir, clusterdir, "",
 						 nodea,
 						 now, now + 7 * 24 * 60 * 60,
 						 "medium",
-						 "sha1");
+						 "sha256");
 
 			repomg::nodekey_generate(nodebdir, clusterdir, "",
 						 nodeb,
 						 now, now + 7 * 24 * 60 * 60,
 						 "medium",
-						 "sha1");
+						 "sha256");
 		}
 		ALARM(120);
 
