@@ -61,7 +61,7 @@ public:
 	}
 
 	void quorum(const STASHER_NAMESPACE::quorumstate &inquorum)
-
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -354,7 +354,7 @@ public:
 		clustertlsconnectshutdownObj::run(mcguffin, c.sock, c.sess);
 	}
 
-	unsigned getTimeout()
+	unsigned getTimeout() override
 	{
 		return timeout;
 	}

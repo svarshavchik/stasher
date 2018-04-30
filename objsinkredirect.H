@@ -30,8 +30,7 @@ public:
 	~objsinkredirectObj();
 
 	//! Sink a message
-	void write(const x::ref<writtenobjbaseObj> &object);
-
+	void write(const x::ref<writtenobjbaseObj> &object) override;
 };
 
 //! A reference to an object sink redirector

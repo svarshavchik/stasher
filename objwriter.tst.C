@@ -26,6 +26,7 @@ public:
 	std::vector<char> buffer;
 
 	size_t flush(const char *ptr, size_t cnt)
+		override
 	{
 		if (cnt > 128)
 			cnt=128;

@@ -40,7 +40,7 @@ private:
 
 	objuuidlist
 	nextbatch(const std::set<std::string> &objectnames)
-
+		override
 	{
 		objuuidlist ret;
 
@@ -67,7 +67,7 @@ private:
 	}
 
 	// [GETOBJECT]
-	objuuidlist getobjuuidlist()
+	objuuidlist getobjuuidlist() override
 	{
 		++msgcnt;
 

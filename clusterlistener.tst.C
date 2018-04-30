@@ -25,13 +25,13 @@ public:
 	}
 
 	void start_network(const x::fd &sock,
-				   const x::sockaddr &addr);
+				   const x::sockaddr &addr) override;
 
 	void start_privsock(const x::fd &sock,
-				    const x::sockaddr &addr);
+				    const x::sockaddr &addr) override;
 
 	void start_pubsock(const x::fd &sock,
-				    const x::sockaddr &addr);
+				    const x::sockaddr &addr) override;
 
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	{

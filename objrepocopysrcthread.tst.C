@@ -97,7 +97,7 @@ public:
 	{
 	}
 
-	void event(const objrepocopy::batonrequest &msg)
+	void event(const objrepocopy::batonrequest &msg) override
 	{
 		ENTERED(received_batonrequest);
 		objrepocopy::batonresponse resp;
@@ -111,6 +111,7 @@ public:
 	}
 
 	void event(const objrepocopy::masterlist &msg) // [SENDMASTERLIST]
+		override
 	{
 		ENTERED(received_masterlist);
 		objrepocopysrcinterfaceptr p=src.getptr();
@@ -162,6 +163,7 @@ public:
 	}
 
 	void event(const objrepocopy::masterlistdone &msg) // [SENDMASTERLIST]
+		override
 	{
 		ENTERED(received_masterlistdone);
 		objrepocopy::slavelistready ack;
@@ -174,6 +176,7 @@ public:
 	}
 
 	void event(const objrepocopy::slaveliststart &msg) // [SLAVELISTSTART]
+		override
 	{
 		ENTERED(received_slaveliststart);
 		std::unique_lock<std::mutex> lock(mutex);
@@ -193,6 +196,7 @@ public:
 	}
 
 	void event(const objrepocopy::masterack &msg) // [SENDMASTERACK]
+		override
 	{
 		ENTERED(received_masterack);
 		objrepocopysrcinterfaceptr p=src.getptr();
@@ -219,6 +223,7 @@ public:
 	}
 
 	void event(const objrepocopy::copycomplete &msg) // [SENDCOPYCOMPLETE]
+		override
 	{
 		ENTERED(received_copycomplete);
 		std::lock_guard<std::mutex> lock(mutex);
@@ -229,6 +234,7 @@ public:
 	}
 
 	void event(const objserializer &msg)
+		override
 	{
 		ENTERED(received_serializer);
 		// Serialize this into a temporary buffer
@@ -481,6 +487,7 @@ public:
 	}
 
 	void event(const objrepocopy::batonrequest &msg)
+		override
 	{
 		ENTERED(received_batonrequest);
 		objrepocopy::batonresponse resp;
@@ -490,6 +497,7 @@ public:
 	}
 
 	void event(const objrepocopy::masterlist &msg)
+		override
 	{
 		ENTERED(received_masterlist);
 		std::lock_guard<std::mutex> lock(mutex);
@@ -498,6 +506,7 @@ public:
 	}
 
 	void event(const objrepocopy::masterlistdone &msg)
+		override
 	{
 		ENTERED(received_masterlistdone);
 		std::lock_guard<std::mutex> lock(mutex);
@@ -506,6 +515,7 @@ public:
 	}
 
 	void event(const objrepocopy::slaveliststart &msg)
+		override
 	{
 		ENTERED(received_slaveliststart);
 		std::lock_guard<std::mutex> lock(mutex);
@@ -514,6 +524,7 @@ public:
 	}
 
 	void event(const objrepocopy::masterack &msg)
+		override
 	{
 		ENTERED(received_masterack);
 		std::lock_guard<std::mutex> lock(mutex);
@@ -522,6 +533,7 @@ public:
 	}
 
 	void event(const objrepocopy::copycomplete &msg)
+		override
 	{
 		ENTERED(received_copycomplete);
 		std::lock_guard<std::mutex> lock(mutex);
@@ -529,6 +541,7 @@ public:
 	}
 
 	void event(const objserializer &msg)
+		override
 	{
 		ENTERED(received_serializer);
 		std::lock_guard<std::mutex> lock(mutex);

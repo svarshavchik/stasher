@@ -63,7 +63,7 @@ class batonhandoverthreadObj : public x::runthreadname,
 	bool quorum_flag;
 
 	//! Return the thread's name
-	std::string getName() const;
+	std::string getName() const override;
 public:
 
 	//! Constructor

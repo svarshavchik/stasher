@@ -34,11 +34,10 @@ class objwriterthreadObj::writeRequestObj : public requestObj {
 	x::ptr<writtenobjbaseObj> object;
 
 public:
-	writeRequestObj(const x::ptr<writtenobjbaseObj> &objectArg)
-;
+	writeRequestObj(const x::ptr<writtenobjbaseObj> &objectArg);
 	~writeRequestObj();
 
-	void serialize(objwriterObj &writer);
+	void serialize(objwriterObj &writer) override;
 };
 
 objwriterthreadObj::writeRequestObj
@@ -63,7 +62,7 @@ public:
 	stopRequestObj();
 	~stopRequestObj();
 
-	void serialize(objwriterObj &writer);
+	void serialize(objwriterObj &writer) override;
 };
 
 objwriterthreadObj::stopRequestObj::stopRequestObj()

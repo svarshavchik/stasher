@@ -32,6 +32,7 @@ public:
 	}
 
 	void serialize(STASHER_NAMESPACE::objwriterObj &writer)
+		override
 	{
 		writer.serialize(vec);
 	}
@@ -190,6 +191,7 @@ public:
 	}
 
 	void serialize(STASHER_NAMESPACE::objwriterObj &writer)
+		override
 	{
 		while (1)
 			writer.serialize(vec);

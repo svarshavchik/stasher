@@ -49,6 +49,7 @@ public:
 		~makewriteabortObj() {}
 
 		void serialize(STASHER_NAMESPACE::objwriterObj &writer)
+			override
 		{
 			throw EXCEPTION("Aborted, as per request (makewriteabort)");
 		}

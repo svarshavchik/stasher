@@ -519,7 +519,8 @@ public:
 		~commitreqObj();
 
 		//! Serialization function
-		void serialize(STASHER_NAMESPACE::objwriterObj &writer);
+		void serialize(STASHER_NAMESPACE::objwriterObj &writer)
+			override;
 	};
 
 private:
@@ -1412,8 +1413,7 @@ private:
 	class handover_request_cb;
 
 	//! Report this thread's status
-	std::string report(std::ostream &rep);
-
+	std::string report(std::ostream &rep) override;
 public:
 
 	//! Connection request from the controller

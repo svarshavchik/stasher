@@ -81,7 +81,7 @@ public:
 
 	size_t pubread(const x::fdbase &transport,
 		       char *buffer,
-		       size_t cnt)
+		       size_t cnt) override
 	{
 		size_t n;
 

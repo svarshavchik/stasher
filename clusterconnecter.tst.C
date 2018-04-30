@@ -81,7 +81,7 @@ public:
 		       const nodeclusterstatus &peerstatus,
 		       time_t timestamp,
 		       const x::uuid &connuuid,
-		       const clusterlistener &listener);
+		       const clusterlistener &listener) override;
 
 	template<typename ...Args>
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
@@ -110,7 +110,7 @@ public:
 	~mydistributorObj()=default;
 
 	void internal_transaction(const x::ref<internalTransactionObj>
-				  &tran) {}
+				  &tran) override {}
 };
 
 myserver::myserver()
@@ -194,7 +194,7 @@ public:
 		       const nodeclusterstatus &peerstatus,
 		       time_t timestamp,
 		       const x::uuid &connuuid,
-		       const clusterlistener &listener);
+		       const clusterlistener &listener) override;
 
 	template<typename ...Args>
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
@@ -330,15 +330,15 @@ public:
 	~mylistener();
 
 	void start_network(const x::fd &sock,
-			   const x::sockaddr &addr);
+			   const x::sockaddr &addr) override;
 
 	//! Handle a private socket connection
 	void start_privsock(const x::fd &sock,
-			    const x::sockaddr &addr);
+			    const x::sockaddr &addr) override;
 
 	//! Handle a public socket connection
 	void start_pubsock(const x::fd &sock,
-			   const x::sockaddr &addr);
+			   const x::sockaddr &addr) override;
 
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 		 start_threadmsgdispatcher_sync &sync_arg)

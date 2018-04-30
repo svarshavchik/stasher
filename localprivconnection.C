@@ -166,7 +166,7 @@ class LIBCXX_INTERNAL localprivconnectionObj::propsetresetaction::setpropvalue :
 
 	void operator()(std::map<std::string,
 				 std::string> &propmap)
-
+		override
 	{
 		x::property::load_property(name, value, true,
 					   true,
@@ -191,7 +191,7 @@ class LIBCXX_INTERNAL localprivconnectionObj::propsetresetaction::resetpropvalue
 
 	void operator()(std::map<std::string,
 				 std::string> &propmap)
-
+		override
 	{
 		propmap.erase(name);
 	}

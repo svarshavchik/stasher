@@ -26,10 +26,12 @@ public:
 	~test1subscriber() {}
 
 	void serverinfo(const STASHER_NAMESPACE::userhelo &serverinfo)
+		override
 	{
 	}
 
 	void state(const STASHER_NAMESPACE::clusterstate &state)
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -39,6 +41,7 @@ public:
 	}
 
 	void connection_update(STASHER_NAMESPACE::req_stat_t statArg)
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 

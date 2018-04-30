@@ -90,7 +90,7 @@ public:
 	~test1subscriber() {}
 
 	void updated(const std::string &objname,
-		     const std::string &suffix)
+		     const std::string &suffix) override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 

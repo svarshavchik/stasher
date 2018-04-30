@@ -25,6 +25,7 @@ public:
 	~test1subscriber() {}
 
 	void updated(const std::string &objname, const std::string &suffix)
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -33,6 +34,7 @@ public:
 	}
 
 	void connection_update(STASHER_NAMESPACE::req_stat_t statArg)
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 

@@ -40,6 +40,7 @@ public:
 	~test1subscriber() {}
 
 	void connection_update(STASHER_NAMESPACE::req_stat_t status)
+		override
 	{
 		meta_t::lock lock(meta);
 
@@ -48,7 +49,7 @@ public:
 		lock.notify_all();
 	}
 
-	void begin()
+	void begin() override
 	{
 		meta_t::lock lock(meta);
 
@@ -58,7 +59,7 @@ public:
 		lock.notify_all();
 	}
 
-	void enumerated()
+	void enumerated() override
 	{
 		meta_t::lock lock(meta);
 
@@ -67,7 +68,7 @@ public:
 	}
 
 	void updated(const std::string &objname,
-		     const x::uuid &objuuid)
+		     const x::uuid &objuuid) override
 	{
 		meta_t::lock lock(meta);
 
@@ -78,7 +79,7 @@ public:
 		lock.notify_all();
 	}
 
-	void removed(const std::string &objname)
+	void removed(const std::string &objname) override
 	{
 		meta_t::lock lock(meta);
 

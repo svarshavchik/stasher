@@ -48,8 +48,7 @@ public:
 	dummyhalt() {}
 	~dummyhalt() {}
 
-	void stop() {
-	}
+	void stop() override {}
 };
 
 class handofftest : public repocontrollerbaseObj,
@@ -131,24 +130,24 @@ public:
 	void connect_slave(const
 			   x::ptr<slavesyncinfoObj>
 			   &synchandle)
-
+		override
 	{
 	}
 
 	void connect_master(const
 			   x::ref<mastersyncinfoObj>
 			   &synchandle)
-
+		override
 	{
 	}
 
 	void connect_peer(const peerlinkptr &masterlinkArg)
-
+		override
 	{
 	}
 
 	void disconnect_peer()
-
+		override
 	{
 	}
 };
@@ -225,13 +224,13 @@ public:
 	void connect_master(const
 			   x::ref<mastersyncinfoObj>
 			   &synchandle)
-
+		override
 	{
 	}
 
 	void connect_slave(const slavesyncinfo
 			   &synchandleArg)
-
+		override
 	{
 		std::lock_guard<std::mutex> lock(mutex);
 
@@ -255,12 +254,12 @@ public:
 	}
 
 	void connect_peer(const peerlinkptr &masterlinkArg)
-
+		override
 	{
 	}
 
 	void disconnect_peer()
-
+		override
 	{
 	}
 };
@@ -324,7 +323,7 @@ public:
 	}
 
 	void event(const objrepocopy::batonrequest &msg)
-
+		override
 	{
 		objrepocopydstinterfaceptr
 			ptr(synchandle->dstinterface.getptr());
@@ -334,7 +333,7 @@ public:
 	}
 
 	void event(const objrepocopy::masterlist &msg)
-
+		override
 	{
 		objrepocopydstinterfaceptr
 			ptr(synchandle->dstinterface.getptr());
@@ -344,7 +343,7 @@ public:
 	}
 
 	void event(const objrepocopy::masterlistdone &msg)
-
+		override
 	{
 		objrepocopydstinterfaceptr
 			ptr(synchandle->dstinterface.getptr());
@@ -354,7 +353,7 @@ public:
 	}
 
 	void event(const objrepocopy::slaveliststart &msg)
-
+		override
 	{
 		objrepocopydstinterfaceptr
 			ptr(synchandle->dstinterface.getptr());
@@ -364,7 +363,7 @@ public:
 	}
 
 	void event(const objrepocopy::masterack &msg)
-
+		override
 	{
 		objrepocopydstinterfaceptr
 			ptr(synchandle->dstinterface.getptr());
@@ -374,7 +373,7 @@ public:
 	}
 
 	void event(const objrepocopy::copycomplete &msg)
-
+		override
 	{
 		objrepocopydstinterfaceptr
 			ptr(synchandle->dstinterface.getptr());
@@ -384,7 +383,7 @@ public:
 	}
 
 	void event(const objserializer &msg)
-
+		override
 	{
 		objrepocopydstinterfaceptr
 			ptr(synchandle->dstinterface.getptr());
@@ -433,7 +432,7 @@ public:
 	bool flag;
 
 	void quorum(const STASHER_NAMESPACE::quorumstate
-		    &quorum)
+		    &quorum) override
 	{
 		if (quorum.full)
 		{
@@ -694,7 +693,7 @@ public:
 	}
 
 	void event(const objrepocopy::batonrequest &msg)
-
+		override
 	{
 		objrepocopy::batonresponse resp;
 
@@ -704,42 +703,42 @@ public:
 	}
 
 	void event(const objrepocopy::masterlist &msg)
-
+		override
 	{
 		std::cout << "master -> masterlist" << std::endl;
 		deser->submit(msg);
 	}
 
 	void event(const objrepocopy::masterlistdone &msg)
-
+		override
 	{
 		std::cout << "master -> masterlistdone" << std::endl;
 		deser->submit(msg);
 	}
 
 	void event(const objrepocopy::slaveliststart &msg)
-
+		override
 	{
 		std::cout << "master -> slaveliststart" << std::endl;
 		deser->submit(msg);
 	}
 
 	void event(const objrepocopy::masterack &msg)
-
+		override
 	{
 		std::cout << "master -> masterack" << std::endl;
 		deser->submit(msg);
 	}
 
 	void event(const objrepocopy::copycomplete &msg)
-
+		override
 	{
 		std::cout << "master -> copycomplete" << std::endl;
 		deser->submit(msg);
 	}
 
 	void event(const objserializer &msg)
-
+		override
 	{
 		std::cout << "master -> object("
 			  << msg.getName() << ")" << std::endl;
@@ -759,7 +758,7 @@ public:
 	bool flag;
 
 	void quorum(const STASHER_NAMESPACE::quorumstate &quorum)
-
+		override
 	{
 		if (quorum.full)
 		{

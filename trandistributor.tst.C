@@ -128,7 +128,7 @@ public:
 
 	void operator()(const x::uuid &uuid,
 			const dist_received_status_t &status)
-
+		override
 	{
 		uuids.insert(uuid);
 	}
@@ -146,7 +146,7 @@ public:
 
 	std::set<x::uuid> received_uuids, cancelled_uuids;
 
-	void received(const trandistuuid &uuids)
+	void received(const trandistuuid &uuids) override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -157,7 +157,7 @@ public:
 		cond.notify_all();
 	}
 
-	void cancelled(const tranuuid &uuids)
+	void cancelled(const tranuuid &uuids) override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 

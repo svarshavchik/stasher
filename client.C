@@ -210,11 +210,11 @@ public:
  private:
 
 	//! We'll always accept file descriptors from the server, we trust it
-	void accept_fds(size_t n);
+	void accept_fds(size_t n) override;
 
 	//! Received some file descriptors from the server
 
-	void received_fd(const std::vector<x::fdptr> &fdArg);
+	void received_fd(const std::vector<x::fdptr> &fdArg) override;
 
 	//! Handler for the file descriptors from the server
 

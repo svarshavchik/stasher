@@ -87,12 +87,6 @@ public:
 	{
 	}
 
-	void peernewmaster(const x::ptr<peerstatusObj> &peerRef,
-			   const nodeclusterstatus &newmaster)
-
-	{
-	}
-
 	void installnotifycluster(const clusternotifier &notifier)
 
 	{
@@ -114,7 +108,22 @@ public:
 	}
 
 	void installformermasterbaton(const batonptr &batonp)
+	{
+	}
 
+	virtual std::pair<bool, x::ptr<peerstatusObj> >
+	installpeer_locked(const std::string &nodename,
+			   const x::ptr<peerstatusObj> &node)
+	{
+		return {false, {}};
+	}
+
+	virtual void peernewmaster(const x::ptr<peerstatusObj> &peerRef,
+				   const nodeclusterstatus &peerStatus)
+	{
+	}
+
+	virtual void startmaster(const newnodeclusterstatus &newStatus)
 	{
 	}
 };

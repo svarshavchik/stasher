@@ -306,7 +306,7 @@ public:
 		node0->listener->connectpeers();
 	}
 
-	void stop()
+	void stop() override
 	{
 		std::unique_lock<std::mutex> lock(test34_mutex);
 

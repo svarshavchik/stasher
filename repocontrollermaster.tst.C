@@ -139,7 +139,7 @@ public:
 
 	void connect_peer(const repopeerconnectionbaseObj::peerlinkptr
 			  &masterlinkArg)
-
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -151,7 +151,7 @@ public:
 	}
 
 	void connect_master(const mastersyncinfo &synchandleArg)
-
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -169,8 +169,7 @@ public:
 	dummyhalt() {}
 	~dummyhalt() {}
 
-	void stop() {
-	}
+	void stop() override {}
 };
 
 class mymastercontrollerObj : public repocontrollermasterObj {
@@ -217,7 +216,7 @@ public:
 		}
 
 		void quorum(const STASHER_NAMESPACE::quorumstate &inquorum)
-
+			override
 		{
 			if (inquorum.full != 0 && inquorum.full != 1)
 				abort();
@@ -417,13 +416,13 @@ public:
 
 
 		void event(const objrepocopy::batonrequest &msg)
-
+			override
 		{
 			thread->event(msg);
 		}
 
 		void event(const objrepocopy::masterlist &msg)
-
+			override
 		{
 
 			{
@@ -445,31 +444,31 @@ public:
 		}
 
 		void event(const objrepocopy::masterlistdone &msg)
-
+			override
 		{
 			thread->event(msg);
 		}
 
 		void event(const objrepocopy::slaveliststart &msg)
-
+			override
 		{
 			thread->event(msg);
 		}
 
 		void event(const objrepocopy::masterack &msg)
-
+			override
 		{
 			thread->event(msg);
 		}
 
 		void event(const objrepocopy::copycomplete &msg)
-
+			override
 		{
 			thread->event(msg);
 		}
 
 		void event(const objserializer &msg)
-
+			override
 		{
 			std::vector<char> tmpbuf;
 
@@ -516,7 +515,7 @@ public:
 		}
 
 		void bind(const objrepocopysrcinterfaceptr &src)
-
+			override
 		{
 			x::ptr<copydstObj> ptr(copydst.getptr());
 
@@ -546,7 +545,7 @@ public:
 
 	void connect_peer(const repopeerconnectionbaseObj::peerlinkptr
 			  &masterlinkArg)
-
+		override
 	{
 		if (!masterlink.null())
 			LOG_FATAL("Internal error: duplicate peerlink message");
@@ -555,7 +554,7 @@ public:
 	}
 
 	void connect_master(const mastersyncinfo &synchandleArg)
-
+		override
 	{
 		if (!synchandle.null())
 			LOG_FATAL("Internal error: duplicate peerlink message");

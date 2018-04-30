@@ -63,20 +63,16 @@ public:
 
 
 	//! Received a batonresponse message
-	void event(const objrepocopy::batonresponse &msg);
-
+	void event(const objrepocopy::batonresponse &msg) override;
 
 	//! Received a slavelist message
-	void event(const objrepocopy::slavelist &msg);
-
+	void event(const objrepocopy::slavelist &msg) override;
 
 	//! Received a slavelistready message
-	void event(const objrepocopy::slavelistready &msg);
-
+	void event(const objrepocopy::slavelistready &msg) override;
 
 	//! Received a slavelistdone message
-	void event(const objrepocopy::slavelistdone &msg);
-
+	void event(const objrepocopy::slavelistdone &msg) override;
 };
 
 #endif

@@ -25,7 +25,7 @@ public:
 	void operator()(const std::string &keyfilename,
 			const std::string &clustername,
 			time_t activation_time,
-			time_t expiration_time) const;
+			time_t expiration_time) const override;
 };
 
 void get_keys::operator()(const std::string &keyfilename,
@@ -68,7 +68,7 @@ static void test1(const char *clusterdir, const char *nodedir)
 				  now,
 				  now + 7 * 24 * 60 * 60,
 				  CERTTYPE, BITSIZE, ALGO); // [NEWCLUSTGEN]
-		
+
 	repomg::nodekey_generate(nodedir, clusterdir,
 				 "",
 				 "node",

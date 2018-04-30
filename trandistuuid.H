@@ -67,12 +67,10 @@ public:
 	std::map<x::uuid, dist_received_status_t> uuids;
 
 	//! Add a bunch of uuids.
-	void received(const trandistuuid &recvuuids);
-
+	void received(const trandistuuid &recvuuids) override;
 
 	//! Remove a bunch of uuids
-	void cancelled(const tranuuid &cancuuids);
-
+	void cancelled(const tranuuid &cancuuids) override;
 
 	//! Dump this object
 	void toString(std::ostream &o);

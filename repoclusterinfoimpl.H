@@ -56,7 +56,7 @@ class repoclusterinfoimplObj : public repoclusterinfoObj,
 
 		//! Invoke stop() on repoclusterinfoimplObj
 
-		void stop();
+		void stop() override;
 	};
 
 	//! The logger object
@@ -130,11 +130,11 @@ private:
 
 public:
 	//! Stop this instance.
-	void stop();
+	void stop() override;
 
 	//! Implement admin stop interface
 
-	void stop(const x::fd &socket);
+	void stop(const x::fd &socket) override;
 
 	//! Get the file descriptor that sent the admin stop command
 

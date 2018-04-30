@@ -301,7 +301,7 @@ public:
 	~test2_receiverObj() {}
 
 	void received(const trandistuuid &recvuuids)
-
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -311,7 +311,7 @@ public:
 	}
 
 	void cancelled(const tranuuid &cancuuids)
-
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 

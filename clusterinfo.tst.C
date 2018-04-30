@@ -37,7 +37,7 @@ public:
 		status_update_received(false) {}
 	~mypeerObj() {}
 
-	void stop()
+	void stop() override
 	{
 		stop_received=true;
 	}
@@ -50,14 +50,14 @@ public:
 	nodeclusterstatus statusupdate_value;
 
 	void statusupdated(const nodeclusterstatus &newStatus)
-
+		override
 	{
 		statusupdate_value=newStatus;
 		status_update_received=true;
 	}
 
 	void initialstatus(const nodeclusterstatus &newStatus)
-
+		override
 	{
 		initialstatus_value=newStatus;
 		initial_status_received=true;
@@ -80,7 +80,7 @@ public:
 	~mynotifierObj() {}
 
 	void statusupdated(const nodeclusterstatus &newStatus)
-
+		override
 	{
 		status=newStatus;
 		notified=true;
@@ -100,7 +100,7 @@ public:
 	clusterinfoObj::cluster_t curstatus;
 
         void clusterupdated(const clusterinfoObj::cluster_t &newStatus)
-
+		override
 	{
 		++invoked;
 		curstatus=newStatus;
@@ -192,7 +192,7 @@ static void test1()
 		c->installnotifyclusterstatus(n); // [REGISTER], [FIRSTSTATUS]
 
 		if (!n->notified || n->status != status2 ||
-		    n->status.uuid != status2.uuid) 
+		    n->status.uuid != status2.uuid)
 			throw EXCEPTION("[FIRSTSTATUS] test failed");
 
 		n->notified=false;
@@ -564,7 +564,7 @@ public:
 	}
 
 	x::ptr<x::obj> operator()(const std::string &peername)
-		const
+		const override
 	{
 		x::ptr<x::obj> mcguffin(x::ptr<x::obj>::create());
 

@@ -23,13 +23,13 @@ public:
 	~keeptrackofmasterObj() {}
 
         void initialstatus(const nodeclusterstatus &newStatus)
-
+		override
 	{
 		masterrecord.push_back(newStatus.master);
 	}
 
         void statusupdated(const nodeclusterstatus &newStatus)
-
+		override
 	{
 		if (masterrecord.back() == newStatus.master)
 			return;

@@ -69,7 +69,7 @@ class fdobjwriterthreadObj : public objwriterthreadObj {
 
 	//! \internal
 
-	size_t flush(const char *ptr, size_t cnt) LIBCXX_HIDDEN;
+	size_t flush(const char *ptr, size_t cnt) override LIBCXX_HIDDEN;
 
 	//! A mcguffin used to send a file descriptor
 

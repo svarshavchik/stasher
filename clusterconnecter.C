@@ -66,7 +66,7 @@ public:
 
 	bool timedout;
 
-	void event(const x::fd &filedesc, event_t events);
+	void event(const x::fd &filedesc, event_t events) override;
 };
 
 clusterconnecterObj::dummyCallbackObj::dummyCallbackObj()
@@ -100,7 +100,7 @@ public:
 	{
 	}
 
-	void doit()
+	void doit() override
 	{
 		LOG_DEBUG("Installing new cluster node map");
 

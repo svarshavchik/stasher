@@ -52,34 +52,27 @@ public:
 
 
 	//! Received a batonrequest message
-	void event(const objrepocopy::batonrequest &msg);
-
+	void event(const objrepocopy::batonrequest &msg) override;
 
 	//! Received a masterlist message
-	void event(const objrepocopy::masterlist &msg);
-
+	void event(const objrepocopy::masterlist &msg) override;
 
 	//! Received a masterlistdone message
-	void event(const objrepocopy::masterlistdone &msg);
-
+	void event(const objrepocopy::masterlistdone &msg) override;
 
 	//! Received a slaveliststart message
-	void event(const objrepocopy::slaveliststart &msg);
-
+	void event(const objrepocopy::slaveliststart &msg) override;
 
 	//! Received a masterack message
-	void event(const objrepocopy::masterack &msg);
-
+	void event(const objrepocopy::masterack &msg) override;
 
 	//! Received a copycomplete message
-	void event(const objrepocopy::copycomplete &msg);
-
+	void event(const objrepocopy::copycomplete &msg) override;
 
 private:
 	//! Not implemented
 
-	void event(const objserializer &msg);
-
+	void event(const objserializer &msg) override;
 };
 
 #endif

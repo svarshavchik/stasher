@@ -120,7 +120,7 @@ public:
 	{
 	}
 
-	void serialize(class objwriterObj &writer)
+	void serialize(class objwriterObj &writer) override
 	{
 		fdwriter.dosendfd(gethandler->get_fd());
 	}
@@ -146,7 +146,7 @@ class LIBCXX_INTERNAL fdobjwriterthreadObj::getsendfd::default_impl
  : fd(fdArg) {}
 	~default_impl() {}
 
-	const std::vector<x::fd> &get_fd() { return fd; }
+	const std::vector<x::fd> &get_fd() override { return fd; }
 };
 
 

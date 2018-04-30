@@ -47,7 +47,7 @@ public:
 	std::vector<char> buffer;
 
 	// [SUBCLASS]
-	size_t flush(const char *ptr, size_t cnt)
+	size_t flush(const char *ptr, size_t cnt) override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -78,7 +78,7 @@ public:
 	{
 	}
 
-	void serialize(STASHER_NAMESPACE::objwriterObj &writer)
+	void serialize(STASHER_NAMESPACE::objwriterObj &writer) override
 	{
 		writer.serialize(vec);
 	}

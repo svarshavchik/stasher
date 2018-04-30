@@ -419,13 +419,13 @@ public:
 	~keeptrackofmasterObj() {}
 
         void initialstatus(const nodeclusterstatus &newStatus)
-
+		override
 	{
 		master=newStatus.master;
 	}
 
         void statusupdated(const nodeclusterstatus &newStatus)
-
+		override
 	{
 		if (newStatus.master == master)
 			return;

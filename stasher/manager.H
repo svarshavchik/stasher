@@ -203,7 +203,7 @@ public:
 
 	//! Notification from the manager about a change in connection status
 
-	void connection_update(req_stat_t status)
+	void connection_update(req_stat_t status) override
 	{
 		try {
 			// When a connection to the object repository server
@@ -223,7 +223,7 @@ public:
 
 	void updated(const std::string &objname,
 		     const x::uuid &uuid,
-		     const x::fd &contents)
+		     const x::fd &contents) override
 	{
 		bool flag=connected;
 
@@ -253,7 +253,7 @@ public:
 
 	//! Notification from the manager that the object is not in the repository any more.
 
-	void removed(const std::string &objname)
+	void removed(const std::string &objname) override
 	{
 		bool flag=connected;
 

@@ -256,7 +256,7 @@ public:
 
 	~updateThread() {}
 
-	void stop() {}
+	void stop() override {}
 
 	void run()
 	{

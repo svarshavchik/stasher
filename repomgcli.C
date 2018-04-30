@@ -101,7 +101,7 @@ public:
 	void operator()(const std::string &keyfilename,
 			const std::string &clustername,
 			time_t activation_time,
-			time_t expiration_time) const;
+			time_t expiration_time) const override;
 };
 
 display_keys::display_keys() : l(x::locale::create(""))

@@ -123,7 +123,7 @@ public:
 
 	//! Retrieve this thread's name
 
-	std::string getName() const noexcept;
+	std::string getName() const noexcept override;
 
 	//! Repository copy completion notification.
 
@@ -209,22 +209,18 @@ public:
 
 	//! If the slave produces a matching batonuuid, we're done
 
-	void event(const objrepocopy::batonresponse &msg);
-
+	void event(const objrepocopy::batonresponse &msg) override;
 
 	//! Send the thread a slavelist message
 
-	void event(const objrepocopy::slavelist &msg);
-
+	void event(const objrepocopy::slavelist &msg) override;
 
 	//! Send the thread a slavelistready message
 
-	void event(const objrepocopy::slavelistready &msg);
-
+	void event(const objrepocopy::slavelistready &msg) override;
 
 	//! Send the thread a slavelistdone message
-	void event(const objrepocopy::slavelistdone &msg);
-
+	void event(const objrepocopy::slavelistdone &msg) override;
 	//! The execution thread
 
 	void run(//! Constructor mcguffin

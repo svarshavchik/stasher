@@ -317,7 +317,7 @@ public:
 	}
 
 	void installed(const std::string &objname,
-		       const x::ptr<x::obj> &lock)
+		       const x::ptr<x::obj> &lock) override
 	{
 		if (!p->obj_exists(objname))
 			throw EXCEPTION("installed callback failed");
@@ -326,7 +326,7 @@ public:
 	}
 
 	void removed(const std::string &objname,
-		     const x::ptr<x::obj> &lock)
+		     const x::ptr<x::obj> &lock) override
 	{
 		if (p->obj_exists(objname))
 			throw EXCEPTION("removed callback failed");

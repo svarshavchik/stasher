@@ -58,7 +58,7 @@ public:
 	}
 
 	void quorum(const STASHER_NAMESPACE::quorumstate &inquorum)
-
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 

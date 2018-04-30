@@ -26,6 +26,7 @@ public:
 	~test1_cb() {}
 
 	void state(const STASHER_NAMESPACE::clusterstate &inquorum)
+		override
 	{
 		std::lock_guard<std::mutex> lock(mutex);
 
@@ -38,6 +39,7 @@ public:
 	}
 
 	void serverinfo(const STASHER_NAMESPACE::userhelo &serverinfo)
+		override
 	{
 	}
 };

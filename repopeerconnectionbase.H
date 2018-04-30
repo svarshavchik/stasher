@@ -139,7 +139,8 @@ public:
 		~peerdisconnect_msgObj();
 
 		//! Slave controller has been disconnected
-		void destroyed(const x::ptr<repocontrollerbaseObj> &dummy);
+		void destroyed(const x::ptr<repocontrollerbaseObj> &dummy)
+			override;
 
 	};
 

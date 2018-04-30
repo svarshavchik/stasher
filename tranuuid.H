@@ -30,11 +30,10 @@ public:
 	std::set<x::uuid> uuids;
 
 	//! Add a bunch of uuids.
-	void received(const tranuuid &recvuuids);
+	void received(const tranuuid &recvuuids) override;
 
 	//! Remove a bunch of uuids
-	void cancelled(const tranuuid &cancuuids);
-
+	void cancelled(const tranuuid &cancuuids) override;
 
 	//! Dump this object
 	void toString(std::ostream &o);

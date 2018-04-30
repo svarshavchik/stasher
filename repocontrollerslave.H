@@ -162,7 +162,7 @@ private:
 
 	//! Report this thread's status
 
-	std::string report(std::ostream &rep);
+	std::string report(std::ostream &rep) override;
 
 	//! Implement a halt request, by saying that we aren't the master.
 

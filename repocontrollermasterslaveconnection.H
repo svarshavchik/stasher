@@ -62,7 +62,7 @@ public:
 
 	//! Send a message to the master controller, requesting a quorum
 	//! recalculation.
-	void destroyed(const repopeerconnectionptr &) noexcept;
+	void destroyed(const repopeerconnectionptr &) noexcept override;
 };
 
 #endif

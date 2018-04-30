@@ -50,43 +50,43 @@ public:
 	}
 
 	void event(const objrepocopy::batonrequest &msg)
-
+		override
 	{
 		realdst->event(msg);
 	}
 
 	void event(const objrepocopy::masterlist &msg) // [SENDMASTERLIST]
-
+		override
 	{
 		realdst->event(msg);
 	}
 
 	void event(const objrepocopy::masterlistdone &msg) // [SENDMASTERLIST]
-
+		override
 	{
 		realdst->event(msg);
 	}
 
 	void event(const objrepocopy::slaveliststart &msg) // [SLAVELISTSTART]
-
+		override
 	{
 		realdst->event(msg);
 	}
 
 	void event(const objrepocopy::masterack &msg) // [SENDMASTERACK]
-
+		override
 	{
 		realdst->event(msg);
 	}
 
 	void event(const objrepocopy::copycomplete &msg) // [SENDCOPYCOMPLETE]
-
+		override
 	{
 		realdst->event(msg);
 	}
 
 	void event(const objserializer &msg)
-
+		override
 	{
 		// Serialize this into a temporary buffer
 
@@ -144,25 +144,25 @@ public:
 	}
 
 	void event(const objrepocopy::batonresponse &msg)
-
+		override
 	{
 		realsrc->event(msg);
 	}
 
 	void event(const objrepocopy::slavelist &msg)
-
+		override
 	{
 		realsrc->event(msg);
 	}
 
 	void event(const objrepocopy::slavelistready &msg)
-
+		override
 	{
 		realsrc->event(msg);
 	}
 
 	void event(const objrepocopy::slavelistdone &msg)
-
+		override
 	{
 		realsrc->event(msg);
 	}

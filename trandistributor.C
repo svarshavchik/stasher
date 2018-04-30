@@ -168,7 +168,7 @@ public:
 
 	void operator()(const x::uuid &uuid,
 			const dist_received_status_t &status)
-
+		override
 	{
 		if (known_nodes->find(status.sourcenode) != known_nodes->end())
 			return;
@@ -254,7 +254,7 @@ public:
 
 	void operator()(const x::uuid &uuid,
 			const dist_received_status_t &status)
-
+		override
 	{
 		if (status.sourcenode != peername)
 			return;
@@ -505,7 +505,7 @@ public:
 
 	void operator()(const x::uuid &uuid,
 			const dist_received_status_t &status)
-
+		override
 	{
 		p->insert(std::make_pair(uuid, status));
 	}

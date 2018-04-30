@@ -63,7 +63,7 @@ public:
 	}
 
         void clusterupdated(const clusterinfoObj::cluster_t &newStatus)
-
+		override
 	{
 		clusterlistenerimplptr ptr(listener.getptr());
 
@@ -161,7 +161,7 @@ public:
 
 	~connectpeers_cb();
 
-	x::ptr<x::obj> operator()(const std::string &peername) const;
+	x::ptr<x::obj> operator()(const std::string &peername) const override;
 };
 
 clusterlistenerimplObj::connectpeers_cb

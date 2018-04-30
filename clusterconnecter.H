@@ -108,11 +108,11 @@ public:
 	~clusterconnecterObj();
 
 	//! Return this thread's name.
-	std::string getName() const;
+	std::string getName() const override;
 
 	//! Terminate this thread
 
-	void stop();
+	void stop() override;
 
 private:
 

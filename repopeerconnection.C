@@ -94,17 +94,17 @@ public:
 	~srcmasterObj();
 
 	//! Process a batonresponse message
-	void event(const objrepocopy::batonresponse &msg);
+	void event(const objrepocopy::batonresponse &msg) override;
 
 	//! Process a slavelist message
-	void event(const objrepocopy::slavelist &msg);
+	void event(const objrepocopy::slavelist &msg) override;
 
 	//! Process a slavelistready message
 
-	void event(const objrepocopy::slavelistready &msg);
+	void event(const objrepocopy::slavelistready &msg) override;
 
 	//! Process a slavelistdone message
-	void event(const objrepocopy::slavelistdone &msg);
+	void event(const objrepocopy::slavelistdone &msg) override;
 };
 
 class repopeerconnectionObj::slavemeta {
@@ -146,10 +146,10 @@ public:
 		~tranreceivednotifyObj();
 
 		//! This node received transaction(s)
-		void received(const trandistuuid &uuids);
+		void received(const trandistuuid &uuids) override;
 
 		//! This node received a request to cancel transaction(s)
-		void cancelled(const tranuuid &uuids);
+		void cancelled(const tranuuid &uuids) override;
 	};
 
 	//! The received transactions notifier instance
@@ -253,25 +253,25 @@ public:
 	~dstmasterObj();
 
 	//! Process a batonrequest message
-	void event(const objrepocopy::batonrequest &msg);
+	void event(const objrepocopy::batonrequest &msg) override;
 
 	//! Process a masterlist message
-	void event(const objrepocopy::masterlist &msg);
+	void event(const objrepocopy::masterlist &msg) override;
 
 	//! Process a masterlistdone message
-	void event(const objrepocopy::masterlistdone &msg);
+	void event(const objrepocopy::masterlistdone &msg) override;
 
 	//! Process a slaveliststart message
-	void event(const objrepocopy::slaveliststart &msg);
+	void event(const objrepocopy::slaveliststart &msg) override;
 
 	//! Process a masterack message
-	void event(const objrepocopy::masterack &msg);
+	void event(const objrepocopy::masterack &msg) override;
 
 	//! Process a copycomplete message
-	void event(const objrepocopy::copycomplete &msg);
+	void event(const objrepocopy::copycomplete &msg) override;
 
 	//! Process an objserializer message
-	void event(const objserializer &msg);
+	void event(const objserializer &msg) override;
 
 	//! Return an indication whether the copycomplete message has been sent
 	bool completed();
@@ -403,8 +403,7 @@ public:
 	~syncslave_cbObj();
 
 	//! Bind to this source interface
-	void bind(const objrepocopysrcinterfaceptr &src)
-;
+	void bind(const objrepocopysrcinterfaceptr &src) override;
 };
 
 repopeerconnectionObj::syncslave_cbObj

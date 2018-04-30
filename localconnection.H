@@ -218,12 +218,11 @@ private:
 
 	//! Deserializing a transaction
 	void accept_fds(//! How many file descriptors are coming
-			size_t n);
+			size_t n) override;
 
 	//! Deserializing a transaction
 
-	void received_fd(const std::vector<x::fdptr> &fdArg);
-
+	void received_fd(const std::vector<x::fdptr> &fdArg) override;
 
 protected:
 	//! Return this thread's name
@@ -241,7 +240,7 @@ private:
 	MAINLOOP_DECL;
 
 	//! The thread has started
-	void started();
+	void started() override;
 
 	//! Send a userputreply message back to the client
 	void done(//! Request uuid
@@ -309,7 +308,7 @@ private:
 
 protected:
 	//! Return this thread's status
-	std::string report(std::ostream &rep);
+	std::string report(std::ostream &rep) override;
 
 public:
 #include "localconnection.deserialized.auto.H"

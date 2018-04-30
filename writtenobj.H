@@ -35,7 +35,7 @@ public:
 	}
 
 	//! The serialize() method
-	void serialize(objwriterObj &writer)
+	void serialize(objwriterObj &writer) override
 	{
 		writer.serialize( msg );
 	}

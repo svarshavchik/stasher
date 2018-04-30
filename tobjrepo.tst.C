@@ -600,7 +600,7 @@ public:
 
 	void operator()(const x::uuid &uuid,
 			const dist_received_status_t &status)
-
+		override
 	{
 		m[uuid]=status;
 	}

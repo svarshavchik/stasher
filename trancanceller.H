@@ -45,14 +45,11 @@ public:
 	//! An object was just installed
 
 	void installed(const std::string &objname,
-		       const x::ptr<x::obj> &lock);
-
+		       const x::ptr<x::obj> &lock) override;
 
 	//! An object was just removed
 	void removed(const std::string &objname,
-		     const x::ptr<x::obj> &lock);
-
+		     const x::ptr<x::obj> &lock) override;
 };
 
 #endif
-

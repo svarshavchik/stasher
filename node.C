@@ -37,8 +37,7 @@ public:
 
 
 	void installed(const std::string &objname,
-		       const x::ptr<x::obj> &lock)
-
+		       const x::ptr<x::obj> &lock) override
 	{
 		if (objname == rootcerts)
 			reload();
@@ -88,7 +87,7 @@ public:
 
 
 	void removed(const std::string &objname,
-		     const x::ptr<x::obj> &lock)
+		     const x::ptr<x::obj> &lock) override
 	{
 	}
 };
@@ -219,7 +218,7 @@ public:
 	job(const clusterlistenerimpl &listenerArg,
 	    const clusterinfo &clusterArg);
 	~job();
-	void run();
+	void run() override;
 };
 
 node::reconnecter::job::job(const clusterlistenerimpl &listenerArg,
@@ -246,7 +245,7 @@ class node::certcheck_job : public x::timertaskObj {
 public:
 	certcheck_job(const clusterlistenerimpl &listenerArg);
 	~certcheck_job();
-	void run();
+	void run() override;
 };
 
 node::certcheck_job::certcheck_job(const clusterlistenerimpl &listenerArg)
@@ -364,7 +363,7 @@ public:
 	{
 	}
 
-	void quorum(const STASHER_NAMESPACE::quorumstate &state)
+	void quorum(const STASHER_NAMESPACE::quorumstate &state) override
 	{
 		flag_t::lock lock(flag);
 
@@ -419,7 +418,7 @@ public:
 	~wait4allconnections() {}
 
         void clusterupdated(const clusterinfoObj::cluster_t &newStatus)
-
+		override
 	{
 		for (clusterinfoObj::cluster_t::const_iterator
 			     b=newStatus.begin(), e=newStatus.end(); b != e;

@@ -121,35 +121,29 @@ public:
 	~objrepocopydstthreadObj();
 
 	//! Return this thread's name
-	std::string getName() const noexcept;
+	std::string getName() const noexcept override;
 
 	//! Send the thread a batonrequest message
-	void event(const objrepocopy::batonrequest &msg);
-
+	void event(const objrepocopy::batonrequest &msg) override;
 
 	//! Send the thread a masterlist message
-	void event(const objrepocopy::masterlist &msg);
+	void event(const objrepocopy::masterlist &msg) override;
 
 
 	//! Send the thread a masterlistdone message
-
-	void event(const objrepocopy::masterlistdone &msg);
-
+	void event(const objrepocopy::masterlistdone &msg) override;
 
 	//! Send the thread a slaveliststart message
-	void event(const objrepocopy::slaveliststart &msg);
-
+	void event(const objrepocopy::slaveliststart &msg) override;
 
 	//! Send the thread a masterack message
-	void event(const objrepocopy::masterack &msg);
-
+	void event(const objrepocopy::masterack &msg) override;
 
 	//! Send the thread a copycomplete message
-	void event(const objrepocopy::copycomplete &msg);
-
+	void event(const objrepocopy::copycomplete &msg) override;
 
 	//! Send the thread an objserializer message
-	void event(const objserializer &msg);
+	void event(const objserializer &msg) override;
 
 
 private:

@@ -105,9 +105,9 @@ public:
 	// Transactions that this node is in the process of committing
 	tranuuid committing;
 
-	void received(const trandistuuid &recvuuids);
+	void received(const trandistuuid &recvuuids) override;
 
-	void cancelled(const tranuuid &uuids);
+	void cancelled(const tranuuid &uuids) override;
 
 	thisnodereceivedObj(const repocontrollermasterptr
 			    &controllerArg);
@@ -262,7 +262,7 @@ public:
 	~clusterNotifierCallbackObj();
 
         void clusterupdated(const clusterinfoObj::cluster_t &newStatus)
-;
+		override;
 };
 
 repocontrollermasterObj::clusterNotifierCallbackObj

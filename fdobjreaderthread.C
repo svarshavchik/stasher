@@ -24,7 +24,7 @@ public:
 
 	//! Intercept reads.
 
-	size_t pubread(char *buffer, size_t cnt);
+	size_t pubread(char *buffer, size_t cnt) override;
 };
 
 fdobjreaderthreadObj::fdadapterObj::fdadapterObj(const x::fdbase &baseArg,

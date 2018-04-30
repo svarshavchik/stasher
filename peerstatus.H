@@ -50,7 +50,8 @@ class peerstatusObj : public clusterstatusnotifierObj {
 
 	//! Load the initial cluster status
 
-	virtual void initialstatus(const nodeclusterstatus &newStatus)=0;
+	virtual void initialstatus(const nodeclusterstatus &newStatus)
+		override=0;
 
 	//! Peer's status, as set by the subclass that calls peerstatusupdate()
 

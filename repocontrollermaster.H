@@ -351,7 +351,7 @@ private:
 
 	//! Report this thread's status
 
-	std::string report(std::ostream &rep);
+	std::string report(std::ostream &rep) override;
 
 #include "repocontrollermaster.msgs.H"
 

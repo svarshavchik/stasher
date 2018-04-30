@@ -133,7 +133,7 @@ public:
 
 	//! Stop the managed thread.
 
-	void stop()
+	void stop() override
 	{
 		auto s=thr->getptr();
 

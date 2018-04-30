@@ -279,7 +279,7 @@ public:
 
 	void installed(const std::string &objname,
 		       const x::ptr<x::obj> &lock)
-
+		override
 	{
 		refresh();
 
@@ -288,7 +288,7 @@ public:
 
 	void removed(const std::string &objname,
 		     const x::ptr<x::obj> &lock)
-
+		override
 	{
 		refresh();
 	}

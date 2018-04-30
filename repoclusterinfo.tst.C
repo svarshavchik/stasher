@@ -46,6 +46,7 @@ public:
 	void get_quorum(const STASHER_NAMESPACE::quorumstateref &status_arg,
 			const boolref &processed_arg,
 			const x::ptr<x::obj> &mcguffin_arg)
+		override
 	{
 		static_cast<STASHER_NAMESPACE::quorumstate &>(*status_arg)=
 			STASHER_NAMESPACE::quorumstate();
@@ -55,6 +56,7 @@ public:
 	start_controller_ret_t
 	start_controller(const x::threadmsgdispatcherObj::msgqueue_obj &msgqueue,
 			 const x::ref<x::obj> &mcguffinArg)
+		override
 	{
 		mcguffin=mcguffinArg;
 		++mcguffin_counter;
@@ -63,6 +65,7 @@ public:
 	}
 
 	void handoff(const repocontroller_start_info &next)
+		override
 	{
 		x::ptr<x::obj> obj(mcguffin);
 
@@ -74,18 +77,20 @@ public:
 
 	void peernewmaster(const repopeerconnectionptr &peerRef,
 			   const nodeclusterstatus &peerStatus)
-
+		override
 	{
 	}
 
 	x::ptr<x::obj>
 	handoff_request(const std::string &peername)
+		override
 	{
 		return x::ptr<x::obj>();
 	}
 
 	void halt(const STASHER_NAMESPACE::haltrequestresults &req,
 		  const x::ref<x::obj> &mcguffin)
+		override
 	{
 	}
 };
@@ -130,7 +135,7 @@ public:
 				 const x::uuid &masteruuid,
 				 const tobjrepo &repo,
 				 const repoclusterquorum &callback_listArg)
-
+		override
 	{
 		++master_cnt;
 
@@ -147,7 +152,7 @@ public:
 				const x::uuid &masteruuid,
 				const tobjrepo &repo,
 				const repoclusterquorum &callback_listArg)
-
+		override
 	{
 		++slave_cnt;
 
@@ -158,7 +163,7 @@ public:
 		return repocontroller_start_info::create(p);
 	}
 
-	void stop()
+	void stop() override
 	{
 		stop_received=true;
 	}
@@ -273,7 +278,7 @@ public:
 	~test2cb() {}
 
 	void quorum(const STASHER_NAMESPACE::quorumstate &state)
-
+		override
 	{
 		if (state.full)
 		{

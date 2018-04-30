@@ -184,7 +184,7 @@ class trandistributorObj : virtual public x::threadmsgdispatcherObj,
 
 	//! Return the thread's name
 
-	std::string getName() const;
+	std::string getName() const override;
 public:
 	//! The status of the transaction, after its been processed.
 

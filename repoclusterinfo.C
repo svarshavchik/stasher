@@ -170,12 +170,10 @@ public:
 	~configNotifierObj();
 
 	void installed(const std::string &objname,
-		       const x::ptr<x::obj> &lock)
-;
+		       const x::ptr<x::obj> &lock) override;
 
 	void removed(const std::string &objname,
-		     const x::ptr<x::obj> &lock)
-;
+		     const x::ptr<x::obj> &lock) override;
 };
 
 repoclusterinfoObj::configNotifierObj

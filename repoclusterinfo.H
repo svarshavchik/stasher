@@ -176,27 +176,26 @@ protected:
 
 	std::pair<bool, x::ptr<peerstatusObj> >
 	installpeer_locked(const std::string &nodename,
-			   const x::ptr<peerstatusObj> &node);
-
+			   const x::ptr<peerstatusObj> &node) override;
 
 	//! Override peernewmaster()
 
 	//! And here's a status update from an existing peer, which also
 	//! gets forwarded to the current repository controller.
 
-	virtual void peernewmaster(//! This is expected to be a
-				   //! repopeerconnectionObj, really.
-				   const x::ptr<peerstatusObj> &peerRef,
+	void peernewmaster(//! This is expected to be a
+			   //! repopeerconnectionObj, really.
+			   const x::ptr<peerstatusObj> &peerRef,
 
-				   //! It's new master
-				   const nodeclusterstatus &peerStatus);
+			   //! It's new master
+			   const nodeclusterstatus &peerStatus)
+		override;
 
 
 private:
 
 	//! Start the master (or maybe the slave), new cluster status given
-	void startmaster(const newnodeclusterstatus &newStatus);
-
+	void startmaster(const newnodeclusterstatus &newStatus) override;
 
 	class mcguffinDestroyCallbackObj;
 

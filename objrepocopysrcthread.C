@@ -73,7 +73,7 @@ public:
 	~uuidenumObj();
 
 	objuuidlist nextbatch(const std::set<std::string> &objectnames)
-;
+		override;
 };
 
 objrepocopysrcthreadObj::uuidenumObj::uuidenumObj(const tobjrepo &repoArg,
@@ -123,10 +123,10 @@ public:
 	~notifierObj();
 
 	void installed(const std::string &objname,
-		       const x::ptr<x::obj> &lock);
+		       const x::ptr<x::obj> &lock) override;
 
 	void removed(const std::string &objname,
-		       const x::ptr<x::obj> &lock);
+		       const x::ptr<x::obj> &lock) override;
 };
 
 objrepocopysrcthreadObj::notifierObj

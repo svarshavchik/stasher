@@ -83,7 +83,7 @@ private:
 
 	//! The thread has started, announce the initial status.
 
-	void started();
+	void started() override;
 
 	//! Deserialization wrapper for nodeclusterstatus
 

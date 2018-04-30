@@ -86,11 +86,11 @@ private:
 			    const std::string &name);
 
 	//! Return this thread's status
-	std::string report(std::ostream &rep);
+	std::string report(std::ostream &rep) override;
 
 	//! Allow gets with admin privileges
 
-	bool allow_admin_get();
+	bool allow_admin_get() override;
 
 	class halted_cbObj;
 };

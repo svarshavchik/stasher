@@ -23,7 +23,7 @@ public:
 	mydistributorObj()=default;
 	~mydistributorObj()=default;
 	void internal_transaction(const x::ref<internalTransactionObj>
-				  &tran) {}
+				  &tran) override {}
 };
 
 class testpeerstatusannouncerObj
@@ -82,7 +82,7 @@ public:
 		       const nodeclusterstatus &peerstatus,
 		       time_t timestamp,
 		       const x::uuid &connuuid,
-		       const clusterlistener &listener);
+		       const clusterlistener &listener) override;
 };
 
 class myListener : public clusterlistenerObj {
@@ -104,12 +104,12 @@ public:
 	~myListener();
 
 	void start_network(const x::fd &sock,
-			   const x::sockaddr &addr);
+			   const x::sockaddr &addr) override;
 	void start_privsock(const x::fd &sock,
-			    const x::sockaddr &addr);
+			    const x::sockaddr &addr) override;
 
 	void start_pubsock(const x::fd &sock,
-			   const x::sockaddr &addr);
+			   const x::sockaddr &addr) override;
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	{
 		msgqueue_auto msgqueue(this);
@@ -263,7 +263,7 @@ public:
 	}
 
 	x::ptr<x::obj> operator()(const std::string &peername)
-		const
+		const override
 	{
 		auto connecter=x::ref<myConnecter>::create("connect: " +
 							   peername,
@@ -335,7 +335,7 @@ public:
 	}
 
 	void statusupdated(const nodeclusterstatus &newStatus)
-
+		override
 	{
 		std::lock_guard<std::mutex> lock(mutex);
 

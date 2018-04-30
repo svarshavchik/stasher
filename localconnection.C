@@ -52,8 +52,7 @@ public:
 	{
 	}
 
-	void quorum(const STASHER_NAMESPACE::quorumstate &state)
-
+	void quorum(const STASHER_NAMESPACE::quorumstate &state) override
 	{
 		x::ptr<localconnectionObj> ptr=conn.getptr();
 
@@ -208,8 +207,7 @@ public:
 	{
 	}
 
-	void serialize(STASHER_NAMESPACE::objwriterObj &writer)
-
+	void serialize(STASHER_NAMESPACE::objwriterObj &writer) override
 	{
 		writer.serialize( msg );
 	}
@@ -405,16 +403,14 @@ public:
 private:
 	// notifier callback
 	void installed(const std::string &objname,
-		       const x::ptr<x::obj> &lock)
-
+		       const x::ptr<x::obj> &lock) override
 	{
 		notify(objname);
 	}
 
 	// notifier
 	void removed(const std::string &objname,
-		     const x::ptr<x::obj> &lock)
-
+		     const x::ptr<x::obj> &lock) override
 	{
 		notify(objname);
 	}
@@ -901,7 +897,7 @@ public:
 	{
 	}
 
-	bool nextchunk(std::set<std::string> &ret)
+	bool nextchunk(std::set<std::string> &ret) override
 	{
 		bool opened=open;
 

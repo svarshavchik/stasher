@@ -168,7 +168,7 @@ public:
 
 	//! Return this thread's name
 
-	std::string getName() const;
+	std::string getName() const override;
 
 	//! Return this node's name, from the certificate
 
@@ -201,7 +201,7 @@ protected:
 
 private:
 	//! Report this thread's status
-	std::string report(std::ostream &rep);
+	std::string report(std::ostream &rep) override;
 };
 
 #endif

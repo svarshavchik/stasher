@@ -40,7 +40,7 @@ class LIBCXX_HIDDEN managedhierarchymonitorObj::implObj
 	// Requests the contents of the updated object.
 
 	void updated(const std::string &objname,
-		     const std::string &suffix);
+		     const std::string &suffix) override;
 
 	// Inherited from managedsubscriberObj.
 	// Invokes callback->connection_update(). Also
@@ -48,7 +48,7 @@ class LIBCXX_HIDDEN managedhierarchymonitorObj::implObj
 	// top level hierarchy in hierarchies, then calls
 	// get_next_hierarchy().
 
-	void connection_update(req_stat_t status);
+	void connection_update(req_stat_t status) override;
 
 	// Send request for the contents of the next hierarchy to scan, for
 	// the initial contents of the hierarchy.

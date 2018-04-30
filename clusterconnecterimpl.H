@@ -76,8 +76,7 @@ public:
 		       const nodeclusterstatus &peerstatus,
 		       time_t connect_timestamp,
 		       const x::uuid &connuuid,
-		       const clusterlistener &listener);
-
+		       const clusterlistener &listener) override;
 };
 
 #endif

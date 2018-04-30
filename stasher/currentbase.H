@@ -54,6 +54,7 @@ public:
 	//!
 	virtual void connection_update(//! Report the connection status to the object repository.
 				       req_stat_t status)
+		override
 	{
 	}
 

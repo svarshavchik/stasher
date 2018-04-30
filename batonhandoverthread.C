@@ -61,8 +61,7 @@ public:
 	{
 	}
 
-	void quorum(const STASHER_NAMESPACE::quorumstate &inquorum)
-
+	void quorum(const STASHER_NAMESPACE::quorumstate &inquorum) override
 	{
 		x::ptr<batonhandoverthreadObj> ptr=thr.getptr();
 

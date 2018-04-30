@@ -149,8 +149,7 @@ protected:
 private:
 
 	//! Report this thread's status
-	std::string report(std::ostream &rep);
-
+	std::string report(std::ostream &rep) override;
 };
 
 STASHER_NAMESPACE_END

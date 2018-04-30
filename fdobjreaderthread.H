@@ -122,7 +122,8 @@ protected:
 
 	//! A convenience macro to declare mainloop_impl in a subclass
 #define MAINLOOP_DECL							\
-	void mainloop_impl(x::fd::base::inputiter &b, x::fd::base::inputiter &e) \
+	void mainloop_impl(x::fd::base::inputiter &b, \
+			   x::fd::base::inputiter &e) override
 
 
 	//! A convenience macro to implement some class's mainloop_impl

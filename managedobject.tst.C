@@ -25,7 +25,7 @@ public:
 	test1object() : stat_received(false) {}
 	~test1object() {}
 
-	void connection_update(STASHER_NAMESPACE::req_stat_t statArg)
+	void connection_update(STASHER_NAMESPACE::req_stat_t statArg) override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -36,7 +36,7 @@ public:
 
 	void updated(const std::string &objname,
 		     const x::uuid &uuid,
-		     const x::fd &contents)
+		     const x::fd &contents) override
 	{
 		std::string line;
 
@@ -48,7 +48,7 @@ public:
 		cond.notify_all();
 	}
 
-	void removed(const std::string &objname)
+	void removed(const std::string &objname) override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 

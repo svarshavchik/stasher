@@ -42,7 +42,7 @@ class clustertlsconnectshutdownObj
 
 	//! Return the thread's name
 
-	std::string getName() const;
+	std::string getName() const override;
 
 public:
 

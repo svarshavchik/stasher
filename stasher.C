@@ -56,8 +56,7 @@ class cli {
 		~subscriberHandlerObj() {}
 
 		void updated(const std::string &objname,
-			     const std::string &suffix)
-
+			     const std::string &suffix) override
 		{
 			std::lock_guard<std::mutex> lock(objmutex);
 
@@ -384,7 +383,7 @@ public:
 	~newcluster() {}
 
 	void save(const STASHER_NAMESPACE::client::base::transaction &tran)
-
+		override
 	{
 		tran->newobj(STASHER_NAMESPACE::client::base::clusterconfigobj, serialize());
 	}
@@ -401,7 +400,7 @@ public:
 	~updcluster() {}
 
 	void save(const STASHER_NAMESPACE::client::base::transaction &tran)
-
+		override
 	{
 		tran->updobj(STASHER_NAMESPACE::client::base::clusterconfigobj, olduuid,
 			     serialize());

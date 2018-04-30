@@ -158,20 +158,17 @@ private:
 	//! Starts a clusterconnecterimplObj thread for this new network
 	//! connection.
 	void start_network(const x::fd &sock,
-			   const x::sockaddr &addr);
-
+			   const x::sockaddr &addr) override;
 
 	//! Implement start_privsock()
 
 	void start_privsock(const x::fd &sock,
-			    const x::sockaddr &addr);
-
+			    const x::sockaddr &addr) override;
 
 	//! Implement start_pubsock()
 
 	void start_pubsock(const x::fd &sock,
-			   const x::sockaddr &addr);
-
+			   const x::sockaddr &addr) override;
 
 	//! Receive local connection's userid, then start a connection
 

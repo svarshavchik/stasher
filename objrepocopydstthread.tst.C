@@ -73,12 +73,12 @@ public:
 		slavelistdone=false;
 	}
 
-	void event(const objrepocopy::batonresponse &msg)
+	void event(const objrepocopy::batonresponse &msg) override
 	{
 	}
 
 	void event(const objrepocopy::slavelist &msg)
-
+		override
 	{
 		std::unique_lock<std::mutex> lock(mutex);
 
@@ -87,7 +87,7 @@ public:
 	}
 
 	void event(const objrepocopy::slavelistready &msg)
-
+		override
 	{
 		{
 			std::unique_lock<std::mutex> lock(catchmutex);
@@ -110,7 +110,7 @@ public:
 	}
 
 	void event(const objrepocopy::slavelistdone &msg)
-
+		override
 	{
 		std::lock_guard<std::mutex> lock(mutex);
 
@@ -550,7 +550,7 @@ public:
 	std::condition_variable cond;
 
 	void event(const objrepocopy::batonresponse &msg)
-
+		override
 	{
 		std::lock_guard<std::mutex> lock(mutex);
 		batonp=msg.uuid;
@@ -558,17 +558,17 @@ public:
 	}
 
 	void event(const objrepocopy::slavelist &msg)
-
+		override
 	{
 	}
 
 	void event(const objrepocopy::slavelistready &msg)
-
+		override
 	{
 	}
 
 	void event(const objrepocopy::slavelistdone &msg)
-
+		override
 	{
 	}
 };

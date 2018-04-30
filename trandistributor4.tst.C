@@ -37,7 +37,7 @@ public:
 
 	void installed(const std::string &objname,
 		       const x::ptr<x::obj> &lock)
-
+		override
 	{
 		std::unique_lock<std::mutex> mlock(mutex);
 
@@ -48,7 +48,7 @@ public:
 
 	void removed(const std::string &objname,
 		     const x::ptr<x::obj> &lock)
-
+		override
 	{
 		std::unique_lock<std::mutex> mlock(mutex);
 

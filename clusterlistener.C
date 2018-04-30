@@ -263,7 +263,7 @@ public:
 	}
 
 protected:
-	void event(const x::fd &fileDesc, event_t events)
+	void event(const x::fd &fileDesc, event_t events) override
 	{
 		clusterlistenerptr l(listener.getptr());
 

@@ -45,7 +45,7 @@ public:
 	~uuidenumObj();
 
 	objuuidlist nextbatch(const std::set<std::string> &objectnames)
-;
+		override;
 };
 
 objrepocopydstthreadObj::uuidenumObj::uuidenumObj(const tobjrepo &repoArg,

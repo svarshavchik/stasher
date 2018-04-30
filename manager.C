@@ -566,7 +566,7 @@ public:
 
 	// If connected, request the initial value of the object.
 
-	void connection_update(req_stat_t status)
+	void connection_update(req_stat_t status) override
 	{
 		try {
 			LOG_DEBUG("Received connection update: "
@@ -585,7 +585,7 @@ public:
 	// When the object has changed, request its new value
 
 	void updated(const std::string &objnameArg,
-		     const std::string &suffixArg)
+		     const std::string &suffixArg) override
 	{
 		LOG_DEBUG("Updated: " << objname);
 		update();
