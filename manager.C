@@ -27,7 +27,7 @@ STASHER_NAMESPACE_START
 // nose in it. Therefore, we'll need to make sure that it's gone, using
 // x::destroy_callback_wait4.
 
-class LIBCXX_HIDDEN managerObj::retmcguffinObj : virtual public obj {
+class managerObj::retmcguffinObj : virtual public obj {
 
 public:
 	x::ref<x::obj> impl;
@@ -67,7 +67,7 @@ class LIBCXX_HIDDEN managerObj::retmcguffinBaseObj {
 };
 
 
-class LIBCXX_HIDDEN managerObj::implObj : virtual public x::obj {
+class managerObj::implObj : virtual public x::obj {
 
  public:
 

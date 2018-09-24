@@ -77,7 +77,7 @@ const char clientBase::maxobjectsize[]="etc/maxobjectsize";
 
 const char clientObj::lost_connection_errmsg[]="Lost connection to the server";
 
-class LIBCXX_HIDDEN clientObj::implObj : public fdobjrwthreadObj  {
+class clientObj::implObj : public fdobjrwthreadObj  {
 
 	LOG_CLASS_SCOPE;
 

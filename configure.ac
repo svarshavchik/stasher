@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.66])
-AC_INIT(stasher, 0.06.1, [mrsam@courier-mta.com])
+AC_INIT(stasher, 0.07.0, [mrsam@courier-mta.com])
 AM_INIT_AUTOMAKE(dist-bzip2 foreign)
 AC_CONFIG_SRCDIR([objrepo.H])
 AC_CONFIG_HEADERS([objrepo_config.h])
@@ -32,11 +32,21 @@ AC_CHECK_HEADER([readline/readline.h],
 
 AC_SUBST(LIBREADLINE)
 
+AC_ARG_WITH(testprograms,
+	[AS_HELP_STRING([--with-testprograms],[build test programs])], [
+  TESTPROGS='$(ALLTESTPROGS)'
+  ], [
+   TESTPROGS=""
+  ])
+
+AC_SUBST(TESTPROGS)
+
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
 
 LIBCXX_INIT
+LDFLAGS="$LDFLAGS -z relro -z now"
 
 AM_CONDITIONAL(HAVE_DOCBOOK,[test -d ${srcdir}/docbook])
 AC_CONFIG_FILES(Doxyfile Makefile po/Makefile.in

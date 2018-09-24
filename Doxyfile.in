@@ -2033,6 +2033,9 @@ INCLUDE_FILE_PATTERNS  =
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 PREDEFINED             = DOXYGEN \
+                         LIBCXX_INTERNAL= \
+                         LIBCXX_HIDDEN= \
+			 LIBCXX_PUBLIC= \
                          libx_autogen_suppress_inner
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this

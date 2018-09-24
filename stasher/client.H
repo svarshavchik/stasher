@@ -30,8 +30,6 @@
 
 STASHER_NAMESPACE_START
 
-class clientBase;
-
 //! Reference-counted object for a client connection to an object repository
 
 //! This object is not instantiated directly, but by using
@@ -46,7 +44,7 @@ class clientBase;
 class clientObj : virtual public x::obj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 private:
 	//! Socket connection
 	std::string sockname;

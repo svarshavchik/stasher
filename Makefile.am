@@ -93,7 +93,7 @@ pkginclude_HEADERS=\
 	stasher/versionedptr.H          \
 	stasher/versionedput.H
 
-noinst_PROGRAMS=\
+ALLTESTPROGS= \
 	stasherd.static \
 	stasher.static \
 	adminhalt.tst \
@@ -160,6 +160,9 @@ noinst_PROGRAMS=\
 	userput.tst \
 	usersubscribe.tst \
 	verify.tst
+
+EXTRA_PROGRAMS=$(ALLTESTPROGS)
+noinst_PROGRAMS=@TESTPROGS@
 
 lib_LTLIBRARIES=libstasher-client.la libstasher.la
 
@@ -317,9 +320,11 @@ maxintsize_tst_LDADD=-lcxx
 
 newtran_tst_SOURCES=newtran.tst.C
 newtran_tst_LDADD=-lcxx
+newtran_tst_LDFLAGS=-static
 
 objrepo_tst_SOURCES=objrepo.tst.C
 objrepo_tst_LDADD=libstasher.la
+objrepo_tst_LDFLAGS=-static
 
 objwriter_tst_SOURCES=objwriter.tst.C
 objwriter_tst_LDADD=libstasher.la
@@ -598,6 +603,9 @@ stasher_static_LDADD=libstasher-client.la @LIBREADLINE@ -lcourier-unicode
 stasher_static_LDFLAGS=-static
 
 check-am:
+	test '@TESTPROGS@' = '' || $(MAKE) check-testprograms
+
+check-testprograms:
 	./maxintsize.tst
 	./objrepo.tst
 	./tranmeta.tst

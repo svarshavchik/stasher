@@ -15,8 +15,8 @@
 
 STASHER_NAMESPACE_START
 
-class clientObj;
-class clientBase;
+class LIBCXX_PUBLIC clientObj;
+class LIBCXX_PUBLIC clientBase;
 
 //! A connection to an object repository
 

@@ -25,7 +25,7 @@
 
 STASHER_NAMESPACE_START
 
-class managerObj;
+class LIBCXX_PUBLIC managerObj;
 
 //! Create a managedobject() that takes care of deserializing the object.
 
@@ -80,7 +80,7 @@ class managerObj : virtual public x::obj {
 	//! The logging object
 	LOG_CLASS_SCOPE;
 
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
 	x::ref<implObj> impl;
@@ -135,8 +135,8 @@ private:
 		 typename connectionFunctor>
 	class simpleManagedObjectObj;
 
-	class retmcguffinObj;
-	class retmcguffinBaseObj;
+	class LIBCXX_HIDDEN retmcguffinObj;
+	class LIBCXX_HIDDEN retmcguffinBaseObj;
 
 	//! The mcguffin that's actually returned by all the manage_() methods.
 
