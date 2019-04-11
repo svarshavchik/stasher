@@ -1721,10 +1721,10 @@ std::string repocontrollermasterObj::report(std::ostream &rep)
 	    << x::tostring(!distributor.getptr().null()) << std::endl
 	    << "Transactions received by this node:" << std::endl;
 
-	thisnodereceived->uuids->toString(rep);
+	thisnodereceived->uuids->to_string(rep);
 
 	rep << "Transactions being commited:" << std::endl;
-	thisnodereceived->committing->toString(rep);
+	thisnodereceived->committing->to_string(rep);
 
 	for (slaves_t::iterator b=slaves->begin(), e=slaves->end();
 	     b != e; ++b)
@@ -1756,7 +1756,7 @@ std::string repocontrollermasterObj::report(std::ostream &rep)
 			    << std::endl;
 		}
 		rep << "  Transactions received by this node:" << std::endl;
-		b->second.received_uuids->toString(rep);
+		b->second.received_uuids->to_string(rep);
 	}
 
 	return "master(" + mastername + ", uuid" + x::tostring(masteruuid)

@@ -994,7 +994,7 @@ void localconnectionObj::deserialized(const getdir_req_t &req)
 std::string localconnectionObj::report(std::ostream &rep)
 {
 	rep << "Namespace:" << std::endl;
-	namespaceview->toString(rep);
+	namespaceview->to_string(rep);
 
 	rep << "Receiving transaction: " << x::tostring(!newtran->null())
 	    << std::endl

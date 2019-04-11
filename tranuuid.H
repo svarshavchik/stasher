@@ -36,7 +36,7 @@ public:
 	void cancelled(const tranuuid &cancuuids) override;
 
 	//! Dump this object
-	void toString(std::ostream &o);
+	void to_string(std::ostream &o);
 
 };
 

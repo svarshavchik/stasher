@@ -2363,9 +2363,9 @@ std::string repopeerconnectionObj::report(std::ostream &rep)
 	    << std::endl
 	    << "Peer's last reported status: ";
 
-	peerstatusObj::status(this)->toString(rep); rep << std::endl;
+	peerstatusObj::status(this)->to_string(rep); rep << std::endl;
 	rep << "This node's status: ";
-	thisstatus.toString(rep); rep << std::endl;
+	thisstatus.to_string(rep); rep << std::endl;
 	rep << "Outstanding ping requests:" << std::endl;
 
 	for (std::map<std::string, x::ptr<x::obj> >::iterator

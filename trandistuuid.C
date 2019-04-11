@@ -28,7 +28,7 @@ void trandistuuidObj::cancelled(const tranuuid &canuuids)
 		uuids.erase(*b);
 }
 
-void trandistuuidObj::toString(std::ostream &o)
+void trandistuuidObj::to_string(std::ostream &o)
 {
 	for (std::map<x::uuid, dist_received_status_t>::iterator
 		     b=uuids.begin(), e=uuids.end(); b != e; ++b)

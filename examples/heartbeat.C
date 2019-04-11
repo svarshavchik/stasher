@@ -61,7 +61,7 @@ public:
 	static const x::stringable_t stringable=x::class_tostring;
 
 	template<typename OutputIterator>
-	OutputIterator toString(OutputIterator iter,
+	OutputIterator to_string(OutputIterator iter,
 				const x::const_locale &localeRef) const
 	{
 		std::ostringstream o;

@@ -354,7 +354,7 @@ public:
 	}
 
 	//! Create a string to go into the repository
-	std::string toString() const
+	std::string to_string() const
 	{
 		std::string s;
 		std::back_insert_iterator<std::string> iter(s);
@@ -727,7 +727,7 @@ public:
 
 		tran->updobj(objname,
 			     lock->value->uuid,
-			     lock->value->toString());
+			     lock->value->to_string());
 
 		auto c_cpy=std::move(callback);
 
@@ -875,7 +875,7 @@ public:
 					      std::forward<Args>(args)...);
 
 			tran->newobj(objname,
-				     new_heartbeat->toString());
+				     new_heartbeat->to_string());
 		}
 		else
 		{
@@ -913,7 +913,7 @@ public:
 
 			tran->updobj(objname,
 				     existing_heartbeat->uuid,
-				     existing_heartbeat->toString());
+				     existing_heartbeat->to_string());
 		}
 
 		auto update_cpy=updatereq;

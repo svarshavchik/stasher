@@ -97,7 +97,7 @@ public:
 
 	//! Display the contents of this view
 
-	void toString(std::ostream &o) const;
+	void to_string(std::ostream &o) const;
 };
 
 //! A reference to a view

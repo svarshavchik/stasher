@@ -356,7 +356,7 @@ void clusterlistenerimplObj::dispatch_start_localconn(const x::fd &sock,
 		  << ({
 				  std::ostringstream o;
 
-				  namespaceview->toString(o);
+				  namespaceview->to_string(o);
 
 				  o.str();
 			  }));

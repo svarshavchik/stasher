@@ -545,7 +545,7 @@ void clusterinfoObj::recalculate_locked(thisnodestatus_t::updatelock
 		LOG_DEBUG(nodename << ": changed status to "
 			  << ({ std::ostringstream o;
 
-					  s.status.toString(o);
+					  s.status.to_string(o);
 					  o.str(); }));
 
 		new_master=statuslock->master != s.status.master;
@@ -581,7 +581,7 @@ clusterinfoObj::newnodeclusterstatus clusterinfoObj
 	LOG_DEBUG(nodename << ": current status is "
 		  << ({ std::ostringstream o;
 
-				  initialstatus.toString(o);
+				  initialstatus.to_string(o);
 				  o.str(); }));
 
 	// Proposed status is the same, initially.
@@ -674,7 +674,7 @@ clusterinfoObj::newnodeclusterstatus clusterinfoObj
 				  << b->first << " is "
 				  << ({ std::ostringstream o;
 
-						  cur_status->toString(o);
+						  cur_status->to_string(o);
 						  o.str(); }));
 
 			if (status.status.ismasterof(*cur_status))
@@ -716,7 +716,7 @@ clusterinfoObj::newnodeclusterstatus clusterinfoObj
 			LOG_TRACE(nodename << ": found better master: "
 				  << ({ std::ostringstream o;
 
-						  cur_status->toString(o);
+						  cur_status->to_string(o);
 						  o.str(); }));
 
 		}
@@ -963,7 +963,7 @@ void clusterinfoObj::report(std::ostream &o)
 		{
 			o << "  Status: ";
 
-			lock->toString(o);
+			lock->to_string(o);
 			o << std::endl;
 		}
 	} catch (const x::exception &e)
@@ -989,7 +989,7 @@ void clusterinfoObj::report(std::ostream &o)
 		if (peerlock.locked())
 		{
 			o << "  This node:" << std::endl;
-			thisnode.toString(o);
+			thisnode.to_string(o);
 
 			for (cluster_t::iterator b=peerlock->begin(),
 				     e=peerlock->end(); b != e; ++b)
@@ -1002,7 +1002,7 @@ void clusterinfoObj::report(std::ostream &o)
 				o << "  Node: " << b->first
 				  << ": " << (conn.null() ? "not connected":"connected")
 				  << std::endl;
-				b->second.toString(o);
+				b->second.to_string(o);
 			}
 		}
 	} catch (const x::exception &e)

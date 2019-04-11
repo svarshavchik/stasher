@@ -38,7 +38,7 @@ nsviewObj::nsviewObj()
 	view.insert(std::make_pair("", std::make_pair("", true)));
 }
 
-void nsviewObj::toString(std::ostream &o) const
+void nsviewObj::to_string(std::ostream &o) const
 {
 	for (view_t::const_iterator b=view.begin(), e=view.end(); b != e; ++b)
 	{

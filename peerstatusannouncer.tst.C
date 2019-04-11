@@ -344,7 +344,7 @@ public:
 		cond.notify_all();
 
 		std::cout << name << ": ";
-		newStatus.toString(std::cout);
+		newStatus.to_string(std::cout);
 		std::cout << std::endl;
 	}
 };
@@ -426,7 +426,7 @@ void test1()
 		std::cout << tstnodes::getnodefullname(0) << "->" << tstnodes::getnodefullname(1)
 			  << ": ";
 
-		rb->toString(std::cout);
+		rb->to_string(std::cout);
 		std::cout << std::endl;
 	}
 
@@ -442,7 +442,7 @@ void test1()
 		std::cout << tstnodes::getnodefullname(1) << "->" << tstnodes::getnodefullname(0)
 			  << ": ";
 
-		rb->toString(std::cout);
+		rb->to_string(std::cout);
 		std::cout << std::endl;
 	}
 

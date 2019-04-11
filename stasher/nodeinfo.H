@@ -122,7 +122,7 @@ public:
 
 	//! Dump a report
 
-	void toString(std::ostream &o);
+	void to_string(std::ostream &o);
 
 
 	//! A cluster node property used for ordering

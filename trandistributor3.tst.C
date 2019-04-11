@@ -376,15 +376,15 @@ void test2()
 		{
 			std::ostringstream o;
 
-			as.toString(o);
+			as.to_string(o);
 
 			o << "; ";
 
-			bs.toString(o);
+			bs.to_string(o);
 
 			o << "; ";
 
-			cs.toString(o);
+			cs.to_string(o);
 
 			throw EXCEPTION("Cluster did not come up in the expected status: " + o.str());
 		}
@@ -533,11 +533,11 @@ void test3()
 		{
 			std::ostringstream o;
 
-			as.toString(o);
+			as.to_string(o);
 
 			o << "; ";
 
-			bs.toString(o);
+			bs.to_string(o);
 
 			throw EXCEPTION("Cluster did not come up in the expected status: " + o.str());
 		}
@@ -681,15 +681,15 @@ void test4()
 		{
 			std::ostringstream o;
 
-			as.toString(o);
+			as.to_string(o);
 
 			o << "; ";
 
-			bs.toString(o);
+			bs.to_string(o);
 
 			o << "; ";
 
-			cs.toString(o);
+			cs.to_string(o);
 
 			throw EXCEPTION("Cluster did not come up in the expected status: " + o.str());
 		}

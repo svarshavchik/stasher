@@ -169,7 +169,7 @@ public:
 
 	//! Convert to a string representation
 
-	void toString(std::ostream &o) const
+	void to_string(std::ostream &o) const
 	{
 		x::uuid::charbuf cb;
 

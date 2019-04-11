@@ -27,7 +27,7 @@ void tranuuidObj::cancelled(const tranuuid &canuuids)
 		uuids.erase(*b);
 }
 
-void tranuuidObj::toString(std::ostream &o)
+void tranuuidObj::to_string(std::ostream &o)
 {
 	for (std::set<x::uuid>::iterator
 		     b=uuids.begin(), e=uuids.end(); b != e; ++b)

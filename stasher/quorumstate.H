@@ -63,7 +63,7 @@ public:
 
 	//! Convert a class instance to a string.
 	template<typename OutputIterator>
-	OutputIterator toString(OutputIterator iter,
+	OutputIterator to_string(OutputIterator iter,
 				const x::const_locale &localeRef)
 		const
 	{

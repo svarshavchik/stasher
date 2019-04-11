@@ -196,14 +196,14 @@ static void test1()
 	std::cout << "a: " << ({
 			std::ostringstream o;
 
-			clusterinfoObj::status(a.repocluster)->toString(o);
+			clusterinfoObj::status(a.repocluster)->to_string(o);
 
 			o.str(); }) << std::endl;
 
 	std::cout << "b: " << ({
 			std::ostringstream o;
 
-			clusterinfoObj::status(b.repocluster)->toString(o);
+			clusterinfoObj::status(b.repocluster)->to_string(o);
 
 			o.str(); }) << std::endl;
 
@@ -274,14 +274,14 @@ static void test2()
 	std::cout << "a: " << ({
 			std::ostringstream o;
 
-			clusterinfoObj::status(a.repocluster)->toString(o);
+			clusterinfoObj::status(a.repocluster)->to_string(o);
 
 			o.str(); }) << std::endl;
 
 	std::cout << "b: " << ({
 			std::ostringstream o;
 
-			clusterinfoObj::status(b.repocluster)->toString(o);
+			clusterinfoObj::status(b.repocluster)->to_string(o);
 
 			o.str(); }) << std::endl;
 

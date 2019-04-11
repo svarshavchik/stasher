@@ -86,7 +86,7 @@ void nodeinfo::ordernum(int n) noexcept
 	options.insert(std::make_pair(ordernum_option, o.str()));
 }
 
-void nodeinfo::toString(std::ostream &o)
+void nodeinfo::to_string(std::ostream &o)
 {
 	auto utf8=x::locale::base::utf8();
 

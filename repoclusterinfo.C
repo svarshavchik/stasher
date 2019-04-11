@@ -238,7 +238,7 @@ repoclusterinfoObj::installpeer_locked(const std::string &name,
 		 << ({
 				 std::ostringstream o;
 
-				 peerstatusObj::status(node)->toString(o);
+				 peerstatusObj::status(node)->to_string(o);
 
 				 o.str(); }));
 
