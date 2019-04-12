@@ -51,7 +51,7 @@ void test1(tstnodes &t)
 	tnodes[2]->debugWaitFullQuorumStatus(false);
 	std::cerr << "Started third node, connecting to peers"
 		  << std::endl;
-	tnodes[2]->listener->connectpeers();
+	tnodes[2]->start_reconnecter();
 	std::cerr << "Connecting to the third node" << std::endl;
 	STASHER_NAMESPACE::client cl2=
 		STASHER_NAMESPACE::client::base
@@ -88,6 +88,7 @@ int main(int argc, char **argv)
 {
 #include "opts.parse.inc.tst.C"
 
+	x::property::load_property("reconnect", "4", true, true);
 	try {
 		tstnodes nodes(3);
 		test1(nodes);

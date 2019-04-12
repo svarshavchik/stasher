@@ -86,8 +86,8 @@ void repocontrollerbaseObj::handoff_next(const
 	next_controller_mcguffin=mcguffin;
 }
 
-void repocontrollerbaseObj::quorum(const STASHER_NAMESPACE::quorumstate
-				   &inquorum)
+STASHER_NAMESPACE::quorumstate
+repocontrollerbaseObj::quorum(const STASHER_NAMESPACE::quorumstate &inquorum)
 
 {
 	LOG_INFO("Announcing quorum status: " << x::tostring(inquorum));
@@ -103,7 +103,7 @@ void repocontrollerbaseObj::quorum(const STASHER_NAMESPACE::quorumstate
 				wlock->reported_status(inquorum);
 
 			if (newval == wlock->value)
-				return;
+				return newval;
 
 			wlock->value=newval;
 
@@ -111,6 +111,7 @@ void repocontrollerbaseObj::quorum(const STASHER_NAMESPACE::quorumstate
 		});
 
 	lock.notify(flag);
+	return flag;
 }
 
 STASHER_NAMESPACE::quorumstate repocontrollerbaseObj::inquorum()

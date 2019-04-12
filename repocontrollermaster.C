@@ -356,12 +356,13 @@ void repocontrollermasterObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 
 	cluster= &clusterref;
 
+	// There's an expectation of the initial quorum status
+	// announcement. Do not disappoint.
+
+	curquorum=quorum(STASHER_NAMESPACE::quorumstate());
 	started();
 
 	try {
-		// Come up without a quorum, by default
-		curquorum=STASHER_NAMESPACE::quorumstate();
-
 		slaves_t slavemap;
 
 		auto receivedref = x::ref<thisnodereceivedObj>::create
@@ -398,11 +399,6 @@ void repocontrollermasterObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 			stop_mcguffinweakptr(stop_mcguffinref);
 
 		stop_mcguffin=&stop_mcguffinweakptr;
-
-		// There's an expectation of the initial quorum status
-		// announcement. Do not disappoint.
-
-		quorum(STASHER_NAMESPACE::quorumstate());
 
 		while (1)
 		{
@@ -711,13 +707,15 @@ bool repocontrollermasterObj
 
 	bool quorumChanged=false;
 
+	newquorum=quorum(newquorum);
+
 	if (newquorum != curquorum)
 	{
 		quorumChanged=true;
 
 		LOG_TRACE("Quorum: " << x::tostring(newquorum));
 
-		quorum(curquorum=newquorum);
+		curquorum=newquorum;
 
 		for (slaves_t::iterator b(slaves->begin()), e(slaves->end());
 		     b != e; ++b)

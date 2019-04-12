@@ -100,7 +100,8 @@ protected:
 	void started();
 
 	//! Subclass announces that the quorum may have been reached or unreached
-	void quorum(const STASHER_NAMESPACE::quorumstate &inquorum);
+	STASHER_NAMESPACE::quorumstate
+	quorum(const STASHER_NAMESPACE::quorumstate &inquorum);
 
 
 	//! Return the quorum status

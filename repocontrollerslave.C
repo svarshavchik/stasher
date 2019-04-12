@@ -95,12 +95,12 @@ void repocontrollerslaveObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 
 	LOG_INFO("Starting sync from master: " << mastername);
 
+	quorum(lastmasterquorumstate=STASHER_NAMESPACE::quorumstate());
 	started();
 
 	objrepocopydstptr dstcopy(objrepocopydstptr::create());
 
 	try {
-		quorum(lastmasterquorumstate=STASHER_NAMESPACE::quorumstate());
 
 		dstcopy_ptr= &dstcopy;
 
