@@ -109,7 +109,7 @@ public:
 		std::unique_lock<std::mutex> lock(mutex);
 
 		std::cerr << "Deserialized "
-			  << x::tostring(uuid)
+			  << x::to_string(uuid)
 			  << std::endl;
 
 		deserialized.insert(uuid);
@@ -210,9 +210,9 @@ void test1()
 	b.start();
 
 	std::cout << "a quorum: "
-		  << x::tostring(*a.repocluster->debug_inquorum()) << std::endl;
+		  << x::to_string(*a.repocluster->debug_inquorum()) << std::endl;
 	std::cout << "b quorum: "
-		  << x::tostring(*b.repocluster->debug_inquorum()) << std::endl;
+		  << x::to_string(*b.repocluster->debug_inquorum()) << std::endl;
 
 	a.listener->connectpeers();
 
@@ -225,7 +225,7 @@ void test1()
 	a.distributor->newtransaction(a.repo->newtransaction(tran1),
 				      x::ptr<x::obj>());
 
-	std::cerr << "Waiting for " << x::tostring(tran1)
+	std::cerr << "Waiting for " << x::to_string(tran1)
 		  << " to be deserialized" << std::endl;
 
 	{
@@ -246,7 +246,7 @@ void test1()
 			throw EXCEPTION("[TRANDISTSETNODE] failed");
 	}
 
-	std::cerr << "Waiting for " << x::tostring(tran1)
+	std::cerr << "Waiting for " << x::to_string(tran1)
 		  << " to be cancelled" << std::endl;
 
 	a.distributor->canceltransaction(tran1);
@@ -326,7 +326,7 @@ static void recvtrans(const std::string &peername, const tranrecvcanc &c)
 		     b=c.received->uuids.begin(),
 		     e=c.received->uuids.end(); b != e; ++b)
 	{
-		std::cerr << "Received " << x::tostring(b->first) << " from "
+		std::cerr << "Received " << x::to_string(b->first) << " from "
 			  << peername << std::endl;
 
 		recvtranslist[peername].insert(b->first);
@@ -336,7 +336,7 @@ static void recvtrans(const std::string &peername, const tranrecvcanc &c)
 		     b=c.cancelled->uuids.begin(),
 		     e=c.cancelled->uuids.end(); b != e; ++b)
 	{
-		std::cerr << "Cancelled " << x::tostring(*b) << " from "
+		std::cerr << "Cancelled " << x::to_string(*b) << " from "
 			  << peername << std::endl;
 
 		recvtranslist[peername].erase(*b);
@@ -394,8 +394,8 @@ void test3()
 		b.distributor->newtransaction(nb, x::ptr<x::obj>());
 	}
 
-	std::cerr << "trana: " << x::tostring(trana) << std::endl;
-	std::cerr << "tranb: " << x::tostring(tranb) << std::endl;
+	std::cerr << "trana: " << x::to_string(trana) << std::endl;
+	std::cerr << "tranb: " << x::to_string(tranb) << std::endl;
 
 	a.listener->connectpeers();
 
@@ -421,7 +421,7 @@ void test3()
 
 	x::uuid tranc;
 
-	std::cerr << "tranc: " << x::tostring(tranc) << std::endl;
+	std::cerr << "tranc: " << x::to_string(tranc) << std::endl;
 
 	{
 		newtran nc=a.repo->newtransaction(tranc);

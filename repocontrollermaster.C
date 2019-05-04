@@ -345,7 +345,7 @@ void repocontrollermasterObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 	mcguffin= &start_arg; // The global mcguffin that's passed between controllers
 
 	x::logger::context thread("master(" + mastername + ", "
-				  + x::tostring(masteruuid) + ")");
+				  + x::to_string(masteruuid) + ")");
 
 	LOG_INFO("Master controller on " << mastername << " has started");
 
@@ -493,7 +493,7 @@ void repocontrollermasterObj::dispatch_do_peernewmaster(const x::weakptr<repopee
 
 	LOG_DEBUG("Peer " << peer->peername << ", status: master "
 		  << peerStatus.master << ", uuid "
-		  << x::tostring(peerStatus.uuid));
+		  << x::to_string(peerStatus.uuid));
 
 	if (peerStatus.master != mastername ||
 	    peerStatus.uuid != masteruuid)
@@ -713,7 +713,7 @@ bool repocontrollermasterObj
 	{
 		quorumChanged=true;
 
-		LOG_TRACE("Quorum: " << x::tostring(newquorum));
+		LOG_TRACE("Quorum: " << x::to_string(newquorum));
 
 		curquorum=newquorum;
 
@@ -1026,7 +1026,7 @@ void repocontrollermasterObj::checkcommit(const trandistuuid &uuids,
 		{
 
 			LOG_TRACE("Checking if "
-				  << x::tostring(b->first)
+				  << x::to_string(b->first)
 				  << " can be commited");
 
 			commitset.insert(*p);
@@ -1045,7 +1045,7 @@ void repocontrollermasterObj::checkcommit(const trandistuuid &uuids,
 			auto found=uuids.find(cp->first);
 			if (found == uuids.end())
 			{
-				LOG_TRACE(x::tostring(cp->first)
+				LOG_TRACE(x::to_string(cp->first)
 					  << " has not been received by "
 					  << peerEntry.first->peername);
 				commitset.erase(cp);
@@ -1057,7 +1057,7 @@ void repocontrollermasterObj::checkcommit(const trandistuuid &uuids,
 
 				LOG_FATAL(peerEntry.first->peername
 					  << " says it received "
-					  << x::tostring(cp->first)
+					  << x::to_string(cp->first)
 					  << " from "
 					  << found->second.sourcenode
 					  << ", but I received it from "
@@ -1073,7 +1073,7 @@ void repocontrollermasterObj::checkcommit(const trandistuuid &uuids,
 		     b(commitset.begin()),
 		     e(commitset.end()); b != e; ++b)
 	{
-		LOG_DEBUG("Submitting " << x::tostring(b->first)
+		LOG_DEBUG("Submitting " << x::to_string(b->first)
 			  << " for comitting");
 
 		auto job=x::ref<commitJobObj>::create(b->first,
@@ -1156,7 +1156,7 @@ void repocontrollermasterObj::commitJobObj
 #ifdef DEBUG_DISABLE_MASTER_COMMITS
 
 #else
-	LOG_DEBUG("Preparing to commit: " << x::tostring(uuid)
+	LOG_DEBUG("Preparing to commit: " << x::to_string(uuid)
 		  << " from " << status.sourcenode);
 
 	trancommitptr tr;
@@ -1179,7 +1179,7 @@ void repocontrollermasterObj::commitJobObj
 						// Already gone
 
 						LOG_TRACE("Stopping: "
-							  << x::tostring(uuid));
+							  << x::to_string(uuid));
 						return;
 					}
 
@@ -1203,7 +1203,7 @@ void repocontrollermasterObj::commitJobObj
 			}
 
 			LOG_TRACE("Object lock acquired: "
-				  << x::tostring(uuid));
+				  << x::to_string(uuid));
 
 			res=tr->verify() ?
 				STASHER_NAMESPACE::req_processed_stat:
@@ -1214,11 +1214,11 @@ void repocontrollermasterObj::commitJobObj
 			// Could be a race condition - distributing peer
 			// could've removed it.
 
-			LOG_FATAL("begin_commit failed: " << x::tostring(uuid)
+			LOG_FATAL("begin_commit failed: " << x::to_string(uuid)
 				  << ": " << e);
 		}
 
-		LOG_TRACE("Transaction verified: " << x::tostring(uuid)
+		LOG_TRACE("Transaction verified: " << x::to_string(uuid)
 			  << ", status: " << (int)res);
 	}
 
@@ -1238,7 +1238,7 @@ void repocontrollermasterObj::commitJobObj
 		}
 
 		LOG_TRACE("Sending commit/cancel: "
-			  << x::tostring(uuid) << ", peer: "
+			  << x::to_string(uuid) << ", peer: "
 			  << peer.second->first);
 
 		peer.first->commit_peer(req, mcguffin);
@@ -1257,7 +1257,7 @@ void repocontrollermasterObj::commitJobObj
 			{
 				// Already gone
 
-				LOG_TRACE("Stopping: " << x::tostring(uuid));
+				LOG_TRACE("Stopping: " << x::to_string(uuid));
 				return;
 			}
 
@@ -1275,7 +1275,7 @@ void repocontrollermasterObj::commitJobObj
 #endif
 
 		LOG_TRACE("Waiting for peers to process: "
-			  << x::tostring(uuid));
+			  << x::to_string(uuid));
 		cb->wait();
 	}
 
@@ -1283,7 +1283,7 @@ void repocontrollermasterObj::commitJobObj
 		if (res == STASHER_NAMESPACE::req_processed_stat)
 		{
 			LOG_TRACE("Committing on this node: "
-				  << x::tostring(uuid));
+				  << x::to_string(uuid));
 
 			tr->commit();
 
@@ -1291,7 +1291,7 @@ void repocontrollermasterObj::commitJobObj
 		else
 		{
 			LOG_TRACE("Rejecting on this node: "
-				  << x::tostring(uuid));
+				  << x::to_string(uuid));
 
 			master->repo->mark_done(uuid, status.sourcenode,
 						res, x::ptr<x::obj>());
@@ -1300,7 +1300,7 @@ void repocontrollermasterObj::commitJobObj
 	{
 		// Possible another race condition.
 
-		LOG_FATAL("commit failed: " << x::tostring(uuid)
+		LOG_FATAL("commit failed: " << x::to_string(uuid)
 			  << ": " << e);
 		return;
 	}
@@ -1308,7 +1308,7 @@ void repocontrollermasterObj::commitJobObj
 	if (!source_peer.null())
 	{
 		LOG_TRACE("Notifying distributing peer: "
-			  << x::tostring(uuid));
+			  << x::to_string(uuid));
 		source_peer->commit_peer(req, x::ptr<x::obj>());
 	}
 #endif
@@ -1714,9 +1714,9 @@ void repocontrollermasterObj::dispatch_halt_continue(const STASHER_NAMESPACE::ha
 
 std::string repocontrollermasterObj::report(std::ostream &rep)
 {
-	rep << "Quorum: " << x::tostring(curquorum) << std::endl
+	rep << "Quorum: " << x::to_string(curquorum) << std::endl
 	    << "Distributor object installed: "
-	    << x::tostring(!distributor.getptr().null()) << std::endl
+	    << x::to_string(!distributor.getptr().null()) << std::endl
 	    << "Transactions received by this node:" << std::endl;
 
 	thisnodereceived->uuids->to_string(rep);
@@ -1734,7 +1734,7 @@ std::string repocontrollermasterObj::report(std::ostream &rep)
 			continue;
 		}
 		rep << "  Connected, synchronized: "
-		    << x::tostring(b->second.synced) << std::endl;
+		    << x::to_string(b->second.synced) << std::endl;
 
 		if (b->second.sync.null())
 		{
@@ -1750,13 +1750,13 @@ std::string repocontrollermasterObj::report(std::ostream &rep)
 				: b->second.sync->commitlock->locked()
 				? "locked":"not locked") << std::endl
 			    << "  Repository copy object installed: "
-			    << x::tostring(!b->second.sync->copycomplete.null())
+			    << x::to_string(!b->second.sync->copycomplete.null())
 			    << std::endl;
 		}
 		rep << "  Transactions received by this node:" << std::endl;
 		b->second.received_uuids->to_string(rep);
 	}
 
-	return "master(" + mastername + ", uuid" + x::tostring(masteruuid)
+	return "master(" + mastername + ", uuid" + x::to_string(masteruuid)
 		+ ")";
 }

@@ -79,7 +79,7 @@ static void test1(tstnodes &t)
 
 		if (rootsub->stat != STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Subscription request failed with "
-					<< x::tostring(rootsub->stat));
+					<< x::to_string(rootsub->stat));
 	}
 	std::cerr << "Dropping another node" << std::endl;
 

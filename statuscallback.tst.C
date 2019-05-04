@@ -98,7 +98,7 @@ void test1(tstnodes &t)
 
 		if (cb->status.majority)
 			throw EXCEPTION("Unexpected initial quorum status:\n"
-					+ x::tostring(cb->status));
+					+ x::to_string(cb->status));
 
 		std::cout << "Connected to "
 			  << cb->curserverinfo.nodename
@@ -115,7 +115,7 @@ void test1(tstnodes &t)
 
 		if (cb->status.full)
 			throw EXCEPTION("How can I have a full quorum?\n" +
-					x::tostring(cb->status));
+					x::to_string(cb->status));
 	}
 	std::cout << "notified, majority quorum" << std::endl;
 
@@ -157,7 +157,7 @@ void test2(tstnodes &t, int which1st)
 			cb->cond.wait(lock);
 		if (cb->status.majority)
 			throw EXCEPTION("Unexpected initial quorum status:\n"
-					+ x::tostring(cb->status));
+					+ x::to_string(cb->status));
 	}
 	std::cout << "notified, no quorum" << std::endl;
 

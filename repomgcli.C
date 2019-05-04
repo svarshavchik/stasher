@@ -55,8 +55,8 @@ public:
 
 		  defaultkeystrength
 		  ("\""
-		   + l->tolower(x::tostring(x::gnutls::sec_param
-					    (GNUTLS_SEC_PARAM_NORMAL)))
+		   + l->tolower(x::to_string(x::gnutls::sec_param
+					     (GNUTLS_SEC_PARAM_NORMAL)))
 		   + "\""),
 
 		  digests(

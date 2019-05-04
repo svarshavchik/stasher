@@ -585,7 +585,7 @@ void test4()
 
 	src=objrepocopysrcptr::create();
 	batonp=batonptr::create("a", x::uuid(), "b", x::uuid());
-	dst=x::ptr<test4_dst>::create(x::tostring(batonp->batonuuid),
+	dst=x::ptr<test4_dst>::create(x::to_string(batonp->batonuuid),
 				      src);
 
 	complete=src->start(repo, dst, batonp, x::ptr<x::obj>());

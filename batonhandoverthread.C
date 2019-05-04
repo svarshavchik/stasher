@@ -121,7 +121,7 @@ void batonhandoverthreadObj::dispatch_baton_destroyed()
 
 void batonhandoverthreadObj::dispatch_quorum(bool flag)
 {
-	LOG_DEBUG("Quorum status: " << x::tostring(flag));
+	LOG_DEBUG("Quorum status: " << x::to_string(flag));
 	quorum_flag=flag;
 	check_transfer_completed();
 }
@@ -135,7 +135,7 @@ void batonhandoverthreadObj::check_transfer_completed()
 		clusterinfoObj::status(*cluster)->master == *newmaster;
 
 	LOG_DEBUG("Transfer status: "
-		  << x::tostring((*completed_status)->flag));
+		  << x::to_string((*completed_status)->flag));
 
 	stop();
 }

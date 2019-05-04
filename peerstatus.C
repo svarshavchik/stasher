@@ -32,7 +32,7 @@ peerstatusObj::install(const clusterinfo &clusterArg)
 
 	LOG_DEBUG(clusterArg->getthisnodename() << ": status of "
 		  << peername << " installation attempt: "
-		  << x::tostring(ret.first));
+		  << x::to_string(ret.first));
 
 	if (ret.first)
 		cluster=clusterArg;

@@ -37,7 +37,7 @@ static void test1(tstnodes &t, const char *argv0)
 	auto res=client->put(tran);
 
 	if (res->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION("put: " + x::tostring(res->status));
+		throw EXCEPTION("put: " + x::to_string(res->status));
 
 	client=STASHER_NAMESPACE::client::base::admin(tstnodes::getnodedir(0));
 

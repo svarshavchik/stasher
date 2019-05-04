@@ -169,7 +169,7 @@ static void test1(tstnodes &t)
 			auto res=client0->put(put);
 
 			if (res->status != STASHER_NAMESPACE::req_processed_stat)
-				throw EXCEPTION("PUT failed: " << x::tostring(res->status));
+				throw EXCEPTION("PUT failed: " << x::to_string(res->status));
 
 			res->newuuid;
 		});
@@ -205,7 +205,7 @@ static void test1(tstnodes &t)
 					  std::cerr << "null" << std::endl;
 				  else
 					  std::cerr << lock->value->s << " ("
-						    << x::tostring(lock->value
+						    << x::to_string(lock->value
 								   ->uuid)
 						    << ")" << std::endl;
 

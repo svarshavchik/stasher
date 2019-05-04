@@ -183,7 +183,7 @@ void api_get_results(void *handle, std::vector<std::string> &buffer)
 
 		if (!contents->succeeded)
 		{
-			errmsg=x::tostring(contents->errmsg);
+			errmsg=x::to_string(contents->errmsg);
 			return;
 		}
 
@@ -192,9 +192,9 @@ void api_get_results(void *handle, std::vector<std::string> &buffer)
 		for (const auto &obj:*contents)
 		{
 			buffer.push_back(obj.first);
-			buffer.push_back(x::tostring(obj.second.uuid));
+			buffer.push_back(x::to_string(obj.second.uuid));
 			buffer.push_back(obj.second.fd.null() ? "":
-					 x::tostring(obj.second.fd->get_fd()));
+					 x::to_string(obj.second.fd->get_fd()));
 		}
 	} catch (const x::exception &e)
 	{
@@ -323,12 +323,12 @@ void api_put_results(void *handle, std::string &error,
 
 		switch (results->status) {
 		case stasher::req_processed_stat:
-			newuuid=x::tostring(results->newuuid);
+			newuuid=x::to_string(results->newuuid);
 			break;
 		case stasher::req_rejected_stat:
 			break;
 		default:
-			throw EXCEPTION(x::tostring(results->status));
+			throw EXCEPTION(x::to_string(results->status));
 		}
 	} catch (const x::exception &e)
 	{
@@ -382,7 +382,7 @@ void api_getdir_results(void *handle, std::vector<std::string> &buffer)
 		auto results=(*request)->getmsg();
 
 		if (results->status != stasher::req_processed_stat)
-			throw EXCEPTION(x::tostring(results->status));
+			throw EXCEPTION(x::to_string(results->status));
 
 		buffer.reserve(1+results->objects.size());
 		for (const auto &object:results->objects)

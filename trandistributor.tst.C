@@ -204,7 +204,7 @@ static void test1() // [PURGETRANSOURCEUNKNOWN].
 		node1tran=tr->finalize();
 	}
 
-	std::cout << "node 1 transaction: " << x::tostring(node1tran)
+	std::cout << "node 1 transaction: " << x::to_string(node1tran)
 		  << std::endl;
 
 	{

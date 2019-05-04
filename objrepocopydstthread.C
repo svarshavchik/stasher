@@ -143,7 +143,7 @@ void objrepocopydstthreadObj::dispatch_event_batonrequest()
 	objrepocopy::batonresponse ack;
 
 	if (!batonp->null())
-		ack.uuid=x::tostring((*batonp)->batonuuid);
+		ack.uuid=x::to_string((*batonp)->batonuuid);
 
 	getsrc()->event(ack);
 }

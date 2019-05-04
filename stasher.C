@@ -855,7 +855,7 @@ void cli::new_or_update_or_delete(const std::map<std::string, std::string> &newv
 	STASHER_NAMESPACE::putresults results=client->put(tran);
 
 	if (results->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(results->status));
+		throw EXCEPTION(x::to_string(results->status));
 }
 
 void cli::put(const std::list<std::string> &args)
@@ -942,11 +942,11 @@ void cli::put(const std::list<std::string> &args)
 	STASHER_NAMESPACE::putresults results=client->put(tran);
 
 	if (results->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(results->status));
+		throw EXCEPTION(x::to_string(results->status));
 
 	if (interactive)
 		std::cout << "New object uuid: ";
-	std::cout << x::tostring(results->newuuid) << std::endl;
+	std::cout << x::to_string(results->newuuid) << std::endl;
 }
 
 void cli::put_syntax_error()
@@ -991,7 +991,7 @@ void cli::uuids(const std::list<std::string> &args)
 		}
 
 		std::cout << fromutf8(*b)
-			  << ":" << x::tostring(p->second.uuid)
+			  << ":" << x::to_string(p->second.uuid)
 			  << std::endl;
 	}
 }
@@ -1032,7 +1032,7 @@ void cli::get(const std::list<std::string> &args)
 		}
 
 		std::cout << fromutf8(*b)
-			  << ":" << x::tostring(p->second.uuid)
+			  << ":" << x::to_string(p->second.uuid)
 			  << std::endl;
 	}
 
@@ -1099,7 +1099,7 @@ void cli::save(const std::list<std::string> &args)
 		}
 
 		std::cout << fromutf8(b->first)
-			  << ":" << x::tostring(p->second.uuid)
+			  << ":" << x::to_string(p->second.uuid)
 			  << std::endl;
 
 		x::fd ofile=x::fd::create(b->second);
@@ -1136,7 +1136,7 @@ void cli::dir(const std::list<std::string> &args)
 			std::cout << fromutf8(*b) << std::endl;
 
 	if (res->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(res->status));
+		throw EXCEPTION(x::to_string(res->status));
 }
 
 void cli::rmrf(const std::list<std::string> &args)
@@ -1219,7 +1219,7 @@ void cli::dormrf(const std::vector<std::string> &objs)
 		goto again;
 
 	if (results->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(results->status));
+		throw EXCEPTION(x::to_string(results->status));
 
 	if (interactive)
 		for (auto name : objs)
@@ -1294,7 +1294,7 @@ void cli::setprop(const std::string &propname, const std::string &propvalue)
 		throw EXCEPTION(res->errmsg);
 
 	std::cout << "Property set, new value: "
-		  << x::tostring(res->newvalue, locale) << std::endl;
+		  << x::to_string(res->newvalue, locale) << std::endl;
 }
 
 void cli::resetprop(const std::string &propname)
@@ -1683,7 +1683,7 @@ void cli::savecluster(bool forceflag)
 	STASHER_NAMESPACE::putresults results=client->put(tran);
 
 	if (results->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(results->status));
+		throw EXCEPTION(x::to_string(results->status));
 
 	auto newmeta=x::ptr<editclusterObj::updcluster>
 		::create(results->newuuid);
@@ -1704,7 +1704,7 @@ void cli::subscribe(std::list<std::string> &args)
 		STASHER_NAMESPACE::subscriberesults res=client->subscribe(n, subscriber);
 
 		if (res->status != STASHER_NAMESPACE::req_processed_stat)
-			throw EXCEPTION(x::tostring(res->status));
+			throw EXCEPTION(x::to_string(res->status));
 
 		subscription_list[n]=res->mcguffin;
 		std::cout << "Subscribed to " << n << std::endl;
@@ -1933,7 +1933,7 @@ void cli::namespaceupdate(const STASHER_NAMESPACE::client::base::transaction &tr
 	if (results->status != STASHER_NAMESPACE::req_processed_stat)
 	{
 		ns=loadns();
-		throw EXCEPTION(x::tostring(results->status));
+		throw EXCEPTION(x::to_string(results->status));
 	}
 
 	ns->nsmapuuid=results->newuuid;

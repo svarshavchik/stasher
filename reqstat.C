@@ -7,8 +7,8 @@
 #include "stasher/reqstat.H"
 
 template<>
-std::string x::tostring(const STASHER_NAMESPACE::req_stat_t &value,
-			const const_locale &dummy)
+std::string x::to_string(const STASHER_NAMESPACE::req_stat_t &value,
+			 const const_locale &dummy)
 
 {
 	const char *p;

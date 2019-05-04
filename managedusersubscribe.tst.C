@@ -70,7 +70,7 @@ static void test1(tstnodes &t)
 
 		if (rootsub->stat != STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Subscription request failed with "
-					<< x::tostring(rootsub->stat));
+					<< x::to_string(rootsub->stat));
 	}
 
 	{
@@ -111,7 +111,7 @@ static void test1(tstnodes &t)
 
 		if (rootsub->stat != STASHER_NAMESPACE::req_disconnected_stat)
 			throw EXCEPTION("Expected to get a disconnected status, but got a "
-					<< x::tostring(rootsub->stat)
+					<< x::to_string(rootsub->stat)
 					<< " instead");
 	}
 }
@@ -142,7 +142,7 @@ static void test2(tstnodes &t)
 
 		if (rootsub->stat != STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Subscription request failed with "
-					<< x::tostring(rootsub->stat));
+					<< x::to_string(rootsub->stat));
 	}
 
 	{

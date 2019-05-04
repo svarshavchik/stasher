@@ -277,7 +277,7 @@ void objrepocopysrcthreadObj::dispatch_event_batonresponse(const objrepocopy::ba
 {
 	ENTERED(dispatch_event_batonresponse);
 
-	if (!batonp->null() && x::tostring((*batonp)->batonuuid) == msg.uuid)
+	if (!batonp->null() && x::to_string((*batonp)->batonuuid) == msg.uuid)
 	{
 		LOG_DEBUG("Received valid BATONRESPONSE");
 

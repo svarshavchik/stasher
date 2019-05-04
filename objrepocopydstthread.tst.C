@@ -602,7 +602,7 @@ void test7()
 			while (src->batonp.size() == 0)
 				src->cond.wait(lock);
 
-			if (src->batonp != x::tostring(batonuuid))
+			if (src->batonp != x::to_string(batonuuid))
 				throw EXCEPTION("test7 failed");
 
 			// [BATONDSTCOPYRELEASECOMPLETE]
@@ -650,7 +650,7 @@ void test7()
 			while (src->batonp.size() == 0)
 				src->cond.wait(lock);
 
-			if (src->batonp != x::tostring(batonuuid))
+			if (src->batonp != x::to_string(batonuuid))
 				throw EXCEPTION("test7 failed");
 
 			objrepocopy::masterlist msg;

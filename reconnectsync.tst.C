@@ -41,10 +41,10 @@ void test1(tstnodes &t)
 		STASHER_NAMESPACE::putresults res=cl0->put(tran);
 
 		if (res->status != STASHER_NAMESPACE::req_processed_stat)
-			throw EXCEPTION(x::tostring(res->status));
+			throw EXCEPTION(x::to_string(res->status));
 
 		std::cerr << "Success putting obj1: "
-			  << x::tostring(res->newuuid) << std::endl;
+			  << x::to_string(res->newuuid) << std::endl;
 	}
 
 	tnodes[2]->start(true);

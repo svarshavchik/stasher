@@ -52,10 +52,10 @@ static void test1()
 		x::uuid ua;
 
 		x::fd::base::open("conftestdir.tst/" TMP "/" +
-			    x::tostring(ua), O_CREAT|O_RDWR, 0666);
+			    x::to_string(ua), O_CREAT|O_RDWR, 0666);
 
 		x::fd::base::open("conftestdir.tst/" TMP "/" +
-			    x::tostring(ua) + ".1", O_CREAT|O_RDWR, 0666);
+			    x::to_string(ua) + ".1", O_CREAT|O_RDWR, 0666);
 	}
 
 	{
@@ -69,9 +69,9 @@ static void test1()
 		tfiles.insert(repo->obj_begin(), repo->obj_end());
 
 		if (tfiles.size() != 2 ||
-		    tfiles.find( x::tostring(tuuid) + "." T_SUFFIX) ==
+		    tfiles.find( x::to_string(tuuid) + "." T_SUFFIX) ==
 		    tfiles.end() ||
-		    tfiles.find( x::tostring(tuuid) + ".0") ==
+		    tfiles.find( x::to_string(tuuid) + ".0") ==
 		    tfiles.end())
 			throw EXCEPTION("Transaction temp file sanity check failed"); // [CLEANUP]
 
@@ -101,9 +101,9 @@ static void test1()
 		tfiles.insert(tmpdir->begin(), tmpdir->end());
 
 		if (tfiles.size() != 2 ||
-		    tfiles.find( x::tostring(tuuid) + "." X_SUFFIX) ==
+		    tfiles.find( x::to_string(tuuid) + "." X_SUFFIX) ==
 		    tfiles.end() ||
-		    tfiles.find( x::tostring(tuuid) + ".0") ==
+		    tfiles.find( x::to_string(tuuid) + ".0") ==
 		    tfiles.end())
 			throw EXCEPTION("Transaction temp file sanity check #2 failed"); // [FILES]
 	}
@@ -515,7 +515,7 @@ static void test6()
 	std::set<std::string> objset;
 
 	objset.insert(std::string(tobjrepoObj::done_hier) + "/nodea/" +
-		      x::tostring(firstuuid)); // [MARKDONE]
+		      x::to_string(firstuuid)); // [MARKDONE]
 
 	{
 		tobjrepoObj::values_t valuesMap;
@@ -540,7 +540,7 @@ static void test6()
 
 	if (objset.size() != 1 ||
 	    *objset.begin() != std::string(tobjrepoObj::done_hier) + "/nodea/" +
-	    x::tostring(firstuuid))
+	    x::to_string(firstuuid))
 		throw EXCEPTION("[OBJITER] failed");
 
 	repo->cancel(firstuuid);

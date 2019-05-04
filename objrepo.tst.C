@@ -123,7 +123,7 @@ static void trigger_after_a(std::string s)
 
 		p->tmp_open("obj2_tmp", O_RDWR|O_CREAT);
 		p->tmp_get("obj2_tmp")->setattr(XATTRSERIAL,
-						x::tostring(x::uuid()));
+						x::to_string(x::uuid()));
 		p->obj_install("obj2_tmp", "a/b/c/obj2",
 			       x::ptr<x::obj>());
 	}
@@ -144,7 +144,7 @@ static void test_obj1()
 	x::uuid obj1_uuid;
 
 	repo1->tmp_get("obj1_tmp")->setattr(XATTRSERIAL,
-					    x::tostring(obj1_uuid));
+					    x::to_string(obj1_uuid));
 
 	repo1->obj_install("obj1_tmp", "a/b/c/obj.1",
 			   x::ptr<x::obj>()); // [OBJINSTALL]

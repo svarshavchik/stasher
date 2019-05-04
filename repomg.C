@@ -559,7 +559,7 @@ void repomg::key_export(const std::string &dirname,
 	STASHER_NAMESPACE::putresults res=cl->put(tran);
 
 	if (res->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(res->status));
+		throw EXCEPTION(x::to_string(res->status));
 }
 
 void repomg::key_export_local(const std::string &dirname,

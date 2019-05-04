@@ -46,7 +46,7 @@ void heartbeatCommonBase::log_next_expiration(const std::string &nodename,
 
 void heartbeatCommonBase::log_update_processed(req_stat_t status)
 {
-	LOG_TRACE("Heartbeat update processed: " + x::tostring(status));
+	LOG_TRACE("Heartbeat update processed: " + x::to_string(status));
 }
 
 x::timertask

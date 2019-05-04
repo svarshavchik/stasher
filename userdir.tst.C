@@ -43,7 +43,7 @@ static void test1(tstnodes &t)
 
 			if (res->status !=
 			    STASHER_NAMESPACE::req_processed_stat)
-				throw EXCEPTION(x::tostring(res->status));
+				throw EXCEPTION(x::to_string(res->status));
 		}
 
 		STASHER_NAMESPACE::getdirresults res=cl1->getdir("tst");
@@ -81,7 +81,7 @@ static void test1(tstnodes &t)
 		STASHER_NAMESPACE::putresults res=cl0->put(tran);
 
 		if (res->status != STASHER_NAMESPACE::req_processed_stat)
-			throw EXCEPTION(x::tostring(res->status));
+			throw EXCEPTION(x::to_string(res->status));
 	}
 
 	STASHER_NAMESPACE::getdirresults res=cl1->getdir("tst");

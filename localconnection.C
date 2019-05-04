@@ -996,7 +996,7 @@ std::string localconnectionObj::report(std::ostream &rep)
 	rep << "Namespace:" << std::endl;
 	namespaceview->to_string(rep);
 
-	rep << "Receiving transaction: " << x::tostring(!newtran->null())
+	rep << "Receiving transaction: " << x::to_string(!newtran->null())
 	    << std::endl
 	    << "There are " << getqueue_cnt
 	    << " get request(s) pending:" << std::endl;
@@ -1004,7 +1004,7 @@ std::string localconnectionObj::report(std::ostream &rep)
 	for (std::list<getinfo>::iterator b=getqueue->begin(),
 		     e=getqueue->end(); b != e; ++b)
 	{
-		rep << x::tostring(b->requuid) << ":" << std::endl;
+		rep << x::to_string(b->requuid) << ":" << std::endl;
 
 		for (std::set<std::string>::iterator ob=b->objects.begin(),
 			     oe=b->objects.end(); ob != oe; ++ob)
@@ -1012,17 +1012,17 @@ std::string localconnectionObj::report(std::ostream &rep)
 			rep << "    Object: " << *ob << std::endl;
 		}
 
-		rep << "    Retrieve contents: " << x::tostring(b->openobjects)
+		rep << "    Retrieve contents: " << x::to_string(b->openobjects)
 		    << std::endl
-		    << "    Admin: " << x::tostring(b->admin) << std::endl
+		    << "    Admin: " << x::to_string(b->admin) << std::endl
 		    << "    Object lock acquired: " <<
-			x::tostring(b->lock->locked()) << std::endl
+			x::to_string(b->lock->locked()) << std::endl
 		    << "    Semaphore acquired: " <<
 			(b->semaphore.null() ? "N/A":
-			 x::tostring(!b->semaphore->getMcguffin().null()))
+			 x::to_string(!b->semaphore->getMcguffin().null()))
 		    << std::endl;
 	}
-	rep << "In quorum: " << x::tostring(currentstate)
+	rep << "In quorum: " << x::to_string(currentstate)
 	    << std::endl;
 
 	(*subscriptions)->report(rep);

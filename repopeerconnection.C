@@ -540,7 +540,7 @@ void repopeerconnectionObj::disconnect()
 			    "master "
 			    << (*currentpeerlink)->mastername
 			    << " ("
-			    << x::tostring((*currentpeerlink)->masteruuid)
+			    << x::to_string((*currentpeerlink)->masteruuid)
 			    << ")");
 
 	*currentconnect=peerdisconnect_msg();
@@ -594,11 +594,11 @@ void repopeerconnectionObj
 			    " peer: master "
 			    << peerlinkArg->mastername
 			    << " ("
-			    << x::tostring(peerlinkArg->masteruuid)
+			    << x::to_string(peerlinkArg->masteruuid)
 			    << "), peer's master is "
 			    << thisstatus->master
 			    << " ("
-			    << x::tostring(thisstatus->uuid)
+			    << x::to_string(thisstatus->uuid)
 			    << ")");
 		return;
 	}
@@ -612,7 +612,7 @@ void repopeerconnectionObj
 			    << ": Null controller object: master "
 			    << peerlinkArg->mastername
 			    << " ("
-			    << x::tostring(peerlinkArg->masteruuid)
+			    << x::to_string(peerlinkArg->masteruuid)
 			    << ")");
 		return;
 	}
@@ -625,7 +625,7 @@ void repopeerconnectionObj
 			    <<": Null controller object trigger: master "
 			    << peerlinkArg->mastername
 			    << " ("
-			    << x::tostring(peerlinkArg->masteruuid)
+			    << x::to_string(peerlinkArg->masteruuid)
 			    << ")");
 		return;
 	}
@@ -644,7 +644,7 @@ void repopeerconnectionObj
 		 << ": Connected controller with peer: master "
 		 << peerlinkArg->mastername
 		 << " ("
-		 << x::tostring(peerlinkArg->masteruuid)
+		 << x::to_string(peerlinkArg->masteruuid)
 		 << ")");
 }
 
@@ -694,7 +694,7 @@ void repopeerconnectionObj
 			    << ": ignoring slave synchandle for "
 			    << synchandle->mastername
 			    << " ("
-			    << x::tostring(synchandle->masteruuid)
+			    << x::to_string(synchandle->masteruuid)
 			    << "), not connected to this controller");
 		return;
 	}
@@ -707,11 +707,11 @@ void repopeerconnectionObj
 			    << ": ignoring slave synchandle for "
 			    << synchandle->mastername
 			    << " ("
-			    << x::tostring(synchandle->masteruuid)
+			    << x::to_string(synchandle->masteruuid)
 			    << "), current status announced to peer is "
 			    << thisstatus.master
 			    << " ("
-			    << x::tostring(thisstatus.uuid)
+			    << x::to_string(thisstatus.uuid)
 			    << ")");
 		return;
 	}
@@ -721,7 +721,7 @@ void repopeerconnectionObj
 		 << ": slave connection established with: "
 		 << synchandle->mastername
 		 << " ("
-		 << x::tostring(synchandle->masteruuid) << ")");
+		 << x::to_string(synchandle->masteruuid) << ")");
 
 	objrepocopydstptr dstptr(synchandle->dstinterface.getptr());
 
@@ -782,7 +782,7 @@ void repopeerconnectionObj
 			    << ": ignoring master synchandle for "
 			    << synchandle->mastername
 			    << " ("
-			    << x::tostring(synchandle->masteruuid)
+			    << x::to_string(synchandle->masteruuid)
 			    << "), not connected to this controller");
 		return;
 	}
@@ -795,11 +795,11 @@ void repopeerconnectionObj
 			    << ": ignoring master synchandle for "
 			    << synchandle->mastername
 			    << " ("
-			    << x::tostring(synchandle->masteruuid)
+			    << x::to_string(synchandle->masteruuid)
 			    << "), current status announced to peer is "
 			    << thisstatus.master
 			    << " ("
-			    << x::tostring(thisstatus.uuid)
+			    << x::to_string(thisstatus.uuid)
 			    << ")");
 		return;
 	}
@@ -809,7 +809,7 @@ void repopeerconnectionObj
 		 << ": master connection established with "
 		 << synchandle->mastername
 		 << " ("
-		 << x::tostring(synchandle->masteruuid) << ")");
+		 << x::to_string(synchandle->masteruuid) << ")");
 
 	repocontrollermasterptr ptr(synchandle->controller.getptr());
 
@@ -844,7 +844,7 @@ void repopeerconnectionObj::deserialized(const nodeclusterstatus &newStatus)
 		 << ": Peer " << peername << " status changed: master "
 		 << newStatus.master
 		 << " ("
-		 << x::tostring(newStatus.uuid) << ")");
+		 << x::to_string(newStatus.uuid) << ")");
 
 #ifdef DEBUG_BATON_TEST_4_CLUSTERSTATUS_HOOK
 	DEBUG_BATON_TEST_4_CLUSTERSTATUS_HOOK();
@@ -854,7 +854,7 @@ void repopeerconnectionObj::deserialized(const nodeclusterstatus &newStatus)
 		  << ", status changed: master "
 		  << newStatus.master
 		  << " ("
-		  << x::tostring(newStatus.uuid) << ")");
+		  << x::to_string(newStatus.uuid) << ")");
 
 	{
 		peerstatusObj::status curstatus(this);
@@ -868,7 +868,7 @@ void repopeerconnectionObj::deserialized(const nodeclusterstatus &newStatus)
 				 << ", status changed: master "
 				 << newStatus.master
 				 << " ("
-				 << x::tostring(newStatus.uuid) << ")");
+				 << x::to_string(newStatus.uuid) << ")");
 
 			slavesyncrequest_received=false;
 		}
@@ -889,11 +889,11 @@ void repopeerconnectionObj::deserialized(const nodeclusterstatus &newStatus)
 			    << " status changed: master "
 			    << newStatus.master
 			    << " ("
-			    << x::tostring(newStatus.uuid)
+			    << x::to_string(newStatus.uuid)
 			    << "): disconnect from controller: "
 			    << (*currentpeerlink)->mastername
 			    << " ("
-			    << x::tostring((*currentpeerlink)->masteruuid)
+			    << x::to_string((*currentpeerlink)->masteruuid)
 			    << ")");
 
 		disconnect();
@@ -1121,7 +1121,7 @@ void repopeerconnectionObj::deserialized(const slavesyncrequest &msg)
 				 peerstatusObj::status peerstatus(this);
 
 				 o << peerstatus->master << "("
-				   << x::tostring(peerstatus->uuid)
+				   << x::to_string(peerstatus->uuid)
 				   << ")";
 
 				 o.str(); }));
@@ -1201,7 +1201,7 @@ void repopeerconnectionObj::deserialized(const transerializer &msg)
 	if (msg.outofspace)
 	{
 		LOG_ERROR("No space to receive transaction "
-			  << x::tostring(msg.uuid) << " from " << peername);
+			  << x::to_string(msg.uuid) << " from " << peername);
 
 		distributor->deserialized_fail(msg.uuid,
 					       dist_received_status_t
@@ -1401,7 +1401,7 @@ void repopeerconnectionObj
 				  peerstatusObj::status stat(this);
 
 				  stat->master + " (" +
-					  x::tostring(stat->uuid) + ")";
+					  x::to_string(stat->uuid) + ")";
 			  }));
 
 	std::pair<bool, peerstatus> install_ret=install(cluster);
@@ -1572,7 +1572,7 @@ void repopeerconnectionObj::deserialized(const commitreq &msg)
 {
 	LOG_DEBUG("Received commit request on "
 		  << getthisnodename()
-		  << ": " << x::tostring(msg.uuid)
+		  << ": " << x::to_string(msg.uuid)
 		  << ", status: " << (int)msg.status);
 
 #ifdef REPOPEERCONNECTION_DEBUG_COMMITREQ
@@ -1583,7 +1583,7 @@ void repopeerconnectionObj::deserialized(const commitreq &msg)
 
 	if (!slavemetaptr->installed())
 	{
-		LOG_WARNING("Commit request for " << x::tostring(msg.uuid)
+		LOG_WARNING("Commit request for " << x::to_string(msg.uuid)
 			    << " from " << peername
 			    << " who is not from my master");
 		return;
@@ -1592,13 +1592,13 @@ void repopeerconnectionObj::deserialized(const commitreq &msg)
 	if (msg.status == STASHER_NAMESPACE::req_processed_stat)
 	{
 		slavemetaptr->dstrepo->commit_nolock(msg.uuid);
-		LOG_TRACE("Commited " << x::tostring(msg.uuid));
+		LOG_TRACE("Commited " << x::to_string(msg.uuid));
 	}
 	else
 	{
 		slavemetaptr->dstrepo->mark_done(msg.uuid, msg.source,
 						 msg.status, x::ptr<x::obj>());
-		LOG_TRACE("Cancelled " << x::tostring(msg.uuid));
+		LOG_TRACE("Cancelled " << x::to_string(msg.uuid));
 	}
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<commitack> >
@@ -1611,12 +1611,12 @@ void repopeerconnectionObj::dispatch_commit_peer(const x::ptr<commitreqObj> &req
 {
 	x::uuid uuid=req->msg.uuid;
 
-	LOG_DEBUG("Sending commit request: " << x::tostring(uuid)
+	LOG_DEBUG("Sending commit request: " << x::to_string(uuid)
 		  << ", status: " << (int)req->msg.status);
 
 	if (!mastermetaptr->installed())
 	{
-		LOG_WARNING("Commit request for " << x::tostring(uuid)
+		LOG_WARNING("Commit request for " << x::to_string(uuid)
 			    << " to " << peername << " who is not my slave");
 		return;
 	}
@@ -1631,7 +1631,7 @@ void repopeerconnectionObj::dispatch_commit_peer(const x::ptr<commitreqObj> &req
 void repopeerconnectionObj::deserialized(const commitack &msg)
 
 {
-	LOG_DEBUG("Received commit ack for " << x::tostring(msg.uuid));
+	LOG_DEBUG("Received commit ack for " << x::to_string(msg.uuid));
 
 	mastermetaptr->pending_commits.erase(msg.uuid);
 }
@@ -1987,7 +1987,7 @@ void repopeerconnectionObj::dispatch_baton_transfer_request(const baton &batonp)
 		      ::create(batonp->resigningnode,
 			       batonp->resigninguuid,
 			       batonp->batonuuid));
-	(*pings_outstanding)[x::tostring(batonp->batonuuid)]=given_cb;
+	(*pings_outstanding)[x::to_string(batonp->batonuuid)]=given_cb;
 }
 
 LOG_FUNC_SCOPE_DECL(repopeerconnectionObj::deserialized::batonisyours, deserialized_batonisyoursLog);
@@ -2039,7 +2039,7 @@ void repopeerconnectionObj::dispatch_batonismine(const baton &batonp)
 
 	pongm pp;
 
-	pp.uuid=x::tostring(batonp->batonuuid);
+	pp.uuid=x::to_string(batonp->batonuuid);
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<pongm> >::create(pp));
 }
@@ -2064,7 +2064,7 @@ void repopeerconnectionObj::dispatch_ping(const x::ptr<x::obj> &mcguffin)
 {
 	pingm pp;
 
-	pp.uuid=x::tostring(x::uuid());
+	pp.uuid=x::to_string(x::uuid());
 
 	(*pings_outstanding)[pp.uuid]=mcguffin;
 
@@ -2107,7 +2107,7 @@ void repopeerconnectionObj::dispatch_master_quorum_announce(const std::string &m
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername
 		 << ": notifying of master quorum status update: "
-		 << x::tostring(inquorum));
+		 << x::to_string(inquorum));
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<master_quorum> >
 		      ::create(mastername,
@@ -2121,8 +2121,8 @@ void repopeerconnectionObj::deserialized(const master_quorum &msg)
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername
 		 << ": master quorum status update: "
-		 << msg.mastername << ", uuid=" << x::tostring(msg.masteruuid)
-		 << ": " << x::tostring(msg.state));
+		 << msg.mastername << ", uuid=" << x::to_string(msg.masteruuid)
+		 << ": " << x::to_string(msg.state));
 
 	if (!IS_SLAVE(msg.mastername, msg.masteruuid))
 	{
@@ -2195,11 +2195,11 @@ void repopeerconnectionObj
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername
 		 << ": sending handover request "
-		 << x::tostring(uuid)
+		 << x::to_string(uuid)
 		 << " to "
 		 << newmastername);
 
-	(*pings_outstanding)[x::tostring(uuid)]=mcguffin;
+	(*pings_outstanding)[x::to_string(uuid)]=mcguffin;
 
 	writer->write(x::ref<STASHER_NAMESPACE::writtenObj<handover_request> >
 		      ::create(newmastername, uuid));
@@ -2216,7 +2216,7 @@ void repopeerconnectionObj::deserialized(const handover_request &msg)
 		LOG_INFO(getthisnodename()
 			 << ": connection with " << peername
 			 << ": received handover request "
-			 << x::tostring(msg.uuid)
+			 << x::to_string(msg.uuid)
 			 << " to "
 			 << msg.newmastername);
 
@@ -2230,9 +2230,9 @@ void repopeerconnectionObj::dispatch_handover_request_processed(const x::uuid &u
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername
 		 << ": acknowledged handover request "
-		 << x::tostring(uuid));
+		 << x::to_string(uuid));
 
-	deserialized(pingm(x::tostring(uuid))); // Send a pong
+	deserialized(pingm(x::to_string(uuid))); // Send a pong
 }
 
 void repopeerconnectionObj::dispatch_noop(const x::ptr<x::obj> &mcguffin)
@@ -2268,7 +2268,7 @@ void repopeerconnectionObj
 
 	auto req = x::ptr<STASHER_NAMESPACE::writtenObj<setnewcert> >
 		::create(request->certificate,
-		         x::tostring(request_uuid));
+		         x::to_string(request_uuid));
 
 	(*pings_outstanding)[req->msg.uuid]=pending;
 	writer->write(req);
@@ -2317,7 +2317,7 @@ void repopeerconnectionObj::dispatch_halt_request(const std::string &mastername,
 		LOG_INFO(getthisnodename()
 			 << ": connection with " << peername
 			 << ": ignoring halt request from: "
-			 << mastername << ", uuid=" << x::tostring(masteruuid));
+			 << mastername << ", uuid=" << x::to_string(masteruuid));
 		return;
 	}
 
@@ -2335,7 +2335,7 @@ void repopeerconnectionObj::deserialized(const halt &msg)
 	LOG_INFO(getthisnodename()
 		 << ": connection with " << peername
 		 << ": received halt message: "
-		 << msg.mastername << ", uuid=" << x::tostring(msg.masteruuid));
+		 << msg.mastername << ", uuid=" << x::to_string(msg.masteruuid));
 
 	if (!IS_SLAVE(msg.mastername, msg.masteruuid))
 	{
@@ -2359,7 +2359,7 @@ void repopeerconnectionObj::deserialized(const halt &msg)
 
 std::string repopeerconnectionObj::report(std::ostream &rep)
 {
-	rep << "Encrypted connection: " << x::tostring(encrypted)
+	rep << "Encrypted connection: " << x::to_string(encrypted)
 	    << std::endl
 	    << "Peer's last reported status: ";
 
@@ -2383,7 +2383,7 @@ std::string repopeerconnectionObj::report(std::ostream &rep)
 	else
 		rep << "Connected with controller: "
 		    << (*currentpeerlink)->mastername << " ("
-		    << x::tostring((*currentpeerlink)->masteruuid) << ")"
+		    << x::to_string((*currentpeerlink)->masteruuid) << ")"
 		    << std::endl;
 
 	rep << "Disconnection mcguffin " << (currentconnect->null()
@@ -2394,15 +2394,15 @@ std::string repopeerconnectionObj::report(std::ostream &rep)
 	{
 		rep << "Connected to a slave controller:" << std::endl;
 		rep << "  Slave controller object installed: "
-		    << x::tostring(!slavemetaptr->slave.getptr().null())
+		    << x::to_string(!slavemetaptr->slave.getptr().null())
 		    << std::endl;
 
 		rep << "  Destination repository copy object installed: "
-		    << x::tostring(slavemetaptr->dstptr.null())
+		    << x::to_string(slavemetaptr->dstptr.null())
 		    << std::endl;
 
 		rep << "  Source repository copy object installed: "
-		    << x::tostring(slavemetaptr->srcmaster.null())
+		    << x::to_string(slavemetaptr->srcmaster.null())
 		    << std::endl;
 
 		if (slavemetaptr->slave_baton.null())
@@ -2422,23 +2422,23 @@ std::string repopeerconnectionObj::report(std::ostream &rep)
 		rep << "Connected to a master controller:" << std::endl;
 
 		rep << "  Slave sync request message received: "
-		    << x::tostring(slavesyncrequest_received) << std::endl;
+		    << x::to_string(slavesyncrequest_received) << std::endl;
 		rep << "  Master controller object present: "
-		    << x::tostring(!mastermetaptr->master.null())
+		    << x::to_string(!mastermetaptr->master.null())
 		    << std::endl;
 		rep << "  Destination copy object present: "
-		    << x::tostring(!mastermetaptr->master.null())
+		    << x::to_string(!mastermetaptr->master.null())
 		    << std::endl;
 		rep << "  Destination repository copy completed: "
-		    << x::tostring(mastermetaptr->dstcopy_done)
+		    << x::to_string(mastermetaptr->dstcopy_done)
 		    << std::endl;
 
 		rep << "  Baton announcement mcguffin present: "
-		    << x::tostring(!mastermetaptr->baton_announce_mcguffin
+		    << x::to_string(!mastermetaptr->baton_announce_mcguffin
 				   .null())
 		    << std::endl;
 		rep << "  Halt request sent: "
-		    << x::tostring(!mastermetaptr->halt_mcguffin.null())
+		    << x::to_string(!mastermetaptr->halt_mcguffin.null())
 		    << std::endl;
 		rep << "  Commit requests outstanding:"
 		    << std::endl;
@@ -2448,7 +2448,7 @@ std::string repopeerconnectionObj::report(std::ostream &rep)
 			     e=mastermetaptr->pending_commits.end(); b != e;
 		     ++b)
 		{
-			rep << "    " << x::tostring(b->first) << std::endl;
+			rep << "    " << x::to_string(b->first) << std::endl;
 		}
 
 		// peertrans owned by the controller

@@ -149,8 +149,8 @@ batonObj::operator std::string() const
 	std::ostringstream o;
 
 	o << "Resigning master: " << resigningnode
-	  << " (" << x::tostring(resigninguuid) << "), new master: "
-	  << replacementnode << ", baton uuid: " << x::tostring(batonuuid);
+	  << " (" << x::to_string(resigninguuid) << "), new master: "
+	  << replacementnode << ", baton uuid: " << x::to_string(batonuuid);
 
 	return o.str();
 }

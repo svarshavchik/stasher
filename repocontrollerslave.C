@@ -91,7 +91,7 @@ void repocontrollerslaveObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin,
 	mcguffin= &start_arg;
 
 	x::logger::context thread("slave(" + mastername + ", "
-				  + x::tostring(masteruuid) + ")");
+				  + x::to_string(masteruuid) + ")");
 
 	LOG_INFO("Starting sync from master: " << mastername);
 
@@ -218,8 +218,8 @@ void repocontrollerslaveObj
 ::dispatch_master_quorum_announce(const STASHER_NAMESPACE::quorumstate &status)
 {
 	LOG_INFO("Master " << mastername << " quorum status: "
-		 << x::tostring(status)
-		 << ", sync completed: " << x::tostring(synccomplete_flag));
+		 << x::to_string(status)
+		 << ", sync completed: " << x::to_string(synccomplete_flag));
 	lastmasterquorumstate=status;
 
 	if (synccomplete_flag)
@@ -266,19 +266,19 @@ std::string repocontrollerslaveObj::report(std::ostream &rep)
 
 {
 	rep << "Connection object installed: "
-	    << x::tostring(!peer.getptr().null()) << std::endl
+	    << x::to_string(!peer.getptr().null()) << std::endl
 
 	    << "Destination repo copy object installed: "
-	    << x::tostring(!dstcopy_ptr->null()) << std::endl
+	    << x::to_string(!dstcopy_ptr->null()) << std::endl
 
 	    << "Receiver object installed: "
-	    << x::tostring(!receiver_ptr->null()) << std::endl
+	    << x::to_string(!receiver_ptr->null()) << std::endl
 
 	    << "Synchronized with master: "
-	    << x::tostring(synccomplete_flag) << std::endl
+	    << x::to_string(synccomplete_flag) << std::endl
 	    << "Distributor object installed: "
-	    << x::tostring(!distributor.getptr().null()) << std::endl;
+	    << x::to_string(!distributor.getptr().null()) << std::endl;
 
-	return "slave(" + mastername + ", uuid" + x::tostring(masteruuid)
+	return "slave(" + mastername + ", uuid" + x::to_string(masteruuid)
 		+ ")";
 }

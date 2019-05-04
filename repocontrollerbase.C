@@ -90,7 +90,7 @@ STASHER_NAMESPACE::quorumstate
 repocontrollerbaseObj::quorum(const STASHER_NAMESPACE::quorumstate &inquorum)
 
 {
-	LOG_INFO("Announcing quorum status: " << x::tostring(inquorum));
+	LOG_INFO("Announcing quorum status: " << x::to_string(inquorum));
 
 	repoclusterquorum::base::updatelock lock(*callback_list);
 

@@ -8,7 +8,7 @@
 
 #include <stasher/namespace.H>
 
-#include <x/tostring.H>
+#include <x/to_string.H>
 #include <x/serialization.H>
 
 STASHER_NAMESPACE_START
@@ -33,8 +33,8 @@ STASHER_NAMESPACE_END
 
 namespace x {
 	template<>
-	std::string tostring(const STASHER_NAMESPACE::req_stat_t &,
-			     const const_locale &localeRef);
+	std::string to_string(const STASHER_NAMESPACE::req_stat_t &,
+			      const const_locale &localeRef);
 };
 
 LIBCXX_SERIALIZE_ENUMERATION(STASHER_NAMESPACE::req_stat_t,char);

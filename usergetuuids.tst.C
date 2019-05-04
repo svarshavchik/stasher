@@ -53,12 +53,12 @@ static void test1(tstnodes &t)
 			STASHER_NAMESPACE::putresults res=cl0->put(tran);
 
 			if (res->status != STASHER_NAMESPACE::req_processed_stat)
-				throw EXCEPTION(x::tostring(res->status));
+				throw EXCEPTION(x::to_string(res->status));
 
 			res->newuuid;
 		});
 
-	std::cerr << "New transaction: " << x::tostring(obj1uuid)
+	std::cerr << "New transaction: " << x::to_string(obj1uuid)
 		  << std::endl;
 
 	{
@@ -190,7 +190,7 @@ static void test2(tstnodes &t)
 			STASHER_NAMESPACE::putresults res=cl->put(tran);
 
 			if (res->status != STASHER_NAMESPACE::req_processed_stat)
-				throw EXCEPTION(x::tostring(res->status));
+				throw EXCEPTION(x::to_string(res->status));
 
 			res->newuuid;
 		});
@@ -246,7 +246,7 @@ static void test2(tstnodes &t)
 			STASHER_NAMESPACE::putresults res=cl->put(tran);
 
 			if (res->status != STASHER_NAMESPACE::req_processed_stat)
-				throw EXCEPTION(x::tostring(res->status));
+				throw EXCEPTION(x::to_string(res->status));
 
 			res->newuuid;
 		});

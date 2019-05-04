@@ -73,7 +73,7 @@ public:
 		meta_t::lock lock(meta);
 
 		std::cout << "Updated " << objname << ":"
-			  << x::tostring(objuuid)
+			  << x::to_string(objuuid)
 			  << std::endl;
 		lock->objects[objname]=objuuid;
 		lock.notify_all();
@@ -116,7 +116,7 @@ static void test1(tstnodes &t, const std::string &hier, const std::string &pfix)
 			if (res->status !=
 			    STASHER_NAMESPACE::req_processed_stat)
 				throw EXCEPTION("put: " +
-						x::tostring(res->status));
+						x::to_string(res->status));
 
 			res->newuuid;
 		});
@@ -135,7 +135,7 @@ static void test1(tstnodes &t, const std::string &hier, const std::string &pfix)
 		lock.wait([&lock] { return lock->begin_called; });
 
 		std::cerr << "Waiting to get the initial contents of the hierarchy (uuid="
-			  << x::tostring(objuuid) << ")"
+			  << x::to_string(objuuid) << ")"
 			  << std::endl;
 
 		lock.wait([&lock] { return lock->enumerated_called; });
@@ -164,7 +164,7 @@ static void test1(tstnodes &t, const std::string &hier, const std::string &pfix)
 			if (res->status !=
 			    STASHER_NAMESPACE::req_processed_stat)
 				throw EXCEPTION("put: " +
-						x::tostring(res->status));
+						x::to_string(res->status));
 
 			res->newuuid;
 		});
@@ -252,7 +252,7 @@ static void test2(tstnodes &t)
 
 		if (res->status !=
 		    STASHER_NAMESPACE::req_processed_stat)
-			throw EXCEPTION("put: " + x::tostring(res->status));
+			throw EXCEPTION("put: " + x::to_string(res->status));
 	}
 
 	auto manager=STASHER_NAMESPACE::manager::create();
@@ -353,7 +353,7 @@ static void test4(tstnodes &t)
 			if (res->status !=
 			    STASHER_NAMESPACE::req_processed_stat)
 				throw EXCEPTION("put: " +
-						x::tostring(res->status));
+						x::to_string(res->status));
 
 			res->newuuid;
 		});

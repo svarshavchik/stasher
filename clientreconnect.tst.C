@@ -46,7 +46,7 @@ static void test1(tstnodes &t)
 	STASHER_NAMESPACE::putresults res=cl->put(tran);
 
 	if (res->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(res->status));
+		throw EXCEPTION(x::to_string(res->status));
 
 	x::ref<sendstop> thr(x::ref<sendstop>::create());
 
@@ -88,7 +88,7 @@ static void test1(tstnodes &t)
 		if (dir_resp->status !=
 		    STASHER_NAMESPACE::req_processed_stat)
 			std::cerr << "DIR error: "
-				  << x::tostring(dir_resp->status)
+				  << x::to_string(dir_resp->status)
 				  << std::endl;
 
 		req=STASHER_NAMESPACE::client::base::getreq::create();

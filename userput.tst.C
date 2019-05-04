@@ -631,10 +631,10 @@ static void test10(tstnodes &t)
 	STASHER_NAMESPACE::putresults res=cl->put(tran);
 
 	if (res->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(res->status));
+		throw EXCEPTION(x::to_string(res->status));
 
 	std::cerr << "Transaction success: "
-		  << x::tostring(res->newuuid) << std::endl;
+		  << x::to_string(res->newuuid) << std::endl;
 
 	tran=STASHER_NAMESPACE::client::base::transaction::create();
 
@@ -650,10 +650,10 @@ static void test10(tstnodes &t)
 	res=cl->put(tran);
 
 	if (res->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(res->status));
+		throw EXCEPTION(x::to_string(res->status));
 
 	std::cerr << "Transaction success: "
-		  << x::tostring(res->newuuid) << std::endl;
+		  << x::to_string(res->newuuid) << std::endl;
 
 	for (size_t i=0; i<2; ++i)
 	{
@@ -684,7 +684,7 @@ static void test10(tstnodes &t)
 		if (res2->status == STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Transaction did not fail, as expected");
 
-		std::cerr << "Expected error: " << x::tostring(res2->status)
+		std::cerr << "Expected error: " << x::to_string(res2->status)
 			  << std::endl;
 	}
 
@@ -694,7 +694,7 @@ static void test10(tstnodes &t)
 	res=cl->put(tran);
 
 	if (res->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(res->status));
+		throw EXCEPTION(x::to_string(res->status));
 
 	tran=STASHER_NAMESPACE::client::base::transaction::create();
 	tran->newobj("obj1//.err", x::fd::base::tmpfile());
@@ -705,7 +705,7 @@ static void test10(tstnodes &t)
 		if (res2->status == STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Transaction did not fail, as expected");
 
-		std::cerr << "Expected error: " << x::tostring(res2->status)
+		std::cerr << "Expected error: " << x::to_string(res2->status)
 			  << std::endl;
 	}
 
@@ -718,7 +718,7 @@ static void test10(tstnodes &t)
 		if (res2->status == STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Transaction did not fail, as expected");
 
-		std::cerr << "Expected error: " << x::tostring(res2->status)
+		std::cerr << "Expected error: " << x::to_string(res2->status)
 			  << std::endl;
 	}
 
@@ -731,7 +731,7 @@ static void test10(tstnodes &t)
 		if (res2->status == STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Transaction did not fail, as expected");
 
-		std::cerr << "Expected error: " << x::tostring(res2->status)
+		std::cerr << "Expected error: " << x::to_string(res2->status)
 			  << std::endl;
 	}
 
@@ -786,7 +786,7 @@ static void test11(tstnodes &t)
 		if (res->status == STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Bad transaction did not fail (>10 obj put)");
 
-		std::cerr << "Expected error: " << x::tostring(res->status) << std::endl;
+		std::cerr << "Expected error: " << x::to_string(res->status) << std::endl;
 	}
 
 	{
@@ -805,7 +805,7 @@ static void test11(tstnodes &t)
 		if (res->status == STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Bad transaction did not fail (chunk > 8192)");
 
-		std::cerr << "Expected error: " << x::tostring(res->status) << std::endl;
+		std::cerr << "Expected error: " << x::to_string(res->status) << std::endl;
 	}
 
 	{
@@ -830,7 +830,7 @@ static void test11(tstnodes &t)
 		if (res->status == STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Bad transaction did not fail (3)");
 
-		std::cerr << "Expected error: " << x::tostring(res->status) << std::endl;
+		std::cerr << "Expected error: " << x::to_string(res->status) << std::endl;
 	}
 
 	{
@@ -845,7 +845,7 @@ static void test11(tstnodes &t)
 		if (res->status == STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("Bad transaction did not fail (4)");
 
-		std::cerr << "Expected error: " << x::tostring(res->status) << std::endl;
+		std::cerr << "Expected error: " << x::to_string(res->status) << std::endl;
 	}
 }
 

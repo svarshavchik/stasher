@@ -222,7 +222,7 @@ void managedhierarchymonitorObj::implObj::updated(const std::string &objname,
 
 void managedhierarchymonitorObj::implObj::connection_update(req_stat_t status)
 {
-	LOG_DEBUG("connection_update: " << x::tostring(status));
+	LOG_DEBUG("connection_update: " << x::to_string(status));
 
 	callback->connection_update(status);
 	if (status != req_processed_stat)
@@ -285,7 +285,7 @@ void managedhierarchymonitorObj::implObj::getdirCompleteMcguffinObj::destroyed()
 	auto results=req->getmsg();
 	auto m=mon.getptr();
 
-	LOG_DEBUG("directory retrieve: " << x::tostring(results->status));
+	LOG_DEBUG("directory retrieve: " << x::to_string(results->status));
 
 	if (m.null())
 	{
@@ -296,7 +296,7 @@ void managedhierarchymonitorObj::implObj::getdirCompleteMcguffinObj::destroyed()
 	if (results->status != req_processed_stat)
 	{
 		LOG_ERROR(m->hierarchy << ": "
-			  << x::tostring(results->status));
+			  << x::to_string(results->status));
 		return;
 	}
 

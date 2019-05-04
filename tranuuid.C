@@ -32,7 +32,6 @@ void tranuuidObj::to_string(std::ostream &o)
 	for (std::set<x::uuid>::iterator
 		     b=uuids.begin(), e=uuids.end(); b != e; ++b)
 	{
-		o << "        " << x::tostring(*b) << std::endl;
+		o << "        " << x::to_string(*b) << std::endl;
 	}
 }
-

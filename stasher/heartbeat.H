@@ -106,7 +106,7 @@ public:
 
 	void report(std::ostream &o)
 	{
-		std::istringstream i(x::tostring(meta));
+		std::istringstream i(x::to_string(meta));
 		bool flag=false;
 		std::string s;
 
@@ -512,7 +512,7 @@ public:
 //! be the name of the object repository node the instance runs on.
 //!
 //! The template parameter is a class that represent each instance's metadata.
-//! The class must be serializable, and support x::tostring(). A template
+//! The class must be serializable, and support x::to_string(). A template
 //! parameter of \c void indicates that no per-instance metadata is needed,
 //! and the heartbeat consists of only the heartbeat timestamps.
 
@@ -738,7 +738,7 @@ public:
 						 c_cpy(res->status
 						       == stasher::
 						       req_processed_stat,
-						       x::tostring(res->
+						       x::to_string(res->
 								   status));
 					 });
 	}
@@ -757,14 +757,14 @@ public:
 		}
 
 		o << "Heartbeat status (uuid "
-		  << x::tostring(lock->value->uuid)
+		  << x::to_string(lock->value->uuid)
 		  << "):" << std::endl;
 
 		size_t max_len=0;
 
 		for (auto &timestamp:lock->value->timestamps)
 		{
-			size_t s=x::tostring(timestamp.first).size();
+			size_t s=x::to_string(timestamp.first).size();
 
 			if (s > max_len)
 				max_len=s;
@@ -774,7 +774,7 @@ public:
 		{
 			o << "    "
 			  << std::setw(max_len)
-			  << x::tostring(timestamp.first)
+			  << x::to_string(timestamp.first)
 			  << std::setw(0)
 			  << " expires on "
 			  << (std::string)x::ymdhms(timestamp.second
@@ -852,7 +852,7 @@ public:
 
 		my_expiration += time(NULL);
 
-		heartbeatCommonBase::log_next_expiration(x::tostring(nodename),
+		heartbeatCommonBase::log_next_expiration(x::to_string(nodename),
 							 my_expiration);
 
 		auto tran=stasher::client::base::transaction::create();
@@ -903,7 +903,7 @@ public:
 					continue;
 
 				heartbeatCommonBase
-					::log_stale_heartbeat(x::tostring
+					::log_stale_heartbeat(x::to_string
 							      (p->first));
 				existing_heartbeat->timestamps.erase(p);
 			}

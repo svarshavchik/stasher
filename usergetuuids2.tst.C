@@ -186,7 +186,7 @@ static void test3(tstnodes &t)
 		auto res=cl->put(tran);
 
 		if (res->status != STASHER_NAMESPACE::req_processed_stat)
-			throw EXCEPTION(x::tostring(res->status));
+			throw EXCEPTION(x::to_string(res->status));
 	}
 
 	auto wl=x::weaklist<x::obj>::create();
@@ -235,7 +235,7 @@ static void test3(tstnodes &t)
 					   &res)
 					  {
 						  std::cout << s << ": put: "
-							    << x::tostring
+							    << x::to_string
 							  (res->status)
 							    << std::endl;
 					  });

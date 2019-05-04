@@ -681,7 +681,7 @@ void clientBase::connect_socket(const client &cl)
 
 	if (status->result != req_processed_stat)
 		throw EXCEPTION(cl->sockname + ": " +
-				x::tostring(status->result));
+				x::to_string(status->result));
 }
 
 // Kick off a connection thread
@@ -1176,7 +1176,7 @@ void clientObj::implObj::dispatch_subscribe(const std::string &objname,
 		x::ref<writtenObj<STASHER_NAMESPACE::beginsubreq> >::create();
 
 	LOG_TRACE(objname + ": subscription request "
-		  + x::tostring(wmsg->msg.requuid));
+		  + x::to_string(wmsg->msg.requuid));
 
 	wmsg->msg.objname=objname;
 
@@ -1189,8 +1189,8 @@ void clientObj::implObj::dispatch_subscribe(const std::string &objname,
 void clientObj::implObj::deserialized(const beginsubreply &msg)
 
 {
-	LOG_DEBUG(x::tostring(msg.requuid) + ": subscription acknowledged: "
-		  + x::tostring(msg.msg->status));
+	LOG_DEBUG(x::to_string(msg.requuid) + ": subscription acknowledged: "
+		  + x::to_string(msg.msg->status));
 
 	// Find the queue, and ack the waiting requests.
 
@@ -1200,7 +1200,7 @@ void clientObj::implObj::deserialized(const beginsubreply &msg)
 			if (iter == subquuids.end())
 				throw EXCEPTION("Subscription ack with an "
 						" unknown uuid "
-						+ x::tostring(msg.requuid));
+						+ x::to_string(msg.requuid));
 
 			std::string objname=iter->second;
 			subquuids.erase(iter);
@@ -1226,7 +1226,7 @@ void clientObj::implObj::register_subscription(const std::string &objname,
 					       req_stat_t status)
 {
 	LOG_DEBUG("Registered subscription for " << objname <<
-		  x::tostring(status));
+		  x::to_string(status));
 
 	x::ref<subscriberesultsObj>
 		res=x::ref<subscriberesultsObj>::create();

@@ -33,9 +33,8 @@ void trandistuuidObj::to_string(std::ostream &o)
 	for (std::map<x::uuid, dist_received_status_t>::iterator
 		     b=uuids.begin(), e=uuids.end(); b != e; ++b)
 	{
-		o << "        " << x::tostring(b->first)
+		o << "        " << x::to_string(b->first)
 		  << ": status " << b->second.status
 		  << ", source " << b->second.sourcenode << std::endl;
 	}
 }
-

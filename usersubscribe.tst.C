@@ -219,7 +219,7 @@ static void do_test1(const STASHER_NAMESPACE::client &cl0,
 		STASHER_NAMESPACE::putresults res=cl1->put(tran);
 
 		if (res->status != STASHER_NAMESPACE::req_processed_stat)
-			throw EXCEPTION(x::tostring(res->status));
+			throw EXCEPTION(x::to_string(res->status));
 	}
 
 	std::cerr << "Checking callback for obj1: root" << std::endl;
@@ -241,7 +241,7 @@ static void do_test1(const STASHER_NAMESPACE::client &cl0,
 		STASHER_NAMESPACE::putresults res=cl1->put(tran);
 
 		if (res->status != STASHER_NAMESPACE::req_processed_stat)
-			throw EXCEPTION(x::tostring(res->status));
+			throw EXCEPTION(x::to_string(res->status));
 	}
 
 	// [USERSUBSCRIBEHIER]
@@ -265,7 +265,7 @@ static void do_test1(const STASHER_NAMESPACE::client &cl0,
 		STASHER_NAMESPACE::putresults res=cl1->put(tran);
 
 		if (res->status != STASHER_NAMESPACE::req_processed_stat)
-			throw EXCEPTION(x::tostring(res->status));
+			throw EXCEPTION(x::to_string(res->status));
 	}
 
 	obj1hiersub->wait("obj1/");
@@ -345,7 +345,7 @@ static void do_test2(const STASHER_NAMESPACE::client &cl0)
 
 	// [SUBSCRIBE2MANY]
 	if (res->status != STASHER_NAMESPACE::req_toomany_stat)
-		throw EXCEPTION(x::tostring(res->status));
+		throw EXCEPTION(x::to_string(res->status));
 }
 
 static void do_test3(const STASHER_NAMESPACE::client &cl0);
@@ -396,7 +396,7 @@ static void do_test3(const STASHER_NAMESPACE::client &cl0)
 		STASHER_NAMESPACE::putresults res=cl0->put(tran);
 
 		if (res->status != STASHER_NAMESPACE::req_processed_stat)
-			throw EXCEPTION(x::tostring(res->status));
+			throw EXCEPTION(x::to_string(res->status));
 	}
 
 	std::cout << "Before wait" << std::endl;

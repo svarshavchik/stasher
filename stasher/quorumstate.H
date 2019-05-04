@@ -9,7 +9,7 @@
 #include <x/exception.H>
 #include <x/locale.H>
 #include <x/value_string.H>
-#include <x/tostring.H>
+#include <x/to_string.H>
 #include <stasher/namespace.H>
 
 STASHER_NAMESPACE_START
@@ -69,8 +69,8 @@ public:
 	{
 		std::ostringstream o;
 
-		o << "full: " << x::tostring(full)
-		  << ", majority: " << x::tostring(majority);
+		o << "full: " << x::to_string(full)
+		  << ", majority: " << x::to_string(majority);
 
 		std::string s(o.str());
 

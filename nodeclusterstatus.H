@@ -183,8 +183,8 @@ public:
 
 		auto l=x::locale::base::global();
 
-		o << x::tostring(localtimestamp.format("%Y-%m-%d %H:%M:%S %z"),
-				 l);
+		o << x::to_string(localtimestamp.format("%Y-%m-%d %H:%M:%S %z"),
+				  l);
 
 		if (reluctant)
 			o << ", inferior";

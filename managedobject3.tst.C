@@ -140,7 +140,7 @@ static void test1(tstnodes &t)
 
 	if (res->status != STASHER_NAMESPACE::req_processed_stat)
 		throw EXCEPTION("Unexpected status: "
-				<< x::tostring(res->status));
+				<< x::to_string(res->status));
 
 	std::cerr << "Waiting for the updated object"
 		  << std::endl;
@@ -349,7 +349,7 @@ static void test3(tstnodes &t)
 
 		if (res->status != STASHER_NAMESPACE::req_processed_stat)
 			throw EXCEPTION("test3 failed: "
-					+ x::tostring(res->status));
+					+ x::to_string(res->status));
 
 	}
 }

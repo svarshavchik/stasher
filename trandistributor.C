@@ -173,7 +173,7 @@ public:
 		if (known_nodes->find(status.sourcenode) != known_nodes->end())
 			return;
 
-		LOG_WARNING("Cancelling " << x::tostring(uuid)
+		LOG_WARNING("Cancelling " << x::to_string(uuid)
 			    << " from unknown node: "
 			    << status.sourcenode);
 
@@ -313,7 +313,7 @@ void trandistributorObj
 	x::ref<STASHER_NAMESPACE::writtenObj<transerializer> > serializer=
 		create_serialization_msg(reporef, msguuid);
 
-	LOG_DEBUG("Distributing " << x::tostring(msguuid)
+	LOG_DEBUG("Distributing " << x::to_string(msguuid)
 		  << " to " << peer_list->size() << " peers");
 
 	for (auto peerp: *peer_list)
@@ -323,7 +323,7 @@ void trandistributorObj
 		if (peer.null())
 			continue;
 
-		LOG_TRACE("Distributing " << x::tostring(msguuid)
+		LOG_TRACE("Distributing " << x::to_string(msguuid)
 			  << " to " << peer->peername);
 
 		peer->distribute_peer(serializer);
@@ -343,7 +343,7 @@ void trandistributorObj::dispatch_cancel(const x::uuid &uuid)
 
 	cancel.uuids.insert(uuid);
 
-	LOG_DEBUG("Cancellation request for " << x::tostring(uuid));
+	LOG_DEBUG("Cancellation request for " << x::to_string(uuid));
 
 	cancelled(uuid);
 
@@ -354,7 +354,7 @@ void trandistributorObj::dispatch_cancel(const x::uuid &uuid)
 		if (peer.null())
 			continue;
 
-		LOG_TRACE("Distributing cancel " << x::tostring(uuid)
+		LOG_TRACE("Distributing cancel " << x::to_string(uuid)
 			  << " to " << peer->peername);
 
 		peer->distribute_peer(cancel);
@@ -447,7 +447,7 @@ void trandistributorObj
 	for (std::set<x::uuid>::const_iterator b(cancel.uuids.begin()),
 		     e(cancel.uuids.end()); b != e; ++b)
 	{
-		LOG_DEBUG("Cancelled " << x::tostring(*b) << " from peer");
+		LOG_DEBUG("Cancelled " << x::to_string(*b) << " from peer");
 		cancelled(*b);
 	}
 }
@@ -468,14 +468,14 @@ void trandistributorObj::do_dispatch_deserialized_transaction(const newtran &tra
 {
 	x::uuid received_uuid(process_received(tran));
 
-	LOG_DEBUG("Received " << x::tostring(received_uuid) << " from peer");
+	LOG_DEBUG("Received " << x::to_string(received_uuid) << " from peer");
 }
 
 void trandistributorObj::dispatch_deserialized_fail(const x::uuid &uuid,
 						    const dist_received_status_t &errcode)
 
 {
-	LOG_DEBUG("Failure receiving " << x::tostring(uuid)
+	LOG_DEBUG("Failure receiving " << x::to_string(uuid)
 		  << " from peer " << errcode.sourcenode);
 
 	repo->failedlist_insert(uuid, errcode);
@@ -551,12 +551,12 @@ void trandistributorObj::process_received(const x::uuid &uuid,
 					  const dist_received_status_t &status)
 
 {
-	LOG_DEBUG("Received " << x::tostring(uuid) << " from "
+	LOG_DEBUG("Received " << x::to_string(uuid) << " from "
 		  << status.sourcenode);
 
 	if (known_nodes.find(status.sourcenode) == known_nodes.end())
 	{
-		LOG_WARNING("Rejecting transaction " << x::tostring(uuid)
+		LOG_WARNING("Rejecting transaction " << x::to_string(uuid)
 			    << " from unknown peer " << status.sourcenode);
 
 		if (status.status == dist_received_status_ok)
@@ -580,7 +580,7 @@ void trandistributorObj::process_received(const x::uuid &uuid,
 
 void trandistributorObj::cancelled(const x::uuid &uuid)
 {
-	LOG_DEBUG("Cancelling " << x::tostring(uuid));
+	LOG_DEBUG("Cancelling " << x::to_string(uuid));
 
 	trandistlist_t::iterator tran(trandistlist->find(uuid));
 
@@ -617,7 +617,7 @@ void trandistributorObj::dispatch_completed(const x::uuid &uuid)
 	STASHER_NAMESPACE::req_stat_t
 		res=repo->get_tran_stat(nodename, uuid);
 
-	LOG_DEBUG("Transaction completed: " << x::tostring(uuid)
+	LOG_DEBUG("Transaction completed: " << x::to_string(uuid)
 		  << ", status=" << (int)res);
 
 #ifdef DEBUG_DISTRIBUTOR_CANCEL_HOOK
@@ -643,7 +643,7 @@ std::string trandistributorObj::report(std::ostream &rep)
 	for (trandistlist_t::iterator b=trandistlist->begin(),
 		     e=trandistlist->end(); b != e; ++b)
 	{
-		rep << "Distributing: " << x::tostring(b->first) << std::endl;
+		rep << "Distributing: " << x::to_string(b->first) << std::endl;
 	}
 	return "distributor(" + nodename + ")";
 }

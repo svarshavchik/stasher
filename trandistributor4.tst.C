@@ -105,7 +105,7 @@ void test1()
 		std::unique_lock<std::mutex> mlock(notifier->mutex);
 		bool found=false;
 
-		std::string str="/" + x::tostring(tranuuid);
+		std::string str="/" + x::to_string(tranuuid);
 
 		while (!found)
 		{
@@ -160,7 +160,7 @@ void test2()
 		std::unique_lock<std::mutex> mlock(notifier->mutex);
 		bool found=false;
 
-		std::string str="/" + x::tostring(tranuuid);
+		std::string str="/" + x::to_string(tranuuid);
 
 		while (!found)
 		{

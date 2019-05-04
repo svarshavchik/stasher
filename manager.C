@@ -398,7 +398,7 @@ void managerObj::implObj::objectsubscribeRequestObj<info>::destroyed()
 		auto msg=req->getmsg();
 		LOG_TRACE("Processed: " << sub.impl.describe()
 			  << ": "
-			  << x::tostring(msg->status));
+			  << x::to_string(msg->status));
 
 		switch (sub.request_stat=msg->status) {
 		case req_processed_stat:
@@ -490,7 +490,7 @@ void managerObj::implObj::objectsubscribeCancelledObj<info>
 				::make_timer_task([me] { me->run(); });
 
 			LOG_TRACE("Scheduled in "
-				  << x::tostring(interval) << ": " << describe);
+				  << x::to_string(interval) << ": " << describe);
 
 			lock->timer->
 				scheduleAfter(task,
@@ -571,7 +571,7 @@ public:
 		try {
 			LOG_DEBUG("Received connection update: "
 				  << objname << ": "
-				  << x::tostring(status));
+				  << x::to_string(status));
 			callback->connection_update(status);
 			if (status == req_processed_stat)
 				update();

@@ -34,7 +34,7 @@ public:
 		status=inquorum;
 		std::cout << dir << ": " << status.nodes.size()
 			  << " peers: "
-			  << x::tostring(status) << std::endl;
+			  << x::to_string(status) << std::endl;
 		cond.notify_all();
 	}
 
@@ -110,7 +110,7 @@ void test1(tstnodes &t)
 	STASHER_NAMESPACE::putresults results=cl0->put(tran);
 
 	if (results->status != STASHER_NAMESPACE::req_processed_stat)
-		throw EXCEPTION(x::tostring(results->status));
+		throw EXCEPTION(x::to_string(results->status));
 
 	{
 		std::unique_lock<std::mutex> lock(cb1->mutex);

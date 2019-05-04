@@ -48,10 +48,10 @@ void test1()
 		newtran tr(repo->newtransaction());
 
 		tr->newobj(std::string(tobjrepoObj::done_hier) + "/node1/"
-			   + x::tostring(tran1));
+			   + x::to_string(tran1));
 
 		tr->newobj(std::string(tobjrepoObj::done_hier) + "/node2/"
-			   + x::tostring(tran2));
+			   + x::to_string(tran2));
 
 		tr->newobj("foo/bar");
 

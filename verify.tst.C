@@ -175,7 +175,7 @@ void keepitObj::dispatch_check_put(const STASHER_NAMESPACE::putresults &res)
 	update_pending=false;
 
 	std::cout << "Update: " << name << ": "
-		  << x::tostring(res->status) << std::endl;
+		  << x::to_string(res->status) << std::endl;
 
 	if (res->status == STASHER_NAMESPACE::req_processed_stat)
 	{

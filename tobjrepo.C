@@ -100,12 +100,12 @@ tobjrepoObj::tobjrepoObj(const std::string &directoryArg)
 				if (b->second)
 				{
 					LOG_INFO("Cancelling " <<
-						 x::tostring(tranRef->uuid));
+						 x::to_string(tranRef->uuid));
 					cancel_uuid_locked(tranRef);
 				}
 				else
 				{
-					std::string uuid_str(x::tostring(tranRef->uuid));
+					std::string uuid_str(x::to_string(tranRef->uuid));
 
 					LOG_INFO("Committing " << uuid_str);
 
@@ -170,7 +170,7 @@ x::fd tobjrepoObj::tmp_create(const x::uuid &uuid, size_t objnum)
 {
 	std::ostringstream o;
 
-	o << x::tostring(uuid) << '.' << objnum;
+	o << x::to_string(uuid) << '.' << objnum;
 
 	x::fd fd(tmp_open(o.str(), O_CREAT|O_RDWR));
 
@@ -184,7 +184,7 @@ x::fd tobjrepoObj::tmp_reopen(const x::uuid &uuid, size_t objnum)
 {
 	std::ostringstream o;
 
-	o << x::tostring(uuid) << '.' << objnum;
+	o << x::to_string(uuid) << '.' << objnum;
 
 	x::fd fd(tmp_open(o.str(), O_RDONLY));
 
@@ -196,7 +196,7 @@ void tobjrepoObj::tmp_remove(const x::uuid &uuid, size_t objnum)
 {
 	std::ostringstream o;
 
-	o << x::tostring(uuid) << '.' << objnum;
+	o << x::to_string(uuid) << '.' << objnum;
 
 	objrepoObj::tmp_remove(o.str());
 }
@@ -352,7 +352,7 @@ void tobjrepoObj::cancel(const x::uuid &uuidArg)
 		if (iter != lock->end())
 		{
 			LOG_ERROR("Failed transaction: "
-				  << x::tostring(uuidArg)
+				  << x::to_string(uuidArg)
 				  << ": removed");
 
 			lock->erase(iter);
@@ -361,7 +361,7 @@ void tobjrepoObj::cancel(const x::uuid &uuidArg)
 	}
 
 
-	std::string uuidstr=x::tostring(uuidArg);
+	std::string uuidstr=x::to_string(uuidArg);
 
 	std::string tname=uuidstr + "." T_SUFFIX;
 	std::string xname=uuidstr + "." X_SUFFIX;
@@ -381,7 +381,7 @@ void tobjrepoObj::cancel_uuid_locked(const tran &tranArg)
 {
 	tranmeta &meta= *tranArg;
 
-	std::string uuid(x::tostring(tranArg->uuid));
+	std::string uuid(x::to_string(tranArg->uuid));
 
 	for (size_t n=meta.objects.size(); n > 0; )
 	{
@@ -447,7 +447,7 @@ void tobjrepoObj::commit_nolock(const x::uuid &uuidArg)
 	} catch (...) {
 
 		LOG_FATAL("Repository corruption detected: "
-			  << x::tostring(uuidArg));
+			  << x::to_string(uuidArg));
 		throw;
 	}
 	commit_uuid_locked(uuidArg, *t, x::ptr<x::obj>());
@@ -458,7 +458,7 @@ x::fd tobjrepoObj::open_tran_uuid_locked(const x::uuid &uuidArg)
 {
 	std::ostringstream tname;
 
-	tname << x::tostring(uuidArg) << "." T_SUFFIX;
+	tname << x::to_string(uuidArg) << "." T_SUFFIX;
 
 	return tmp_open(tname.str(), O_RDONLY);
 }
@@ -483,7 +483,7 @@ void tobjrepoObj::commit_uuid_locked(const x::uuid &uuidArg,
 				     const x::ptr<x::obj> &lock)
 
 {
-	std::string uuid_str(x::tostring(uuidArg));
+	std::string uuid_str(x::to_string(uuidArg));
 
 	try {
 		tmp_link(uuid_str + "." T_SUFFIX,
@@ -559,7 +559,7 @@ void tobjrepoObj::mark_done_uuid_locked(const x::uuid &uuidArg,
 
 {
 	std::string done_object_name=source_done_hier(source) + "/" +
-		x::tostring(uuidArg);
+		x::to_string(uuidArg);
 
 	bool failed;
 
@@ -573,7 +573,7 @@ void tobjrepoObj::mark_done_uuid_locked(const x::uuid &uuidArg,
 
 	if (failed)
 	{
-		LOG_ERROR("Failed transaction: " << x::tostring(uuidArg)
+		LOG_ERROR("Failed transaction: " << x::to_string(uuidArg)
 			  << ": does not need to be marked as done");
 
 		// Note -- transactions never fail on the distributing node,
@@ -582,7 +582,7 @@ void tobjrepoObj::mark_done_uuid_locked(const x::uuid &uuidArg,
 		return;
 	}
 
-	std::string tmp_name=x::tostring(uuidArg) + ".commit";
+	std::string tmp_name=x::to_string(uuidArg) + ".commit";
 
 	x::fd fd(tmp_open(tmp_name, O_CREAT|O_RDWR));
 
@@ -598,7 +598,7 @@ x::fdptr tobjrepoObj::open_tran_stat(const std::string &source,
 
 {
 	std::string n=source_done_hier(source) + "/" +
-		x::tostring(uuidArg);
+		x::to_string(uuidArg);
 
 	std::set<std::string> objects;
 	values_t values;
@@ -641,7 +641,7 @@ void tobjrepoObj::cancel_done(const std::string &source,
 			      const x::uuid &uuid)
 {
 	objrepoObj::obj_remove(source_done_hier(source) + "/" +
-			       x::tostring(uuid), x::ptr<x::obj>());
+			       x::to_string(uuid), x::ptr<x::obj>());
 }
 
 void tobjrepoObj::cancel_done(const std::string &source)
@@ -671,5 +671,5 @@ void tobjrepoObj::failedlist_insert(const x::uuid &uuidArg,
 
 	lock->insert(std::make_pair(uuidArg, statusArg));
 
-	LOG_ERROR("Failed transaction: " << x::tostring(uuidArg));
+	LOG_ERROR("Failed transaction: " << x::to_string(uuidArg));
 }
