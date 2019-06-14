@@ -244,7 +244,7 @@ void api_put_objects(void *handleptr, std::string &error,
 			if (c == 'd')
 			{
 				// Delete object, uuid:
-				tran->delobj(name, *b++);
+				tran->delobj(name, x::uuid{*b++});
 				continue;
 			}
 
@@ -269,7 +269,8 @@ void api_put_objects(void *handleptr, std::string &error,
 					goto bad;
 
 				if (c == 'u')
-					tran->updobj(name, uuidstr, *b);
+					tran->updobj(name, x::uuid{uuidstr},
+						     *b);
 				else
 				{
 					tran->newobj(name, *b);
@@ -289,7 +290,7 @@ void api_put_objects(void *handleptr, std::string &error,
 				auto fd=x::fd::base::dup(n);
 
 				if (c == 'u')
-					tran->updobj(name, uuidstr, fd);
+					tran->updobj(name, x::uuid{uuidstr}, fd);
 				else
 				{
 					tran->newobj(name, fd);

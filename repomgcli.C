@@ -41,8 +41,8 @@ public:
 		return x::join(list, L", ");
 	}
 
-	repomgcliopts_base(const x::messagesptr &msgcat)
-		: l(msgcat->getLocale()),
+	repomgcliopts_base(const x::messages &msgcat)
+		: l(msgcat->get_locale()),
 		  keystrengths(
 			       ({
 				       std::vector<std::string> list;
@@ -175,10 +175,10 @@ static x::property::list mkconfig()
 
 static int clustmg(int argc, char **argv)
 {
-	x::locale locale(x::locale::create(""));
-	x::messages msgcat(x::messages::create(locale, "stasher"));
-	repomgcliopts opts(msgcat);
-	std::list<std::string> args(opts.parse(argc, argv, locale)->args);
+	auto locale=x::locale::base::environment();
+	auto msgcat=x::messages::create("stasher", locale);
+	repomgcliopts opts{msgcat};
+	auto args=opts.parse(argc, argv, locale)->args;
 
 #define DAYS(v)	((v).years * 365 +			\
 		 (v).years / 4 +			\

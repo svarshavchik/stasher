@@ -91,9 +91,12 @@ tobjrepoObj::tobjrepoObj(const std::string &directoryArg)
 			     e=unfinished_business.end(); b != e; ++b)
 		{
 			try {
-				auto tranRef=tran::create(b->first.substr
-							  (0, b->first.find('.')
-							   ));
+				auto tranRef=tran::create(x::uuid
+							  {b->first.substr
+								   (0,
+								    b->first
+								    .find('.')
+								    )});
 
 				parse(*tranRef, tmp_open(b->first, O_RDONLY));
 
@@ -401,7 +404,7 @@ void tobjrepoObj::cancel_uuid_locked(const tran &tranArg)
 		node(meta.opts.find(node_opt));
 
 	if (node != meta.opts.end())
-		cancel_done(node->second, uuid);
+		cancel_done(node->second, tranArg->uuid);
 
 	objrepoObj::tmp_remove(uuid + "." X_SUFFIX);
 
@@ -529,7 +532,7 @@ void tobjrepoObj::commit_uuid_locked(const std::string &uuidArg,
 	if (node == meta.opts.end())
 		return;
 
-	mark_done_uuid_locked(uuidArg, node->second,
+	mark_done_uuid_locked(x::uuid{uuidArg}, node->second,
 			      STASHER_NAMESPACE::req_processed_stat, lock);
 }
 
