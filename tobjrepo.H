@@ -65,10 +65,16 @@ class trandistributorObj;
 //! cancelled. Then, any temporary files other than the remaining .t and #
 //! files get purged.
 //!
+//! \par Corrupted transaction file recovery [FAILCORRUPTED]
+//!
+//! When a tobjrepoObj gets instantiated, if a .c or .x file cannot be
+//! recommitted or canceled, or the .t file does not contain a parsable
+//! transaction, it gets removed
+//!
 //! \par Cancelling transactions [CANCEL]
 //!
 //! cancel() takes a transaction identifier, and removes the transaction.
-//! First, the .t file gets renamed to .x, then all the corresponding 
+//! First, the .t file gets renamed to .x, then all the corresponding
 //! temporary files with contents of new/updated objects are removed, followed
 //! by the .x file itself.
 //!

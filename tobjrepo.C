@@ -17,6 +17,8 @@
 #include <iterator>
 #include <algorithm>
 #include <sstream>
+#include <unordered_set>
+#include <unordered_map>
 
 #define T_SUFFIX "t" /* Completed transaction */
 #define C_SUFFIX "c" /* Committing transaction */
@@ -67,7 +69,8 @@ tobjrepoObj::tobjrepoObj(const std::string &directoryArg)
 	LOG_INFO("Checking open transactions");
 
 	{
-		std::map<std::string, bool> unfinished_business;
+		std::unordered_map<std::string, bool> unfinished_business;
+		std::unordered_set<std::string> removeset;
 
 		for (std::pair<tmp_iter_t, tmp_iter_t> iter(tmp_iter());
 		     iter.first != iter.second; ++iter.first)
@@ -84,10 +87,31 @@ tobjrepoObj::tobjrepoObj(const std::string &directoryArg)
 				unfinished_business[n]=false;
 			else if (suffix == X_SUFFIX)
 				unfinished_business[n]=true;
+			else if (suffix == T_SUFFIX)
+			{
+				bool remove=true;
+				tranmeta meta;
+
+				try {
+					parse(meta, tmp_open(n, O_RDONLY));
+					remove=false;
+				} catch(const x::exception &e)
+				{
+
+				}
+				if (remove)
+					removeset.insert(n);
+			}
 		}
 
-		for (std::map<std::string, bool>::const_iterator
-			     b=unfinished_business.begin(),
+		for (auto &n:removeset)
+		{
+			LOG_ERROR("Removing " << n);
+
+			objrepoObj::tmp_remove(n);
+		}
+
+		for (auto b=unfinished_business.begin(),
 			     e=unfinished_business.end(); b != e; ++b)
 		{
 			try {
@@ -123,7 +147,7 @@ tobjrepoObj::tobjrepoObj(const std::string &directoryArg)
 	}
 
 	{
-		std::set<std::string> removeset;
+		std::unordered_set<std::string> removeset;
 
 		for (std::pair<tmp_iter_t, tmp_iter_t> iter(tmp_iter());
 		     iter.first != iter.second; ++iter.first)
@@ -154,12 +178,11 @@ tobjrepoObj::tobjrepoObj(const std::string &directoryArg)
 			removeset.insert(n);
 		}
 
-		for (std::set<std::string>::iterator b(removeset.begin()),
-			     e(removeset.end()); b != e; ++b)
+		for (auto &n:removeset)
 		{
-			LOG_ERROR("Removing " << *b);
+			LOG_ERROR("Removing " << n);
 
-			objrepoObj::tmp_remove(*b);
+			objrepoObj::tmp_remove(n);
 		}
 	}
 }

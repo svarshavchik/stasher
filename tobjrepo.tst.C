@@ -662,6 +662,49 @@ void test8()
 
 }
 
+struct test9_cb : tobjrepoObj::finalized_cb {
+
+	int counter=0;
+
+	void operator()(const x::uuid &, const dist_received_status_t &)
+		override
+	{
+		++counter;
+	}
+};
+
+void test9()
+{
+	x::dir::base::rmrf("conftestdir.tst");
+
+	{
+		auto repo=objrepo::create("conftestdir.tst");
+
+		static const char * const suffixes[]=
+			{T_SUFFIX, C_SUFFIX, X_SUFFIX};
+
+		for (const auto suffix:suffixes)
+		{
+			x::uuid u;
+			x::uuid::charbuf buf;
+
+			u.asString(buf);
+
+			repo->tmp_open(std::string(buf) + "." + suffix,
+				       O_RDWR|O_CREAT, 0666);
+		}
+	}
+
+	auto repo=tobjrepo::create("conftestdir.tst");
+
+	test9_cb cb;
+
+	repo->enumerate(cb);
+
+	if (cb.counter)
+		throw EXCEPTION("test9 failed"); // [FAILCORRUPTED]
+}
+
 int main(int argc, char **argv)
 {
 #include "opts.parse.inc.tst.C"
@@ -677,6 +720,7 @@ int main(int argc, char **argv)
 		test6();
 		test7();
 		test8();
+		test9();
 		x::dir::base::rmrf("conftestdir.tst");
 	} catch (const x::exception &e)
 	{
