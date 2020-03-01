@@ -672,7 +672,7 @@ check-testprograms:
 
 docs: html/index.html html/book.css html/logo.png html/.htaccess html/frame.js html/icon.gif $(patsubst %,html/%,$(notdir $(wildcard $(srcdir)/docbook/*.png)))
 	chcon -R -t httpd_sys_content_t html 2>/dev/null || true
-	rsync -a -X html/* ~/www/www.courier-mta.org/stasher
+	rsync -a -X --delete-after html/. ~/www/hostrocket/libcxx.org/stasher
 
 html/%.png: html/index.html docbook/%.png
 	$(INSTALL) -m 0644 $(srcdir)/docbook/$(notdir $@) html
