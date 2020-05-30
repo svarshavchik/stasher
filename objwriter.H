@@ -105,8 +105,8 @@ public:
 
 	//! Serialization function
 
-	template<typename obj_type> void serialize(obj_type &obj)
-
+	template<typename obj_type>
+	void serialize(obj_type &obj)
 	{
 		ser_iter(obj);
 	}

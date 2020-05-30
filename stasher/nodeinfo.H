@@ -114,10 +114,10 @@ public:
 
 	//! Serialization function
 
-	template<typename iter_type> void serialize(iter_type &iter)
-
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(options);
+		iter(ptr->options);
 	}
 
 	//! Dump a report

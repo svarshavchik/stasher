@@ -38,19 +38,19 @@ public:
 
 	//! Serialization function
 
-	template<typename iter_type> void serialize(iter_type &iter)
-
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(status);
-		iter(sourcenode);
+		iter(ptr->status);
+		iter(ptr->sourcenode);
 	}
 };
 
 //! Transaction received status: received without any issues
-static const short dist_received_status_ok=0;
+static constexpr short dist_received_status_ok=0;
 
 //! Transaction received status: could not receive the transaction
-static const short dist_received_status_err=1;
+static constexpr short dist_received_status_err=1;
 
 //! A set of transactions that were received or cancelled by a node.
 

@@ -36,12 +36,12 @@ public:
 
 	//! Serialization function
 
-	template<typename iter_type>
-	void serialize(iter_type &iter)
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		quorumstate::serialize(iter);
-		iter(master);
-		iter(nodes);
+		quorumstate::serialize(ptr, iter);
+		iter(ptr->master);
+		iter(ptr->nodes);
 	}
 
 	//! Helper operator

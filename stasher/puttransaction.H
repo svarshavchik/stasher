@@ -41,7 +41,7 @@ public:
 
 		//! Constructor -- contents in a string
 		objcontentsObj(const std::string &contentsArg);
-		
+
 		//! Destructor
 		~objcontentsObj();
 	};
@@ -129,15 +129,15 @@ public:
 
 		//! Iterate over everything except the contents
 		//!
-		template<typename iter_type>
-		void serialize(iter_type &iter)
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			name.serialize(iter);
-			iter(contents_size);
-			iter(newflag);
-			iter(delflag);
-			if (!newflag)
-				iter(uuid);
+			ptr->name.serialize(&ptr->name, iter);
+			iter(ptr->contents_size);
+			iter(ptr->newflag);
+			iter(ptr->delflag);
+			if (!ptr->newflag)
+				iter(ptr->uuid);
 		}
 	private:
 
@@ -167,11 +167,11 @@ public:
 	size_t maxobjects;
 	//! Serialization function
 
-	template<typename iter_type>
-	void serialize(iter_type &iter)
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(objects, maxobjects);
-		iter(admin);
+		iter(ptr->objects, ptr->maxobjects);
+		iter(ptr->admin);
 	}
 
 	//! The content of the object is given in a string
@@ -206,10 +206,10 @@ public:
 
 		//! Serialization function
 
-		template<typename iter_type>
-		void serialize(iter_type &iter)
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(str, chunksize);
+			iter(ptr->str, ptr->chunksize);
 		}
 	};
 

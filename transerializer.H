@@ -125,10 +125,10 @@ public:
 	template<bool direction> friend class impl;
 
 	//! Serialization function
-	template<typename iter_type> void serialize(iter_type &iter)
-
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		impl<iter_type::serializing>::serialize(*this, iter);
+		impl<iter_type::serializing>::serialize(*ptr, iter);
 	}
 };
 
@@ -141,7 +141,7 @@ public:
 	//! Serialize a transaction
 
 	template<typename iter_type>
-	static void serialize(transerializer &me,
+	static void serialize(const transerializer &me,
 			      iter_type &iter)
 
 	{

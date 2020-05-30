@@ -95,24 +95,24 @@ public:
 		}
 
 		//! Serialization function
-		template<typename iter_type> void serialize(iter_type &i)
-
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &i)
 		{
 			uint8_t change_ut;
 
-			if (i.serializing)
-				change_ut=(uint8_t)change;
+			if constexpr (i.serializing)
+				change_ut=(uint8_t)ptr->change;
 
 			i(change_ut);
 
-			if (!i.serializing)
-				change=(change_t)change_ut;
+			if constexpr (!i.serializing)
+				ptr->change=(change_t)change_ut;
 
-			i(name);
-			i(size);
+			i(ptr->name);
+			i(ptr->size);
 
-			if (has_existing_serial())
-				i(serial);
+			if (ptr->has_existing_serial())
+				i(ptr->serial);
 		}
 
 		//! Comparison operator
@@ -195,11 +195,11 @@ public:
 	}
 
 	//! Serialization function
-	template<typename iter_type> void serialize(iter_type &i)
-
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &i)
 	{
-		i(opts);
-		i(objects);
+		i(ptr->opts);
+		i(ptr->objects);
 	}
 
 	//! Comparison operator

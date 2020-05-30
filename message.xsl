@@ -128,9 +128,9 @@ See COPYING for distribution information.
 
 	  <!-- Emit serialization function that iterates over each field -->
 
-	  <xsl:text>&#10;//! Serialization function&#10;    template &lt;typename iter_type&gt;&#10;    void serialize(iter_type &amp;iter)&#10;    {&#10;</xsl:text>
+	  <xsl:text>&#10;//! Serialization function&#10;    template &lt;typename ptr_type, typename iter_type&gt;&#10;    static void serialize(ptr_type ptr, iter_type &amp;iter)&#10;    {&#10;</xsl:text>
 	  <xsl:for-each select="results/field">
-	    <xsl:text>        iter(</xsl:text>
+	    <xsl:text>        iter(ptr-&gt;</xsl:text>
 	    <xsl:value-of select="decl/name" />
 	    <xsl:text>);&#10;</xsl:text>
 	  </xsl:for-each>
@@ -241,11 +241,11 @@ See COPYING for distribution information.
 	  <xsl:value-of select="@name" />
 	  <xsl:text><![CDATA[reply() noexcept;
     //! Serialization function
-    template<typename iter_type>
-    void serialize(iter_type &iter)
+    template<typename ptr_type, typename iter_type>
+    static void serialize(ptr_type ptr, iter_type &iter)
     {
-        iter(requuid);
-        msg->serialize(iter);
+        iter(ptr->requuid);
+        ptr->msg->serialize(&*ptr->msg, iter);
     }
 };
 ]]></xsl:text>
@@ -304,10 +304,10 @@ See COPYING for distribution information.
 	  <xsl:value-of select="@name" />
 	  <xsl:text>req();&#10;&#10;    //! Destructor&#10;    ~</xsl:text>
 	  <xsl:value-of select="@name" />
-	  <xsl:text>req() noexcept;&#10;&#10;   //! Serialization function&#10;    template&lt;typename iter_type&gt;&#10;    void serialize(iter_type &amp;iter)&#10;    {&#10;        iter(requuid);&#10;</xsl:text>
+	  <xsl:text>req() noexcept;&#10;&#10;   //! Serialization function&#10;    template&lt;typename ptr_type, typename iter_type&gt;&#10;    static void serialize(ptr_type ptr, iter_type &amp;iter)&#10;    {&#10;        iter(ptr-&gt;requuid);&#10;</xsl:text>
 
 	  <xsl:for-each select="request/field">
-	    <xsl:text>        iter(</xsl:text>
+	    <xsl:text>        iter(ptr-&gt;</xsl:text>
 	    <xsl:value-of select="decl/name" />
 	    <xsl:text>);&#10;</xsl:text>
 	  </xsl:for-each>

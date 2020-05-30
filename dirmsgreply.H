@@ -61,20 +61,25 @@ public:
 
 	~dirmsgreply();
 
-	template<bool> class serialize_impl;
-
 	//! Serialization function
 
-	template<typename iter_type>
-	void serialize(iter_type &iter)
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		serialize_impl<iter_type::serializing>::serialize(iter, *this);
+		if constexpr (iter.serializing)
+		{
+			ptr->impl_serialize(iter);
+		}
+		else
+		{
+			ptr->impl_deserialize(iter);
+		}
 	}
 
 	//! Serializing
 
 	template<typename iter_type>
-	void impl_serialize(iter_type &iter)
+	void impl_serialize(iter_type &iter) const
 	{
 		bool more;
 
@@ -115,38 +120,6 @@ public:
 		} while (more);
 
 		iter(msg->status);
-	}
-};
-
-//! Stub hook for the serialization path
-template<>
-class dirmsgreply::serialize_impl<true> {
-
-public:
-
-	//! Invoke serialize_impl() when serialize() gets called with a serialization iterator
-
-	template<typename iter_type>
-	static void serialize(iter_type &iter,
-			      dirmsgreply &msg)
-	{
-		msg.impl_serialize(iter);
-	}
-};
-
-//! Stub hook for the deserialization path
-template<>
-class dirmsgreply::serialize_impl<false> {
-
-public:
-
-	//! Invoke deserialize_impl() when serialize() gets called with a deserialization iterator
-
-	template<typename iter_type>
-	static void serialize(iter_type &iter,
-			      dirmsgreply &msg)
-	{
-		msg.impl_deserialize(iter);
 	}
 };
 

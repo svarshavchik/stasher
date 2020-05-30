@@ -93,10 +93,11 @@ public:
 
 	//! Serialize the metadata.
 
-	template<typename iter_type> void serialize(iter_type &iter)
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(timestamp);
-		iter(meta);
+		iter(ptr->timestamp);
+		iter(ptr->meta);
 	}
 
 	//! Convert the metadata to a string, then write it to an output stream.
@@ -174,9 +175,10 @@ public:
 
 	//! Serialize the metadata.
 
-	template<typename iter_type> void serialize(iter_type &iter)
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(timestamp);
+		iter(ptr->timestamp);
 	}
 
 	//! There is no metadata, so nothing gets reported by this specialization
@@ -193,6 +195,8 @@ public:
 template<typename I, typename T> class heartbeat_map_t
 	: public std::map<I, heartbeat_meta_t<T> > {
 public:
+
+	typedef std::map<I, heartbeat_meta_t<T> > superclass_t;
 
 	//! Update the metadata of a particular node.
 
@@ -223,12 +227,20 @@ public:
 					    std::forward<Args>(args)...);
 	}
 
+	//! Helper used by serialize()
+
+	inline superclass_t &get_map() { return *this; }
+
+	//! Helper used by serialize()
+
+	inline const superclass_t &get_map() const { return *this; }
+
 	//! Serialize the entire heartbeat object.
 
-	template<typename iter_type> void serialize(iter_type &iter)
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(static_cast<std::map<I, heartbeat_meta_t<T> > &>
-		     (*this));
+		iter(ptr->get_map());
 	}
 };
 

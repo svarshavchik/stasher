@@ -67,7 +67,7 @@ public:
 		: repo(repoArg), peername(peernameArg)
 	{
 	}
-	
+
 	//! Constructor for serializing an object in a repository
 
 	objserializer(//! Transaction repository with the object to serialize
@@ -83,13 +83,14 @@ public:
 	}
 
 	//! Serialization function
-	template<typename iter_type> void serialize(iter_type &iter)
-
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		serialize_impl<iter_type::serializing>::serialize(repo,
-								  peername,
-								  objname,
-								  iter);
+		serialize_impl<iter_type::serializing>
+			::serialize(ptr->repo,
+				    ptr->peername,
+				    ptr->objname,
+				    iter);
 	}
 
 	//! Return the object's name (for debugging/logging purposes)

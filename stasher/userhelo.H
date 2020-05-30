@@ -42,12 +42,12 @@ public:
 
 	//! Serialization function
 
-	template<typename iter_type>
-	void serialize(iter_type &iter)
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(nodename);
-		iter(clustername);
-		limits.serialize(iter);
+		iter(ptr->nodename);
+		iter(ptr->clustername);
+		ptr->limits.serialize(&ptr->limits, iter);
 	}
 };
 

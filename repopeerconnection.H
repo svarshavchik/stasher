@@ -371,21 +371,21 @@ class repopeerconnectionObj: public peerstatusannouncerObj,
 		~commitreq()=default;
 
 		//! Serialization function
-		template<typename iter_type> void serialize(iter_type &iter)
-
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(uuid);
-			iter(source);
+			iter(ptr->uuid);
+			iter(ptr->source);
 
 			unsigned char n;
 
-			if (iter_type::serializing)
-				n=(unsigned char)status;
+			if constexpr (iter_type::serializing)
+				n=(unsigned char)ptr->status;
 
 			iter(n);
 
-			if (!iter_type::serializing)
-				status=(STASHER_NAMESPACE::req_stat_t)n;
+			if constexpr (!iter_type::serializing)
+				ptr->status=(STASHER_NAMESPACE::req_stat_t)n;
 		}
 	};
 
@@ -427,12 +427,13 @@ class repopeerconnectionObj: public peerstatusannouncerObj,
 
 		//! Serialization function
 
-		template<typename iter_type> void serialize(iter_type &iter)
-
+		template<typename ptr_type,
+			 typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(resigningnode);
-			iter(resigninguuid);
-			iter(batonuuid);
+			iter(ptr->resigningnode);
+			iter(ptr->resigninguuid);
+			iter(ptr->batonuuid);
 		}
 	};
 
@@ -463,11 +464,11 @@ class repopeerconnectionObj: public peerstatusannouncerObj,
 
 		//! Serialization function
 
-		template<typename iter_type> void serialize(iter_type &iter)
-
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(newmastername);
-			iter(uuid);
+			iter(ptr->newmastername);
+			iter(ptr->uuid);
 		}
 	};
 
@@ -545,10 +546,10 @@ private:
 		~commitack()=default;
 
 		//! Serialization function
-		template<typename iter_type> void serialize(iter_type &iter)
-
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(uuid);
+			iter(ptr->uuid);
 		}
 	};
 
@@ -574,10 +575,10 @@ private:
 		~pingm()=default;
 
 		//! Serialization function
-		template<typename iter_type> void serialize(iter_type &iter)
-
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(uuid);
+			iter(ptr->uuid);
 		}
 	};
 
@@ -597,10 +598,10 @@ private:
 		~pongm()=default;
 
 		//! Serialization function
-		template<typename iter_type> void serialize(iter_type &iter)
-
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(uuid);
+			iter(ptr->uuid);
 		}
 	};
 
@@ -642,12 +643,12 @@ private:
 
 		//! Serialization function
 
-		template<typename iter_type>
-		void serialize(iter_type &iter)
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(mastername);
-			iter(masteruuid);
-			iter(state);
+			iter(ptr->mastername);
+			iter(ptr->masteruuid);
+			iter(ptr->state);
 		}
 	};
 
@@ -677,10 +678,11 @@ private:
 
 		//! Serialization function
 
-		template<typename iter_type> void serialize(iter_type &iter)
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(uuid);
-			iter(certificate);
+			iter(ptr->uuid);
+			iter(ptr->certificate);
 		}
 	};
 
@@ -714,11 +716,12 @@ private:
 
 		//! Serialization function
 
-		template<typename iter_type> void serialize(iter_type &iter)
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(uuid);
-			iter(success);
-			iter(result);
+			iter(ptr->uuid);
+			iter(ptr->success);
+			iter(ptr->result);
 		}
 	};
 
@@ -751,11 +754,11 @@ private:
 
 		//! Serialization function
 
-		template<typename iter_type>
-		void serialize(iter_type &iter)
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(mastername);
-			iter(masteruuid);
+			iter(ptr->mastername);
+			iter(ptr->masteruuid);
 		}
 	};
 
@@ -781,12 +784,13 @@ private:
 
 		~baton_master_announce_msg()=default;
 
-		template<typename iter_type> void serialize(iter_type &iter)
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(mastername);
-			iter(masteruuid);
-			iter(batonuuid);
-			iter(newmasterpeer);
+			iter(ptr->mastername);
+			iter(ptr->masteruuid);
+			iter(ptr->batonuuid);
+			iter(ptr->newmasterpeer);
 		}
 	};
 
@@ -805,10 +809,11 @@ private:
 		baton_master_release_msg() = default;
 		~baton_master_release_msg() = default;
 
-		template<typename iter_type> void serialize(iter_type &iter)
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(mastername);
-			iter(masteruuid);
+			iter(ptr->mastername);
+			iter(ptr->masteruuid);
 		}
 	};
 
@@ -957,8 +962,8 @@ protected:
 
 		//! Serialization function
 
-		template<typename iter_type>
-		void serialize(iter_type &iter)
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
 		}
 	};
@@ -1194,8 +1199,8 @@ public:
 		baton_slave_received_msg() {}
 		~baton_slave_received_msg() {}
 		//! Serialization function
-		template<typename iter_type> void serialize(iter_type &iter)
-
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
 		}
 	};

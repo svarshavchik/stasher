@@ -57,10 +57,10 @@ public:
 		}
 
 		//! Serialization function
-		template<typename iter_type>
-		void serialize(iter_type &iter)
+		template<typename ptr_type, typename iter_type>
+		static void serialize(ptr_type ptr, iter_type &iter)
 		{
-			iter(requuid);
+			iter(ptr->requuid);
 		}
 	};
 
@@ -95,14 +95,14 @@ public:
 	~usergetuuidsreply();
 
 	//! Serialization function
-	template<typename iter_type>
-	void serialize(iter_type &iter)
+	template<typename iter_type, typename ptr_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(requuid);
-		iter(succeeded);
-		iter(errmsg);
+		iter(ptr->requuid);
+		iter(ptr->succeeded);
+		iter(ptr->errmsg);
 		iter(static_cast<std::vector<std::pair<std::string, retrobj> >
-		     &>(*uuids));
+		     &>(*ptr->uuids));
 	}
 };
 

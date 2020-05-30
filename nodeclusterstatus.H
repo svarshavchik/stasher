@@ -157,14 +157,14 @@ public:
 
 	//! Serialization function
 
-	template<typename iter_type> void serialize(iter_type &iter)
-
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(master);
-		iter(uuid);
-		iter(slavecount);
-		iter(timestamp);
-		iter(reluctant);
+		iter(ptr->master);
+		iter(ptr->uuid);
+		iter(ptr->slavecount);
+		iter(ptr->timestamp);
+		iter(ptr->reluctant);
 	}
 
 	//! Convert to a string representation

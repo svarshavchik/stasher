@@ -34,7 +34,7 @@ class userinit;
 //! When constructed for deserialization purposes, an empty puttransactionObj
 //! gets constructed, then the metadata gets deserialized. After deserialization
 //! proceed as follows:
-//! 
+//!
 //! Construct a deserializedObj object, passing it the transaction object
 //! that was deserialized.
 //!
@@ -90,11 +90,11 @@ public:
 	//! This is just a wrapper for the transaction object's serialization
 	//! function.
 
-	template<typename iter_type>
-	void serialize(iter_type &iter)
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(uuid);
-		tran->serialize(iter);
+		iter(ptr->uuid);
+		ptr->tran->serialize(&*ptr->tran, iter);
 	}
 
 	//! Write this transaction into a file descriptor

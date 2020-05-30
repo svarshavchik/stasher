@@ -57,14 +57,14 @@ public:
 	~userinit();
 
 	//! Serialization function
-	template<typename iter_type>
-	void serialize(iter_type &iter)
+	template<typename ptr_type, typename iter_type>
+	static void serialize(ptr_type ptr, iter_type &iter)
 	{
-		iter(maxgets);
-		iter(maxobjects);
-		iter(maxobjectsize);
-		iter(chunksize);
-		iter(maxsubs);
+		iter(ptr->maxgets);
+		iter(ptr->maxobjects);
+		iter(ptr->maxobjectsize);
+		iter(ptr->chunksize);
+		iter(ptr->maxsubs);
 	}
 };
 

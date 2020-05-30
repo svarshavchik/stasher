@@ -703,6 +703,7 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.
 	links --dump html.tmp/INSTALL.html >INSTALL.tmp
 	mv -f INSTALL.tmp INSTALL
 	ln -s ../stasher-distreboot html.tmp/distreboot
+	mv html/ref html.tmp/ref
 	rm -rf html
 	mv html.tmp html
 
