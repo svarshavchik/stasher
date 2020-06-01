@@ -187,9 +187,9 @@ static int clustmg(int argc, char **argv)
 		 (v).weeks * 7 +			\
 		 (v).days)
 
-	if (opts.clustkey->isSet())
+	if (opts.clustkey->is_set())
 	{
-		if (opts.clustkey_generate->isSet())
+		if (opts.clustkey_generate->is_set())
 		{
 			time_t days=DAYS(opts.clustkey_expire->value);
 
@@ -240,7 +240,7 @@ static int clustmg(int argc, char **argv)
 		std::string dirname=args.front();
 		args.pop_front();
 
-		if (opts.clustkey_remove->isSet())
+		if (opts.clustkey_remove->is_set())
 		{
 			if (args.empty())
 			{
@@ -252,12 +252,12 @@ static int clustmg(int argc, char **argv)
 			repomg::clustkey_remove(dirname, args.front());
 			return 0;
 		}
-		else if (opts.clustkey_list->isSet())
+		else if (opts.clustkey_list->is_set())
 		{
 			repomg::cluster_key_list(dirname, display_keys());
 			return 0;
 		}
-		else if (opts.clustkey_export->isSet())
+		else if (opts.clustkey_export->is_set())
 		{
 			if (args.empty())
 			{
@@ -270,7 +270,7 @@ static int clustmg(int argc, char **argv)
 		}
 	}
 
-	if (opts.nodekey->isSet())
+	if (opts.nodekey->is_set())
 	{
 		if (args.empty())
 		{
@@ -282,7 +282,7 @@ static int clustmg(int argc, char **argv)
 		std::string nodekeydir=args.front();
 		args.pop_front();
 
-		if (opts.nodekey_generate->isSet())
+		if (opts.nodekey_generate->is_set())
 		{
 			std::string clustkeydir;
 
@@ -356,10 +356,7 @@ static int clustmg(int argc, char **argv)
 							     "/properties",
 							     0644);
 
-				std::map<std::string,
-					 std::string> propmap;
-
-				mkconfig()->enumerate(propmap);
+				auto propmap=mkconfig()->enumerate();
 
 				x::ostream w=propfile->getostream();
 

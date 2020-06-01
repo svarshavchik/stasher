@@ -28,7 +28,7 @@ public:
 
 		directory=args.front();
 
-		daemon=options.daemon->isSet();
+		daemon=options.daemon->is_set();
 	}
 };
 

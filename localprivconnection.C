@@ -125,7 +125,7 @@ void localprivconnectionObj::deserialized(const getprops_req_t &msg)
 	getprops_resp_msg_t resp(msg.requuid);
 	getprops_resp_msg_t::resp_t &msgres=resp.getmsg();
 
-	x::property::enumerate_properties(msgres.properties);
+	msgres.properties=x::property::enumerate_properties();
 	resp.write(writer);
 }
 
@@ -252,9 +252,7 @@ void localprivconnectionObj::dopropsetreset(propsetresetaction &action,
 					    const std::string &name)
 
 {
-	std::map<std::string, std::string> props;
-
-	x::property::enumerate_properties(props);
+	auto props=x::property::enumerate_properties();
 
 	// Check that the property actually exists
 	if (props.find(name) == props.end())
@@ -273,7 +271,7 @@ void localprivconnectionObj::dopropsetreset(propsetresetaction &action,
 	tmplist->load_file(filename, true, true,
 			   x::property::errhandler::errthrow(), glob);
 
-	tmplist->enumerate(props);
+	props=tmplist->enumerate();
 
 	action(props);
 

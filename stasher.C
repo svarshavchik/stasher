@@ -2231,9 +2231,9 @@ int main(int argc, char **argv)
 
 		if (opts.alarm->value)
 			alarm(opts.alarm->value);
-		if (opts.connect->isSet())
+		if (opts.connect->is_set())
 			parser.connect(opts.connect->value);
-		if (opts.admin->isSet())
+		if (opts.admin->is_set())
 			parser.admin(opts.admin->value);
 
 		if (!args.empty())
