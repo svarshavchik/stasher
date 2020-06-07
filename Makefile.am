@@ -2,7 +2,7 @@ MANPAGESIN=stashermg.1.in stasher.1.in
 man1_MANS=stashermg.1 stasher.1
 sysconf_DATA=stasherlogconfig
 
-EXTRA_DIST=config.rpath repomgcli.xml opts.parse.inc.tst.C message.xsl $(myXML) $(MANPAGESIN) maillogs.sh.in stasherlogconfig \
+EXTRA_DIST= m4/ChangeLog config.rpath repomgcli.xml opts.parse.inc.tst.C message.xsl $(myXML) $(MANPAGESIN) maillogs.sh.in stasherlogconfig \
 	packaging/freebsd9/databases/stasher/Makefile \
 	packaging/freebsd9/databases/stasher/pkg-deinstall \
 	packaging/freebsd9/databases/stasher/pkg-descr \
