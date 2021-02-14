@@ -190,7 +190,7 @@ void clusterlistenerObj::dispatch_checkcert()
 				    x::locale::create())
 			(expiration_time)("%F");
 
-		if ( expiration_time < ({
+		if ( x::ymdhms{expiration_time} < ({
 					x::ymdhms t=now;
 
 					static_cast<x::ymd &>(t)
