@@ -351,7 +351,7 @@ void clusterconnecterObj::connect(connect_common &common,
 		// object to read/write directly from the socket. This
 		// disconnects the timeout wrapper.
 		if (useencryption && !sess.null())
-			sess->setTransport(socket);
+			sess->set_transport(socket);
 		else
 		{
 			// Otherwise, terminate the TLS session.
@@ -540,7 +540,7 @@ void clusterconnecterObj::connect(connect_common &common,
 		  << "sent my status");
 
 	if (useencryption)
-		sess->setTransport(socket);
+		sess->set_transport(socket);
 	else
 	{
 		int dummy;

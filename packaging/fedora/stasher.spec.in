@@ -14,6 +14,7 @@ Requires(postun): /sbin/ldconfig systemd-units
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: libcxxbase-devel
 BuildRequires: perl-devel
+BuildRequires: courier-unicode-devel
 
 %description
 A server process that replicates "objects" (or, rather, files) between

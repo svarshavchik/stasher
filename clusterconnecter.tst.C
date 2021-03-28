@@ -56,7 +56,7 @@ public:
 		}
 		else
 		{
-			session->setTransport(timeout);
+			session->set_transport(timeout);
 			iter=inputiter;
 			out_iter=x::fd::base::outputiter(session,
 						   session->get_max_size());
