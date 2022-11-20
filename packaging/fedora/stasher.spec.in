@@ -1,7 +1,7 @@
 Summary: stasher object repository server
 Name: stasher
 Version: @VERSION@
-Release: 1%{?extrarelease}
+Release: 1%{?dist}%{?extrarelease}
 License: GPL
 Group: Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -9,11 +9,9 @@ Requires(post): /sbin/ldconfig systemd-units
 Requires(preun): systemd-units
 Requires(postun): /sbin/ldconfig systemd-units
 
-%define _hardened_build 1
-
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: libcxxbase-devel
-BuildRequires: perl-devel
+BuildRequires: perl-devel perl-macros
 BuildRequires: courier-unicode-devel
 
 %description
@@ -40,10 +38,10 @@ Stasher object repository from Perl.
 
 %prep
 %setup -q
-%configure
-%{__make} perl-configure PERL_CONFIGURE_FLAGS=INSTALLDIRS=vendor
 
 %build
+%configure
+%{__make} perl-configure PERL_CONFIGURE_FLAGS=INSTALLDIRS=vendor
 %{__make} %{_smp_mflags}
 %{__make} perl-build
 
@@ -68,6 +66,7 @@ touch $RPM_BUILD_ROOT%{_localstatedir}/stasher/stasher.logs
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly
 ln -s %{_datadir}/stasher/maillogs.sh $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/stasher-maillogs
 
+rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 %post
 /sbin/ldconfig
 /bin/systemctl daemon-reload || :
@@ -107,7 +106,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_libdir}/*.so
 %{_libdir}/*.a
-%{_libdir}/*.la
 %{_includedir}/stasher
 
 %files perl

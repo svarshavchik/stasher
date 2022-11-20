@@ -204,7 +204,10 @@ repomg::key_generate(const std::string &dirname,
 	}
 
 	if (std::find_if(name.begin(), name.end(),
-			 std::bind2nd(std::less_equal<unsigned char>(), ' '))
+			 [](unsigned char c)
+			 {
+				 return c < ' ';
+			 })
 	    != name.end())
 	{
 		throw EXCEPTION("The cluster/node name contains an invalid character");

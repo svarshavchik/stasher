@@ -242,8 +242,7 @@ public:
 
 	//! An iterator over objects in the repository
 
-	class obj_iter_t : public std::iterator<std::input_iterator_tag,
-						std::string> {
+	class obj_iter_t {
 
 		//! The repository
 		objrepoptr repo;
@@ -268,6 +267,12 @@ public:
 			   const x::dirwalk::base::iterator &eArg);
 
 	public:
+		typedef std::input_iterator_tag iterator_category;
+		typedef std::string value_type;
+		typedef void difference_type;
+		typedef void pointer;
+		typedef void iterator;
+
 		friend class objrepoObj;
 
 		//! Ending iterator constructor
@@ -310,8 +315,7 @@ public:
 
 	//! The iterated over name ends with a trailing / for a subdirectory
 
-	class dir_iter_t : public std::iterator<std::input_iterator_tag,
-						std::string> {
+	class dir_iter_t {
 
 		//! The repository
 		objrepoptr repo;
@@ -336,6 +340,12 @@ public:
 			   const x::dir::base::iterator &eArg);
 
 	public:
+		typedef std::input_iterator_tag iterator_category;
+		typedef std::string value_type;
+		typedef void difference_type;
+		typedef void pointer;
+		typedef void iterator;
+
 		friend class objrepoObj;
 
 		//! Ending iterator constructor

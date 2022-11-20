@@ -244,8 +244,7 @@ class cli {
 	static std::string quote(const std::string &s)
 	{
 		if (s.size() &&
-		    std::find_if(s.begin(), s.end(), std::ptr_fun(needquote))
-		    == s.end())
+		    std::find_if(s.begin(), s.end(), needquote) == s.end())
 			return s;
 
 		std::ostringstream o;

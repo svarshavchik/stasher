@@ -57,21 +57,25 @@ out_iter encode_object_name(in_iter beg_iter, in_iter end_iter,
 				*p_iter++='.';
 				*p_iter++='f';
 				return p_iter;
-			} 
+			}
 		}
 	}
 }
 
 //! An iterator that counts the encoded length;
 
-class object_name_length_iter :
-	public std::iterator<std::output_iterator_tag,
-			     void, void, void, void> {
+class object_name_length_iter {
 
 	//! Counter
 	size_t n;
 
 public:
+	typedef std::output_iterator_tag iterator_category;
+	typedef void value_type;
+	typedef void difference_type;
+	typedef void pointer;
+	typedef void iterator;
+
 	//! Constructor
 	object_name_length_iter() noexcept : n(0) {}
 

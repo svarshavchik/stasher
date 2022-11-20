@@ -61,7 +61,8 @@ See COPYING for distribution information.
 	  //! Formatted server status
 	</comment>
 	<decl>std::string <name>report</name></decl>
-	<default>std::string(clientObj::lost_connection_errmsg) + "\n"</default>
+	<!-- TODO: spurious gcc warning -->
+	<default>std::string(clientObj::lost_connection_errmsg) + std::string{"\n"}</default>
       </field>
     </results>
   </message>
