@@ -13,6 +13,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: libcxxbase-devel
 BuildRequires: perl-devel perl-macros
 BuildRequires: courier-unicode-devel
+BuildRequires: systemd-rpm-macros
 
 %description
 A server process that replicates "objects" (or, rather, files) between
@@ -64,7 +65,7 @@ cd ../..
 touch $RPM_BUILD_ROOT%{_localstatedir}/stasher/stasher.logs
 
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly
-ln -s %{_datadir}/stasher/maillogs.sh $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/stasher-maillogs
+%{__ln_s}  `realpath --relative-to %{_sysconfdir}/cron.hourly -m %{_datadir}/stasher/maillogs.sh` $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/stasher-maillogs
 
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 %post

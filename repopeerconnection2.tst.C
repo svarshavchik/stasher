@@ -342,6 +342,8 @@ public:
 
 	test345_shutdown(const conn &cArg) : c(cArg) {}
 
+	using clustertlsconnectshutdownObj::run;
+
 	void run()
 	{
 		int dummy;
