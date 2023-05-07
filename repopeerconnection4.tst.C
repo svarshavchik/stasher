@@ -15,6 +15,7 @@
 #include "clusterinfofwd.H"
 #include "clusterlistener.H"
 #include "batonfwd.H"
+#include <filesystem>
 
 #define clusterinfo_H
 
@@ -375,7 +376,7 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf("repo.tst");
+		std::filesystem::remove_all("repo.tst");
 		ALARM(120);
 
 		std::cout << "test1" << std::endl;
@@ -392,7 +393,7 @@ int main(int argc, char **argv)
 
 		std::cout << "test5" << std::endl;
 		test5();
-		x::dir::base::rmrf("repo.tst");
+		std::filesystem::remove_all("repo.tst");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

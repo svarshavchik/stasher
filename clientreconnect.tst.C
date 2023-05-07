@@ -7,6 +7,7 @@
 #include "tst.nodes.H"
 #include "stasher/client.H"
 #include <x/options.H>
+#include <filesystem>
 
 class sendstop : virtual public x::obj {
 
@@ -120,11 +121,11 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 		std::cout << "test1" << std::endl;
 		tstnodes nodes(1);
 		test1(nodes);
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

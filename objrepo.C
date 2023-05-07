@@ -11,6 +11,8 @@
 #include <x/sysexception.H>
 #include <cstring>
 #include <cstdio>
+#include <algorithm>
+#include <iterator>
 
 #define TMP "tmp"
 #define DATA "data"
@@ -38,22 +40,16 @@ objrepoObj::objrepoObj(const std::string &directoryArg)
 
 	LOG_INFO("Validating repository");
 
-	auto data_dir=x::dirwalk::create(data_name, true);
+	std::vector<std::string> directories;
 
-	for (auto data_iter: *data_dir)
+	for (auto &data_dir :
+		     std::filesystem::recursive_directory_iterator{data_name})
 	{
-		std::string p=data_iter.fullpath();
+		std::string p=data_dir.path();
 
-		if (data_iter.filetype() == DT_DIR)
+		if (data_dir.is_directory())
 		{
-			if (p != data_name)
-			{
-				if (rmdir(p.c_str()) == 0)
-				{
-					LOG_INFO("Removed empty directory: "
-						 << p);
-				}
-			}
+			directories.push_back(std::move(p));
 			continue;
 		}
 
@@ -79,17 +75,34 @@ objrepoObj::objrepoObj(const std::string &directoryArg)
 		unlink(p.c_str());
 	}
 
-	auto tmp_dir=x::dir::create(directory + "/" TMP);
+	std::sort(directories.begin(), directories.end(),
+		  [](const auto &a, const auto &b)
+		  {
+			  return b < a;
+		  });
 
-	for (auto tmp_iter: *tmp_dir)
+	for (auto &p:directories)
+	{
+		if (p != data_name)
+		{
+			if (rmdir(p.c_str()) == 0)
+			{
+				LOG_INFO("Removed empty directory: "
+					 << p);
+			}
+		}
+	}
+
+	for (auto &tmp_iter : std::filesystem::directory_iterator{
+			directory + "/" TMP})
 	{
 		try {
-			valid_tmp_name(tmp_iter);
+			valid_tmp_name(tmp_iter.path().filename());
 			continue;
 		} catch (...) {
 		}
 
-		std::string n(tmp_iter.fullpath());
+		auto n=tmp_iter.path();
 
 		LOG_ERROR(n << ": invalid filename, removed");
 		unlink(n.c_str());
@@ -162,12 +175,12 @@ void objrepoObj::tmp_remove(const std::string &tmpfilename)
 	unlink(valid_tmp_name(tmpfilename).c_str());
 }
 
-std::pair<objrepoObj::tmp_iter_t,
+std::tuple<objrepoObj::tmp_iter_t,
 	  objrepoObj::tmp_iter_t> objrepoObj::tmp_iter()
 {
-	x::dir d=x::dir::create(directory + "/" TMP);
+	std::filesystem::directory_iterator d{directory + "/" TMP};
 
-	return std::make_pair(d->begin(), d->end());
+	return { begin(d), end(d) };
 }
 
 size_t objrepoObj::obj_name_len(const std::string &s)
@@ -479,9 +492,14 @@ std::string objrepoObj::topdir(const std::string &hier)
 objrepoObj::obj_iter_t objrepoObj::obj_begin(const std::string &hier)
 
 {
-	x::dirwalk dw=x::dirwalk::create(topdir(hier));
+	std::error_code ec;
 
-	return obj_iter_t(objrepo(this), dw->begin(), dw->end());
+	auto dw=std::filesystem::recursive_directory_iterator{
+		topdir(hier),
+		{},
+		ec};
+
+	return obj_iter_t(objrepo(this), begin(dw), end(dw));
 }
 
 objrepoObj::obj_iter_t objrepoObj::obj_end()
@@ -492,9 +510,11 @@ objrepoObj::obj_iter_t objrepoObj::obj_end()
 objrepoObj::dir_iter_t objrepoObj::dir_begin(const std::string &hier)
 
 {
-	x::dir dw=x::dir::create(topdir(hier));
+	std::error_code ec;
 
-	return dir_iter_t(objrepo(this), dw->begin(), dw->end());
+	auto dw=std::filesystem::directory_iterator{topdir(hier), {}, ec};
+
+	return dir_iter_t(objrepo(this), begin(dw), end(dw));
 }
 
 objrepoObj::dir_iter_t objrepoObj::dir_end()
@@ -542,10 +562,11 @@ std::string objrepoObj::fullpath_to_objname(const std::string &s) noexcept
 	return n;
 }
 
-objrepoObj::obj_iter_t::obj_iter_t(const objrepo &repoArg,
-				   const x::dirwalk::base::iterator &bArg,
-				   const x::dirwalk::base::iterator &eArg)
-	: repo(repoArg), b(bArg), e(eArg)
+objrepoObj::obj_iter_t::obj_iter_t(
+	const objrepo &repo,
+	const std::filesystem::recursive_directory_iterator &b,
+	const std::filesystem::recursive_directory_iterator &e)
+	: repo{repo}, b{b}, e{e}
 {
 	n_init();
 }
@@ -558,17 +579,16 @@ void objrepoObj::obj_iter_t::n_init()
 {
 	while (b != e)
 	{
-		if (b->filetype() != DT_DIR)
+		if (!b->is_directory())
 		{
-			n=repo->fullpath_to_objname(b->fullpath());
+			n=repo->fullpath_to_objname(b->path());
 			return;
 		}
 
 		++b;
 	}
 
-	b=x::dirwalk::base::iterator();
-	e=x::dirwalk::base::iterator();
+	b=e={};
 	repo=objrepoptr();
 }
 
@@ -583,10 +603,11 @@ objrepoObj::obj_iter_t &objrepoObj::obj_iter_t::operator++()
 	return *this;
 }
 
-objrepoObj::dir_iter_t::dir_iter_t(const objrepo &repoArg,
-				   const x::dir::base::iterator &bArg,
-				   const x::dir::base::iterator &eArg)
-	: repo(repoArg), b(bArg), e(eArg)
+objrepoObj::dir_iter_t::dir_iter_t(
+	const objrepo &repo,
+	const std::filesystem::directory_iterator &b,
+	const std::filesystem::directory_iterator &e)
+	: repo{repo}, b{b}, e{e}
 {
 	n_init();
 }
@@ -599,18 +620,16 @@ void objrepoObj::dir_iter_t::n_init()
 {
 	if (b != e)
 	{
-		std::string s=b->fullpath();
+		std::string s=b->path();
 
-		n.reserve(s.size()+1);
-		n=repo->fullpath_to_objname(b->fullpath());
+		n=repo->fullpath_to_objname(s);
 
 		if (s.size() > 2 && s.substr(s.size()-2) != ".f")
 			n += "/";
 		return;
 	}
 
-	b=x::dir::base::iterator();
-	e=x::dir::base::iterator();
+	b=e={};
 	repo=objrepoptr();
 }
 

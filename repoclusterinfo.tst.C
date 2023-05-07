@@ -11,6 +11,7 @@
 #include "tobjrepo.H"
 #include <x/options.H>
 #include <x/stoppable.H>
+#include <filesystem>
 
 class mycontroller : public repocontrollerbaseObj,
 		     public x::threadmsgdispatcherObj {
@@ -410,16 +411,16 @@ int main(int argc, char **argv)
 
 	try {
 		std::cout << "test1" << std::endl;
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 		test1();
 		std::cout << "test2" << std::endl;
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 		test2();
 		std::cout << "test3" << std::endl;
 		test3();
 		std::cout << "test4" << std::endl;
 		test4();
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

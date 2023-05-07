@@ -14,11 +14,12 @@
 
 #include <iostream>
 #include <iterator>
+#include <filesystem>
 
 static void test1()
 {
-	x::dir::base::rmrf("conftest.dir");
-	x::dir::base::rmrf("conftest2.dir");
+	std::filesystem::remove_all("conftest.dir");
+	std::filesystem::remove_all("conftest2.dir");
 
 	tobjrepo repo1(tobjrepo::create("conftest.dir"));
 
@@ -152,8 +153,8 @@ int main(int argc, char **argv)
 	ALARM(30);
 	try {
 		test1();
-		x::dir::base::rmrf("conftest.dir");
-		x::dir::base::rmrf("conftest2.dir");
+		std::filesystem::remove_all("conftest.dir");
+		std::filesystem::remove_all("conftest2.dir");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

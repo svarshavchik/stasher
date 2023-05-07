@@ -5,7 +5,6 @@
 
 #include <string>
 #include <unistd.h>
-#include <x/dir.H>
 #include <x/options.H>
 
 #include "objrepo_config.h"
@@ -26,6 +25,7 @@ static bool donotcommit=false;
 #include "newtran.C"
 #include "tran.C"
 #include "trancommit.C"
+#include <filesystem>
 
 static void test1()
 {
@@ -61,11 +61,15 @@ static void test1()
 	{
 		tobjrepo repo(tobjrepo::create("conftestdir.tst"));
 
-		x::dir tmpdir=x::dir::create("conftestdir.tst/" TMP);
-
 		std::set<std::string> tfiles;
 
-		tfiles.insert(tmpdir->begin(), tmpdir->end());
+		for (auto &empty:std::filesystem::directory_iterator{
+				"conftestdir.tst/" TMP
+			})
+		{
+			tfiles.insert(empty.path().filename());
+		}
+
 		tfiles.insert(repo->obj_begin(), repo->obj_end());
 
 		if (tfiles.size() != 2 ||
@@ -77,7 +81,7 @@ static void test1()
 
 	}
 
-	x::dir::base::rmrf("conftestdir.tst");
+	std::filesystem::remove_all("conftestdir.tst");
 
 	{
 		tobjrepo repo(tobjrepo::create("conftestdir.tst"));
@@ -94,11 +98,14 @@ static void test1()
 
 		std::set<std::string> tmpfiles;
 
-		x::dir tmpdir=x::dir::create("conftestdir.tst/" TMP);
-
 		std::set<std::string> tfiles;
 
-		tfiles.insert(tmpdir->begin(), tmpdir->end());
+		for (const auto &entry:std::filesystem::directory_iterator{
+				"conftestdir.tst/" TMP
+			})
+		{
+			tfiles.insert(entry.path().filename());
+		}
 
 		if (tfiles.size() != 2 ||
 		    tfiles.find( x::to_string(tuuid) + "." X_SUFFIX) ==
@@ -113,11 +120,14 @@ static void test1()
 
 		std::set<std::string> tmpfiles;
 
-		x::dir tmpdir=x::dir::create("conftestdir.tst/" TMP);
-
 		std::set<std::string> tfiles;
 
-		tfiles.insert(tmpdir->begin(), tmpdir->end());
+		for (const auto &entry:std::filesystem::directory_iterator{
+				"conftestdir.tst/" TMP
+			})
+		{
+			tfiles.insert(entry.path());
+		}
 
 		if (!tfiles.empty())
 			throw EXCEPTION("Transaction temp file sanity check #3 failed"); // [FILES]
@@ -126,7 +136,7 @@ static void test1()
 
 static void test2()
 {
-	x::dir::base::rmrf("conftestdir.tst");
+	std::filesystem::remove_all("conftestdir.tst");
 
 	x::uuid firstuuid, seconduuid;
 
@@ -268,9 +278,12 @@ static void test2()
 	{
 		std::set<std::string> s;
 
-		x::dir tmpdir=x::dir::create("conftestdir.tst/" TMP);
-
-		s.insert(tmpdir->begin(), tmpdir->end());
+		for (const auto &entry:std::filesystem::directory_iterator{
+				"conftestdir.tst/" TMP
+			})
+		{
+			s.insert(entry.path().filename());
+		}
 
 		if (!s.empty())
 			throw EXCEPTION("Transaction commit had something left over in tmp");
@@ -279,7 +292,7 @@ static void test2()
 
 static void test3()
 {
-	x::dir::base::rmrf("conftestdir.tst");
+	std::filesystem::remove_all("conftestdir.tst");
 
 	tobjrepo repo(tobjrepo::create("conftestdir.tst"));
 
@@ -328,7 +341,7 @@ static void test4() // [GLOBALLOCK]
 	pfd.fd=fd->get_fd();
 	pfd.events=POLLIN;
 
-	x::dir::base::rmrf("conftestdir.tst");
+	std::filesystem::remove_all("conftestdir.tst");
 
 	tobjrepo repo(tobjrepo::create("conftestdir.tst"));
 
@@ -408,7 +421,7 @@ static void test5()
 	pfd.fd=fd->get_fd();
 	pfd.events=POLLIN;
 
-	x::dir::base::rmrf("conftestdir.tst");
+	std::filesystem::remove_all("conftestdir.tst");
 
 	tobjrepo repo(tobjrepo::create("conftestdir.tst"));
 
@@ -494,7 +507,7 @@ static void test5()
 
 static void test6()
 {
-	x::dir::base::rmrf("conftestdir.tst");
+	std::filesystem::remove_all("conftestdir.tst");
 
 	tobjrepo repo(tobjrepo::create("conftestdir.tst"));
 
@@ -555,7 +568,7 @@ static void test6()
 
 static void test7()
 {
-	x::dir::base::rmrf("conftestdir.tst");
+	std::filesystem::remove_all("conftestdir.tst");
 
 	tobjrepo repo(tobjrepo::create("conftestdir.tst"));
 
@@ -608,7 +621,7 @@ public:
 
 void test8()
 {
-	x::dir::base::rmrf("conftestdir.tst");
+	std::filesystem::remove_all("conftestdir.tst");
 
 	tobjrepo repo(tobjrepo::create("conftestdir.tst"));
 
@@ -675,7 +688,7 @@ struct test9_cb : tobjrepoObj::finalized_cb {
 
 void test9()
 {
-	x::dir::base::rmrf("conftestdir.tst");
+	std::filesystem::remove_all("conftestdir.tst");
 
 	{
 		auto repo=objrepo::create("conftestdir.tst");
@@ -711,7 +724,7 @@ int main(int argc, char **argv)
 
 	ALARM(30);
 	try {
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 		test1();
 		test2();
 		test3();
@@ -721,7 +734,7 @@ int main(int argc, char **argv)
 		test7();
 		test8();
 		test9();
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

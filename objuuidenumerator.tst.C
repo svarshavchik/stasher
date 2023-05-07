@@ -17,6 +17,7 @@
 #include "writtenobjbase.C"
 #include "objwriter.C"
 #include <sstream>
+#include <filesystem>
 
 #include <x/deserialize.H>
 #include <x/options.H>
@@ -95,7 +96,7 @@ static x::uuid createobjects(const tobjrepo &repo, size_t n,
 
 static void test1(size_t n)
 {
-	x::dir::base::rmrf("conftest.dir");
+	std::filesystem::remove_all("conftest.dir");
 
 	tobjrepo repo(tobjrepo::create("conftest.dir"));
 
@@ -153,7 +154,7 @@ int main(int argc, char **argv)
 		test1(objuuidlistObj::default_chunksize.get());
 		test1(objuuidlistObj::default_chunksize.get()+1);
 		test1(0);
-		x::dir::base::rmrf("conftest.dir");
+		std::filesystem::remove_all("conftest.dir");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

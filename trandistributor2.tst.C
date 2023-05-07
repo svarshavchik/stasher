@@ -17,6 +17,7 @@
 #include "writtenobj.H"
 
 #include "clusternotifierfwd.H"
+#include <filesystem>
 
 #define repopeerconnection_H
 
@@ -402,15 +403,14 @@ static void test2()
 	}
 
 	{
-		std::pair<objrepoObj::tmp_iter_t,
-			  objrepoObj::tmp_iter_t> tmps=
-			objrepo(x::ptr<x::obj>(repo))->tmp_iter();
-
 		std::list<std::string> n;
 
-		std::copy(tmps.first, tmps.second,
-			  std::back_insert_iterator<std::list<std::string> >
-			  (n));
+		for (auto [first, second] =
+			     objrepo{x::ptr<x::obj>(repo)}->tmp_iter();
+		     first != second; ++first)
+		{
+			n.push_back(first->path());
+		}
 
 		if (!n.empty())
 			throw EXCEPTION("test2 failed");
@@ -447,7 +447,7 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf(repo1);
+		std::filesystem::remove_all(repo1);
 
 		ALARM(60);
 
@@ -455,10 +455,10 @@ int main(int argc, char **argv)
 		test1();
 
 		std::cout << "test2" << std::endl;
-		x::dir::base::rmrf(repo1);
+		std::filesystem::remove_all(repo1);
 		test2();
 
-		x::dir::base::rmrf(repo1);
+		std::filesystem::remove_all(repo1);
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

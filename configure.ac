@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.66])
-AC_INIT(stasher, 0.11.0.20210503, [mrsam@courier-mta.com])
+AC_PREREQ([2.71])
+AC_INIT([stasher],[0.11.0.20210503],[mrsam@courier-mta.com])
 AM_INIT_AUTOMAKE(dist-bzip2 foreign)
 AC_CONFIG_SRCDIR([objrepo.H])
 AC_CONFIG_HEADERS([objrepo_config.h])
@@ -18,7 +18,7 @@ AM_CONDITIONAL(extratests, test "$extratests" = "yes")
 
 # Checks for programs.
 AC_PROG_CXX
-AC_PROG_LIBTOOL
+LT_INIT
 AC_PATH_PROGS(PERL,perl5 perl,/usr/bin/perl)
 
 # Checks for libraries.

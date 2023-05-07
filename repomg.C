@@ -11,7 +11,6 @@
 #include <x/exception.H>
 #include <x/pwd.H>
 #include <x/grp.H>
-#include <x/dir.H>
 #include <x/gnutls/init.H>
 #include <x/strftime.H>
 #include <x/basicstringstreamobj.H>
@@ -23,6 +22,7 @@
 #include <fstream>
 #include <algorithm>
 #include <sstream>
+#include <filesystem>
 
 // Compare two certificate filenames, based on their timestamp
 
@@ -70,11 +70,9 @@ std::string repomg::sort::lastkey(const std::string &dirname)
 
 	std::string filename;
 
-	auto dirref=x::dir::create(dirname);
-
-	for (auto keyname: *dirref)
+	for (auto &keyname : std::filesystem::directory_iterator{dirname})
 	{
-		std::string k_filename= keyname;
+		std::string k_filename= keyname.path().filename();
 
 		std::string::iterator kb=k_filename.begin(),
 			ke=k_filename.end(),
@@ -368,13 +366,11 @@ void repomg::clustkey_generate(const std::string &dirname,
 
 class repomg::keylist {
 
-	x::dir keydir;
-	x::dir::base::iterator b, e;
+	std::filesystem::directory_iterator b, e;
 
 public:
 	keylist(const std::string &dirname)
-		: keydir(x::dir::create(dirname)),
-		  b(keydir->begin()), e(keydir->end())
+		: b{dirname}
 	{
 	}
 
@@ -386,7 +382,8 @@ public:
 	{
 		while (b != e)
 		{
-			std::string n= *b++;
+			std::string n=b->path().filename();
+			++b;
 
 			std::string::iterator sb=n.begin(),
 				se=n.end(),

@@ -5,13 +5,12 @@
 
 #include "objrepo_config.h"
 #include "repomg.H"
-#include <x/dir.H>
 #include <x/fd.H>
 #include <x/threads/run.H>
 #include <x/gnutls/session.H>
 #include <x/gnutls/credentials.H>
 #include <list>
-
+#include <filesystem>
 #define BITSIZE "medium"
 #define ALGO	"sha256"
 #define CERTTYPE "rsa"
@@ -205,10 +204,10 @@ int main(int argc, char **argv)
 	static const char nodedir2[]="conftestnode2.dir";
 
 	try {
-		x::dir::base::rmrf(clusterdir1);
-		x::dir::base::rmrf(nodedir1);
-		x::dir::base::rmrf(clusterdir2);
-		x::dir::base::rmrf(nodedir2);
+		std::filesystem::remove_all(clusterdir1);
+		std::filesystem::remove_all(nodedir1);
+		std::filesystem::remove_all(clusterdir2);
+		std::filesystem::remove_all(nodedir2);
 
 		std::cout << "test1, Part I" << std::endl;
 
@@ -234,10 +233,10 @@ int main(int argc, char **argv)
 		if (!thrown)
 			throw EXCEPTION("Certificate was not rejected");
 
-		x::dir::base::rmrf(clusterdir1);
-		x::dir::base::rmrf(nodedir1);
-		x::dir::base::rmrf(clusterdir2);
-		x::dir::base::rmrf(nodedir2);
+		std::filesystem::remove_all(clusterdir1);
+		std::filesystem::remove_all(nodedir1);
+		std::filesystem::remove_all(clusterdir2);
+		std::filesystem::remove_all(nodedir2);
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

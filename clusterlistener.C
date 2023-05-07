@@ -9,7 +9,6 @@
 #include "dirs.H"
 
 #include <x/netaddr.H>
-#include <x/dir.H>
 #include <x/strftime.H>
 #include <x/locale.H>
 #include <x/epoll.H>
@@ -19,6 +18,7 @@
 #include <sys/time.h>
 
 #include <iomanip>
+#include <filesystem>
 
 LOG_CLASS_INIT(clusterlistenerObj);
 
@@ -44,7 +44,7 @@ x::fd clusterlistenerObj::init_sock(const std::string &directory,
 				    const std::string &dstname)
 
 {
-	x::dir::base::rmrf(directory);
+	std::filesystem::remove_all(directory);
 
 	if (mkdir(directory.c_str(), mode) < 0)
 		throw SYSEXCEPTION(directory);

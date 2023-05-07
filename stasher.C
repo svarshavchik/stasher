@@ -16,7 +16,6 @@
 #include <x/deserialize.H>
 #include <x/serialize.H>
 #include <x/fmtsize.H>
-#include <x/dir.H>
 #include <x/sysexception.H>
 #include <courier-unicode.h>
 

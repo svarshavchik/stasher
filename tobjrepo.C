@@ -72,10 +72,10 @@ tobjrepoObj::tobjrepoObj(const std::string &directoryArg)
 		std::unordered_map<std::string, bool> unfinished_business;
 		std::unordered_set<std::string> removeset;
 
-		for (std::pair<tmp_iter_t, tmp_iter_t> iter(tmp_iter());
-		     iter.first != iter.second; ++iter.first)
+		for (auto [first, second]=tmp_iter();
+		     first != second; ++first)
 		{
-			std::string n(*iter.first);
+			std::string n=first->path().filename();
 			size_t p=n.find('.');
 
 			if (p == std::string::npos)
@@ -149,10 +149,10 @@ tobjrepoObj::tobjrepoObj(const std::string &directoryArg)
 	{
 		std::unordered_set<std::string> removeset;
 
-		for (std::pair<tmp_iter_t, tmp_iter_t> iter(tmp_iter());
-		     iter.first != iter.second; ++iter.first)
+		for (auto [first, second] = tmp_iter(); first != second;
+		     ++first)
 		{
-			std::string n(*iter.first);
+			std::string n=first->path().filename();
 			size_t p=n.find('.');
 
 			if (p != std::string::npos)
@@ -297,10 +297,10 @@ void tobjrepoObj::enumerate(finalized_cb &cbArg)
 	{
 		std::unique_lock<std::shared_mutex> w{tmp_writelock};
 
-		for (std::pair<tmp_iter_t, tmp_iter_t> iter(tmp_iter());
-		     iter.first != iter.second; ++iter.first)
+		for (auto [first, second] = tmp_iter();
+		     first != second; ++first)
 		{
-			std::string n=*iter.first;
+			std::string n=first->path().filename();
 
 			size_t p=n.find('.');
 

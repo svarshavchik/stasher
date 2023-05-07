@@ -10,6 +10,7 @@
 #include "stasher/process_request.H"
 #include "clusterlistenerimpl.H"
 #include <fstream>
+#include <filesystem>
 
 static void test1(tstnodes &t, const char *argv0)
 {
@@ -94,11 +95,11 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf("appsdir.tmp");
+		std::filesystem::remove_all("appsdir.tmp");
 		tstnodes nodes(2);
 
 		test1(nodes, argv[0]);
-		x::dir::base::rmrf("appsdir.tmp");
+		std::filesystem::remove_all("appsdir.tmp");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

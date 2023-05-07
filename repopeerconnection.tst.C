@@ -14,6 +14,7 @@
 #include <x/serialize.H>
 #include <x/options.H>
 #include <x/destroy_callback.H>
+#include <filesystem>
 
 class testconnection : public repopeerconnectionObj {
 
@@ -568,7 +569,7 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf("repo.tst");
+		std::filesystem::remove_all("repo.tst");
 		ALARM(30);
 
 		std::cout << "test1" << std::endl;
@@ -579,7 +580,7 @@ int main(int argc, char **argv)
 
 		std::cout << "test3" << std::endl;
 		test3();
-		x::dir::base::rmrf("repo.tst");
+		std::filesystem::remove_all("repo.tst");
 
 	} catch (const x::exception &e)
 	{

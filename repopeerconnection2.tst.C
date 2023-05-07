@@ -17,6 +17,7 @@
 #include "newtran.H"
 #include "trancommit.H"
 #include <x/options.H>
+#include <filesystem>
 
 class mytlsshutdown : public clustertlsconnectshutdownObj {
 
@@ -425,9 +426,9 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(nodeadir);
-		x::dir::base::rmrf(nodebdir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(nodeadir);
+		std::filesystem::remove_all(nodebdir);
 
 		{
 			time_t now(time(NULL));
@@ -463,9 +464,9 @@ int main(int argc, char **argv)
 		test4();
 		std::cout << "test5" << std::endl;
 		test5();
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(nodeadir);
-		x::dir::base::rmrf(nodebdir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(nodeadir);
+		std::filesystem::remove_all(nodebdir);
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

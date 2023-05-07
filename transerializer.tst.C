@@ -11,6 +11,7 @@
 #include <x/options.H>
 #include <x/serialize.H>
 #include <x/deserialize.H>
+#include <filesystem>
 
 static const char repo1[]="conftest1.dir";
 static const char repo2[]="conftest2.dir";
@@ -111,16 +112,16 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf(repo1);
-		x::dir::base::rmrf(repo2);
+		std::filesystem::remove_all(repo1);
+		std::filesystem::remove_all(repo2);
 
 		ALARM(60);
 
 		std::cout << "test1" << std::endl;
 		test1();
 
-		x::dir::base::rmrf(repo1);
-		x::dir::base::rmrf(repo2);
+		std::filesystem::remove_all(repo1);
+		std::filesystem::remove_all(repo2);
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

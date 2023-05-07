@@ -54,14 +54,14 @@ void tstnodes::clustkey_generate(time_t now)
 
 tstnodes::tstnodes(size_t nArg) : n(nArg), useencryption(false)
 {
-	x::dir::base::rmrf(clusterdir);
+	std::filesystem::remove_all(clusterdir);
 	time_t now(time(NULL));
 
 	clustkey_generate(now);
 
 	for (size_t i=0; i<n; ++i)
 	{
-		x::dir::base::rmrf(getnodedir(i));
+		std::filesystem::remove_all(getnodedir(i));
 
 		update_node_key(now, i);
 	}
@@ -87,10 +87,10 @@ void tstnodes::update_node_key(time_t now, size_t i)
 
 tstnodes::~tstnodes()
 {
-	x::dir::base::rmrf(clusterdir);
+	std::filesystem::remove_all(clusterdir);
 
 	for (size_t i=0; i<n; ++i)
-		x::dir::base::rmrf(getnodedir(i));
+		std::filesystem::remove_all(getnodedir(i));
 }
 
 tstnodes::nodeObj::nodeObj(const std::string &dir)

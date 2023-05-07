@@ -18,7 +18,6 @@ static void (*rmdired_debug_hook)(std::string);
 
 #include "objrepo.C"
 
-#include <x/dir.H>
 #include <x/options.H>
 #include <cstdlib>
 #include <iostream>
@@ -29,7 +28,7 @@ static void (*rmdired_debug_hook)(std::string);
 
 static void test_instance()
 {
-	x::dir::base::rmrf("conftest.dir");
+	std::filesystem::remove_all("conftest.dir");
 
 	objrepoptr repo1(objrepo::create("conftest.dir")); // [CREATE]
 
@@ -99,12 +98,10 @@ static void test_tmp()
 
 	std::set<std::string> tmpnames;
 
-	std::pair<objrepoObj::tmp_iter_t, objrepoObj::tmp_iter_t>
-		tmp(repo1->tmp_iter());
-
-	std::copy(tmp.first, tmp.second,
-		  std::insert_iterator<std::set<std::string> >
-		  (tmpnames, tmpnames.end()));
+	for (auto [first, second] = repo1->tmp_iter(); first != second; ++first)
+	{
+		tmpnames.insert(first->path().filename());
+	}
 
 	if (tmpnames.size() != 2 ||
 	    tmpnames.find("foo") == tmpnames.end() ||
@@ -277,7 +274,7 @@ static void test_obj3()
 
 static void test_obj4()
 {
-	x::dir::base::rmrf("conftest.dir");
+	std::filesystem::remove_all("conftest.dir");
 
 	{
 		objrepo repo1(objrepo::create("conftest.dir"));
@@ -337,7 +334,7 @@ public:
 
 static void test_obj5()
 {
-	x::dir::base::rmrf("conftest.dir");
+	std::filesystem::remove_all("conftest.dir");
 
 	objrepo repo1(objrepo::create("conftest.dir"));
 
@@ -363,7 +360,7 @@ static void test_obj5()
 
 static void test_obj6()
 {
-	x::dir::base::rmrf("conftest.dir");
+	std::filesystem::remove_all("conftest.dir");
 
 	objrepo repo(objrepo::create("conftest.dir"));
 
@@ -431,7 +428,7 @@ int main(int argc, char **argv)
 
 		std::cout << "test: obj(6)" << std::endl;
 		test_obj6();
-		x::dir::base::rmrf("conftest.dir");
+		std::filesystem::remove_all("conftest.dir");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

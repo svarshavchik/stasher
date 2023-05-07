@@ -7,6 +7,7 @@
 
 #include <mutex>
 #include <condition_variable>
+#include <filesystem>
 
 static std::mutex test3_mutex;
 static std::condition_variable test3_cond;
@@ -35,7 +36,6 @@ static bool test3_flag;
 #include "objsource.H"
 #include "spacemonitor.H"
 #include <x/options.H>
-#include <x/dir.H>
 #include <x/serialize.H>
 #include <x/deserialize.H>
 #include <x/destroy_callback.H>
@@ -1007,11 +1007,11 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf("repo.tst");
+		std::filesystem::remove_all("repo.tst");
 		ALARM(30);
 
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(cluster2dir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(cluster2dir);
 
 		std::cout << "test1" << std::endl;
 		test1();
@@ -1019,15 +1019,15 @@ int main(int argc, char **argv)
 		std::cout << "test2" << std::endl;
 		test2();
 
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(cluster2dir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(cluster2dir);
 
 		std::cout << "test3" << std::endl;
 		test3();
 
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(cluster2dir);
-		x::dir::base::rmrf("repo.tst");
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(cluster2dir);
+		std::filesystem::remove_all("repo.tst");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

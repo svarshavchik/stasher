@@ -5,12 +5,12 @@
 
 #include "objrepo_config.h"
 #include "nsmap.H"
-#include <x/dir.H>
 #include <x/fd.H>
 #include <x/locale.H>
 #include <x/strtok.H>
 #include <x/fileattr.H>
 #include <sstream>
+#include <filesystem>
 
 LOG_CLASS_INIT(nsmap);
 
@@ -75,14 +75,15 @@ nsmap::clientcred::computemappings(const std::vector<nsmap> &map,
 void nsmap::get_local_map(const std::string &dirname,
 			  local_map_t &localmap)
 {
-	auto dir=x::dir::create(dirname);
+	std::error_code ec;
 
-	for (auto &direntry:*dir)
+	for (auto &direntry:std::filesystem::directory_iterator{
+			dirname, {}, ec})
 	{
-		if (direntry.filetype() != DT_REG)
+		if (!direntry.is_regular_file())
 			continue;
 
-		std::string s=direntry;
+		std::string s=direntry.path().filename();
 
 		if (s.find('#') != std::string::npos ||
 		    s.find('~') != std::string::npos ||
@@ -90,10 +91,10 @@ void nsmap::get_local_map(const std::string &dirname,
 			continue;
 
 		try {
-			parse_local_map(direntry.fullpath(), localmap);
+			parse_local_map(direntry.path(), localmap);
 		} catch (const x::exception &e)
 		{
-			LOG_ERROR(direntry.fullpath() << ": "
+			LOG_ERROR(direntry.path() << ": "
 				  << e);
 		}
 	}

@@ -32,7 +32,6 @@ static bool server_connect_terminate_hook,
 #include <iostream>
 #include <sstream>
 #include <list>
-#include <x/dir.H>
 
 class serverclientcommon {
 

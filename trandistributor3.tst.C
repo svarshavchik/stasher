@@ -57,13 +57,11 @@ public:
 			objrepoObj *p=dynamic_cast<objrepoObj *>
 				((x::obj *)&*repo); // I hate myself
 
-			std::pair<objrepoObj::tmp_iter_t,
-				  objrepoObj::tmp_iter_t>
-				t(p->tmp_iter());
-
-			std::copy(t.first, t.second,
-				  std::insert_iterator<std::set<std::string> >
-				  (tmpnames, tmpnames.end()));
+			for (auto [first, second]=p->tmp_iter();
+			     first != second; ++first)
+			{
+				tmpnames.insert(first->path().filename());
+			}
 
 			for (std::set<std::string>::iterator b=tmpnames.begin(),
 				     e=tmpnames.end(); b != e; ++b)

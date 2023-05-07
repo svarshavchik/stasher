@@ -7,8 +7,6 @@
 #define objrepo_H
 
 #include <x/fd.H>
-#include <x/dir.H>
-#include <x/dirwalk.H>
 #include <x/logger.H>
 #include <x/fileattr.H>
 #include <x/weaklist.H>
@@ -20,6 +18,8 @@
 
 #include "stasher/namespace.H"
 #include "objrepofwd.H"
+#include <filesystem>
+#include <tuple>
 
 STASHER_NAMESPACE_START
 class userput;
@@ -61,9 +61,9 @@ STASHER_NAMESPACE_END
 //! tmp_open() opens a temporary file.
 //!
 //! Existing temporary filenames in a repository directory are iterated by
-//! invoking tmp_iter(), which returns a std::pair of tmp_iter_t objects,
+//! invoking tmp_iter(), which returns a two tmp_iter_t objects,
 //! which are iterator types. tmp_iter() returns the beginning and the
-//! ending iterator. *tmp_iter_t is convertible to a std::string. // [TMPITER]
+//! ending iterator. // [TMPITER]
 //!
 //! tmp_get() returns an x::fileattr object, that can be used to retrieve
 //! attributes of a temporary file. [TMPGET]
@@ -192,12 +192,11 @@ public:
 
 	//! Iterators over temporary files in the object repository directory
 
-	typedef x::dir::base::iterator tmp_iter_t;
+	typedef std::filesystem::directory_iterator tmp_iter_t;
 
 	//! Return a beginning and ending iterator
 
-	std::pair<tmp_iter_t, tmp_iter_t>
-	tmp_iter();
+	std::tuple<tmp_iter_t, tmp_iter_t> tmp_iter();
 
 	// ---
 
@@ -248,10 +247,10 @@ public:
 		objrepoptr repo;
 
 		//! Beginning iterator over the entire directory hierarchy
-		x::dirwalk::base::iterator b;
+		std::filesystem::recursive_directory_iterator b;
 
 		//! Ending iterator over the entire directory hierarchy
-		x::dirwalk::base::iterator e;
+		std::filesystem::recursive_directory_iterator e;
 
 		//! Name of the current object the iterator is referencing
 		std::string n;
@@ -262,9 +261,11 @@ public:
 
 		//! Constructor
 
-		obj_iter_t(const objrepo &repoArg,
-			   const x::dirwalk::base::iterator &bArg,
-			   const x::dirwalk::base::iterator &eArg);
+		obj_iter_t(
+			const objrepo &repo,
+			const std::filesystem::recursive_directory_iterator &b,
+			const std::filesystem::recursive_directory_iterator &e
+		);
 
 	public:
 		typedef std::input_iterator_tag iterator_category;
@@ -321,10 +322,10 @@ public:
 		objrepoptr repo;
 
 		//! Beginning iterator over the entire directory hierarchy
-		x::dir::base::iterator b;
+		std::filesystem::directory_iterator b;
 
 		//! Ending iterator over the entire directory hierarchy
-		x::dir::base::iterator e;
+		std::filesystem::directory_iterator e;
 
 		//! Name of the current object the iterator is referencing
 		std::string n;
@@ -335,9 +336,10 @@ public:
 
 		//! Constructor
 
-		dir_iter_t(const objrepo &repoArg,
-			   const x::dir::base::iterator &bArg,
-			   const x::dir::base::iterator &eArg);
+		dir_iter_t(const objrepo &repo,
+			   const std::filesystem::directory_iterator &b,
+			   const std::filesystem::directory_iterator &e);
+
 
 	public:
 		typedef std::input_iterator_tag iterator_category;

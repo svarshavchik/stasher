@@ -22,6 +22,7 @@
 #include <x/fditer.H>
 #include <x/deserialize.H>
 #include <fstream>
+#include <filesystem>
 
 class up_test {
 
@@ -887,7 +888,7 @@ static void test12(tstnodes &t)
 
 void test13(const char *argv0)
 {
-	x::dir::base::rmrf("conftestdir.tst");
+	std::filesystem::remove_all("conftestdir.tst");
 	mkdir("conftestdir.tst", 0777);
 	{
 		std::ofstream o("conftestdir.tst/test.tst");
@@ -920,7 +921,7 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 		std::cout << "test1" << std::endl;
 		test1();
 		std::cout << "test2" << std::endl;
@@ -942,7 +943,7 @@ int main(int argc, char **argv)
 		test9();
 		std::cout << "test9b" << std::endl;
 		test9b();
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 
 		tstnodes nodes(2);
 
@@ -953,7 +954,7 @@ int main(int argc, char **argv)
 		std::cout << "test12" << std::endl;
 		test12(nodes);
 		test13(argv[0]);
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

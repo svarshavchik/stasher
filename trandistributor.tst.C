@@ -17,6 +17,7 @@
 #include "trandistuuid.H"
 #include "trandistributor.H"
 #include <x/options.H>
+#include <filesystem>
 
 static const char repo1[]="conftest1.dir";
 
@@ -311,14 +312,14 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf(repo1);
+		std::filesystem::remove_all(repo1);
 
 		ALARM(60);
 
 		std::cout << "test1" << std::endl;
 		test1();
 
-		x::dir::base::rmrf(repo1);
+		std::filesystem::remove_all(repo1);
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

@@ -9,8 +9,8 @@
 #include "dirs.H"
 #include "repomg.H"
 
-#include <x/dir.H>
 #include <x/options.H>
+#include <filesystem>
 
 class testclusterlistenerObj : public clusterlistenerObj {
 
@@ -144,13 +144,13 @@ int main(int argc, char **argv)
 
 	ALARM(30);
 	try {
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(nodedir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(nodedir);
 
 		test1(clusterdir, nodedir);
 
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(nodedir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(nodedir);
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

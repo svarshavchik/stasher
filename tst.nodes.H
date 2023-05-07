@@ -8,7 +8,6 @@
 
 #ifndef DOXYGEN
 
-#include <x/dir.H>
 #include "repomg.H"
 #include "node.H"
 #include "repocontrollermasterfwd.H"

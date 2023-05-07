@@ -7,7 +7,6 @@
 
 #include <x/obj.H>
 #include <x/options.H>
-#include <x/dir.H>
 #include <x/serialize.H>
 #include <x/deserialize.H>
 #include <x/logger.H>
@@ -20,6 +19,7 @@
 #include "objrepocopydst.H"
 #include "objserializer.H"
 #include <iterator>
+#include <filesystem>
 
 class trandistihave;
 class trandistcancel;
@@ -695,22 +695,22 @@ int main(int argc, char **argv)
 	try {
 		ALARM(30);
 
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(cluster2dir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(cluster2dir);
 
 		std::cout << "test1" << std::endl;
 
 		test1();
 
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(cluster2dir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(cluster2dir);
 
 		std::cout << "test2" << std::endl;
 
 		test2();
 
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(cluster2dir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(cluster2dir);
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

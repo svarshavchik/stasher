@@ -39,7 +39,7 @@ static int debug_ping_cnt=0;
 #include "trandistcancel.H"
 #include "transerializer.H"
 #include <x/options.H>
-
+#include <filesystem>
 
 class quorumcbObj: public STASHER_NAMESPACE::repoclusterquorumcallbackbaseObj {
 
@@ -659,9 +659,9 @@ int main(int argc, char **argv)
 #include "opts.parse.inc.tst.C"
 
 	try {
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(nodeadir);
-		x::dir::base::rmrf(nodebdir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(nodeadir);
+		std::filesystem::remove_all(nodebdir);
 
 		{
 			time_t now(time(NULL));
@@ -698,9 +698,9 @@ int main(int argc, char **argv)
 		std::cerr << "test5" << std::endl;
 		test5();
 
-		x::dir::base::rmrf(clusterdir);
-		x::dir::base::rmrf(nodeadir);
-		x::dir::base::rmrf(nodebdir);
+		std::filesystem::remove_all(clusterdir);
+		std::filesystem::remove_all(nodeadir);
+		std::filesystem::remove_all(nodebdir);
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

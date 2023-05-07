@@ -14,6 +14,7 @@
 #include <x/threads/run.H>
 #include <x/destroy_callback.H>
 #include <x/options.H>
+#include <filesystem>
 
 static void (*wait_lock_hook)()=0;
 static void (*after_lock_hook)()=0;
@@ -691,7 +692,7 @@ int main(int argc, char **argv)
 	ALARM(30);
 
 	try {
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 
 		std::cerr << "test1" << std::endl;
 		test1();
@@ -714,7 +715,7 @@ int main(int argc, char **argv)
 
 		std::cerr << "test7" << std::endl;
 		test7();
-		x::dir::base::rmrf("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir.tst");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

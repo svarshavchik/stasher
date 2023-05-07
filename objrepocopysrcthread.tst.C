@@ -21,6 +21,7 @@ static bool threadmgr_debug_flag_caught=false;
 #include <x/serialize.H>
 #include <x/deserialize.H>
 #include <x/options.H>
+#include <filesystem>
 
 static x::uuid mkobj(const tobjrepo &repo,
 		     const std::string &objname)
@@ -617,8 +618,8 @@ int main(int argc, char **argv)
 	ALARM(30);
 
 	try {
-		x::dir::base::rmrf("conftestdir.tst");
-		x::dir::base::rmrf("conftestdir2.tst");
+		std::filesystem::remove_all("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir2.tst");
 
 		std::cerr << "test1" << std::endl;
 		test1();
@@ -628,8 +629,8 @@ int main(int argc, char **argv)
 		test3();
 		std::cerr << "test4" << std::endl;
 		test4();
-		x::dir::base::rmrf("conftestdir.tst");
-		x::dir::base::rmrf("conftestdir2.tst");
+		std::filesystem::remove_all("conftestdir.tst");
+		std::filesystem::remove_all("conftestdir2.tst");
 	} catch (const x::exception &e)
 	{
 		std::cerr << e << std::endl;

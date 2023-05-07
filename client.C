@@ -606,10 +606,10 @@ x::fd clientObj::implObj::connect_socket(const std::string &filename)
 
 void clientBase::defaultnodes(std::set<std::string> &paths)
 {
-	x::dir d=x::dir::create(clientObj::implObj::default_nodedir.get());
-
-	for (auto &iter:*d)
-		paths.insert(iter.fullpath());
+	for (auto &iter : std::filesystem::directory_iterator{
+			clientObj::implObj::default_nodedir.get()
+		})
+		paths.insert(iter.path());
 }
 
 client clientBase::connect()
