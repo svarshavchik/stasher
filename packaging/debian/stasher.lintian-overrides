@@ -1,0 +1,13 @@
+#
+# This package normally installs files here.
+#
+non-standard-dir-in-var var/local/
+file-in-unusual-dir var/local/stasher/stasher.logs
+#
+# This is libcxx's installation convention
+#
+custom-library-search-path RUNPATH /usr/lib/x86_64-linux-gnu/libcxx*
+#
+# Man pages generated from DocBook source via a stylesheet.
+#
+groff-message usr/share/man/man1/stasher.1.gz*

@@ -1,0 +1,53 @@
+#!/usr/bin/make -f
+
+LIBCXX_VERSION=@LIBCXX_VERSION@
+SOVERSION=@SOVERSION@
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- CC=@CC@ CXX=@CXX@ --localstatedir=/var/local
+
+override_dh_auto_test:
+	:
+override_dh_makeshlibs:
+	dh_makeshlibs -n
+
+override_dh_builddeb:
+	dh_builddeb -- $(DEB_BUILDDEB_OPTIONS)
+
+
+override_dh_auto_install:
+	dh_auto_install
+	perl -p -i -e "s/dependency_libs=.*/dependency_libs=''/" debian/tmp/usr/lib/*/*.la
+	dh_install --package stasher debian/tmp/usr/libexec/stasher
+	dh_installman --package stasher debian/tmp/usr/share/man/*/*
+	dh_install --package stasher debian/tmp/usr/bin/* usr/bin
+	mkdir -p debian/tmp/etc/cron.hourly
+	ln -s /usr/share/stasher/maillogs.sh debian/tmp/etc/cron.hourly/stasher-maillogs
+	dh_install --package stasher debian/tmp/etc/* etc
+	cp sysinit.rc debian/tmp/usr/share/stasher/sysinit.rc
+	cp stasher.sysinit debian/tmp/usr/share/stasher/sysinit
+	chmod 0555 debian/tmp/usr/share/stasher/sysinit.rc
+	chmod 0555 debian/tmp/usr/share/stasher/sysinit
+	touch debian/tmp/var/local/stasher/stasher.logs
+	dh_install --package stasher debian/tmp/usr/share/stasher
+	dh_install --package stasher debian/tmp/var/local/stasher
+	mkdir -p debian/tmp/lib/systemd/system
+	cp debian/stasher.service debian/tmp/lib/systemd/system
+	dh_install --package stasher lib/systemd/system/stasher.service
+	echo 'activate-noawait ldconfig' >debian/libstasher$(SOVERSION).triggers
+	echo 'activate-noawait ldconfig' >debian/libstasher-client$(SOVERSION).triggers
+	dh_install --package libstasher$(SOVERSION) debian/tmp/usr/lib/*/libstasher.so.* \
+		`cd debian/tmp; echo usr/lib/*`
+	dh_install --package libstasher-client$(SOVERSION) \
+		debian/tmp/usr/lib/*/libstasher-client.so.* \
+		`cd debian/tmp; echo usr/lib/*`
+	dh_install --package libstasher-dev debian/tmp/usr/include/stasher
+	dh_install --package libstasher-dev debian/tmp/usr/lib/*/*.so \
+		`cd debian/tmp; echo usr/lib/*`
+	dh_install --package libstasher-dev debian/tmp/usr/lib/*/*.la \
+		`cd debian/tmp; echo usr/lib/*`
+	dh_install --package libstasher-dev debian/tmp/usr/lib/*/*.a \
+		`cd debian/tmp; echo usr/lib/*`

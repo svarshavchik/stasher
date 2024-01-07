@@ -49,9 +49,7 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      &app; is based on &libx; which currently works on Linux only; an earlier
-      version of &libx; could also be build on &freebsdver;, but the port is not
-      maintained at present.
+      &app; is based on &libx; which currently works on Linux only.
       &app; is free software, distributed under the terms of the
       <link linkend="COPYING">GPL, version 3</link>.
     </para>
@@ -376,11 +374,7 @@ See COPYING for distribution information.
 
     <para>
       &libx; must be installed first. &app; uses &libx;, which currently
-      builds only on Linux. An earlier version of &app; could
-      also be be built on &freebsdver;, but the port is not maintained at
-      present, see <xref linkend="freebsdport" />
-      for more information.
-      The following instructions are for Linux.
+      builds only on Linux.
     </para>
 
     <para>

@@ -56,12 +56,6 @@
 <!ENTITY heartbeatclass SYSTEM "heartbeatclass.xml">
 <!ENTITY heartbeatoter SYSTEM "heartbeatother.xml">
 
-<!ENTITY freebsd SYSTEM "freebsd.xml">
-<!ENTITY freebsdver "FreeBSD 10">
-<!ENTITY freebsdverdir "<filename>packaging/freebsd9/databases/stasher</filename>">
-<!ENTITY freebsdprefix "/usr/local">
-<!ENTITY freebsdvarstasher "/usr/local/var/stasher">
-
 %entity-list;
 
 ]>
@@ -182,8 +176,6 @@ See COPYING for distribution information.
     &stasher;
     &stasherpm;
   </part>
-
-  &freebsd;
 
   <appendix id="COPYING">
     <title>COPYING</title>

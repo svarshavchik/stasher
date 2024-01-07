@@ -1,9 +1,0 @@
-set -e
-
-if test "$2" = "POST-INSTALL"
-then
-    for d in apps clusters nodes newnodes
-    do
-	mkdir -p ${PKG_PREFIX}/var/stasher/$d
-    done
-fi

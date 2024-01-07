@@ -1,0 +1,13 @@
+[Unit]
+Description=Object Repository Server
+Wants=network-online.target httportmap.service
+After=network-online.target httportmap.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=forking
+RemainAfterExit=true
+ExecStart=/usr/share/stasher/sysinit.rc /usr/share/stasher/sysinit start
+ExecStop=/usr/share/stasher/sysinit.rc /usr/share/stasher/sysinit stop

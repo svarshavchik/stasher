@@ -2,13 +2,17 @@ MANPAGESIN=stashermg.1.in stasher.1.in
 man1_MANS=stashermg.1 stasher.1
 sysconf_DATA=stasherlogconfig
 
-EXTRA_DIST= m4/ChangeLog config.rpath repomgcli.xml opts.parse.inc.tst.C message.xsl $(myXML) $(MANPAGESIN) maillogs.sh.in stasherlogconfig \
-	packaging/freebsd9/databases/stasher/Makefile \
-	packaging/freebsd9/databases/stasher/pkg-deinstall \
-	packaging/freebsd9/databases/stasher/pkg-descr \
-	packaging/freebsd9/databases/stasher/pkg-install \
-	packaging/freebsd9/databases/stasher/pkg-plist \
-	packaging/freebsd9/databases/stasher/files/stasherd.in
+EXTRA_DIST= config.rpath repomgcli.xml opts.parse.inc.tst.C message.xsl $(myXML) $(MANPAGESIN) maillogs.sh.in stasherlogconfig \
+	debuild \
+	packaging/debian/changelog \
+	packaging/debian/control \
+	packaging/debian/copyright \
+	packaging/debian/rules \
+	packaging/debian/source/format \
+	packaging/debian/lintian-overrides.allow-errors \
+	packaging/debian/*.lintian-overrides \
+	packaging/debian/stasher.postrm \
+	packaging/debian/stasher.service
 
 BUILT_SOURCES=localstatedir.h repomgcliopts.h stasherdpath.h
 CLEANFILES=localstatedir.h repomgcliopts.h stasherdpath.h \
@@ -54,6 +58,7 @@ $(call genxsl,client.deserialized.auto.H,message.xml,clientdeserialized) \
 
 dist-hook:
 	cd $(distdir); rm -f $(myCLEANFILES)
+	chmod +x $(distdir)/debuild
 	set -e; for f in `cat $(srcdir)/perl/Stasher/MANIFEST`; do $(mkdir_p) `dirname $(distdir)/perl/Stasher/$$f`; s="perl/Stasher/$$f"; if test ! -f "$$s"; then s="$(srcdir)/$$s"; fi; ln $$s $(distdir)/perl/Stasher/$$f; done
 	rm -f $(distdir)/perl/Stasher/lib/Stasher.pm
 
@@ -279,9 +284,10 @@ libstasher_la_SOURCES=\
 	trancommit.C trancommit.H trancommitfwd.H \
 	tranmeta.H \
 	userput.C userput_deserialized.H
+libstasher_la_LDFLAGS=-version-info @SOVERSION@
 
 libstasher_client_la_LIBADD=$(XLIBS)
-libstasher_client_la_LDFLAGS=-version-info 1
+libstasher_client_la_LDFLAGS=-version-info @SOVERSION@
 
 @LIBCXX_AM@
 
@@ -801,6 +807,19 @@ rpm:
 		--define "_topdir `pwd`/rpm" \
 		--define "extrarelease .`date '+%Y%m%d%H%M%S'`" @PACKAGE@-@VERSION@.tar.bz2
 	sh $$HOME/bin/rpmrepos.sh
+
+.PHONY: deb
+
+deb: dist
+	rm -rf deb
+	mkdir deb
+	cp stasher-@VERSION@.tar.bz2 deb
+	cd deb; set -e; tar xf stasher-@VERSION@.tar.bz2; cd stasher-@VERSION@; \
+                RELEASE="`date +%Y%m%d%H%M%S`" \
+		./debuild -us -uc
+	rm -rf deb.new; mv deb/*/deb deb.new
+	rm -rf deb; mv deb.new deb
+	$$HOME/bin/debrepos.sh
 
 www: html
 	rsync -a --delete-after html/. ~/www/www.courier-mta.org/stasher/.

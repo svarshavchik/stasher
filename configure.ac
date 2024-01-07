@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([stasher],[0.11.0.20210503],[mrsam@courier-mta.com])
+AC_INIT([stasher],[0.11.1],[mrsam@courier-mta.com])
 AM_INIT_AUTOMAKE(dist-bzip2 foreign)
 AC_CONFIG_SRCDIR([objrepo.H])
 AC_CONFIG_HEADERS([objrepo_config.h])
@@ -22,6 +22,10 @@ LT_INIT
 AC_PATH_PROGS(PERL,perl5 perl,/usr/bin/perl)
 
 # Checks for libraries.
+
+# Shared librari version
+SOVERSION=1
+AC_SUBST(SOVERSION)
 
 # Checks for header files.
 
@@ -54,5 +58,6 @@ AC_CONFIG_FILES(Doxyfile Makefile po/Makefile.in
 		perl/Stasher/lib/Stasher.pm
 		packaging/fedora/Makefile
 		packaging/fedora/stasher.spec
-		packaging/fedora/stasher.service)
+		packaging/fedora/stasher.service
+		debuild)
 AC_OUTPUT

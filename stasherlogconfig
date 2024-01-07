@@ -1,6 +1,6 @@
 # Recipients of stasher object repository server's logs.
 # Multiple addresses can be listed, separated by spaces.
-RECIPIENTS=""
+RECIPIENTS="root"
 
 # Mail log entries that match this pattern. The default log file format.
 # Change, as needed.

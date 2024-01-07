@@ -1,0 +1,45 @@
+#! /bin/bash
+
+set -e
+shopt -s extglob
+
+LIBCXX_VERSION=${LIBCXX_VERSION-@LIBCXX_VERSION@}
+SOVERSION=@SOVERSION@
+
+CC="`pkg-config --variable=CC libcxx-$LIBCXX_VERSION`"
+CXX="`pkg-config --variable=CXX libcxx-$LIBCXX_VERSION`"
+
+rm -rf deb
+mkdir deb
+cp ../stasher-@VERSION@.tar.bz2 deb/stasher_@VERSION@.orig.tar.bz2
+cd deb
+tar xf stasher_@VERSION@.orig.tar.bz2
+cd stasher-@VERSION@
+rm -rf debian
+cp -pr packaging/debian .
+
+ln -s libstasher.soname.lintian-overrides \
+   debian/libstasher${SOVERSION}.lintian-overrides
+ln -s libstasher-client.soname.lintian-overrides \
+   debian/libstasher-client${SOVERSION}.lintian-overrides
+
+. /etc/lsb-release
+
+RELEASE="${RELEASE-100}+`echo $DISTRIB_RELEASE | tr '.' '+'`"
+
+for f in debian/changelog debian/control debian/rules
+do
+	sed "
+s/@""VERSION""@/@VERSION@/g
+s/@""RELEASE""@/$RELEASE/g
+s/@""SOVERSION""@/@SOVERSION@/g
+s/@""LIBCXX_VERSION""@/${LIBCXX_VERSION}/g
+s/@""CC""@/${CC}/g
+s/@""CXX""@/${CXX}/g
+s/@DATE@/`date -R`/g
+" <packaging/$f >$f
+done
+
+chmod +x debian/rules
+
+debuild "$@"

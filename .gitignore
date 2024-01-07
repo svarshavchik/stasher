@@ -21,6 +21,8 @@ config.log
 config.status
 config.sub
 configure
+/deb
+/debuild
 depcomp
 /header.html
 install-sh
