@@ -313,7 +313,7 @@ localstatedir.h: Makefile
 	mv -f localstatedir.h.tmp localstatedir.h
 
 stashermg_SOURCES=repomgcli.C
-stashermg_LDADD=libstasher.la -lcourier-unicode
+stashermg_LDADD=libstasher.la -lcourier-unicode -lcxx -lcxxtls
 
 maxintsize_tst_SOURCES=maxintsize.tst.C
 maxintsize_tst_LDADD=-lcxx
@@ -543,15 +543,15 @@ managedhierarchymonitor_tst_LDADD=libstasher.la -lcourier-unicode
 managedhierarchymonitor_tst_LDFLAGS=-static
 
 managedobject_tst_SOURCES=managedobject.tst.C tst.nodes.C tst.nodes.H
-managedobject_tst_LDADD=libstasher.la -lcourier-unicode
+managedobject_tst_LDADD=libstasher.la libstasher-client.la -lcourier-unicode -lcxx -lcxxtls
 managedobject_tst_LDFLAGS=
 
 managedobject2_tst_SOURCES=managedobject2.tst.C tst.nodes.C tst.nodes.H
-managedobject2_tst_LDADD=libstasher.la -lcourier-unicode
+managedobject2_tst_LDADD=libstasher.la libstasher-client.la -lcourier-unicode -lcxx -lcxxtls
 managedobject2_tst_LDFLAGS=
 
 managedobject3_tst_SOURCES=managedobject3.tst.C tst.nodes.C tst.nodes.H
-managedobject3_tst_LDADD=libstasher.la -lcourier-unicode
+managedobject3_tst_LDADD=libstasher.la libstasher-client.la -lcourier-unicode -lcxx -lcxxtls
 managedobject3_tst_LDFLAGS=
 
 appsdir_tst_SOURCES=appsdir.tst.C tst.nodes.C tst.nodes.H
@@ -586,7 +586,7 @@ stasherdpath.h: Makefile
 $(call OPTIONS_GEN,stasherd.h,stasherd.xml)
 
 stasherd_SOURCES=stasherd.C
-stasherd_LDADD=libstasher.la
+stasherd_LDADD=libstasher.la -lcxx
 
 stasherd_static_SOURCES=stasherd.C
 stasherd_static_LDADD=libstasher.la
@@ -596,7 +596,7 @@ noinst_PROGRAMS += stashercli
 $(call OPTIONS_GEN,stasher.h,stasher.xml)
 
 stashercli_SOURCES=stasher.C
-stashercli_LDADD=libstasher-client.la @LIBREADLINE@ -lcourier-unicode
+stashercli_LDADD=libstasher-client.la @LIBREADLINE@ -lcxx -lcourier-unicode
 
 stasher_static_SOURCES=stasher.C
 stasher_static_LDADD=libstasher-client.la @LIBREADLINE@ -lcourier-unicode
@@ -672,7 +672,8 @@ check-testprograms:
 
 docs: html/index.html html/book.css html/logo.png html/.htaccess html/frame.js html/icon.gif $(patsubst %,html/%,$(notdir $(wildcard $(srcdir)/docbook/*.png)))
 	chcon -R -t httpd_sys_content_t html 2>/dev/null || true
-	rsync -a -X --delete-after html/. ~/www/hostrocket/libcxx.org/stasher
+	test -d ~/www/hostrocket || exit 0; \
+		rsync -a -X --delete-after html/. ~/www/hostrocket/libcxx.org/stasher
 
 html/%.png: html/index.html docbook/%.png
 	$(INSTALL) -m 0644 $(srcdir)/docbook/$(notdir $@) html
@@ -700,7 +701,7 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.
 	find examples -depth \( -type d -o -name '*.[CH]' -o -name '*.xml' -o -name Makefile.am -o -name configure.ac \) -print | cpio -o --quiet | (cd html.tmp; cpio -i --quiet --make-directories)
 	echo 'ForceType text/plain' >html.tmp/examples/.htaccess
 	echo 'Options +Indexes' >>html.tmp/examples/.htaccess
-	links --dump html.tmp/INSTALL.html >INSTALL.tmp
+	elinks --dump html.tmp/INSTALL.html >INSTALL.tmp
 	mv -f INSTALL.tmp INSTALL
 	ln -s ../stasher-distreboot html.tmp/distreboot
 	mv html/ref html.tmp/ref
