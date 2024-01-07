@@ -106,8 +106,13 @@ static void test1(const char *clusterdir,
 			throw EXCEPTION("[PORTLOCK] failed");
 	}
 
-	x::fd socket(x::httportmap::create()->
-		     connect("node.test", getuid()));
+	auto conn=x::httportmap::create()->
+		connect("node.test", getuid());
+
+	if (!conn)
+		throw EXCEPTION("Portmap connection failed");
+
+	auto &socket=*conn;
 
 	std::string line;
 

@@ -602,8 +602,12 @@ x::fd clusterconnecterObj::do_connect(connect_common &common,
 			LOG_INFO("Connecting to " << peername
 				 << " on " << iter.first->second);
 
-			return (x::httportmap::create(iter.first->second)
-				->connect_any(peername, common.epollfd));
+			auto conn=x::httportmap::create(iter.first->second)
+				->connect_any(peername, common.epollfd);
+
+			if (conn)
+				return *conn;
+
 		} catch (const x::exception &e)
 		{
 			common.epollfd->epoll_wait(0);
