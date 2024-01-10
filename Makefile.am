@@ -10,7 +10,7 @@ EXTRA_DIST= config.rpath repomgcli.xml opts.parse.inc.tst.C message.xsl $(myXML)
 	packaging/debian/rules \
 	packaging/debian/source/format \
 	packaging/debian/lintian-overrides.allow-errors \
-	packaging/debian/*.lintian-overrides \
+	$(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/packaging/debian/*.lintian-overrides)) \
 	packaging/debian/stasher.postrm \
 	packaging/debian/stasher.service
 
