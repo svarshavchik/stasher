@@ -8,6 +8,7 @@ Source0: %{name}-%{version}.tar.bz2
 Requires(post): /sbin/ldconfig systemd-units
 Requires(preun): systemd-units
 Requires(postun): /sbin/ldconfig systemd-units
+Provides: %{_localstatedir}/stasher/apps
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: libcxxbase-devel
