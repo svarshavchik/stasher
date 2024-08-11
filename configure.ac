@@ -6,6 +6,7 @@ AC_INIT([stasher],[0.11.1],[mrsam@courier-mta.com])
 AM_INIT_AUTOMAKE(dist-bzip2 foreign)
 AC_CONFIG_SRCDIR([objrepo.H])
 AC_CONFIG_HEADERS([objrepo_config.h])
+LIBCXX_INIT
 LT_INIT
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.20.2])
@@ -49,7 +50,6 @@ AC_SUBST(TESTPROGS)
 
 # Checks for library functions.
 
-LIBCXX_INIT
 LDFLAGS="$LDFLAGS -z relro -z now"
 
 AM_CONDITIONAL(HAVE_DOCBOOK,[test -d ${srcdir}/docbook])
