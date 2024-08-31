@@ -34,9 +34,6 @@ override_dh_auto_install:
 	touch debian/tmp/var/local/stasher/stasher.logs
 	dh_install --package stasher debian/tmp/usr/share/stasher
 	dh_install --package stasher debian/tmp/var/local/stasher
-	mkdir -p debian/tmp/lib/systemd/system
-	cp debian/stasher.service debian/tmp/lib/systemd/system
-	dh_install --package stasher lib/systemd/system/stasher.service
 	echo 'activate-noawait ldconfig' >debian/libstasher$(SOVERSION).triggers
 	echo 'activate-noawait ldconfig' >debian/libstasher-client$(SOVERSION).triggers
 	dh_install --package libstasher$(SOVERSION) debian/tmp/usr/lib/*/libstasher.so.* \
@@ -51,3 +48,9 @@ override_dh_auto_install:
 		`cd debian/tmp; echo usr/lib/*`
 	dh_install --package libstasher-dev debian/tmp/usr/lib/*/*.a \
 		`cd debian/tmp; echo usr/lib/*`
+	mkdir -p debian/tmp/usr/lib/systemd/system
+	cp debian/stasher.service debian/tmp/usr/lib/systemd/system
+	dh_install --package stasher debian/tmp/usr/lib/systemd/system/stasher.service
+
+override_dh_installsystemd:
+	dh_installsystemd --package stasher --no-start stasher.service
