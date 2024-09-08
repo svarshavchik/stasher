@@ -13,7 +13,7 @@ Rules-Requires-Root: no
 Package: stasher
 Section: contrib/net
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, anacron
 Description: Distributed object repository
  A server process that replicates "objects" (or, rather, files) between
  multiple servers, and keeps them in sync.
