@@ -118,5 +118,5 @@ rm -rf $RPM_BUILD_ROOT
 %{perl_vendorarch}/auto/Stasher/Stasher*
 
 %changelog
-* Tue Jan 10 2012 Sam Varshavchik <mrsam@octopus.email-scan.com> -
+* @DATE@ Sam Varshavchik <mrsam@octopus.email-scan.com> -
 - Initial build.

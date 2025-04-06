@@ -53,6 +53,13 @@ AC_SUBST(TESTPROGS)
 LDFLAGS="$LDFLAGS -z relro -z now"
 
 AM_CONDITIONAL(HAVE_DOCBOOK,[test -d ${srcdir}/docbook])
+
+env LC_ALL=C perl -e 'use POSIX qw(strftime); print strftime("DATE=\"%a %b %d %Y\"; DATEFULL=\"%a, %d %b %Y %H:%M:%S %z\"", localtime)' >configure.date
+. ./configure.date
+rm configure.date
+AC_SUBST(DATE)
+AC_SUBST(DATEFULL)
+
 AC_CONFIG_FILES(Doxyfile Makefile po/Makefile.in
 		stasher.sysinit sysinit.rc
 		perl/Stasher/lib/Stasher.pm
